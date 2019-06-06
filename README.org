@@ -1,22 +1,23 @@
 
 * Greenland Ice Sheet solid ice discharge from 1986 through 2017
 
-This is the source for the "Greenland Ice Sheet solid ice discharge from 1986 through 2017". The paper is located at [[http://dx.doi.org/10.5194/essd-2019-29][doi:10.5194/essd-2019-29]] and the data sets are located at [[http://dx.doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
+This is the source for the "Greenland Ice Sheet solid ice discharge from 1986 through 2017". The paper is located at [[http://dx.doi.org/10.5194/essd-11-769-2019][doi:10.5194/essd-11-769-2019]] and the data sets are located at [[http://dx.doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
 
 GitHub [[https://github.com/mankoff/ice_discharge/issues?utf8=%E2%9C%93&q=is%3Aissue][issues]] are used to collect suggested improvements to the paper, problems that made it through review, and mention of similar papers that have been published since this was accepted.
 
-The [[https://github.com/mankoff/ice_discharge/tree/HEAD@{2019-06-05}][initial commit]] is the published paper. The [[https://github.com/mankoff/ice_discharge/tree/master][master branch]] contains any updates from the initial publication. Differences between the two can be seen in this [[https://github.com/mankoff/ice_discharge/compare/HEAD@{2019-06-05}...master][diff]].
+The [[https://github.com/mankoff/ice_discharge/tree/10.5194/essd-11-769-2019][initial commit]] is the published paper. The [[https://github.com/mankoff/ice_discharge/tree/master][master branch]] contains any updates from the initial publication. Differences between the two can be seen in this [[https://github.com/mankoff/ice_discharge/compare/10.5194/essd-11-769-2019...master][diff]].
 
 * Citation
 
 #+BEGIN_EXAMPLE
 @article{mankoff_2019_ice,
-  doi = {10.5194/essd-2019-29},
-  url = {https://doi.org/10.5194/essd-2019-29},
+  doi = {10.5194/essd-11-769-2019},
+  url = {https://doi.org/10.5194/essd-11-769-2019},
   year = {2019},
-  month = 6,
+  volume = 11,
+  issue = 2,
+  pages = {769 -- 786},
   publisher = {Copernicus {GmbH}},
-  pages = {1--31},
   author = {Kenneth D. Mankoff and William Colgan and Anne Solgaard and 
             Nanna B. Karlsson and Andreas P. Ahlstrøm and Dirk van As 
             and Jason E. Box and Shfaqat Abbas Khan and Kristian K. 
