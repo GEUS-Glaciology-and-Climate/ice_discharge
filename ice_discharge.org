@@ -351,9 +351,19 @@ The application of our flux-gate algorithm shows that ice-sheet wide discharge v
 
 Transparency in data and methodology are critical to move beyond a focus of estimating discharge quantities, towards more operational mass loss products with realistic errors and uncertainty estimates. The convention of devoting a paragraph, or even page, to methods is insufficient given the complexity, pace, and importance of Greenland ice sheet research. Therefore the flux gates, discharge data, and the algorithm used to generate the gates, discharge, and all figures from this manuscript are freely available. We hope that the flux gates, data, and code we provide here is a step toward helping others both improve their work and discover the errors in ours.
 
-* Acknowledgments                                         :ignore:
+* Other                                                   :ignore:
+
+#+BEGIN_authorcontribution
+\ KDM conceived of the algorithm approach, and wrote the code. KDM , WIC, and RSF iterated over the algorithm results and methods. ASO provided the velocity data. SAK supplied the surface elevation change data. All authors contributed to the scientific discussion, writing, and editing of the manuscript. 
+#+END_authorcontribution
+
+
+#+BEGIN_competinginterests
+\ The authors declare that they have no conflict of interest.
+#+END_competinginterests
+
 #+BEGIN_acknowledgements
-Author Contribution: KDM conceived of the algorithm approach, and wrote the code. KDM , WIC, and RSF iterated over the algorithm results and methods. ASO provided the velocity data. SAK supplied the surface elevation change data. All authors contributed to the scientific discussion, writing, and editing of the manuscript. We thank the reviewers for their constructive input that helped improve the paper. The authors declare that they have no conflict of interest. Data from the Programme for Monitoring of the Greenland Ice Sheet (PROMICE) were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org. Parts of this work were funded by the INTAROS project under the European Union's Horizon 2020 research and innovation program under grant agreement No. 727890.
+We thank the reviewers for their constructive input that helped improve the paper. Ice velocity maps were produced from ESA Sentinel-1 remote sensing data as part the Programme for Monitoring of the Greenland Ice Sheet (PROMICE) and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org. Ice sheet Velocity Data, from Mouginot (2018), contains modified Copernicus Sentinel 2013-2017 data processed by ESA. Parts of this work were funded by the INTAROS project under the European Union's Horizon 2020 research and innovation program under grant agreement No. 727890. 
 #+END_acknowledgements
 
 
