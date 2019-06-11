@@ -12,7 +12,7 @@
 #+EXCLUDE_TAGS: noexport
 
 #+BEGIN_EXPORT LaTeX
-\title{Greenland Ice Sheet solid ice discharge from 1986 through 2017}
+\title{Greenland Ice Sheet solid ice discharge from 1986 through 2018}
 \Author[1]{Kenneth D.}{Mankoff}
 \Author[1]{William}{Colgan}
 \Author[1]{Anne}{Solgaard}
@@ -27,7 +27,7 @@
 \affil[1]{Department of Glaciology and Climate, Geological Survey of Denmark and Greenland (GEUS), Copenhagen, Denmark}
 \affil[2]{DTU Space, National Space Institute, Department of Geodesy, Technical University of Denmark, Kgs. Lyngby, Denmark}
 \affil[3]{Department of Earth System Science, University of California, Irvine, CA, USA}
-\runningtitle{Greenland ice sheet solid ice discharge from 1986 through 2017}
+\runningtitle{Greenland ice sheet solid ice discharge from 1986 through 2018}
 \runningauthor{K. D. Mankoff \textit{et al.}}
 \correspondence{Ken Mankoff (kdm@geus.dk)}
 
@@ -46,10 +46,10 @@
 
 
 #+BEGIN_abstract
-We present a 1986 through 2017 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional hand-picked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and ends with near-complete spatial coverage and six-day updates to velocity. The 2010 through 2017 average ice discharge through the flux-gates is ~488 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the NW region. As part of the journal's living archive option, all input data, code, and results from this study will be updated when new input data are accessible and made freely available at doi:10.22008/promice/data/ice_discharge.
+We present a 1986 through 2018 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional hand-picked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and ends with near-complete spatial coverage and six-day updates to velocity. The 2010 through 2018 average ice discharge through the flux-gates is ~488 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the NW region. As part of the journal's living archive option, all input data, code, and results from this study will be updated when new input data are accessible and made freely available at doi:10.22008/promice/data/ice_discharge.
 #+END_abstract
 
-# For 2000 to 2017 mean see LINK: [[id:eca400fe-cffc-4e6b-8fc1-694945093adb][2000 to 2017 mean]]
+# For 2000 to 2018 mean see LINK: [[id:eca400fe-cffc-4e6b-8fc1-694945093adb][2000 to 2018 mean]]
 
 
 * README                                                :noexport:
@@ -76,7 +76,7 @@ To recreate this work
 
 # A short summary [...] 500-character (incl. spaces) non-technical text that may be used to promote your work to a broader audience. It should highlight your main conclusions and results, and what the implications are. If possible, please also summarize briefly why you did the research and how you did it.
 
-We have produced an open and reproducible estimate of Greenland ice sheet solid ice discharge from 1986 through 2017. Our results show three modes at the total ice-sheet scale: Steady discharge from 1986 through 2000, increasing discharge from 2000 through 2005, steady discharge from 2005 through 2017. The behavior of individual sectors and glaciers is more complicated. This work was done to provide a 100% reproducible estimate to help constrain mass balance and sea level rise estimates. 
+We have produced an open and reproducible estimate of Greenland ice sheet solid ice discharge from 1986 through 2018. Our results show three modes at the total ice-sheet scale: Steady discharge from 1986 through 2000, increasing discharge from 2000 through 2005, steady discharge from 2005 through 2018. The behavior of individual sectors and glaciers is more complicated. This work was done to provide a 100% reproducible estimate to help constrain mass balance and sea level rise estimates. 
 
 * Introduction
 :PROPERTIES:
@@ -133,7 +133,18 @@ where \(\rho\) is the average density of ice, \(V\) is depth-average gate-perpen
 
 Conventional methods of gate selection involve hand-picking gate locations, generally as linear features (e.g. citet:enderlin_2014_improved) or visually approximating ice-orthogonal gates at one point in time (e.g. citet:king_2018_seasonal). Manual gate definition is sub-optimal. For example, the largest discharging glaciers draw from an upstream radially-diffusing region that may not easily be represented by a single linear gate. Approximately flow-orthogonal curved gates may not be flow-orthogonal on the multi-decade time scale due to changing flow directions. Manual gate selection makes it difficult to update gate locations, corresponding with glacier termini retreat or advance, in a systematic and reproducible fashion. We therefore adopt an algorithmic approach to generate gates based on a range of criteria.
 
-Here, we present a discharge dataset based on gates selected in a reproducible fashion by a new algorithm. Relative to previous studies, we employ ice velocity observation over a longer period with higher temporal frequency and denser spatial coverage. We use ice velocity from 1986 through 2017 including six-day velocities for the last ~500 days of the time series, and discharge at 200 m pixel resolution capturing all ice flowing faster than 100 m yr^{-1} that crosses glacier termini into fjords.
+Here, we present a discharge dataset based on gates selected in a reproducible fashion by a new algorithm. Relative to previous studies, we employ ice velocity observation over a longer period with higher temporal frequency and denser spatial coverage. We use ice velocity from 1986 through 2018 including six-day velocities for the last ~500 days of the time series, and discharge at 200 m pixel resolution capturing all ice flowing faster than 100 m yr^{-1} that crosses glacier termini into fjords.
+
+* What's new in this version
+
+#+BEGIN_SRC sh :results verbatim
+ls ~/data/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc
+#+END_SRC
+#+RESULTS:
+
+This update includes 48 additional monthly average velocity maps from 2014-12-01 through 2018-11-30. This increases data density and coverage from 2014 through 2017, and extends the time series by one year covered by 12 additional points. Newly incorporated data come from MEaSUREs NSIDC 0731 citep:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland.
+
+Results show a continued steady total discharge. The contributions from the central east (CW) region continue to decrease, while the (CE) region continues to increase, and they are now approximately tied for the 3rd largest sector. The top three individually contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continues its rapid discharge decline, returning to ~Y2000 levels. If the trend continues within a year or two the top contributor to sea level rise will once again be Helheim  Gletsjer, then Kangerlussuaq Gletsjer, then Sermeq Kujalleq in third place.
 
 * Input data
 
@@ -148,28 +159,32 @@ For ice thickness estimates, we use surface elevation from GIMP (citet:howat_201
 #+BEGIN_SRC sh :results verbatim
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l)
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep -v 19|wc -l)
+echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2016|wc -l)
+echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2017|wc -l)
+echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2018|wc -l)
 #+END_SRC
 #+RESULTS:
 : times:  308
 : times:  235
 
-This work uses 308 different velocity maps, biased toward the last 500 days of the time series when six-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is 1 to a few velocity map per year from 1986 to 2000, 9 to 13 velocity maps per year from 2000 through 2015, 24 in 2016, and 55 in 2017.
+This work uses 356 different velocity maps, biased toward the last 500 days of the time series when six-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is 1 to a few velocity map per year from 1986 to 2000, 9 to 13 velocity maps per year from 2000 through 2015, 36 in 2016, and 68 in 2017, and 12 in 2018.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
 #+NAME: tab:data
-| Property                       | Name used in this paper  | Reference                                               |
-|--------------------------------+--------------------------+---------------------------------------------------------|
-| Basal Topography               | BedMachine               | citet:morlighem_2017_bedmachine,NSIDC_BedMachine        |
-| Basal Topography for Southeast |                          | citet:millan_2018_vulnerability                         |
-| Surface Elevation              | GIMP 0715                | citet:howat_2014_greenland,NSIDC_0715                   |
-| Surface Elevation Change       | Surface Elevation Change | citet:khan_2016_geodetic                                |
-| Baseline Velocity              | MEaSUREs 0478            | citet:NSIDC_0478                                        |
-| Velocity                       | Sentinel                 | Appendix                                                |
-| Velocity                       | MEaSUREs 0646            | citet:NSIDC_0646                                        |
-| Velocity                       | pre-2000                 | citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000 |
-| Sectors & Regions              | Sectors & Regions | citet:mouginot_2019_glacier                             |
-| Names                          |                          | citet:bjork_2015_brief,mouginot_2019_glacier            |
+| Property                       | Name used in this paper  | Reference                                                      |
+|--------------------------------+--------------------------+----------------------------------------------------------------|
+| Basal Topography               | BedMachine               | citet:morlighem_2017_bedmachine,NSIDC_BedMachine               |
+| Basal Topography for Southeast |                          | citet:millan_2018_vulnerability                                |
+| Surface Elevation              | GIMP 0715                | citet:howat_2014_greenland,NSIDC_0715                          |
+| Surface Elevation Change       | Surface Elevation Change | citet:khan_2016_geodetic                                       |
+| Baseline Velocity              | MEaSUREs 0478            | citet:NSIDC_0478                                               |
+| Velocity                       | Sentinel                 | Appendix                                                       |
+| Velocity                       | MEaSUREs 0646            | citet:NSIDC_0646                                               |
+| Velocity                       | MEaSUREs 0731            | citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland |
+| Velocity                       | pre-2000                 | citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000        |
+| Sectors & Regions              | Sectors & Regions        | citet:mouginot_2019_glacier                                    |
+| Names                          |                          | citet:bjork_2015_brief,mouginot_2019_glacier                   |
 
 * Methods
 ** Terminology 
@@ -288,9 +303,9 @@ The average unadjusted thickness gates is 405 m with a standard deviation of 260
 :CUSTOM_ID: sec:results_flow_rate
 :END:
 
-Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 438 \(\pm\) 43 Gt in 1986, has a minimum of 421 \(\pm\) 42 Gt in 1995, increases to 452 \(\pm\) 45 in 2000, further to 504 \(\pm\) 49 Gt/yr in 2005, after which annual discharge remains approximately steady at 484 to 503 \(\pm\) ~50 Gt/yr during the 2005 to 2017 period. Annual maxima in ice discharged occurred in 2005 (504 \(\pm\) 49 Gt/yr), 2011 (499 \(\pm\) 50 Gt/yr), and 2014 (503 \(\pm\) 51 Gt/yr).
+Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 438 \(\pm\) 43 Gt in 1986, has a minimum of 421 \(\pm\) 42 Gt in 1995, increases to 452 \(\pm\) 45 in 2000, further to 504 \(\pm\) 49 Gt/yr in 2005, after which annual discharge remains approximately steady at 484 to 503 \(\pm\) ~50 Gt/yr during the 2005 to 2018 period. Annual maxima in ice discharged occurred in 2005 (504 \(\pm\) 49 Gt/yr), 2011 (499 \(\pm\) 50 Gt/yr), and 2014 (503 \(\pm\) 51 Gt/yr).
 
-At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 139 to 167 (\(\pm\) 11 %) Gt yr^{-1} of discharge (30 to 34 % of ice-sheet wide discharge) over the 1986 to 2017 period. By comparison, the predominantly land-terminating NO, NE and SW together were also responsible for 131 to 168 of discharge (~31 % of ice-sheet wide discharge) during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady or declining for the past decade. The NW is the only region exhibiting a persistent increase in discharge -- From ~89 to 113 Gt yr^{-1} (21 % increase) over the 1998 through 2017 period (+ ~1 Gt yr^{-1} or + ~1 % yr^{-1}). This persistent increase in NW discharge offsets declining discharge from other regions. The largest contributing region, SE, contributed a high of 167 \(\pm\) 19 Gt in 2005, but dropped to 149 (155) \(\pm\) 18 Gt in 2016 (2017).
+At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 139 to 167 (\(\pm\) 11 %) Gt yr^{-1} of discharge (30 to 34 % of ice-sheet wide discharge) over the 1986 to 2018 period. By comparison, the predominantly land-terminating NO, NE and SW together were also responsible for 131 to 168 of discharge (~31 % of ice-sheet wide discharge) during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady or declining for the past decade. The NW is the only region exhibiting a persistent increase in discharge -- From ~89 to 113 Gt yr^{-1} (21 % increase) over the 1998 through 2018 period (+ ~1 Gt yr^{-1} or + ~1 % yr^{-1}). This persistent increase in NW discharge offsets declining discharge from other regions. The largest contributing region, SE, contributed a high of 166 \(\pm\) 19 Gt in 2005, but dropped to 146, 154 and 154 \(\pm\) 18 Gt in 2016, 2017, and 2018 respectively.
 
 # 100 - 89/113*100 = 21.2389380531
 # (113-89+1)/(2017-1998+1) = 1.25
@@ -298,7 +313,7 @@ At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are
 
 # In the NO, NE and SW regions, which contribute a minority of ice-sheet discharge, low coverage (large data gaps) is evident in the coverage chart (Fig. [[fig:discharge_ts_regions]], only NO of these three regions is shown for clarity), and as linear trends with data point centers and error bars transparent. These indicators of gap-filling are also evident in the NW region but only in 2014 & 2015. They are more clearly evident in the NE, NO, and SW (see data).
 
-Focusing on the top eight contributors (mean of last year) at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~52 Gt yr^{-1} in 2012 to ~45 Gt yr^{-1} in 2016 and ~38 Gt yr^{-1} in 2017, likely due to ocean cooling citep:khazendar_2019_interruption. We exclude Ikertivaq from the top 8 because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. The 2013 to 2016 slowdown of Sermeq Kujalleq (Fig. [[fig:discharge_ts_topfew]]) is compensated by the many glaciers that make up the NW region (Fig. [[fig:discharge_ts_regions]]). The large 2017 reduction in discharge at Sermeq Kujalleq is partially offset by a large increase in the 2nd largest contributor, Helheim Gletsjer (Fig. [[fig:discharge_ts_topfew]]).
+Focusing on the top eight contributors (mean of last year) at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~52 Gt yr^{-1} in 2012 to ~45 Gt yr^{-1} in 2016 and ~38 Gt yr^{-1} in 2017, likely due to ocean cooling citep:khazendar_2019_interruption. We exclude Ikertivaq from the top 8 because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. The 2013 to 2016 slowdown of Sermeq Kujalleq (Fig. [[fig:discharge_ts_topfew]]) is compensated by the many glaciers that make up the NW region (Fig. [[fig:discharge_ts_regions]]). The large 2017 and 2018 reduction in discharge at Sermeq Kujalleq is partially offset by a large increase in the 2nd largest contributor, Helheim Gletsjer (Fig. [[fig:discharge_ts_topfew]]).
 
 * Discussion
 
@@ -328,7 +343,7 @@ This work in its entirety is available at doi:10.22008/promice/data/ice_discharg
 
 * Conclusions
 
-We have presented a novel dataset of flux gates and 1986 through 2017 glacier-scale ice discharge estimate for the Greenland ice sheet. These data are underpinned by an algorithm that both selects gates for ice flux and then computes ice discharges. 
+We have presented a novel dataset of flux gates and 1986 through 2018 glacier-scale ice discharge estimate for the Greenland ice sheet. These data are underpinned by an algorithm that both selects gates for ice flux and then computes ice discharges. 
 
 Our results are similar to the most recent discharge estimate citep:king_2018_seasonal but begin in 1986 - although there is low coverage and few samples prior to 2000. From our discharge estimate we show that over the past ~30 years, ice sheet discharge was ~430 Gt yr^{-1} prior to 2000, rose to over 500 Gt yr^{-1} from 2000 to 2005, and has held roughly steady since 2005 at near 500 Gt yr^{-1}. However, when viewed at a region or sector scale, the system appears more dynamic with spatial and temporal increases and decreases canceling each other out to produce the more stable ice sheet discharge. We note that there does not appear to be any dynamic connection among the regions, and any increase in one region that was offset by a decrease in another has likely been due to chance. If in coming years when changes occur the signals have matching signs, then ice sheet discharge would decrease or increase, rather than remain fairly steady.
 
@@ -3114,8 +3129,14 @@ for g in th[th['bad']]['gates'].unique(): # only work on gates with some (or all
 # aggressive: Anything <= 50 gets 400 m thickness
 th['thick_adj_400'] = [400 if T <= 50 else T for T in th['thick']]
 th['thick_adj_400_err'] = [400/2. if T[0] <= 50 else T[1] for T in zip(th['thick'],th['err'])]
+#+END_SRC
 
-# print(th.describe())
+#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge
+<<load_data>>
+<<millan_2018>>
+<<adjust_thickness>>
+
+print(th.describe())
 
 D0 = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=0) * 917 / 1E12
 D1 = (vel).apply(lambda c: c * (200 * th['thick_adj_300'] * meta['err_2D'].values), axis=0) * 917 / 1E12
@@ -3124,10 +3145,9 @@ D1 = D1.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_
 pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 #+END_SRC
 
-#+RESULTS: adjust_thickness
-:results:
-# Out[53]:
-# output
+#+RESULTS:
+:RESULTS:
+#+begin_example
              gates  bed@BedMachine        thick  surface@BedMachine  bed@Millan_2018  \
 count  6002.000000     6002.000000  6002.000000         6002.000000      6002.000000   
 mean    168.306398       42.703099   404.833499          441.314562        90.434342   
@@ -3157,8 +3177,7 @@ min        21.000000          10.000000      50.429825          10.000000
 50%       409.649870          49.000000     409.649870          51.000000  
 75%       584.000000          90.000000     584.000000          95.000000  
 max      1477.000000         305.000000    1477.000000         305.000000  
-
-# text/org
+#+end_example
 |                     |   BedMachine |     300 |    diff |
 |---------------------+--------------+---------+---------|
 | 1985-12-31 00:00:00 |      374.375 | 382.212 | 7.83762 |
@@ -3176,27 +3195,27 @@ max      1477.000000         305.000000    1477.000000         305.000000
 | 1997-12-31 00:00:00 |      386.988 | 394.988 | 8.0001  |
 | 1998-12-31 00:00:00 |      389.026 | 396.698 | 7.67141 |
 | 1999-12-31 00:00:00 |      399.215 | 406.817 | 7.60238 |
-| 2000-12-31 00:00:00 |      406.172 | 413.258 | 7.08637 |
-| 2001-12-31 00:00:00 |      406.827 | 414.011 | 7.18403 |
-| 2002-12-31 00:00:00 |      423.918 | 431.258 | 7.34082 |
-| 2003-12-31 00:00:00 |      432.797 | 440.325 | 7.52848 |
-| 2004-12-31 00:00:00 |      445.856 | 453.639 | 7.78341 |
-| 2005-12-31 00:00:00 |      461.54  | 469.381 | 7.84078 |
-| 2006-12-31 00:00:00 |      452.738 | 460.448 | 7.71027 |
-| 2007-12-31 00:00:00 |      447.368 | 454.951 | 7.5832  |
-| 2008-12-31 00:00:00 |      449.842 | 457.527 | 7.68493 |
-| 2009-12-31 00:00:00 |      457.889 | 465.82  | 7.93032 |
-| 2010-12-31 00:00:00 |      464.42  | 472.296 | 7.87678 |
-| 2011-12-31 00:00:00 |      468.901 | 476.704 | 7.80348 |
-| 2012-12-31 00:00:00 |      469.073 | 476.774 | 7.70104 |
-| 2013-12-31 00:00:00 |      476.442 | 484.265 | 7.8228  |
-| 2014-12-31 00:00:00 |      479.846 | 487.43  | 7.58377 |
-| 2015-12-31 00:00:00 |      480.693 | 488.356 | 7.66231 |
-| 2016-12-31 00:00:00 |      476.885 | 484.29  | 7.40501 |
-| 2017-12-31 00:00:00 |      484.666 | 491.603 | 6.93655 |
-:end:
+| 2000-12-31 00:00:00 |      406.172 | 413.258 | 7.08638 |
+| 2001-12-31 00:00:00 |      406.827 | 414.011 | 7.18404 |
+| 2002-12-31 00:00:00 |      423.918 | 431.258 | 7.34085 |
+| 2003-12-31 00:00:00 |      432.797 | 440.326 | 7.52853 |
+| 2004-12-31 00:00:00 |      445.853 | 453.637 | 7.78348 |
+| 2005-12-31 00:00:00 |      461.521 | 469.362 | 7.84053 |
+| 2006-12-31 00:00:00 |      452.762 | 460.468 | 7.70625 |
+| 2007-12-31 00:00:00 |      447.352 | 454.935 | 7.58251 |
+| 2008-12-31 00:00:00 |      450.1   | 457.769 | 7.66889 |
+| 2009-12-31 00:00:00 |      457.835 | 465.763 | 7.92779 |
+| 2010-12-31 00:00:00 |      464.367 | 472.249 | 7.8817  |
+| 2011-12-31 00:00:00 |      468.892 | 476.693 | 7.80105 |
+| 2012-12-31 00:00:00 |      469.052 | 476.757 | 7.70465 |
+| 2013-12-31 00:00:00 |      476.126 | 483.936 | 7.81059 |
+| 2014-12-31 00:00:00 |      480.46  | 487.98  | 7.52003 |
+| 2015-12-31 00:00:00 |      481.572 | 489.011 | 7.4384  |
+| 2016-12-31 00:00:00 |      477.064 | 484.277 | 7.21309 |
+| 2017-12-31 00:00:00 |      484.043 | 491.026 | 6.98291 |
+| 2018-12-31 00:00:00 |      483.786 | 491.439 | 7.65308 |
+:END:
 
-:end:
 
 **** Adjust thickness w thickness v. velocity fit.
 
@@ -3345,7 +3364,7 @@ Warnings:
 :ID:       62f5d28c-c704-422d-9e9b-c0771d5b86ee
 :END:
 
-#+BEGIN_SRC ipython :session :exports none :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :session :exports none :results raw drawer :display text/org
 th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 #+END_SRC
 
