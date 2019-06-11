@@ -206,7 +206,7 @@ The baseline data provides velocity at all gate locations by definition, but ind
 
 We flag invalid (outlier) velocities by treating each pixel as an individual time series, applying a 30 point rolling window, flagging values more than 2 standard deviations outside the mean, and repeating this filter three times. We also drop the 1972 to 1985 years from citet:mouginot_2018_1972to1990 because there is low coverage and extremely high variability when using our algorithm.
 
-This outlier detection method appears to correctly flag outliers (see Appendix for un-filtered time series graphs), but likely also flags some true short-term velocity increases. The effect of this filter is a ~1% reduction in discharge most years, but more in years with high discharge -- a reduction of 3.2 % in 2013, 4.3 % in 2003, and more in the 1980s when the data is noisy. Any analysis using this data and focusing on individual glaciers or short-term changes (or lack there-of) should re-evaluate the upstream data sources.
+This outlier detection method appears to correctly flag outliers (see citet:mankoff_2019_ice for un-filtered time series graphs), but likely also flags some true short-term velocity increases. The effect of this filter is a ~1% reduction in discharge most years, but more in years with high discharge -- a reduction of 3.2 % in 2013, 4.3 % in 2003, and more in the 1980s when the data is noisy. Any analysis using this data and focusing on individual glaciers or short-term changes (or lack there-of) should re-evaluate the upstream data sources.
 
 *** Missing velocity
 :PROPERTIES:
@@ -635,26 +635,6 @@ inkscape -z ./figs/gate_weight_schematic.svg -e ./figs/gate_weight_schematic.png
 #+ATTR_LATEX: :width 0.33\textwidth :placement [!h]
 #+CAPTION: Schematic demonstrating coverage. Velocities are filled with linear interpolation in time, and coverage is weighted by discharge. \(t\) columns represent the same two gate pixels (A & B) at three time steps, where \(t_n\) are linearly spaced, but \(t_2\) is not observed anywhere on the ice sheet and therefore not included. Numbers in boxes represents example discharge values. Gray parenthetical number is filled, not sampled, in pixel B at time t\(_3\). Weighted filling computes the coverage as 9/11 = \(0.\overline{81}\), instead of 0.5 (half of the pixels at time t\(_3\) have observations).
 [[./figs/gate_weight_schematic.png]]
-
-
-*** Filtered Velocity
-
-Here we show the same time series as in Figs. [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]] but without any velocity filtering applied. 
-
-#+NAME: fig:discharge_ts_nofilter
-#+ATTR_LATEX: :width \textwidth :placement [!h]
-#+CAPTION: Same as Fig. [[fig:discharge_ts]] but without the velocity filter. Note different y-axis
-[[./figs/discharge_ts_nofilter.png]]
-
-#+NAME: fig:discharge_ts_regions_nofilter
-#+ATTR_LATEX: :width \textwidth :placement [!h]
-#+CAPTION: Same as Fig. [[fig:discharge_ts_regions]] but without the velocity filter. Note different y-axis
-[[./figs/discharge_ts_regions_nofilter.png]]
-
-#+NAME: fig:discharge_ts_topfew_nofilter
-#+ATTR_LATEX: :width \textwidth :placement [!h]
-#+CAPTION: Same as Fig. [[fig:discharge_ts_topfew]] but without the velocity filter. Note different y-axis
-[[./figs/discharge_ts_topfew_nofilter.png]]
 
 
 *** Errors from map projection                          :noexport:
