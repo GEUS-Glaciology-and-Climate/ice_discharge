@@ -6174,15 +6174,11 @@ done
 #+RESULTS:
 
 * LaTeXdiff                                             :noexport:
-#+BEGIN_SRC sh :results verbatim :results output :eval no-export
+#+BEGIN_SRC sh :results verbatim :results none :eval no-export
 
-OLD=submitted_1dc4f59.tex
+OLD=ice_discharge.2537c3a.tex
 NEW=ice_discharge.tex
 latexdiff --disable-citation-markup --append-safecmd="textcite,autocite" --config="PICTUREENV=(?:picture|DIFnomarkup|tabular)[\w\d*@]*" $OLD $NEW > diff.tex
-
-# hack because latexdiff fails with some citation changes
-sed s/colorlinks=true/colorlinks=false/ diff.tex | sed s/\(e.g.\ \\\\textcite{mouginot_2018\\\\DIFdelbegin\ \\\\DIFdel{_annual}\\\\DIFdelend\ \\\\DIFaddbegin\ \\\\DIFadd{_1972to1990,mouginot_2018_1991to2000}\\\\DIFaddend\ }\)/\(e.g.\ \\\\DIFaddbegin\ \\\\DIFadd{\\\\textcite{mouginot_2018_1972to1990,mouginot_2018_1991to2000}}\\\\DIFaddend\)/g | sed s/Other\ glacier\ names\ come\ from\ \\\\textcite{\\\\DIFdelbegin\ \\\\DIFdel{rignot}\\\\DIFdelend\ \\\\DIFaddbegin\ \\\\DIFadd{mouginot}\\\\DIFaddend\ _2\\\\DIFdelbegin\ \\\\DIFdel{008_mass}\\\\DIFdelend\ \\\\DIFaddbegin\ \\\\DIFadd{019_glacier}\\\\DIFaddend\ }/Other\ glacier\ names\ come\ from\ \\\\textcite{mouginot_2019_glacier}/g | sed s/come\ from\ \\\\textcite{mouginot_2\\\\DIFdelbegin\ \\\\DIFdel{017_comprehensive}\\\\DIFdelend\ \\\\DIFaddbegin\ \\\\DIFadd{019_glacier}\\\\DIFaddend\ }/come\ from\ \\\\textcite{mouginot_2019_glacier}/g | sed s/\\\\textcite{mouginot_2\\\\DIFdelbegin\ \\\\DIFdel{017_comprehensive}\\\\DIFdelend\ \\\\DIFaddbegin\ \\\\DIFadd{019_glacier}\\\\DIFaddend\ }/\\\\textcite{mouginot_2019_glacier}/g > tmp.tex
-mv tmp.tex diff.tex
 
 # NOTE: Stil requires some manual editing of diff.tex, particularly
 # when \DIFDEL and \DIFADD are inside CITE commands.
@@ -6190,6 +6186,7 @@ mv tmp.tex diff.tex
 # latexmk diff.tex
 #+END_SRC
 #+RESULTS:
+
 * Release                                               :noexport:
 ** Share w/ Coauthors
 #+BEGIN_SRC sh :results verbatim
