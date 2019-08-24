@@ -3,16 +3,16 @@
 #+LaTeX_CLASS_OPTIONS: [tc, manuscript]
 #+Options: toc:nil ^:t {}:t
 
-#+PROPERTY: header-args :comments both
-#+PROPERTY: header-args :eval no-export :noweb yes
+#+PROPERTY: header-args: :comments both
+#+PROPERTY: header-args:sh :eval no-export :noweb yes
 #+PROPERTY: header-args:jupyter-python :eval no-export :noweb yes
-#+PROPERTY: header-args :session ice_discharge
+#+PROPERTY: header-args: :session ice_discharge
 
 #+MACRO: JAKO @@latex:Sermeq Kujalleq@@
 #+EXCLUDE_TAGS: noexport
 
 #+BEGIN_EXPORT LaTeX
-\title{Greenland Ice Sheet solid ice discharge from 1986 through 2018}
+\title{Greenland Ice Sheet solid ice discharge from 1986 through July 2019}
 \Author[1]{Kenneth D.}{Mankoff}
 \Author[1]{William}{Colgan}
 \Author[1]{Anne}{Solgaard}
@@ -46,7 +46,7 @@
 
 
 #+BEGIN_abstract
-We present a 1986 through 2018 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional hand-picked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and ends with near-complete spatial coverage and six-day updates to velocity. The 2010 through 2018 average ice discharge through the flux-gates is ~488 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the NW region. As part of the journal's living archive option, all input data, code, and results from this study will be updated when new input data are accessible and made freely available at doi:10.22008/promice/data/ice_discharge.
+We present a 1986 through July 2019 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional hand-picked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and ends with near-complete spatial coverage and six-day updates to velocity. The 2010 through 2018 average ice discharge through the flux-gates is ~488 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the NW region. As part of the journal's living archive option, all input data, code, and results from this study will be updated when new input data are accessible and made freely available at doi:10.22008/promice/data/ice_discharge.
 #+END_abstract
 
 # For 2000 to 2018 mean see LINK: [[id:eca400fe-cffc-4e6b-8fc1-694945093adb][2000 to 2018 mean]]
@@ -76,7 +76,23 @@ To recreate this work
 
 # A short summary [...] 500-character (incl. spaces) non-technical text that may be used to promote your work to a broader audience. It should highlight your main conclusions and results, and what the implications are. If possible, please also summarize briefly why you did the research and how you did it.
 
-We have produced an open and reproducible estimate of Greenland ice sheet solid ice discharge from 1986 through 2018. Our results show three modes at the total ice-sheet scale: Steady discharge from 1986 through 2000, increasing discharge from 2000 through 2005, steady discharge from 2005 through 2018. The behavior of individual sectors and glaciers is more complicated. This work was done to provide a 100% reproducible estimate to help constrain mass balance and sea level rise estimates. 
+We have produced an open and reproducible estimate of Greenland ice sheet solid ice discharge from 1986 through July 2019. Our results show three modes at the total ice-sheet scale: Steady discharge from 1986 through 2000, increasing discharge from 2000 through 2005, steady discharge from 2005 through 2019. The behavior of individual sectors and glaciers is more complicated. This work was done to provide a 100% reproducible estimate to help constrain mass balance and sea level rise estimates. 
+
+* What's new in this version
+
+#+BEGIN_SRC sh :results verbatim
+ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l
+#+END_SRC
+#+RESULTS:
+: 48
+
+The data has been updated repeatedly between the first version of this paper citep:mankoff_2019_ice and this version. The data will continue to be updated, often sub-monthly, although reference papers will only come out once or twice a year. Therefore users are encouraged to regularly check for data updates at doi:10.22008/promice/data/ice_discharge when using the data.
+
+A post-peer-review website is available at https://github.com/mankoff/ice_discharge where we document changes to the paper and use the GitHub Issues feature to collect suggested improvements to the paper, document those improvements as they are implemented, document problems that made it through review, and mention similar papers that have been published since this was accepted.
+
+This update includes 48 additional MEaSUREs monthly average velocity maps from 2014-12-01 through 2018-11-30, and 49 Sentinel 1 velocity maps from 2018 through 2019-07-23, increases data density and coverage from 2014 through 2019, and extends the time series to 2019-07-23. Newly incorporated data come from incorporation of a new data set (MEaSUREs NSIDC 0731 citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland) and additional data from Sentinel 1.
+
+Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and they are now approximately tied for the 3rd largest discharging sector. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continues its rapid discharge decline, returning to, approximately, its discharge from year 2000. If the trend continues, within a year or two the top contributor to sea level rise will once again be Helheim  Gletsjer, then Kangerlussuaq Gletsjer, then Sermeq Kujalleq in third place. The near-term future behavior of Sermeq Kujalleq is not known, but recent changes at Kangerlussuaq suggests it is likely to increase its discharge citep:brough_2019_exceptional.
 
 * Introduction
 :PROPERTIES:
@@ -133,18 +149,7 @@ where \(\rho\) is the average density of ice, \(V\) is depth-average gate-perpen
 
 Conventional methods of gate selection involve hand-picking gate locations, generally as linear features (e.g. citet:enderlin_2014_improved) or visually approximating ice-orthogonal gates at one point in time (e.g. citet:king_2018_seasonal). Manual gate definition is sub-optimal. For example, the largest discharging glaciers draw from an upstream radially-diffusing region that may not easily be represented by a single linear gate. Approximately flow-orthogonal curved gates may not be flow-orthogonal on the multi-decade time scale due to changing flow directions. Manual gate selection makes it difficult to update gate locations, corresponding with glacier termini retreat or advance, in a systematic and reproducible fashion. We therefore adopt an algorithmic approach to generate gates based on a range of criteria.
 
-Here, we present a discharge dataset based on gates selected in a reproducible fashion by a new algorithm. Relative to previous studies, we employ ice velocity observation over a longer period with higher temporal frequency and denser spatial coverage. We use ice velocity from 1986 through 2018 including six-day velocities for the last ~500 days of the time series, and discharge at 200 m pixel resolution capturing all ice flowing faster than 100 m yr^{-1} that crosses glacier termini into fjords.
-
-* What's new in this version
-
-#+BEGIN_SRC sh :results verbatim
-ls ~/data/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc
-#+END_SRC
-#+RESULTS:
-
-This update includes 48 additional monthly average velocity maps from 2014-12-01 through 2018-11-30. This increases data density and coverage from 2014 through 2017, and extends the time series by one year covered by 12 additional points. Newly incorporated data come from MEaSUREs NSIDC 0731 citep:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland.
-
-Results show a continued steady total discharge. The contributions from the central east (CW) region continue to decrease, while the (CE) region continues to increase, and they are now approximately tied for the 3rd largest sector. The top three individually contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continues its rapid discharge decline, returning to ~Y2000 levels. If the trend continues within a year or two the top contributor to sea level rise will once again be Helheim  Gletsjer, then Kangerlussuaq Gletsjer, then Sermeq Kujalleq in third place.
+Here, we present a discharge dataset based on gates selected in a reproducible fashion by a new algorithm. Relative to previous studies, we employ ice velocity observation over a longer period with higher temporal frequency and denser spatial coverage. We use ice velocity from 1986 through 2019 including six-day velocities for the last ~500 days of the time series, and discharge at 200 m pixel resolution capturing all ice flowing faster than 100 m yr^{-1} that crosses glacier termini into fjords.
 
 * Input data
 
@@ -162,12 +167,17 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2016|wc -l)
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2017|wc -l)
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2018|wc -l)
+echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2019|wc -l)
 #+END_SRC
 #+RESULTS:
-: times:  308
-: times:  235
+: times:  404
+: times:  313
+: times:  36
+: times:  69
+: times:  42
+: times:  17
 
-This work uses 356 different velocity maps, biased toward the last 500 days of the time series when six-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is 1 to a few velocity map per year from 1986 to 2000, 9 to 13 velocity maps per year from 2000 through 2015, 36 in 2016, and 68 in 2017, and 12 in 2018.
+This work uses 356 different velocity maps, biased toward the last 500 days of the time series when six-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is 1 to a few velocity map per year from 1986 to 2000, 9 to 13 velocity maps per year from 2000 through 2015, 36 in 2016, and 69 in 2017, 42 in 2018, and 17 in 2019.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -303,9 +313,9 @@ The average unadjusted thickness gates is 405 m with a standard deviation of 260
 :CUSTOM_ID: sec:results_flow_rate
 :END:
 
-Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 438 \(\pm\) 43 Gt in 1986, has a minimum of 421 \(\pm\) 42 Gt in 1995, increases to 452 \(\pm\) 45 in 2000, further to 504 \(\pm\) 49 Gt/yr in 2005, after which annual discharge remains approximately steady at 484 to 503 \(\pm\) ~50 Gt/yr during the 2005 to 2018 period. Annual maxima in ice discharged occurred in 2005 (504 \(\pm\) 49 Gt/yr), 2011 (499 \(\pm\) 50 Gt/yr), and 2014 (503 \(\pm\) 51 Gt/yr).
+Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 438 \(\pm\) 43 Gt in 1986, has a minimum of 421 \(\pm\) 42 Gt in 1995, increases to 452 \(\pm\) 45 in 2000, further to 504 \(\pm\) 49 Gt/yr in 2005, after which annual discharge remains approximately steady at 484 to 503 \(\pm\) ~50 Gt/yr during the 2005 to 2019 period. Annual maxima in ice discharged occurred in 2005 (504 \(\pm\) 49 Gt/yr), 2011 (499 \(\pm\) 50 Gt/yr), and 2014 (503 \(\pm\) 51 Gt/yr).
 
-At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 139 to 167 (\(\pm\) 11 %) Gt yr^{-1} of discharge (30 to 34 % of ice-sheet wide discharge) over the 1986 to 2018 period. By comparison, the predominantly land-terminating NO, NE and SW together were also responsible for 131 to 168 of discharge (~31 % of ice-sheet wide discharge) during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady or declining for the past decade. The NW is the only region exhibiting a persistent increase in discharge -- From ~89 to 113 Gt yr^{-1} (21 % increase) over the 1998 through 2018 period (+ ~1 Gt yr^{-1} or + ~1 % yr^{-1}). This persistent increase in NW discharge offsets declining discharge from other regions. The largest contributing region, SE, contributed a high of 166 \(\pm\) 19 Gt in 2005, but dropped to 146, 154 and 154 \(\pm\) 18 Gt in 2016, 2017, and 2018 respectively.
+At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 139 to 167 (\(\pm\) 11 %) Gt yr^{-1} of discharge (30 to 34 % of ice-sheet wide discharge) over the 1986 to 2019 period. By comparison, the predominantly land-terminating NO, NE and SW together were also responsible for 131 to 168 of discharge (~31 % of ice-sheet wide discharge) during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady or declining for the past decade. The NW is the only region exhibiting a persistent increase in discharge -- From ~89 to 113 Gt yr^{-1} (21 % increase) over the 1998 through 2019 period (+ ~1 Gt yr^{-1} or + ~1 % yr^{-1}). This persistent increase in NW discharge offsets declining discharge from other regions. The largest contributing region, SE, contributed a high of 166 \(\pm\) 19 Gt in 2005, but dropped to 146, 154 and 154 \(\pm\) 18 Gt in 2016, 2017, and 2018 respectively.
 
 # 100 - 89/113*100 = 21.2389380531
 # (113-89+1)/(2017-1998+1) = 1.25
@@ -331,8 +341,6 @@ We instead attribute the majority of our discrepancy with citet:enderlin_2014_im
 
 We are unable to attribute the remaining discrepancy between our discharge estimates and those by citet:enderlin_2014_improved. It is likely a combination of differing seasonal velocity sampling citep:king_2018_seasonal, our evolving surface elevation from citet:khan_2016_geodetic, or other previously-unpublished algorithmic or data differences, of which many possibilities exist.
 
-# Our ice discharge estimates agree well with the most recently published discharge data citep:king_2018_seasonal, with one notable difference. The citet:king_2018_seasonal 2005 peak discharge is 524 \(\pm\) 9 Gt dropping to 461 \(\pm\) 9 Gt in 2008 -- a decrease of ~63 Gt. In our work, the 2005 peak is 503 \(\pm\)49 Gt, dropping to 486 \(\pm\) 48 Gt in 2008 -- a decrease of only ~20 Gt. We note that our uncertainty estimates include the citet:king_2018_seasonal estimates, but the opposite does not appear be true. We suggest the discrepancy in 2005 to 2008 discharge decrease results from differing approaches to temporal interpolation during a period of highly transient discharge. citet:king_2018_seasonal use seasonally varying ice thicknesses, derived from seasonally varying surface elevations, and a Monte Carlo method to temporally interpolate missing velocity data to produce discharge estimates. 
-
 Our ice discharge estimates agree well with the most recently published discharge estimate citep:king_2018_seasonal, except that our discharge is slightly less. We note that our uncertainty estimates include the citet:king_2018_seasonal estimates, but the opposite does not appear be true. The minor differences are likely due to different methods. citet:king_2018_seasonal use seasonally varying ice thicknesses, derived from seasonally varying surface elevations, and a Monte Carlo method to temporally interpolate missing velocity data to produce discharge estimates. In comparison, we use linear interpolation of both yearly surface elevation estimates and temporal data gaps. It is not clear whether linear or higher-order statistical approaches are best-suited for interpolation as annual cycles begin to shift, as is the case with Sermeq Kujalleq (Jakobshavn Isbræ) after 2015. There are benefits and deficiencies with both methods. Linear interpolation may alias large changes if there are no other observations nearby in time. Statistical models of past glacier behavior may not be appropriate when glacier behavior changes.
 
 It is unlikely that discharge estimates using gates that are only approximately flow-orthogonal and time-invariant citep:king_2018_seasonal have large errors due to this, because it is unlikely that glacier flow direction changes significantly, but our gate-orthogonal treatment may be the cause of some differences among our approach and other works. Discharge calculated using non-orthogonal methodology would overestimate true discharge.
@@ -343,7 +351,7 @@ This work in its entirety is available at doi:10.22008/promice/data/ice_discharg
 
 * Conclusions
 
-We have presented a novel dataset of flux gates and 1986 through 2018 glacier-scale ice discharge estimate for the Greenland ice sheet. These data are underpinned by an algorithm that both selects gates for ice flux and then computes ice discharges. 
+We have presented a novel dataset of flux gates and 1986 through July 2019 glacier-scale ice discharge estimate for the Greenland ice sheet. These data are underpinned by an algorithm that both selects gates for ice flux and then computes ice discharges. 
 
 Our results are similar to the most recent discharge estimate citep:king_2018_seasonal but begin in 1986 - although there is low coverage and few samples prior to 2000. From our discharge estimate we show that over the past ~30 years, ice sheet discharge was ~430 Gt yr^{-1} prior to 2000, rose to over 500 Gt yr^{-1} from 2000 to 2005, and has held roughly steady since 2005 at near 500 Gt yr^{-1}. However, when viewed at a region or sector scale, the system appears more dynamic with spatial and temporal increases and decreases canceling each other out to produce the more stable ice sheet discharge. We note that there does not appear to be any dynamic connection among the regions, and any increase in one region that was offset by a decrease in another has likely been due to chance. If in coming years when changes occur the signals have matching signs, then ice sheet discharge would decrease or increase, rather than remain fairly steady.
 
@@ -617,16 +625,19 @@ print("#+NAME: tab:thick_treatments")
 df
 #+END_SRC
 
+#+RESULTS: tab:thick_treatments
+:RESULTS:
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Effect of different thickness adjustments on baseline discharge
 #+NAME: tab:thick_treatments
-| Treatment    | Discharge [Gt] |
-|--------------+----------------|
-| NoAdj        | 472 \(\pm\) 49 |
-| NoAdj+Millan | 480 \(\pm\) 49 |
-| 300          | 488 \(\pm\) 49 |
-| 400          | 495 \(\pm\) 51 |
-| Fit          | 492 \(\pm\) 51 |
+| Treatment   | Discharge [Gt]   |
+|-------------+------------------|
+| NoMillan    | 472 \(\pm\)49    |
+| NoAdj       | 480 \(\pm\)49    |
+| 300         | 488 \(\pm\)49    |
+| 400         | 495 \(\pm\)51    |
+| Fit         | 492 \(\pm\)51    |
+:END:
 
 # NOTE: Manual cleaning performed for above table
 
@@ -3021,44 +3032,44 @@ D.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_area='
 #+END_SRC
 
 #+RESULTS: load_data
-:results:
-# Out[51]:
-# text/plain
-: 1985-12-31    366.513535
-: 1986-12-31    375.755071
-: 1987-12-31    375.464187
-: 1988-12-31    371.502576
-: 1989-12-31    374.419049
-: 1990-12-31    370.962210
-: 1991-12-31    368.800622
-: 1992-12-31    371.283426
-: 1993-12-31    373.966629
-: 1994-12-31    372.115812
-: 1995-12-31    366.201837
-: 1996-12-31    372.471276
-: 1997-12-31    378.800381
-: 1998-12-31    381.143531
-: 1999-12-31    391.551121
-: 2000-12-31    397.503762
-: 2001-12-31    398.169010
-: 2002-12-31    414.841587
-: 2003-12-31    423.171843
-: 2004-12-31    437.418305
-: 2005-12-31    453.106952
-: 2006-12-31    444.754576
-: 2007-12-31    439.759697
-: 2008-12-31    442.204046
-: 2009-12-31    449.711542
-: 2010-12-31    456.587697
-: 2011-12-31    460.801056
-: 2012-12-31    461.402753
-: 2013-12-31    468.333127
-: 2014-12-31    471.333445
-: 2015-12-31    471.888332
-: 2016-12-31    468.400691
-: 2017-12-31    475.588842
-: Freq: A-DEC, dtype: float64
-:end:
+#+begin_example
+1985-12-31    366.513535
+1986-12-31    375.755071
+1987-12-31    375.464187
+1988-12-31    371.502576
+1989-12-31    374.419049
+1990-12-31    370.962210
+1991-12-31    368.800622
+1992-12-31    371.283426
+1993-12-31    373.966629
+1994-12-31    372.115812
+1995-12-31    366.201837
+1996-12-31    372.471276
+1997-12-31    378.800381
+1998-12-31    381.143531
+1999-12-31    391.551121
+2000-12-31    397.503762
+2001-12-31    398.169010
+2002-12-31    414.841587
+2003-12-31    423.172457
+2004-12-31    437.415797
+2005-12-31    453.088396
+2006-12-31    444.779904
+2007-12-31    439.746026
+2008-12-31    442.429674
+2009-12-31    449.653892
+2010-12-31    456.536357
+2011-12-31    460.792451
+2012-12-31    461.384041
+2013-12-31    468.030631
+2014-12-31    472.025586
+2015-12-31    472.851399
+2016-12-31    468.849381
+2017-12-31    474.629449
+2018-12-31    466.229784
+2019-12-31    468.359631
+Freq: A-DEC, dtype: float64
+#+end_example
 
 *** Adjust thickness 
 **** Millan 2018
@@ -3079,24 +3090,11 @@ D_tmp[D_tmp['Millan'] != 0].sum(axis=0)
 #+END_SRC
 
 #+RESULTS: millan_2018
-:results:
-# Out[52]:
-# text/plain
 : BedMachine    101.664973
 : Millan        110.146378
 : Max           117.419139
 : dtype: float64
-:end:
 
-#+RESULTS:
-:results:
-# Out[2]:
-# text/plain
-: BedMachine     94.992667
-: Millan        103.266320
-: Max           110.338719
-: dtype: float64
-:end:
 
 Decision: Use Millan (2018) where it exists. Then adjust as per BedMachine for thickness <= 20 m.
 
@@ -3141,6 +3139,8 @@ for g in th[th['bad']]['gates'].unique(): # only work on gates with some (or all
 th['thick_adj_400'] = [400 if T <= 50 else T for T in th['thick']]
 th['thick_adj_400_err'] = [400/2. if T[0] <= 50 else T[1] for T in zip(th['thick'],th['err'])]
 #+END_SRC
+
+#+RESULTS: adjust_thickness
 
 #+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge
 <<load_data>>
@@ -3214,19 +3214,19 @@ max      1477.000000         305.000000    1477.000000         305.000000
 | 2005-12-31 00:00:00 |      461.521 | 469.362 | 7.84053 |
 | 2006-12-31 00:00:00 |      452.762 | 460.468 | 7.70625 |
 | 2007-12-31 00:00:00 |      447.352 | 454.935 | 7.58251 |
-| 2008-12-31 00:00:00 |      450.1   | 457.769 | 7.66889 |
-| 2009-12-31 00:00:00 |      457.835 | 465.763 | 7.92779 |
-| 2010-12-31 00:00:00 |      464.367 | 472.249 | 7.8817  |
-| 2011-12-31 00:00:00 |      468.892 | 476.693 | 7.80105 |
-| 2012-12-31 00:00:00 |      469.052 | 476.757 | 7.70465 |
-| 2013-12-31 00:00:00 |      476.126 | 483.936 | 7.81059 |
-| 2014-12-31 00:00:00 |      480.46  | 487.98  | 7.52003 |
-| 2015-12-31 00:00:00 |      481.572 | 489.011 | 7.4384  |
-| 2016-12-31 00:00:00 |      477.064 | 484.277 | 7.21309 |
-| 2017-12-31 00:00:00 |      484.043 | 491.026 | 6.98291 |
-| 2018-12-31 00:00:00 |      483.786 | 491.439 | 7.65308 |
+| 2008-12-31 00:00:00 |      450.1   | 457.769 | 7.66886 |
+| 2009-12-31 00:00:00 |      457.835 | 465.763 | 7.92724 |
+| 2010-12-31 00:00:00 |      464.367 | 472.247 | 7.88048 |
+| 2011-12-31 00:00:00 |      468.892 | 476.691 | 7.79915 |
+| 2012-12-31 00:00:00 |      469.052 | 476.754 | 7.70207 |
+| 2013-12-31 00:00:00 |      476.133 | 483.941 | 7.80758 |
+| 2014-12-31 00:00:00 |      480.493 | 488.013 | 7.52002 |
+| 2015-12-31 00:00:00 |      481.436 | 488.866 | 7.42998 |
+| 2016-12-31 00:00:00 |      477.094 | 484.309 | 7.21526 |
+| 2017-12-31 00:00:00 |      483.651 | 490.622 | 6.97033 |
+| 2018-12-31 00:00:00 |      475.28  | 482.348 | 7.06867 |
+| 2019-12-31 00:00:00 |      478.09  | 485.357 | 7.26744 |
 :END:
-
 
 **** Adjust thickness w thickness v. velocity fit.
 
@@ -3295,80 +3295,53 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 #+END_SRC
 
 #+RESULTS: adjust_thickness_fit
-:results:
-# Out[54]:
-# output
-                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:                  thick   R-squared:                       0.300
-Model:                            OLS   Adj. R-squared:                  0.300
-Method:                 Least Squares   F-statistic:                     2295.
-Date:                Wed, 17 Apr 2019   Prob (F-statistic):               0.00
-Time:                        09:25:58   Log-Likelihood:                -35930.
-No. Observations:                5366   AIC:                         7.186e+04
-Df Residuals:                    5364   BIC:                         7.188e+04
-Df Model:                           1                                         
-Covariance Type:            nonrobust                                         
-==============================================================================
-                 coef    std err          t      P>|t|      [0.025      0.975]
-------------------------------------------------------------------------------
-const       -380.6416     17.591    -21.639      0.000    -415.126    -346.157
-vel          308.2662      6.435     47.906      0.000     295.651     320.881
-==============================================================================
-Omnibus:                      145.561   Durbin-Watson:                   0.467
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):              200.041
-Skew:                           0.304   Prob(JB):                     3.64e-44
-Kurtosis:                       3.724   Cond. No.                         20.3
-==============================================================================
-
-Warnings:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-  warnings.warn("This figure includes Axes that are not compatible "
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-  warnings.warn("This figure includes Axes that are not compatible "
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-  warnings.warn("This figure includes Axes that are not compatible "
-
-# text/plain
-:                    300         fit      diff
-: 1985-12-31  382.212214  385.190263  2.978049
-: 1986-12-31  391.453750  394.431799  2.978049
-: 1987-12-31  391.162866  394.140915  2.978049
-: 1988-12-31  387.201255  390.179304  2.978049
-: 1989-12-31  390.117728  393.095777  2.978049
-: 1990-12-31  386.660889  389.638937  2.978049
-: 1991-12-31  384.578171  387.610159  3.031988
-: 1992-12-31  386.747774  389.762390  3.014616
-: 1993-12-31  389.228259  392.104511  2.876252
-: 1994-12-31  388.131312  390.976866  2.845554
-: 1995-12-31  383.299107  386.186263  2.887155
-: 1996-12-31  389.670965  392.879998  3.209033
-: 1997-12-31  394.988013  398.517121  3.529108
-: 1998-12-31  396.697697  400.358936  3.661238
-: 1999-12-31  406.817321  410.546617  3.729296
-: 2000-12-31  413.258336  416.605502  3.347167
-: 2001-12-31  414.010667  417.330418  3.319750
-: 2002-12-31  431.258337  434.605936  3.347599
-: 2003-12-31  440.325298  443.764298  3.439000
-: 2004-12-31  453.639116  457.171255  3.532139
-: 2005-12-31  469.380646  472.911645  3.530999
-: 2006-12-31  460.448005  463.963436  3.515431
-: 2007-12-31  454.951304  458.457633  3.506329
-: 2008-12-31  457.526548  461.073405  3.546857
-: 2009-12-31  465.819726  469.385729  3.566003
-: 2010-12-31  472.296319  475.895180  3.598861
-: 2011-12-31  476.704054  480.370008  3.665954
-: 2012-12-31  476.773802  480.492934  3.719131
-: 2013-12-31  484.264827  487.996909  3.732083
-: 2014-12-31  487.429989  491.132848  3.702859
-: 2015-12-31  488.355689  492.049923  3.694234
-: 2016-12-31  484.289954  487.811861  3.521907
-: 2017-12-31  491.602552  494.873241  3.270689
-
-# text/plain
+:RESULTS:
+: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+:   warnings.warn("This figure includes Axes that are not compatible "
+: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+:   warnings.warn("This figure includes Axes that are not compatible "
+#+begin_example
+                   300         fit      diff
+1985-12-31  382.212214  385.190263  2.978049
+1986-12-31  391.453750  394.431799  2.978049
+1987-12-31  391.162866  394.140915  2.978049
+1988-12-31  387.201255  390.179304  2.978049
+1989-12-31  390.117728  393.095777  2.978049
+1990-12-31  386.660889  389.638937  2.978049
+1991-12-31  384.578171  387.610159  3.031988
+1992-12-31  386.747774  389.762390  3.014616
+1993-12-31  389.228259  392.104511  2.876252
+1994-12-31  388.131312  390.976866  2.845554
+1995-12-31  383.299107  386.186263  2.887155
+1996-12-31  389.670965  392.879998  3.209033
+1997-12-31  394.988013  398.517121  3.529108
+1998-12-31  396.697697  400.358936  3.661238
+1999-12-31  406.817321  410.546617  3.729296
+2000-12-31  413.258337  416.605503  3.347166
+2001-12-31  414.010682  417.330430  3.319749
+2002-12-31  431.258369  434.605964  3.347595
+2003-12-31  440.325960  443.764954  3.438994
+2004-12-31  453.636674  457.168805  3.532130
+2005-12-31  469.361686  472.892685  3.530998
+2006-12-31  460.468037  463.983593  3.515556
+2007-12-31  454.934508  458.438836  3.504328
+2008-12-31  457.768744  461.312991  3.544246
+2009-12-31  465.762541  469.323988  3.561447
+2010-12-31  472.247421  475.833743  3.586321
+2011-12-31  476.690945  480.336766  3.645821
+2012-12-31  476.753950  480.444280  3.690330
+2013-12-31  483.940671  487.630615  3.689944
+2014-12-31  488.012985  491.670156  3.657171
+2015-12-31  488.865766  492.392053  3.526288
+2016-12-31  484.309188  487.775400  3.466212
+2017-12-31  490.621586  493.891863  3.270276
+2018-12-31  482.348355  485.628145  3.279790
+2019-12-31  485.357292  488.780664  3.423371
+#+end_example
+: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+:   warnings.warn("This figure includes Axes that are not compatible "
 : <Figure size 288x288 with 1 Axes>
-:end:
+:END:
 
 **** Table of thickness adjustments
 :PROPERTIES:
@@ -3380,20 +3353,17 @@ th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 #+END_SRC
 
 #+RESULTS:
-:results:
-# Out[55]:
-# text/org
-|       |    thick |   thick_adj_300 |   thick_adj_400 |      fit |
-|-------+----------+-----------------+-----------------+----------|
-| count | 6002     |        6002     |       6002      | 6002     |
-| mean  |  404.833 |         432.288 |        457.119  |  439.779 |
-| std   |  260.602 |         230.639 |        210.502  |  225.811 |
-| min   |    0     |          21     |         50.4298 |   21     |
-| 25%   |  210.688 |         300     |        347      |  288.665 |
-| 50%   |  409.65  |         409.65  |        409.65   |  420.584 |
-| 75%   |  584     |         584     |        584      |  584.605 |
-| max   | 1477     |        1477     |       1477      | 1477     |
-:end:
+|       |   thick | thick_adj_300 | thick_adj_400 |     fit |
+|-------+---------+---------------+---------------+---------|
+| count |    6002 |          6002 |          6002 |    6002 |
+| mean  | 404.833 |       432.288 |       457.119 | 439.779 |
+| std   | 260.602 |       230.639 |       210.502 | 225.811 |
+| min   |       0 |            21 |       50.4298 |      21 |
+| 25%   | 210.688 |           300 |           347 | 288.665 |
+| 50%   |  409.65 |        409.65 |        409.65 | 420.584 |
+| 75%   |     584 |           584 |           584 | 584.605 |
+| max   |    1477 |          1477 |          1477 |    1477 |
+
 
 
 **** Baseline discharge values for various thickness adjustments
@@ -3430,21 +3400,17 @@ D_th['fit_err'] = vel_baseline.apply(lambda c: c * (th['fit_err'].values* 200 * 
 D_th.sum(axis=0)
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out[6]:
-# text/plain
-: NoAdj        451.378094
-: NoAdj_err     28.110112
-: 300          457.335451
-: 300_err       30.422000
-: 400          461.548970
-: 400_err       32.200366
-: fit          461.095366
-: fit_err       32.002581
-: NoMillan     444.109909
+#+RESULTS: discharge_th
+: NoAdj        480.004070
+: NoAdj_err     49.160007
+: 300          488.156346
+: 300_err       48.940213
+: 400          494.564033
+: 400_err       51.337163
+: fit          492.210294
+: fit_err       50.529233
+: NoMillan     472.086164
 : dtype: float64
-:end:
 
 **** Map of where thickness adjustments occur
 
@@ -3788,9 +3754,16 @@ for c in D.columns:
 #+END_SRC
 
 #+RESULTS: discharge
-:results:
-# Out[58]:
-:end:
+: NoAdj        480.004070
+: NoAdj_err     49.160007
+: 300          488.156346
+: 300_err       48.940213
+: 400          494.564033
+: 400_err       51.337163
+: fit          492.210294
+: fit_err       50.529233
+: NoMillan     472.086164
+: dtype: float64
 
 *** SAVE & RESTORE STATE
 
@@ -3886,18 +3859,21 @@ D_all_fill_weight = D_all_fill_weight.T[STARTDATE:].T
 #+END_SRC
 
 #+RESULTS:
-:results:
-# Out[188]:
-:end:
 
 **** README
 
 #+BEGIN_SRC org :tangle ./out/README.txt :mkdirp ./out
-README for "Greenland Ice Sheet solid ice discharge from 1986 through 2017"
+README for "Greenland Ice Sheet solid ice discharge from 1986 through 2018"
 
 Paper Citation: TODO
 
+Original Paper: doi:10.5194/essd-11-769-2019
+
 Data Citation: TODO
+
+Original Data Citations: doi:10.22008/promice/data/ice_discharge
+
+Source: https://github.com/mankoff/ice_discharge
 
 ,* Usage instructions:
 
@@ -4106,19 +4082,17 @@ out
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-|                       |       x |                 y |
-|-----------------------+---------+-------------------|
-| JAKOBSHAVN_ISBRAE     | -181992 |      -2.2678e+06  |
-| HELHEIMGLETSCHER      |  303757 |      -2.57624e+06 |
-| KANGERLUSSUAQ         |  484506 |      -2.28798e+06 |
-| KOGE_BUGT_C           |  182821 |      -2.7211e+06  |
-| ZACHARIAE_ISSTROM     |  487875 |      -1.10175e+06 |
-| NIOGHALVFJERDSFJORDEN |  439187 |      -1.0736e+06  |
-| RINK_ISBRAE           | -224240 |      -1.97637e+06 |
-| PETERMANN_GLETSCHER   | -261888 | -996839           |
-| IKERTIVAQ_M           |  227847 |      -2.67781e+06 |
-:END:
+|                       |       x |            y |
+|-----------------------+---------+--------------|
+| JAKOBSHAVN_ISBRAE     | -181992 |  -2.2678e+06 |
+| HELHEIMGLETSCHER      |  303757 | -2.57624e+06 |
+| KANGERLUSSUAQ         |  484506 | -2.28798e+06 |
+| KOGE_BUGT_C           |  182821 |  -2.7211e+06 |
+| ZACHARIAE_ISSTROM     |  487875 | -1.10175e+06 |
+| NIOGHALVFJERDSFJORDEN |  439187 |  -1.0736e+06 |
+| RINK_ISBRAE           | -224240 | -1.97637e+06 |
+| IKERTIVAQ_M           |  227847 | -2.67781e+06 |
+| PETERMANN_GLETSCHER   | -261888 |      -996839 |
 
 **** Prep data
 #+BEGIN_SRC sh :results verbatim
@@ -4466,82 +4440,42 @@ disp
 #+END_SRC
 
 #+RESULTS: fig:discharge_ts
-:results:
-# Out[74]:
-# text/org
-|   Year |       D |     err |
-|--------+---------+---------|
-|   1986 | 437.954 | 43.3904 |
-|   1987 | 434.214 | 42.8831 |
-|   1988 | 429.421 | 42.6298 |
-|   1989 | 431.74  | 42.8525 |
-|   1990 | 427.765 | 42.5263 |
-|   1991 | 425.336 | 42.3046 |
-|   1992 | 427.346 | 42.5487 |
-|   1993 | 429.094 | 42.623  |
-|   1994 | 427.136 | 42.904  |
-|   1995 | 421.375 | 42.4104 |
-|   1996 | 427.977 | 43.3595 |
-|   1997 | 433.854 | 44.0224 |
-|   1998 | 435.777 | 43.943  |
-|   1999 | 446.558 | 44.8418 |
-|   2000 | 452.377 | 44.7395 |
-|   2001 | 452.084 | 44.504  |
-|   2002 | 468.846 | 45.9138 |
-|   2003 | 476.82  | 46.7058 |
-|   2004 | 489.334 | 48.1514 |
-|   2005 | 504.017 | 48.9818 |
-|   2006 | 492.232 | 48.1604 |
-|   2007 | 484.564 | 47.652  |
-|   2008 | 485.528 | 48.1049 |
-|   2009 | 492.206 | 48.9289 |
-|   2010 | 496.914 | 49.5961 |
-|   2011 | 498.946 | 49.9387 |
-|   2012 | 496.274 | 50.0807 |
-|   2013 | 502.511 | 50.4786 |
-|   2014 | 503.128 | 50.6321 |
-|   2015 | 501.615 | 50.5067 |
-|   2016 | 494.365 | 50.1291 |
-|   2017 | 499.647 | 50.5402 |
-:end:
-
-
-#+NAME: tab_discharge_ts_unfiltered
-|   Year |       D |     err |
-|--------+---------+---------|
-|   1986 | 467.434 | 46.361  |
-|   1987 | 457.426 | 44.3927 |
-|   1988 | 448.697 | 43.9795 |
-|   1989 | 460.618 | 45.3748 |
-|   1990 | 457.693 | 44.9641 |
-|   1991 | 431.99  | 42.8619 |
-|   1992 | 430.197 | 42.7631 |
-|   1993 | 433.901 | 42.8553 |
-|   1994 | 436.287 | 43.5249 |
-|   1995 | 421.163 | 42.2994 |
-|   1996 | 423.235 | 43.0126 |
-|   1997 | 429.534 | 43.8398 |
-|   1998 | 437.337 | 44.2297 |
-|   1999 | 451.861 | 45.2347 |
-|   2000 | 461.442 | 45.9844 |
-|   2001 | 457.837 | 45.6302 |
-|   2002 | 475.337 | 46.9502 |
-|   2003 | 497.393 | 49.3946 |
-|   2004 | 499.104 | 49.5724 |
-|   2005 | 513.761 | 50.0797 |
-|   2006 | 497.707 | 49.2658 |
-|   2007 | 495.699 | 49.3206 |
-|   2008 | 493     | 49.0744 |
-|   2009 | 496.611 | 49.8594 |
-|   2010 | 503.48  | 50.6385 |
-|   2011 | 518.767 | 52.2307 |
-|   2012 | 502.503 | 51.2157 |
-|   2013 | 518.619 | 52.7217 |
-|   2014 | 508.178 | 51.7105 |
-|   2015 | 506.752 | 51.8898 |
-|   2016 | 500.796 | 51.8489 |
-|   2017 | 502.387 | 51.4938 |
-:end:
+| Year |       D |     err |
+|------+---------+---------|
+| 1986 | 437.168 | 43.3904 |
+| 1987 | 433.425 | 42.8831 |
+| 1988 | 428.625 | 42.6298 |
+| 1989 | 430.938 | 42.8525 |
+| 1990 | 426.959 | 42.5263 |
+| 1991 | 424.506 | 42.3046 |
+| 1992 | 426.478 | 42.5487 |
+| 1993 | 428.188 |  42.623 |
+| 1994 |  426.24 |  42.904 |
+| 1995 | 420.541 | 42.4104 |
+| 1996 | 427.194 | 43.3595 |
+| 1997 | 432.996 | 44.0224 |
+| 1998 | 434.877 |  43.943 |
+| 1999 | 445.702 | 44.8418 |
+| 2000 | 451.501 | 44.7395 |
+| 2001 | 451.201 |  44.504 |
+| 2002 | 467.996 | 45.9138 |
+| 2003 | 475.938 | 46.7059 |
+| 2004 | 488.322 | 48.1511 |
+| 2005 | 502.878 | 48.9798 |
+| 2006 | 491.059 | 48.1582 |
+| 2007 | 483.344 | 47.6454 |
+| 2008 | 484.462 | 48.1241 |
+| 2009 | 490.686 | 48.9171 |
+| 2010 | 495.196 | 49.5888 |
+| 2011 | 497.124 | 49.9296 |
+| 2012 | 494.389 | 50.0723 |
+| 2013 | 500.333 | 50.4275 |
+| 2014 | 501.838 | 50.6399 |
+| 2015 | 501.168 | 50.3744 |
+| 2016 | 496.311 | 49.9853 |
+| 2017 | 503.459 | 50.2416 |
+| 2018 | 495.607 | 49.2709 |
+| 2019 | 499.627 | 50.3993 |
 
 
 **** Filtered v. unfiltered
@@ -4672,44 +4606,43 @@ tbl
 #+END_SRC
 
 #+RESULTS: fig:discharge_ts_regions
-:results:
-# Out[75]:
-# text/org
+:RESULTS:
 |   Date | CE (Err %)   | CW (Err %)   | NE (Err %)   | NO (Err %)   | NW (Err %)   | SE (Err %)   | SW (Err %)   |
 |--------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
-|   1986 | 65 (10)      | 69 (9)       | 21 (8)       | 24 (7)       | 89 (8)       | 149 (12)     | 19 (13)      |
+|   1986 | 65 (10)      | 69 (9)       | 21 (8)       | 24 (7)       | 89 (8)       | 148 (12)     | 19 (13)      |
 |   1987 | 65 (10)      | 67 (9)       | 21 (8)       | 24 (7)       | 88 (8)       | 148 (12)     | 19 (13)      |
 |   1988 | 65 (10)      | 66 (8)       | 22 (8)       | 23 (7)       | 88 (8)       | 146 (12)     | 19 (13)      |
-|   1989 | 67 (10)      | 68 (8)       | 22 (8)       | 24 (7)       | 88 (8)       | 144 (12)     | 19 (13)      |
-|   1990 | 67 (10)      | 66 (8)       | 22 (8)       | 22 (7)       | 88 (8)       | 144 (12)     | 19 (13)      |
-|   1991 | 69 (10)      | 64 (8)       | 22 (8)       | 21 (7)       | 88 (8)       | 142 (12)     | 19 (13)      |
-|   1992 | 70 (10)      | 63 (8)       | 22 (8)       | 22 (7)       | 91 (8)       | 141 (12)     | 19 (13)      |
-|   1993 | 69 (10)      | 64 (8)       | 22 (8)       | 22 (7)       | 93 (8)       | 140 (12)     | 19 (13)      |
+|   1989 | 67 (10)      | 68 (8)       | 22 (8)       | 24 (7)       | 88 (8)       | 143 (12)     | 19 (13)      |
+|   1990 | 67 (10)      | 66 (8)       | 22 (8)       | 22 (7)       | 88 (8)       | 143 (12)     | 19 (13)      |
+|   1991 | 69 (10)      | 64 (8)       | 22 (8)       | 21 (7)       | 88 (8)       | 141 (12)     | 19 (13)      |
+|   1992 | 70 (10)      | 63 (8)       | 22 (8)       | 22 (7)       | 91 (8)       | 140 (12)     | 19 (13)      |
+|   1993 | 69 (10)      | 64 (8)       | 22 (8)       | 22 (7)       | 93 (8)       | 139 (12)     | 19 (13)      |
 |   1994 | 66 (10)      | 65 (8)       | 22 (8)       | 23 (9)       | 92 (8)       | 140 (12)     | 18 (13)      |
 |   1995 | 64 (10)      | 65 (8)       | 22 (8)       | 23 (8)       | 90 (8)       | 139 (12)     | 18 (13)      |
-|   1996 | 65 (10)      | 66 (8)       | 22 (8)       | 22 (7)       | 89 (8)       | 144 (13)     | 19 (13)      |
-|   1997 | 67 (10)      | 66 (8)       | 23 (8)       | 22 (7)       | 90 (8)       | 146 (13)     | 20 (13)      |
-|   1998 | 68 (10)      | 71 (8)       | 23 (8)       | 23 (7)       | 89 (8)       | 143 (13)     | 19 (13)      |
-|   1999 | 68 (10)      | 76 (8)       | 23 (8)       | 25 (7)       | 90 (8)       | 146 (12)     | 19 (14)      |
-|   2000 | 67 (10)      | 80 (8)       | 24 (8)       | 23 (7)       | 91 (8)       | 147 (12)     | 21 (14)      |
+|   1996 | 65 (10)      | 66 (8)       | 22 (8)       | 22 (7)       | 89 (8)       | 143 (13)     | 19 (13)      |
+|   1997 | 67 (10)      | 66 (8)       | 23 (8)       | 22 (7)       | 90 (8)       | 145 (13)     | 20 (13)      |
+|   1998 | 68 (10)      | 71 (8)       | 23 (8)       | 23 (7)       | 89 (8)       | 142 (13)     | 19 (13)      |
+|   1999 | 68 (10)      | 76 (8)       | 23 (8)       | 25 (7)       | 90 (8)       | 145 (12)     | 19 (14)      |
+|   2000 | 67 (10)      | 80 (8)       | 24 (8)       | 23 (7)       | 91 (8)       | 146 (12)     | 21 (14)      |
 |   2001 | 68 (10)      | 82 (8)       | 26 (8)       | 23 (7)       | 91 (8)       | 141 (12)     | 20 (14)      |
-|   2002 | 69 (10)      | 82 (8)       | 29 (8)       | 25 (7)       | 92 (8)       | 151 (12)     | 21 (14)      |
+|   2002 | 69 (10)      | 82 (8)       | 29 (8)       | 25 (7)       | 92 (8)       | 150 (12)     | 21 (14)      |
 |   2003 | 70 (10)      | 85 (8)       | 26 (8)       | 23 (7)       | 93 (8)       | 158 (11)     | 21 (14)      |
-|   2004 | 74 (10)      | 84 (8)       | 24 (8)       | 24 (7)       | 96 (9)       | 167 (11)     | 21 (15)      |
-|   2005 | 85 (9)       | 84 (8)       | 25 (8)       | 25 (7)       | 97 (8)       | 167 (11)     | 21 (15)      |
-|   2006 | 84 (9)       | 87 (8)       | 24 (8)       | 23 (7)       | 97 (9)       | 156 (12)     | 21 (15)      |
-|   2007 | 79 (9)       | 87 (9)       | 25 (8)       | 24 (8)       | 97 (9)       | 151 (12)     | 20 (15)      |
-|   2008 | 78 (10)      | 87 (9)       | 25 (8)       | 24 (8)       | 99 (9)       | 153 (12)     | 19 (15)      |
-|   2009 | 77 (10)      | 90 (9)       | 25 (8)       | 23 (7)       | 101 (9)      | 157 (12)     | 20 (15)      |
-|   2010 | 76 (10)      | 90 (9)       | 25 (8)       | 25 (7)       | 104 (9)      | 158 (12)     | 19 (16)      |
-|   2011 | 78 (10)      | 89 (9)       | 25 (8)       | 25 (7)       | 107 (9)      | 154 (12)     | 21 (15)      |
-|   2012 | 76 (10)      | 94 (9)       | 26 (8)       | 24 (7)       | 105 (9)      | 151 (12)     | 20 (16)      |
-|   2013 | 76 (10)      | 94 (9)       | 26 (8)       | 24 (7)       | 108 (9)      | 154 (12)     | 20 (14)      |
-|   2014 | 75 (10)      | 93 (9)       | 27 (8)       | 26 (7)       | 112 (9)      | 152 (12)     | 20 (15)      |
-|   2015 | 74 (10)      | 91 (9)       | 27 (8)       | 25 (7)       | 110 (9)      | 155 (12)     | 20 (15)      |
-|   2016 | 73 (10)      | 89 (9)       | 28 (8)       | 25 (7)       | 112 (9)      | 149 (12)     | 19 (15)      |
-|   2017 | 75 (9)       | 82 (9)       | 29 (8)       | 26 (7)       | 113 (9)      | 156 (12)     | 19 (15)      |
-:end:
+|   2004 | 74 (10)      | 84 (8)       | 24 (8)       | 24 (7)       | 96 (9)       | 166 (11)     | 21 (15)      |
+|   2005 | 85 (9)       | 84 (8)       | 25 (8)       | 25 (7)       | 97 (9)       | 166 (11)     | 21 (15)      |
+|   2006 | 84 (9)       | 87 (8)       | 24 (8)       | 23 (7)       | 97 (9)       | 155 (12)     | 21 (15)      |
+|   2007 | 79 (9)       | 87 (9)       | 25 (8)       | 24 (8)       | 97 (9)       | 150 (12)     | 20 (15)      |
+|   2008 | 78 (10)      | 87 (9)       | 25 (8)       | 24 (8)       | 99 (9)       | 152 (12)     | 19 (15)      |
+|   2009 | 77 (10)      | 90 (9)       | 25 (8)       | 23 (7)       | 101 (9)      | 156 (12)     | 20 (15)      |
+|   2010 | 76 (10)      | 90 (9)       | 25 (8)       | 24 (7)       | 103 (9)      | 157 (12)     | 20 (16)      |
+|   2011 | 78 (10)      | 89 (9)       | 25 (8)       | 25 (7)       | 107 (9)      | 153 (12)     | 21 (15)      |
+|   2012 | 76 (10)      | 94 (9)       | 26 (8)       | 24 (7)       | 105 (9)      | 150 (12)     | 20 (16)      |
+|   2013 | 76 (10)      | 94 (9)       | 26 (8)       | 24 (7)       | 108 (9)      | 152 (12)     | 20 (14)      |
+|   2014 | 75 (10)      | 93 (9)       | 27 (8)       | 26 (7)       | 112 (9)      | 150 (12)     | 20 (15)      |
+|   2015 | 74 (10)      | 93 (9)       | 28 (8)       | 25 (7)       | 110 (9)      | 152 (12)     | 20 (15)      |
+|   2016 | 72 (10)      | 92 (9)       | 28 (8)       | 25 (7)       | 113 (9)      | 146 (12)     | 19 (15)      |
+|   2017 | 75 (9)       | 83 (9)       | 29 (8)       | 26 (7)       | 116 (9)      | 154 (12)     | 19 (15)      |
+|   2018 | 76 (9)       | 77 (9)       | 30 (8)       | 27 (7)       | 115 (9)      | 151 (12)     | 19 (15)      |
+|   2019 | 76 (10)      | 75 (9)       | 30 (8)       | 28 (8)       | 114 (9)      | 157 (12)     | 20 (15)      |:END:
 
 *** Region & Catchment Contributions
 :PROPERTIES:
@@ -5231,9 +5164,7 @@ tbl
 #+END_SRC
 
 #+RESULTS:
-:results:
-# Out[7]:
-# text/org
+:RESULTS:
 |   Date | JAKOBSHAVN_ISBRAE (%)   | HELHEIMGLETSCHER (%)   | KANGERLUSSUAQ (%)   | KOGE_BUGT_C (%)   | ZACHARIAE_ISSTROM (%)   | RINK_ISBRAE (%)   | NIOGHALVFJERDSFJORDEN (%)   | PETERMANN_GLETSCHER (%)   |
 |--------+-------------------------+------------------------+---------------------+-------------------+-------------------------+-------------------+-----------------------------+---------------------------|
 |   1986 | 28 (10)                 | 32 (5)                 | 17 (5)              | 18 (6)            | 9 (9)                   | 12 (6)            | 11 (5)                      | 12 (4)                    |
@@ -5263,12 +5194,13 @@ tbl
 |   2010 | 47 (9)                  | 29 (7)                 | 26 (5)              | 19 (7)            | 12 (9)                  | 13 (7)            | 12 (5)                      | 11 (4)                    |
 |   2011 | 46 (9)                  | 28 (7)                 | 28 (5)              | 18 (7)            | 13 (9)                  | 13 (7)            | 12 (5)                      | 12 (4)                    |
 |   2012 | 52 (10)                 | 26 (7)                 | 27 (5)              | 18 (7)            | 13 (9)                  | 13 (7)            | 12 (5)                      | 12 (4)                    |
-|   2013 | 51 (10)                 | 28 (7)                 | 27 (5)              | 17 (7)            | 13 (9)                  | 13 (7)            | 12 (5)                      | 12 (4)                    |
-|   2014 | 49 (10)                 | 27 (7)                 | 25 (5)              | 17 (7)            | 14 (9)                  | 13 (7)            | 12 (5)                      | 12 (4)                    |
-|   2015 | 46 (10)                 | 30 (7)                 | 25 (5)              | 17 (7)            | 14 (10)                 | 13 (7)            | 12 (5)                      | 12 (4)                    |
-|   2016 | 45 (10)                 | 29 (7)                 | 24 (5)              | 15 (7)            | 14 (10)                 | 13 (7)            | 13 (5)                      | 12 (4)                    |
-|   2017 | 38 (10)                 | 33 (7)                 | 26 (5)              | 16 (7)            | 15 (10)                 | 13 (6)            | 13 (5)                      | 12 (4)                    |
-:end:
+|   2013 | 51 (10)                 | 27 (7)                 | 27 (5)              | 17 (7)            | 13 (9)                  | 13 (7)            | 12 (5)                      | 12 (4)                    |
+|   2014 | 49 (10)                 | 26 (7)                 | 25 (5)              | 18 (7)            | 14 (9)                  | 13 (7)            | 12 (5)                      | 12 (4)                    |
+|   2015 | 48 (10)                 | 29 (7)                 | 25 (5)              | 17 (8)            | 14 (10)                 | 13 (7)            | 13 (5)                      | 12 (4)                    |
+|   2016 | 48 (10)                 | 28 (7)                 | 24 (5)              | 15 (7)            | 14 (10)                 | 13 (7)            | 13 (5)                      | 12 (4)                    |
+|   2017 | 40 (10)                 | 33 (7)                 | 26 (5)              | 16 (7)            | 15 (10)                 | 13 (6)            | 13 (5)                      | 12 (4)                    |
+|   2018 | 34 (10)                 | 31 (7)                 | 27 (5)              | 16 (7)            | 15 (10)                 | 13 (6)            | 13 (5)                      | 12 (4)                    |
+|   2019 | 33 (10)                 | 33 (7)                 | 25 (5)              | 16 (7)            | 16 (10)                 | 12 (7)            | 14 (5)                      | 12 (4)                    |:END:
 
 *** Køge Bugt
 :PROPERTIES:
