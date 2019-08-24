@@ -1,7 +1,7 @@
 
 * Greenland Ice Sheet solid ice discharge from 1986 through 2017
 
-This is the source for the "Greenland Ice Sheet solid ice discharge from 1986 through 2017". The paper is located at [[http://dx.doi.org/10.5194/essd-11-769-2019][doi:10.5194/essd-11-769-2019]] and the data sets are located at [[http://dx.doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
+This is the source for "Greenland Ice Sheet solid ice discharge from 1986 through 2017". The paper is located at [[http://dx.doi.org/10.5194/essd-11-769-2019][doi:10.5194/essd-11-769-2019]] and the data sets are located at [[http://dx.doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
 
 GitHub [[https://github.com/mankoff/ice_discharge/issues?utf8=%E2%9C%93&q=is%3Aissue][issues]] are used to collect suggested improvements to the paper, problems that made it through review, and mention of similar papers that have been published since this was accepted.
 

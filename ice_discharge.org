@@ -362,8 +362,9 @@ Transparency in data and methodology are critical to move beyond a focus of esti
 \ The authors declare that they have no conflict of interest.
 #+END_competinginterests
 
+
 #+BEGIN_acknowledgements
-We thank the reviewers for their constructive input that helped improve the paper. Ice velocity maps were produced from ESA Sentinel-1 remote sensing data as part the Programme for Monitoring of the Greenland Ice Sheet (PROMICE) and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org. Ice sheet Velocity Data, from Mouginot (2018), contains modified Copernicus Sentinel 2013-2017 data processed by ESA. Parts of this work were funded by the INTAROS project under the European Union's Horizon 2020 research and innovation program under grant agreement No. 727890. 
+Funding was provided by the Programme for Monitoring of the Greenland Ice Sheet (PROMICE). Ice velocity maps were produced from ESA Sentinel-1 remote sensing data as part of PROMICE and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org. Parts of this work were funded by the INTAROS project under the European Union's Horizon 2020 research and innovation program under grant agreement No. 727890. We thank the reviewers for their constructive input that helped improve the paper. 
 #+END_acknowledgements
 
 
@@ -411,7 +412,7 @@ plt.close(1)
 fig = plt.figure(1, figsize=(8,4)) # w,h
 # get_current_fig_manager().window.move(0,0)
 fig.clf()
-fig.set_tight_layout(True)
+# fig.set_tight_layout(True)
 
 ax1 = fig.add_subplot(121)
 thick = th['thick']
@@ -446,7 +447,7 @@ from adjust_spines import adjust_spines as adj
 adj(ax1, ['left','bottom'])
 adj(ax2, ['bottom'])
 
-plt.savefig('./figs/h_v_histogram.png', transparent=True, bbox_inches='tight', dpi=300)
+plt.savefig('./figs/h_v_histogram.png', transparent=True, dpi=300)
 #+END_SRC
 
 #+NAME: fig:h_v_histogram
@@ -590,7 +591,7 @@ We adjust these thickness using a poor fit (correlation coefficient: 0.3) of the
 Table [[tab:thick_treatments]] shows the estimated baseline discharge to these four treatments:
 
 #+NAME: tab:thick_treatments
-#+BEGIN_SRC jupyter-python :exports results :results raw drawer :display text/plain :session thick_adj2
+#+BEGIN_SRC jupyter-python :exports results :results raw drawer :display text/org :session thick_adj2
 
 <<load_data>>
 <<millan_2018>>
@@ -1419,7 +1420,7 @@ db.select table=sectors | head
 :ID:       E36D32FE-DA16-4441-8C0F-9F2506B6143D
 :END:
 + h_0 (BedMachine v3) is assumed to be 2007
-+ h_{\(\pm\) n} is based on elevation data from Shfaqat Abbas Khan. See [[file:~/data/Elevation/README.org]]
++ h_{\(\pm\) n} is based on elevation data from Shfaqat Abbas Khan. See [[file:${DATADIR}/Khan_2016/README.org]]
 **** dh/dt
 #+BEGIN_SRC sh :results verbatim
 MSG_OK "dh/dt"
@@ -2864,7 +2865,7 @@ err_gate
 
 ** Raw data to discharge product
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle raw2discharge.py
+:header-args:jupyter-python+: :tangle raw2discharge.py :session raw2discharge
 :END:
 *** Load data
 
@@ -3374,7 +3375,7 @@ Warnings:
 :ID:       62f5d28c-c704-422d-9e9b-c0771d5b86ee
 :END:
 
-#+BEGIN_SRC jupyter-python :session :exports none :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org
 th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 #+END_SRC
 
@@ -3403,7 +3404,7 @@ Here we calculate:
 + D_baseline_th_fit :: The discharge assuming the fitted thickness adjustment
 + D_baseline :: The baseline discharge - picked from our favorite of the above. TBD
 
-#+NAME: discharge
+#+NAME: discharge_th
 #+BEGIN_SRC jupyter-python :exports none :results raw drawer
 D_th = pd.DataFrame(index=th.index,
                     columns=['NoAdj','NoAdj_err','300','300_err','400','400_err','fit','fit_err'])
@@ -3628,9 +3629,10 @@ dhdt_ts = dhdt.copy(deep=True)
 # dhdt_ts[2016] = dhdt_ts[2015] # assume annual dh/dt continues at fixed rate
 # dhdt_ts[2017] = dhdt_ts[2015]
 # dhdt_ts[2018] = dhdt_ts[2015]
-dhdt_ts[2016] = 0
-dhdt_ts[2017] = 0
-dhdt_ts[2018] = 0dhdt_ts[2015]
+# dhdt_ts[2016] = 0
+# dhdt_ts[2017] = 0
+# dhdt_ts[2018] = 0
+dhdt_ts[dhdt.columns.max()+1] = 0
 dhdt_ts = dhdt_ts.reindex(sorted(dhdt_ts.columns), axis='columns')
 dhdt_ts = dhdt_ts.cumsum(axis='columns')
 dhdt_ts.columns = dhdt_ts.columns.astype(np.str).astype(np.datetime64)
@@ -3662,9 +3664,6 @@ for px in bad[bad == True].index:
 #+END_SRC
 
 #+RESULTS:
-:results:
-# Out[57]:
-:end:
 
 *** Discharge
 
@@ -4062,7 +4061,7 @@ cp ./out/README.txt /media/kdm/promicedata/ice_discharge/
 
 zip -e /media/kdm/promicedata/ice_discharge/code/mankoff_et_al.zip ice_discharge.org
 
-cp ~/data/Elevation/dhdt_1995-2015_GrIS.txt /media/kdm/promicedata/ice_discharge/surface_elevation_change
+cp ${DATADIR}/Khan_2016/dhdt_1995-2015_GrIS.txt /media/kdm/promicedata/ice_discharge/surface_elevation_change
 
 #+END_SRC
 #+RESULTS:
@@ -6126,20 +6125,20 @@ Compiled with poppler version 0.62.0
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
                )
 
-(org-add-link-type
- "citet"  (lambda (key) (org-open-file cby-references-file t nil key))
- (lambda (path desc format)
-   (cond
-    ((eq format 'latex) (format "\\citet{%s}" path))
-    ((eq format 'ascii) (format "%s" desc))
-    )))
-(org-add-link-type
- "citep"  (lambda (key) (org-open-file cby-references-file t nil key))
- (lambda (path desc format)
-   (cond
-    ((eq format 'latex) (format "\\citep{%s}" path))
-    ((eq format 'ascii) (format "%s" desc))
-    )))
+;; (org-add-link-type
+;;  "citet"  (lambda (key) (org-open-file cby-references-file t nil key))
+;;  (lambda (path desc format)
+;;    (cond
+;;     ((eq format 'latex) (format "\\citet{%s}" path))
+;;     ((eq format 'ascii) (format "%s" desc))
+;;     )))
+;; (org-add-link-type
+;;  "citep"  (lambda (key) (org-open-file cby-references-file t nil key))
+;;  (lambda (path desc format)
+;;    (cond
+;;     ((eq format 'latex) (format "\\citep{%s}" path))
+;;     ((eq format 'ascii) (format "%s" desc))
+;;     )))
 
 (setq-local org-latex-title-command "")
 #+END_SRC
