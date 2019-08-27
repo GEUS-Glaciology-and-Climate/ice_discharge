@@ -1374,7 +1374,7 @@ FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG
 for FILE in $(find ${ROOT} -name "*.nc"); do
   YYYYMMDD=$(echo ${FILE} | cut -d"_" -f4)
   YEAR=$(echo ${YYYYMMDD} | cut -d"-" -f1)
-  DATE=${YEAR}-01-01
+  DATE=${YEAR}_01_01
   echo $DATE
   r.external -o source="NetCDF:${FILE}:VX" output=vx_${DATE}
   r.external -o source="NetCDF:${FILE}:VY" output=vy_${DATE}
