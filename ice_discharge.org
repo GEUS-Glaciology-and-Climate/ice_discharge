@@ -70,7 +70,7 @@ To recreate this work
 + Download and set up the necessary data files used throughout the [[*Input data][Input data]] section.
 + Open this file in Emacs Org Mode.
 + Tangle the embedded code blocks.
-+ Execute =./runme.sh=
++ Execute =make= to run the contents of the [[#sec:makefile][Makefile]].
 
 * Summary                                               :noexport:
 
@@ -724,29 +724,42 @@ This work was performed using only open-source software, primarily =GRASS GIS= c
 :header-args:sh+: :tangle-mode (identity #o744)
 :header-args:sh+: :shebang #!/usr/bin/env bash
 :END:
-** Init
+** Makefile
+:PROPERTIES:
+:CUSTOM_ID: sec:makefile
+:END:
 
 This code, and all code files in this project, are derived products tangled from the ice_discharge.org source file.
 
-#+BEGIN_SRC sh :results verbatim :tangle runme.sh
-# trash G # reset
+#+BEGIN_SRC makefile :tangle Makefile
+freshwater.zip: G run dist
 
-# Create environment if it doesn't exist
-if [[ ! -d ./G ]]; then grass -e -c EPSG:3413 ./G; fi
+G:
+	grass -e -c EPSG:3413 ./G
 
-# grass ./G/PERMANENT # manual debug
-# export GRASS_OVERWRITE=1
+run: FORCE
+	grass ./G/PERMANENT --exec ./import.sh
+	grass ./G/PERMANENT --exec ./gate_IO_runner.sh
+	grass ./G/PERMANENT --exec ./vel_eff.sh
+	grass ./G/PERMANENT --exec ./export.sh
+	python ./errors.py
+	python ./raw2discharge.py
+	grass ./G/PERMANENT --exec ./gate_export.sh
+	python ./figures.py
 
-grass ./G/PERMANENT --exec ./import.sh
-grass ./G/PERMANENT --exec ./gate_IO_runner.sh
-grass ./G/PERMANENT --exec ./vel_eff.sh
-grass ./G/PERMANENT --exec ./export.sh
-python ./errors.py
-python ./raw2discharge.py
-grass ./G/PERMANENT --exec ./gate_export.sh
-python ./figures.py
+dist: ice_discharge.zip
+	ln -s out ice_discharge
+	zip -r ice_dischrage.zip ice_discharge
+	rm ice_discharge
+
+FORCE: # dummy target
+
+clean:
+	rm -fR G tmp out ice_discharge.zip
 #+END_SRC
 #+RESULTS:
+
+
 
 ** Misc Helper
 *** Support pretty messages
