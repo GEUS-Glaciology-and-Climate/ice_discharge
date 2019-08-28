@@ -794,7 +794,12 @@ toggles verbosity level
 #+BEGIN_SRC sh :results verbatim :tangle no
 export GRASS_VERBOSE=3
 # export GRASS_MESSAGE_FORMAT=silent
-export DATADIR=/home/kdm/data
+
+if [ -z ${DATADIR+x} ]; then
+    echo "DATADIR environment varible is unset."
+    echo "Fix with: \"export DATADIR=/path/to/data\""
+    exit 255
+fi
 
 set -x # print commands to STDOUT before running them
 #+END_SRC
