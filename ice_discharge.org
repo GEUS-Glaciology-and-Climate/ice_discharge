@@ -1200,9 +1200,7 @@ for year in $(seq 1985 2016); do
     LIST=$(find ${ROOT} -name "*${year}-${month}_vx_v2.tif")
     if [[ ! -z ${LIST} ]]; then
       MSG_OK "Building VRTs for ${year} ${month}"
-      if [[ ! -e ${VRTROOT}/${year}_${month}_ey.vrt ]]; then
-        parallel --bar gdalbuildvrt ${VRTROOT}/${year}_${month}_{}.vrt $(find ${ROOT} -name "*${year}-${month}_{}_v2.tif") ::: vx vy ex ey
-      fi
+      parallel --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_v2.tif"\) ::: vx vy ex ey
     fi
   done
 done
@@ -1250,10 +1248,10 @@ for f in $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*vx*.tif"); do
     SEC1=$(date --date="${T1}" +"%s")
     MID=$(echo "(${SEC0}+${SEC1})/2"|bc)
     DATE=$(date --date="@${MID}" +"%Y-%m-%d")
-    gdalbuildvrt -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_vx.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*vx*.tif")
-    gdalbuildvrt -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_vy.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*vy*.tif")
-    gdalbuildvrt -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_ex.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*ex*.tif")
-    gdalbuildvrt -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_ey.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*ey*.tif")
+    gdalbuildvrt -overwrite -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_vx.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*vx*.tif")
+    gdalbuildvrt -overwrite -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_vy.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*vy*.tif")
+    gdalbuildvrt -overwrite -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_ex.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*ex*.tif")
+    gdalbuildvrt -overwrite -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_ey.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*ey*.tif")
 done
 
 # Monthly VRTs including average of all scenes in that month
@@ -1263,10 +1261,10 @@ for year in $(seq 2009 2018); do
     LIST=$(find ${ROOT} -name "*${year}-${month}-??_vx.vrt")
     if [[ ! -z ${LIST} ]]; then
       MSG_OK "Building VRT for ${year} ${month}"
-      gdalbuildvrt ${ROOT}/${year}-${month}_vx.vrt $(find ${ROOT} -name "*${year}-${month}-??_vx.vrt")
-      gdalbuildvrt ${ROOT}/${year}-${month}_vy.vrt $(find ${ROOT} -name "*${year}-${month}-??_vy.vrt")
-      gdalbuildvrt ${ROOT}/${year}-${month}_ex.vrt $(find ${ROOT} -name "*${year}-${month}-??_ex.vrt")
-      gdalbuildvrt ${ROOT}/${year}-${month}_ey.vrt $(find ${ROOT} -name "*${year}-${month}-??_ey.vrt")
+      gdalbuildvrt -overwrite ${ROOT}/${year}-${month}_vx.vrt $(find ${ROOT} -name "*${year}-${month}-??_vx.vrt")
+      gdalbuildvrt -overwrite ${ROOT}/${year}-${month}_vy.vrt $(find ${ROOT} -name "*${year}-${month}-??_vy.vrt")
+      gdalbuildvrt -overwrite ${ROOT}/${year}-${month}_ex.vrt $(find ${ROOT} -name "*${year}-${month}-??_ex.vrt")
+      gdalbuildvrt -overwrite ${ROOT}/${year}-${month}_ey.vrt $(find ${ROOT} -name "*${year}-${month}-??_ey.vrt")
     fi
   done
 done
