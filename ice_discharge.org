@@ -1368,17 +1368,17 @@ for FILE in $(find ${ROOT} -name "*.nc"); do
   r.external -o source="NetCDF:${FILE}:VY" output=vy_${DATE}
 done
 
-ROOT=${DATADIR}/Mouginot_2018/D1MM37
-find ${ROOT} -name "*.nc"
-FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG
-for FILE in $(find ${ROOT} -name "*.nc"); do
-  YYYYMMDD=$(echo ${FILE} | cut -d"_" -f4)
-  YEAR=$(echo ${YYYYMMDD} | cut -d"-" -f1)
-  DATE=${YEAR}_01_01
-  echo $DATE
-  r.external -o source="NetCDF:${FILE}:VX" output=vx_${DATE}
-  r.external -o source="NetCDF:${FILE}:VY" output=vy_${DATE}
-done
+# ROOT=${DATADIR}/Mouginot_2018/D1MM37
+# find ${ROOT} -name "*.nc"
+# FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG
+# for FILE in $(find ${ROOT} -name "*.nc"); do
+#   YYYYMMDD=$(echo ${FILE} | cut -d"_" -f4)
+#   YEAR=$(echo ${YYYYMMDD} | cut -d"-" -f1)
+#   DATE=${YEAR}_01_01
+#   echo $DATE
+#   r.external -o source="NetCDF:${FILE}:VX" output=vx_${DATE}
+#   r.external -o source="NetCDF:${FILE}:VY" output=vy_${DATE}
+# done
 #+END_SRC
 #+RESULTS:
 
@@ -2930,6 +2930,7 @@ vel.rename(columns=lambda c: pd.datetime(int(c[8:12]), int(c[13:15]), int(c[16:1
 # vel.drop(columns=pd.datetime(1999, 7, 1), inplace=True) # bad year?
 vel.replace(0, np.nan, inplace=True)
 # vel = vel.loc[:,vel.columns.year < 2018] # drop 2018
+vel = vel.loc[:,vel.columns.year >= 1985] # drop early years
 vel.sort_index(axis='columns', inplace=True)
 
 ####################
@@ -2967,6 +2968,7 @@ vel.fillna(method='bfill', axis=1, inplace=True)
 err = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('err_eff' in c)))
 err.rename(columns=lambda c: pd.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])), inplace=True)
 err.replace(0, np.nan, inplace=True)
+err = err.loc[:,err.columns.year > 1985] # drop early years
 err.sort_index(axis='columns', inplace=True)
 # err.interpolate(method='time', limit_area='inside', axis=1 inplace=True)
 err.fillna(method='ffill', axis=1, inplace=True)
