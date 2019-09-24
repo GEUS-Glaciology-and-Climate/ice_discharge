@@ -1,0 +1,133 @@
+* Introduction
+
+Develop a monitor to track new Sentinel 1 velocity products and update the ice discharge product when they are found.
+
+This file can be tangled to the [[./monitor.sh]] file that 
++ Generates a list of local velocity dates
++ Generates a list of remote velocity dates
++ Compares the two. If they are different
+  + Downloads missing local files
+  + Runs =make= to update the Ice Discharge product
+
+* File Comparison
+
+There is one minor complication which is that I don't save the Sentinel 1 velocity ZIP files, only the extracted NetCDF data. Therefore we are not directly comparing two directory lists, but rather two lists based on a subset of the filename.
+
+A list of the local Sentinel velocities:
+#+BEGIN_SRC sh :results verbatim
+cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps
+ls | cut -d"." -f1 | tail -n3
+#+END_SRC
+#+RESULTS:
+: IV_20190711_20190804
+: IV_20190723_20190816
+: IV_20190804_20190828
+
+A list of the files on the Promice Data Portal
+1. Manually go to https://www.promice.org/PromiceDataPortal/#Sentinel1Greenlandicevelocity
+2. https://promice.org/PromiceDataPortal/api/download/92ce7cf4-59b8-4a3f-8f75-93d166f5a7ca/Greenland_IV
+
+List contents there
+#+BEGIN_SRC sh :results verbatim
+URL=https://promice.org/PromiceDataPortal/api/download/92ce7cf4-59b8-4a3f-8f75-93d166f5a7ca/Greenland_IV
+curl -s ${URL} --list-only | grep zip | sed -e 's/<[^>]*>//g' | cut -d"." -f1 | tail -n3
+#+END_SRC
+#+RESULTS:
+:     IV_20190711_20190804
+:     IV_20190723_20190816
+:     IV_20190804_20190828
+
+* Algorithm
+:PROPERTIES:
+:header-args:sh+: :comments both
+:header-args:sh+: :tangle-mode (identity #o744)
+:header-args:sh+: :shebang #!/usr/bin/env bash
+:header-args:sh+: :session *monitor-shell*
+:header-args:sh+: :noweb yes
+:END:
+
+Edit the following folder to match your system
+
+#+NAME: USER_CONFIG
+#+BEGIN_SRC sh :results verbatim
+Sentinel1_IV_DATA_DIR=${DATADIR}/Sentinel1/Sentinel1_IV_maps
+#+END_SRC
+#+RESULTS:
+
+Users should not need to edit anything below here.
+
+
+This code block is the top level pseudo-code description of the monitoring and update workflow. It is the only code block that is tangled out to the =monitor.sh= file. However, prior to tangling the =noweb= (<<>>) code blocks are expanded using the code blocks below.
+
+#+BEGIN_SRC sh :results verbatim :tangle monitor.sh
+<<USER_CONFIG>>
+<<setup>>
+<<fetch_IV_list_from_web>>
+<<generate_local_IV_list>>
+<<update_if_needed>>
+#+END_SRC
+#+RESULTS:
+
+#+NAME: fetch_IV_list_from_web
+#+BEGIN_SRC sh :results verbatim
+URL=https://promice.org/PromiceDataPortal/api/download/92ce7cf4-59b8-4a3f-8f75-93d166f5a7ca/Greenland_IV
+IV_web=$(curl -s ${URL} --list-only | grep zip | sed -e 's/<[^>]*>//g' | cut -d"." -f1)
+#+END_SRC
+
+#+NAME: generate_local_IV_list
+#+BEGIN_SRC sh :results verbatim
+IV_local=$(cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps; ls | cut -d"." -f1)
+#+END_SRC
+
+
+Below, =$?= is the return value of the diff command. Diff returns 0 if there is no difference, and some other non-zero value of there is a difference.
+
+#+NAME: update_if_needed
+#+BEGIN_SRC sh :results verbatim
+diff <(echo $IV_web|tr ' ' '\n') <(echo $IV_local|tr ' ' '\n') &> /dev/null
+if [ $? -ne 0 ]; then # difference.
+  MSG_WARN "Local Sentinel1 Velocities do not match remote."
+  MSG_OK "Fetching missing files..."
+  <<update_missing>>
+  <<update_ice_discharge>>
+else 
+  MSG_OK "Local velocities match remote."
+  MSG_OK "No action taken"
+fi
+#+END_SRC
+#+RESULTS:
+
+
+Could use =comm -23= instead of =diff= & =grep=?
+
+#+NAME: update_missing
+#+BEGIN_SRC sh :results verbatim
+missing_local=$(diff <(echo $IV_web|tr ' ' '\n') <(echo $IV_local|tr ' ' '\n') | grep "^<" | cut -c2-)
+for file in $(echo ${missing_local} | tr ' ' '\n'); do
+  MSG_OK "Fetching ${file}"
+  wget -np --continue ${URL}/${file}.zip -O ./tmp_S1.zip
+  unzip -n -j tmp_S1.zip ${file}/${file}.nc -d ${Sentinel1_IV_DATA_DIR}
+  rm ./tmp_S1.zip
+done
+#+END_SRC
+#+RESULTS:
+
+#+NAME: update_ice_discharge
+#+BEGIN_SRC sh :results verbatim
+make
+#+END_SRC
+#+RESULTS:
+
+#+NAME: setup
+#+BEGIN_SRC sh :results verbatim
+
+RED='\033[0;31m'
+ORANGE='\033[0;33m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+MSG_OK() { printf "${GREEN}${1}${NC}\n"; }
+MSG_WARN() { printf "${ORANGE}WARNING: ${1}${NC}\n"; }
+MSG_ERR() { echo "${RED}ERROR: ${1}${NC}\n" >&2; }
+
+#+END_SRC
+#+RESULTS:
