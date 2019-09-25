@@ -4,7 +4,7 @@
 #+Options: toc:nil ^:t {}:t
 
 #+PROPERTY: header-args: :comments both
-#+PROPERTY: header-args:sh :eval no-export :noweb yes
+#+PROPERTY: header-args:bash :eval no-export :noweb yes
 #+PROPERTY: header-args:jupyter-python :eval no-export :noweb yes
 #+PROPERTY: header-args: :session ice_discharge
 
@@ -80,7 +80,7 @@ We have produced an open and reproducible estimate of Greenland ice sheet solid 
 
 * What's new in this version
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l
 #+END_SRC
 #+RESULTS:
@@ -161,7 +161,7 @@ The discharge gates in this study are generated using only surface speed and an 
 
 For ice thickness estimates, we use surface elevation from GIMP (citet:howat_2014_greenland,NSIDC_0715; NSIDC data set ID 0715), adjusted through time with surface elevation change from citet:khan_2016_geodetic and bed elevations from BedMachine v3 replaced by citet:millan_2018_vulnerability where available. Ice sector and region delineation is from citet:mouginot_2019_glacier. Ice velocity data are obtained from a variety of products including Sentinel 1A & 1B derived by PROMICE (see Appendix), MEaSUREs 0478, MEaSUREs 0646 citep:NSIDC_0646, citet:mouginot_2018_1972to1990, and citet:mouginot_2018_1991to2000. Official glacier names come from citet:bjork_2015_brief. Other glacier names come from citet:mouginot_2019_glacier. See Table [[tab:data]] for an overview of data sets used in this work.
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l)
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep -v 19|wc -l)
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2016|wc -l)
@@ -282,7 +282,7 @@ We use \(\rho = 917\) kg m^{-3} because the gates are near the terminus in the a
 * Results
 ** Gates
 
-#+BEGIN_SRC sh :results verbatim :exports none
+#+BEGIN_SRC bash :results verbatim :exports none
 echo "pixels: " $(wc -l tmp/dat_100_5000.csv)
 
 # head -n1 tmp/dat_100_5000.csv | tr ',' '\n' | cat -n | grep clump
@@ -539,7 +539,7 @@ We do not have a solution for the issues brought up here, except to discuss them
 We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of 6002 pixels, 5366 have valid thickness, and 636 (12 %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
 
 #+NAME: post_clean
-#+BEGIN_SRC sh :results verbatim :var r="" :results output
+#+BEGIN_SRC bash :results verbatim :var r="" :results output
 echo "${r}" | sed s/\^:\ \//g | grep -v "^$" | grep -v "^#\ Out.*" | grep -v "#\ output" | grep -v "^#\ text\/.*"
 #+END_SRC
 
@@ -659,7 +659,7 @@ We estimate discharge at all pixel locations for any time when there exists any 
 This treatment is applied at the pixel level and then weight-averaged to the gate, sector, region, and ice sheet results.
 
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 inkscape -z ./figs/gate_weight_schematic.svg -e ./figs/gate_weight_schematic.png
 #+END_SRC
 #+RESULTS:
@@ -720,9 +720,9 @@ This work was performed using only open-source software, primarily =GRASS GIS= c
 
 * Code                                                  :noexport:
 :PROPERTIES:
-:header-args:sh+: :comments both
-:header-args:sh+: :tangle-mode (identity #o744)
-:header-args:sh+: :shebang #!/usr/bin/env bash
+:header-args:bash+: :comments both
+:header-args:bash+: :tangle-mode (identity #o744)
+:header-args:bash+: :shebang #!/usr/bin/env bash
 :END:
 ** Makefile
 :PROPERTIES:
@@ -732,7 +732,7 @@ This work was performed using only open-source software, primarily =GRASS GIS= c
 This code, and all code files in this project, are derived products tangled from the ice_discharge.org source file.
 
 #+BEGIN_SRC makefile :tangle Makefile
-freshwater.zip: G run dist
+all: G run dist
 
 G:
 	grass -e -c EPSG:3413 ./G
@@ -747,9 +747,9 @@ run: FORCE
 	grass ./G/PERMANENT --exec ./gate_export.sh
 	python ./figures.py
 
-dist: ice_discharge.zip
+dist:
 	ln -s out ice_discharge
-	zip -r ice_dischrage.zip ice_discharge
+	zip -r ice_discharge.zip ice_discharge
 	rm ice_discharge
 
 FORCE: # dummy target
@@ -764,7 +764,7 @@ clean:
 ** Misc Helper
 *** Support pretty messages
 #+NAME: MSGS_pretty_print
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
@@ -791,7 +791,7 @@ toggles verbosity level
 #+END_QUOTE
 
 #+NAME: GRASS_config
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 export GRASS_VERBOSE=3
 # export GRASS_MESSAGE_FORMAT=silent
 
@@ -808,10 +808,10 @@ set -x # print commands to STDOUT before running them
 
 ** Import Data
 :PROPERTIES:
-:header-args:sh+: :tangle import.sh
+:header-args:bash+: :tangle import.sh
 :END:
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 <<MSGS_pretty_print>>
 <<GRASS_config>>
 #+END_SRC
@@ -820,7 +820,7 @@ set -x # print commands to STDOUT before running them
 *** Bed and Surface
 **** BedMachine v3
 + from [[textcite:Morlighem:2017BedMachine][Morlighem /et al./ (2017)]]
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "BedMachine"
 g.mapset -c BedMachine
 
@@ -843,7 +843,7 @@ r.mapcalc "mask_ice = if(mask == 2, 1, null())"
 #+END_SRC
 #+RESULTS:
 **** Bamber 2013
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "Bamber 2013"
 g.mapset -c Bamber_2013
 r.in.gdal input=${DATADIR}/Bamber_2013/IceThickness.tif output=thickness
@@ -852,7 +852,7 @@ r.null thickness null=0
 #+RESULTS:
 
 **** Millan 2018
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "Millan 2018"
 g.mapset -c Millan_2018
 
@@ -896,7 +896,7 @@ r.null map=thickness_0 null=0
 #+END_SRC
 
 ***** Testing Old v. New (Millan)
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 d.mon start=wx0
 d.erase
 d.rast bed@BedMachine
@@ -914,7 +914,7 @@ d.vect gates_final@gates_50_2500
 #+RESULTS:
 
 ***** Testing Millan v. BedMachine for Ikertivaq
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 d.mon start=wx0
 d.erase
 d.rast bed@BedMachine
@@ -931,7 +931,7 @@ g.copy vector=gates_final@gates_50_2500,gates
 #+RESULTS:
 
 **** GIMP 0715
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "GIMP 0715"
 g.mapset -c GIMP.0715
 ROOT=${DATADIR}/GIMP/0715
@@ -944,8 +944,8 @@ ROOT=${DATADIR}/GIMP/0715
 #   name=$(basename ${f})
 #   r.external input=${f} output=${name}
 # done
-ls ${ROOT}/reg/tile_?_?_reg_30m_???.tif | parallel --bar r.external input={} output={/.}
-ls ${ROOT}/fit/tile_?_?_fit_30m_???.tif | parallel --bar r.external input={} output={/.}
+ls ${ROOT}/reg/tile_?_?_reg_30m_???.tif | parallel --verbose --bar r.external input={} output={/.}
+ls ${ROOT}/fit/tile_?_?_fit_30m_???.tif | parallel --verbose --bar r.external input={} output={/.}
 
 r.patch -s input=$(g.list type=raster pattern=tile_?_?_reg_30m_dem separator=,),$(g.list type=raster pattern=tile_?_?_fit_30m_dem separator=,) output=dem
 
@@ -959,7 +959,7 @@ r.null map=day null=0
 #+RESULTS:
 
 ***** Display
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 d.mon start=wx0
 d.rast dem
 d.rast vel_baseline@MEaSUREs.0478
@@ -978,7 +978,7 @@ d.vect gates_final@gates_50_2500 color=red
 *** Sectors
 + From citet:mouginot_2019_glacier
 ***** Import & Clean
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "Mouginot 2019 sectors"
 
 g.mapset -c Mouginot_2019
@@ -1017,7 +1017,7 @@ r.mapcalc "regions = @regions_tmp"
 #+END_SRC
 #+RESULTS:
 ***** Test
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 grass74 ./G/Mouginot_2019
 d.mon start=wx0
 d.rast regions
@@ -1031,7 +1031,7 @@ d.vect sectors fill_color=none
 + Method
   + Email: [[mu4e:msgid:m2tvxmd2xr.fsf@gmail.com][Re: {GRASS-user} scale error for each pixel]]
   + Webmail: https://www.mail-archive.com/grass-user@lists.osgeo.org/msg35005.html
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "2D Area Error"
 g.mapset PERMANENT
 
@@ -1081,7 +1081,7 @@ g.region -d
 ****** Import
 + First read in the 200 m files
 + Then read in the 500 m files if there were no 200 m files
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "MEaSURES.0478"
 g.mapset -c MEaSUREs.0478
 
@@ -1095,8 +1095,8 @@ for VX in $(find ${ROOT} -name "*mosaic200_*vx*"); do
   EY=${EX/ex/ey}
   DATE=$(dirname ${VX} | rev | cut -d"/" -f1 | rev | sed s/\\./_/g)
   # echo $DATE
-  parallel --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
-  parallel --bar r.null map={}_${DATE} null=0 ::: VX VY EX EY
+  parallel --verbose --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
+  parallel --verbose --bar r.null map={}_${DATE} null=0 ::: VX VY EX EY
 done
 g.region raster=VX_${DATE} -pa
 
@@ -1110,18 +1110,18 @@ for VX in $(find ${ROOT} -name "*mosaic500_*vx*"); do
   echo $DATE
 
   # Read in all the 500 m velocity data
-  parallel --bar r.external source={1} output={2}_${DATE}_500 ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY # If the 200 m data exists, will produce an error and continue
+  parallel --verbose --bar r.external source={1} output={2}_${DATE}_500 ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY # If the 200 m data exists, will produce an error and continue
   # If the 200 m data does not exist, will resample from 500
   r.mapcalc "VX_${DATE} = VX_${DATE}_500"
   r.mapcalc "VY_${DATE} = VY_${DATE}_500"
   r.mapcalc "EX_${DATE} = EX_${DATE}_500"
   r.mapcalc "EY_${DATE} = EY_${DATE}_500"
-  parallel --bar r.null map={}_${DATE} null=0 ::: VX VY EX EY
+  parallel --verbose --bar r.null map={}_${DATE} null=0 ::: VX VY EX EY
 done
 #+END_SRC
 #+RESULTS:
 ****** Baseline: Average of 2015-2017
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "Baseline"
 g.mapset -c MEaSUREs.0478
 
@@ -1149,7 +1149,7 @@ EOF
 # g.remove -f type=raster name=VX_2015,VX_2016,VX_2017,VY_2015,VY_2016,VY_2017
 # g.remove -f type=raster name=EX_2015,EX_2016,EX_2017,EY_2015,EY_2016,EY_2017
 
-parallel --bar r.null map={}_baseline setnull=0 ::: vx vy vel ex ey vel_err
+parallel --verbose --bar r.null map={}_baseline setnull=0 ::: vx vy vel ex ey vel_err
 r.colors -e map=vel_baseline,vel_err_baseline color=viridis
 #+END_SRC
 #+RESULTS:
@@ -1161,7 +1161,7 @@ r.colors -e map=vel_baseline,vel_err_baseline color=viridis
   + 2nd largest is ocean
 + Mask by ocean (so velocity w/ holes remains)
 + Fill holes
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 r.mask -r
 r.mapcalc "no_vel = if(isnull(vel_baseline), 1, null())"
 r.mask no_vel
@@ -1175,7 +1175,7 @@ r.colors map=vel_baseline -e color=viridis
 #+END_SRC
 #+RESULTS:
 ******* Display
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 d.mon start=wx0
 d.erase
 d.rast vel
@@ -1189,17 +1189,19 @@ d.rast vel_filled
 ****** Generate VRTs
 + One map per month
 + Build GDAL virtual tiles for every month (when data exists)
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.mapset -c MEaSUREs.0646
 
 ROOT=${DATADIR}/MEaSUREs/NSIDC-0646.002/
 VRTROOT=${DATADIR}/MEaSUREs/NSIDC-0646.002.vrt/
 for year in $(seq 1985 2016); do
   for month in $(seq -w 1 12); do
-    LIST=$(find ${ROOT} -name "*${year}-${month}_vx_v02.1.tif")
-    if [[ ! -z ${LIST} ]]; then
-      MSG_OK "Building VRTs for ${year} ${month}"
-      parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_v02.1.tif"\) ::: vx vy ex ey
+    if [[ ! -f ${VRTROOT}/${year}_${month}_vx.vrt ]]; then # VRT file does not exist?
+      LIST=$(find ${ROOT} -name "*${year}-${month}_vx_v02.1.tif")
+      if [[ ! -z ${LIST} ]]; then
+        MSG_OK "Building VRTs for ${year} ${month}"
+        parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_v02.1.tif"\) ::: vx vy ex ey
+      fi
     fi
   done
 done
@@ -1207,7 +1209,7 @@ done
 #+RESULTS:
 
 ****** Import VRTs
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "MEaSURES.0646"
 g.mapset -c MEaSUREs.0646
 
@@ -1222,7 +1224,7 @@ for VX in $(find ${ROOT} -name "*vx*"); do
     DATE=${DATE}_15
     echo $DATE
     
-    parallel --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
+    parallel --verbose --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
 done
 g.region raster=VX_${DATE} -pa
 # g.list type=raster mapset=MEaSUREs.0646
@@ -1235,7 +1237,7 @@ g.region raster=VX_${DATE} -pa
 MEaSUREs Greenland Monthly Ice Sheet Velocity Mosaics from SAR and Landsat, Version 1
 
 ****** Import
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "MEaSURES.0731"
 g.mapset -c MEaSUREs.0731
 r.mask -r
@@ -1254,8 +1256,8 @@ for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif"); do
   DATE=$(date --date="@${MID}" +"%Y_%m_%d")
 
   # echo $DATE
-  parallel --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
-  parallel --bar r.null map={}_${DATE} null=0 ::: VX VY EX EY
+  parallel --verbose --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
+  parallel --verbose --bar r.null map={}_${DATE} null=0 ::: VX VY EX EY
 done
 g.region raster=VX_${DATE} -pa
 #+END_SRC
@@ -1264,7 +1266,7 @@ g.region raster=VX_${DATE} -pa
 
 **** Sentinel 1
 ***** Data Intro                                                   :noexport:
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 DIR=${DATADIR}/Sentinel1/Sentinel1_IV_maps
 (cd ${DIR}; ls *.nc | head)
 (cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")
@@ -1293,7 +1295,7 @@ IV_20161130_20161223.nc
 ***** Import data                                                  :noexport:
 + Read in all the data
 + Convert from [m day-1] to [m year-1]
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "Sentinel 1"
 g.mapset -c Sentinel1
 ROOT=${DATADIR}/Sentinel1/Sentinel1_IV_maps
@@ -1326,7 +1328,7 @@ done
 **** Mouginot 2018 (pre-2000 velocities)
 + See citet:mouginot_2018_1972to1990 and citet:mouginot_2018_1991to2000
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "Mouginot pre 2000"
 g.mapset -c Mouginot_pre2000
 
@@ -1357,7 +1359,7 @@ done
 #+RESULTS:
 
 ***** Display
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 d.mon start=wx0
 g.list type=raster pattern=vx_*
 
@@ -1380,7 +1382,7 @@ d.erase; d.rast vx_1999-07-01
 + Also use citet:mouginot_2019_glacier
 **** Bjørk 2015
 + Write out x,y,name. Can use x,y and mean gate location to find closest name for each gate.
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "Bjørk 2015"
 g.mapset -c Bjork_2015
 
@@ -1392,7 +1394,7 @@ cat ${ROOT}/GreenlandGlacierNames_GGNv01.csv |  iconv -c -f utf-8 -t ascii | gre
 #+END_SRC
 #+RESULTS:
 **** Mouginot 2019
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.mapset Mouginot_2019
 db.select table=sectors | head
 # v.out.ascii -c input=sectors output=./tmp/Mouginot_2019_names.csv columns=NAME,SUBREGION1
@@ -1407,7 +1409,7 @@ db.select table=sectors | head
 + h_0 (BedMachine v3) is assumed to be 2007
 + h_{\(\pm\) n} is based on elevation data from Shfaqat Abbas Khan. See [[file:${DATADIR}/Khan_2016/README.org]]
 **** dh/dt
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 MSG_OK "dh/dt"
 
 g.mapset -c Khan_2016
@@ -1452,7 +1454,7 @@ done
 
 ** Find Gates
 :PROPERTIES:
-:header-args:sh+: :tangle gate_IO.sh
+:header-args:bash+: :tangle gate_IO.sh
 :END:
 
 *** Algorithm
@@ -1470,7 +1472,7 @@ Note that "fast ice" refers to flow velocity, not the sea ice term of "stuck to 
 INSTRUCTIONS: Set VELOCITY_CUTOFF and BUFFER_DIST to 50 and 2500 respectively and run the code. Then repeat for a range of other velocity cutoffs and buffer distances to get a range of sensitivities.
 
 OR: Tangle via ((org-babel-tangle) the code below (C-c C-v C-t or ) to [[./gate_IO.sh]] and then run this in a GRASS session:
-#+BEGIN_SRC sh :results verbatim :tangle gate_IO_runner.sh
+#+BEGIN_SRC bash :results verbatim :tangle gate_IO_runner.sh
 <<MSGS_pretty_print>>
 <<GRASS_config>>
 
@@ -1482,7 +1484,7 @@ BUFFER_DIST=5000
 
 Create a new mapset for this specific velocity cutoff and buffer distance
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.mapset -c gates_${VELOCITY_CUTOFF}_${BUFFER_DIST}
 g.region -d
 #+END_SRC
@@ -1493,7 +1495,7 @@ From above:
 
 The "loosely" is because the BedMachine mask doesn't always reach into each fjord all the way. I buffer the BedMachine mask by 2 km here so that it extends to the edge of the velocity data.
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.copy raster=mask_ice@BedMachine,mask_ice --o
 # Grow by 2 km (10 cells @ 200 m/cell)
 r.grow input=mask_ice output=mask_ice_grow radius=10 new=1 --o
@@ -1502,7 +1504,7 @@ r.mask mask_ice_grow
 
 The fast ice edge is where there is fast-flowing ice overlapping with not-ice.
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 r.mapcalc "fast_ice = if(vel_baseline@MEaSUREs.0478 > ${VELOCITY_CUTOFF}, 1, null())" --o
 r.mask -r
 
@@ -1517,7 +1519,7 @@ The gates are set ${BUFFER_DIST} inland from the fast ice edge. This is done by 
 
 However, in order to properly estimate discharge, the gate location is not enough. Ice must flow from outside the gates, through the gates, to inside the gates, and not flow from one gate pixel to another gate pixel (or it would be counted 2x). 
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 r.buffer input=fast_ice_edge output=fast_ice_buffer distances=${BUFFER_DIST} --o
 r.grow input=fast_ice_buffer output=fast_ice_buffer_grow radius=1.5 new=99 --o
 r.mask -i not_ice --o
@@ -1567,7 +1569,7 @@ r.colors map=gates_IO color=viridis
 |                | [-1,0] | above             |
 |                | [1,0]  | below             |
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 # g.mapset -c gates_50_2500
 
 r.mask -r
@@ -1588,13 +1590,13 @@ r.null map=gates_y null=0 # OR r.null map=gates_y setnull=0
 #+END_SRC
 *** Clean Gates                                                    :noexport:
 **** Subset to where there is known discharge
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 r.mapcalc "gates_xy_clean0 = if((gates_x == 1) || (gates_y == 1), 1, null())" --o
 #+END_SRC
 #+RESULTS:
 
 **** Remove small areas (clusters <X cells)
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 # Remove clusters of 2 or less. How many hectares in X pixels?
 # frink "(200 m)^2 * 2 -> hectares" # ans: 8.0
 
@@ -1608,7 +1610,7 @@ r.mapcalc "gates_xy_clean1 = if(isnull(gates_area), gates_xy_clean0, null())" --
 
 **** Limit to Mouginot 2019 mask
 + Actually, limit to approximate Mouginot 2019 mask - its a bit narrow in some places
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 # r.mask mask_GIC@Mouginot_2019 --o
 r.grow input=mask_GIC@Mouginot_2019 output=mask_GIC_Mouginot_2019_grow radius=4.5 # three cells
 r.mask mask_GIC_Mouginot_2019_grow --o
@@ -1621,7 +1623,7 @@ r.mask -r
 
 **** Remove areas from manually-drawn KML mask
 + See [[./dat/remove_manual.kml]]
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 v.import input=./dat/remove_manual.kml output=remove_manual --o
 r.mask -i vector=remove_manual --o
 r.mapcalc "gates_xy_clean3 = gates_xy_clean2" --o
@@ -1633,7 +1635,7 @@ r.univar map=gates_xy_clean3
 #+RESULTS:
 
 *** Final Gates
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.copy "gates_xy_clean3,gates_final" --o
 #+end_src
 #+RESULTS:
@@ -1651,7 +1653,7 @@ Do this for both the area vector and the point vector so that we can export
 + simple CSV w/ gates and metadata.
 
 **** Gate ID
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 
 # db.droptable -f table=gates_final
 # db.droptable -f table=gates_final_pts
@@ -1672,7 +1674,7 @@ v.what.rast map=gates_final raster=gates_gateID column=gate type=centroid
 #+END_SRC
 #+RESULTS:
 **** Mean x,y
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 v.db.addcolumn map=gates_final columns="x INT, y INT, mean_x INT, mean_y INT, area INT"
 v.to.db map=gates_final option=coor columns=x,y units=meters
 v.to.db map=gates_final option=area columns=area units=meters
@@ -1693,14 +1695,14 @@ v.to.db map=gates_final_pts option=coor columns=mean_x,mean_y units=meters
 #+RESULTS:
 
 Here we have:
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 db.select table=gates_final|head -n10 # cat|gate|x|y|mean_x|mean_y
 db.select table=gates_final_pts|head # cat|gate|mean_x|mean_y
 #+END_SRC
 #+RESULTS:
 
 **** Mean lon,lat
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 v.what.rast map=gates_final_pts raster=lon@PERMANENT column=lon
 v.what.rast map=gates_final_pts raster=lat@PERMANENT column=lat
 
@@ -1716,7 +1718,7 @@ done
 + Sector Number
 + Region Code
 + Nearest Sector or Glacier Name
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 v.db.addcolumn map=gates_final columns="sector INT"
 v.db.addcolumn map=gates_final_pts columns="sector INT"
 v.distance from=gates_final to=sectors@Mouginot_2019 upload=to_attr column=sector to_column=cat
@@ -1747,21 +1749,21 @@ for G in $(db.select -c sql="select gate from gates_final"|sort -n|uniq); do
 done
 #+END_SRC
 **** Clean up
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 db.dropcolumn -f table=gates_final column=area
 # db.dropcolumn -f table=gates_final column=cat
 #+END_SRC
 #+RESULTS:
 
 **** Export as metadata CSV
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 mkdir -p out
 db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019 from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
 #+END_SRC
 #+RESULTS:
 
 *** Export Gates to KML                                            :noexport:
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 v.out.ogr input=gates_final output=./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml format=KML --o
 # open ./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml
 #+END_SRC
@@ -1769,11 +1771,11 @@ v.out.ogr input=gates_final output=./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER
 
 *** Sensitivity of results to gate distance and cutoff velocity
 :PROPERTIES:
-:header-args:sh: :tangle no
+:header-args:bash: :tangle no
 :END:
 
 Run the gate detection algorithm at a variety of cutoff velocities and buffer distances
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 for VELOCITY_CUTOFF in $(echo 10 20 30 40 50 60 70 80 90 100 125 150); do
   for BUFFER_DIST in $(echo 1000 2000 3000 4000 5000 6000 7000 8000 9000); do
       . ./gate_IO.sh
@@ -1784,7 +1786,7 @@ done
 
 **** Heatmap
 ***** Compute
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 rm ./tmp/gate_test.dat
 for M in $(g.mapset -l | tr ' ' '\n' | grep gates); do
   g.mapset ${M} --quiet
@@ -1815,7 +1817,7 @@ for M in $(g.mapset -l | tr ' ' '\n' | grep gates); do
 done
 #+END_SRC
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 cat ./tmp/gate_test.dat | sort
 #+END_SRC
 
@@ -1877,10 +1879,10 @@ df.round()
 
 ** Effective Velocity
 :PROPERTIES:
-:header-args:sh+: :tangle vel_eff.sh
+:header-args:bash+: :tangle vel_eff.sh
 :END:
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 <<MSGS_pretty_print>>
 <<GRASS_config>>
 #+END_SRC
@@ -1890,7 +1892,7 @@ df.round()
 *** NOTDONE All Mapsets
 Effective velocity (because gates may only be valid in =x= or =y= direction) was calculated for the sensitivity test above at one time, but for all gate locations (buffer dist and speed cutoff). Now we need to calculate it at all times
 
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 g.mapsets gates_100_5000
 r.mask -r
 
@@ -1928,7 +1930,7 @@ done
 #+RESULTS:
 
 *** Just one velocity cutoff & buffer distance 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.mapsets -l
 
 r.mask -r
@@ -2006,21 +2008,24 @@ for VX in $(g.list type=raster pattern=vx_????_??_??); do
   echo $DATE
   r.mapcalc "vel_eff_${DATE} = (if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX}))) + if(gates_y@${MAPSET}, if(isnull(${VY}), 0, abs(${VY}))))"
 done
+
+# fix return code of this script so make continues
+MSG_OK "vel_eff DONE" 
 #+END_SRC
 #+RESULTS:
 
 ** Export all data to CSV
 :PROPERTIES:
-:header-args:sh+: :tangle export.sh
+:header-args:bash+: :tangle export.sh
 :END:
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 <<MSGS_pretty_print>>
 <<GRASS_config>>
 #+END_SRC
 #+RESULTS:
 
-#+BEGIN_SRC sh :results output
+#+BEGIN_SRC bash :results output
 MSG_OK "Exporting..."
 g.mapset PERMANENT
 g.region -dp
@@ -2055,7 +2060,7 @@ r.mask -r
 #+END_SRC
 #+RESULTS:
 *** Testing
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 g.mapset PERMANENT
 g.region -dp
 MAPSET=gates_100_5000
@@ -2856,7 +2861,7 @@ err_gate
 
 + What columns are in the file?
 + Don't show all the "vel_eff_YYYY_MM_DD" and "err_eff_YYYY_MM_DD" columns.
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep -v "vel_eff_*" | grep -v "err_eff_*" | grep -v "dh_*" | sort | uniq | tr '\n' '\t'
 echo "also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc."
 #+END_SRC
@@ -3984,7 +3989,7 @@ D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.5f', header=[
 :end:
 
 **** Gates
-#+BEGIN_SRC sh :results verbatim :tangle gate_export.sh
+#+BEGIN_SRC bash :results verbatim :tangle gate_export.sh
 g.mapset gates_100_5000
 
 v.out.ogr input=gates_final output=./out/gates.kml format=KML --o
@@ -4001,7 +4006,7 @@ Done manually. See DOI
 Make sure this Org file is tidy enough...
 
 **** TODO Distribute
-#+BEGIN_SRC sh :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no
 (cd out; zip -e /media/kdm/promicedata/ice_discharge/gates/gates.zip gates*)
 (cd out; zip -e /media/kdm/promicedata/ice_discharge/d/D.zip D*csv)
 cp ./out/README.txt /media/kdm/promicedata/ice_discharge/
@@ -4066,7 +4071,7 @@ out
 | PETERMANN_GLETSCHER   | -261888 |      -996839 |
 
 **** Prep data
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 grass -c ./G/fig_overview
 g.region -d
 r.mask -r
@@ -4278,7 +4283,7 @@ g.region -d
   + zoom, then "set computational region extent from display"
   + then "g.region save=<name>"
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.mapset fig_overview
 g.list type=region mapset=.
 # g.remove -f type=region pattern=*
@@ -4309,7 +4314,7 @@ end
 #+END_SRC
 
 **** Run psmap
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.region -d res=5000 -pa
 ps.map input=overview.psmap output=overview.ps --o; o overview.ps
 # ps.map -e input=overview.psmap output=overview.eps --o; o overview.eps
@@ -4330,7 +4335,7 @@ done
 
 Manually align and adjust in Inkscape, add text, boxes, etc. then...
 
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 inkscape -z ./figs/overview.svg -e ./figs/overview.png
 #+END_SRC
 #+RESULTS:
@@ -5707,7 +5712,7 @@ Name: KOGE_BUGT_C, dtype: float64
 
 ** Grids
 + Display different grids of different products
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 g.mapset -c tmp_grids
 
 g.mapsets -l | tr ' ' '\n' | grep -v "gates_"
@@ -5759,7 +5764,7 @@ This document probably uses code - python, octave, and/or R. Below I provide the
 : Org mode version 9.2.3 (9.2.3-7-g222408-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20190415/)
 
 *** Python
-#+BEGIN_SRC sh :cmdline -i :results verbatim
+#+BEGIN_SRC bash :cmdline -i :results verbatim
 . /home/kdm/local/anaconda/etc/profile.d/conda.sh
 conda env export --name sci
 #+END_SRC
@@ -6008,7 +6013,7 @@ prefix: /home/kdm/local/anaconda/envs/sci
 #+end_example
 
 *** LaTeX
-#+BEGIN_SRC sh :cmdline "-i" :results verbatim
+#+BEGIN_SRC bash :cmdline "-i" :results verbatim
 pdflatex --version
 #+END_SRC
 #+RESULTS:
@@ -6091,7 +6096,7 @@ done
 #+RESULTS:
 
 * LaTeXdiff                                             :noexport:
-#+BEGIN_SRC sh :results verbatim :results none :eval no-export
+#+BEGIN_SRC bash :results verbatim :results none :eval no-export
 
 OLD=ice_discharge.2537c3a.tex
 NEW=ice_discharge.tex
@@ -6106,7 +6111,7 @@ latexdiff --disable-citation-markup --append-safecmd="textcite,autocite" --confi
 
 * Release                                               :noexport:
 ** Share w/ Coauthors
-#+BEGIN_SRC sh :results verbatim
+#+BEGIN_SRC bash :results verbatim
 bibexport -o ice_discharge.bib ice_discharge.aux
 pandoc -f latex -i ice_discharge.tex -t DOCX -o ice_discharge.docx --bibliography ./ice_discharge.bib
 
