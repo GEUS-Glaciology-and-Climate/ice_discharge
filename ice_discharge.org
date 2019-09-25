@@ -90,7 +90,7 @@ The data has been updated repeatedly between the first version of this paper cit
 
 A post-peer-review website is available at https://github.com/mankoff/ice_discharge where we document changes to the paper and use the GitHub Issues feature to collect suggested improvements to the paper, document those improvements as they are implemented, document problems that made it through review, and mention similar papers that have been published since this was accepted.
 
-This update includes 48 additional MEaSUREs monthly average velocity maps from 2014-12-01 through 2018-11-30, and 49 Sentinel 1 velocity maps from 2018 through 2019-07-23, increases data density and coverage from 2014 through 2019, and extends the time series to 2019-07-23. Newly incorporated data come from incorporation of a new data set (MEaSUREs NSIDC 0731 citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland) and additional data from Sentinel 1.
+This update includes 48 additional MEaSUREs monthly average velocity maps from 2014-12-01 through 2018-11-30, and 49 Sentinel 1 velocity maps from 2018 through 2019-07-23, increases data density and coverage from 2014 through 2019, and extends the time series to 2019-07-23. Newly incorporated data come from incorporation of a new data set (MEaSUREs NSIDC 0731 citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland) and additional data from Sentinel 1. In addition, NSIDC 0646 data citep:NSIDC_0646 has been updated from v2 to v2.1.
 
 Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and they are now approximately tied for the 3rd largest discharging sector. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continues its rapid discharge decline, returning to, approximately, its discharge from year 2000. If the trend continues, within a year or two the top contributor to sea level rise will once again be Helheim  Gletsjer, then Kangerlussuaq Gletsjer, then Sermeq Kujalleq in third place. The near-term future behavior of Sermeq Kujalleq is not known, but recent changes at Kangerlussuaq suggests it is likely to increase its discharge citep:brough_2019_exceptional.
 
@@ -1194,13 +1194,12 @@ g.mapset -c MEaSUREs.0646
 
 ROOT=${DATADIR}/MEaSUREs/NSIDC-0646.002/
 VRTROOT=${DATADIR}/MEaSUREs/NSIDC-0646.002.vrt/
-# for year in $(seq 2000 2016); do
 for year in $(seq 1985 2016); do
   for month in $(seq -w 1 12); do
-    LIST=$(find ${ROOT} -name "*${year}-${month}_vx_v2.tif")
+    LIST=$(find ${ROOT} -name "*${year}-${month}_vx_v02.1.tif")
     if [[ ! -z ${LIST} ]]; then
       MSG_OK "Building VRTs for ${year} ${month}"
-      parallel --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_v2.tif"\) ::: vx vy ex ey
+      parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_v02.1.tif"\) ::: vx vy ex ey
     fi
   done
 done
