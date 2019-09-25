@@ -1231,47 +1231,6 @@ g.region raster=VX_${DATE} -pa
 
 
 
-***** 0481.001
-****** Dates
-+ Folders are not named using ISO date, so we'll build lightweight VRT files with better names that patch together all the sub-regions for each day.
-#+BEGIN_SRC sh :results verbatim :tangle no
-f=$(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*vx*.tif" | head -n1) # DEBUG
-
-# VRTs for any date where there exists any 0481 data
-mkdir -p ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt
-for f in $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*vx*.tif"); do
-    ff=$(basename ${f})
-    T0=$(echo ${ff} | cut -d"_" -f3)
-    T1=$(echo ${ff} | cut -d"_" -f4)
-    SEC0=$(date --date="${T0}" +"%s")
-    SEC1=$(date --date="${T1}" +"%s")
-    MID=$(echo "(${SEC0}+${SEC1})/2"|bc)
-    DATE=$(date --date="@${MID}" +"%Y-%m-%d")
-    gdalbuildvrt -overwrite -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_vx.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*vx*.tif")
-    gdalbuildvrt -overwrite -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_vy.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*vy*.tif")
-    gdalbuildvrt -overwrite -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_ex.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*ex*.tif")
-    gdalbuildvrt -overwrite -vrtnodata -2E9 ${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt/${DATE}_ey.vrt $(find ${DATADIR}/MEaSUREs/NSIDC-0481.001 -name "*${T0}_${T1}_*ey*.tif")
-done
-
-# Monthly VRTs including average of all scenes in that month
-ROOT=${DATADIR}/MEaSUREs/NSIDC-0481.001.vrt
-for year in $(seq 2009 2018); do
-  for month in $(seq -w 1 12); do
-    LIST=$(find ${ROOT} -name "*${year}-${month}-??_vx.vrt")
-    if [[ ! -z ${LIST} ]]; then
-      MSG_OK "Building VRT for ${year} ${month}"
-      gdalbuildvrt -overwrite ${ROOT}/${year}-${month}_vx.vrt $(find ${ROOT} -name "*${year}-${month}-??_vx.vrt")
-      gdalbuildvrt -overwrite ${ROOT}/${year}-${month}_vy.vrt $(find ${ROOT} -name "*${year}-${month}-??_vy.vrt")
-      gdalbuildvrt -overwrite ${ROOT}/${year}-${month}_ex.vrt $(find ${ROOT} -name "*${year}-${month}-??_ex.vrt")
-      gdalbuildvrt -overwrite ${ROOT}/${year}-${month}_ey.vrt $(find ${ROOT} -name "*${year}-${month}-??_ey.vrt")
-    fi
-  done
-done
-
-
-#+END_SRC
-#+RESULTS:
-
 ***** 0731.001
 MEaSUREs Greenland Monthly Ice Sheet Velocity Mosaics from SAR and Landsat, Version 1
 
