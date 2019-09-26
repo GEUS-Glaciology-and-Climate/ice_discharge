@@ -4368,6 +4368,18 @@ D = pd.read_csv("./out/GIS_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/GIS_err.csv", index_col=0, parse_dates=True)
 coverage = pd.read_csv("./out/GIS_coverage.csv", index_col=0, parse_dates=True)
 
+# Add t0 and t_end so that graph covers a nice time span
+def pad_df(df):
+    df = df.append(pd.DataFrame(index=np.array(['1986-01-01']).astype('datetime64[ns]')))
+    idx = str(df.index.year.max())+'-12-31'
+    df = df.append(pd.DataFrame(index=np.array([idx]).astype('datetime64[ns]')))
+    df = df.sort_index()
+    return df
+
+D = pad_df(D)
+err = pad_df(err)
+coverage = pad_df(coverage)
+
 MS=4
 ax_D.errorbar(err.index, D.values, fmt='o', mfc='none', mec='k', ms=MS)
 for i in np.arange(D.values.size):
@@ -4390,8 +4402,9 @@ ax_D.set_ylabel('Discharge [Gt yr$^{-1}$]')
 import matplotlib.dates as mdates
 ax_D.xaxis.set_major_locator(mdates.YearLocator())
 ax_D.minorticks_off()
-ax_D.xaxis.set_tick_params(rotation=66)
-ax_D.set_xlim(np.array(ax_D.get_xlim())+[365,-365])
+ax_D.xaxis.set_tick_params(rotation=-90) #, ha="left", rotation_mode="anchor")
+for tick in ax_D.xaxis.get_majorticklabels():
+    tick.set_horizontalalignment("left")
 
 ###
 ### Coverage
@@ -4521,6 +4534,17 @@ D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
 coverage = pd.read_csv("./out/region_coverage.csv", index_col=0, parse_dates=True)
 
+def pad_df(df):
+    df = df.append(pd.DataFrame(index=np.array(['1986-01-01']).astype('datetime64[ns]')))
+    idx = str(df.index.year.max())+'-12-31'
+    df = df.append(pd.DataFrame(index=np.array([idx]).astype('datetime64[ns]')))
+    df = df.sort_index()
+    return df
+
+D = pad_df(D)
+err = pad_df(err)
+coverage = pad_df(coverage)
+
 ### Take annual average from daily interpolated rather than the existing samples.
 D_day_year = D.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
 err_day_year=err.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
@@ -4568,8 +4592,9 @@ ax_D.set_xlabel('Time [Years]')
 ax_D.set_ylabel('Discharge [Gt yr$^{-1}$]')
 # ax_D.set_yscale('log')
 
-ax_D.xaxis.set_tick_params(rotation=66)
-ax_D.set_xlim(np.array(ax_D.get_xlim())+[365,-365])
+ax_D.xaxis.set_tick_params(rotation=-90)
+for tick in ax_D.xaxis.get_majorticklabels():
+    tick.set_horizontalalignment("left")
 
 plt.savefig('./figs/discharge_ts_regions.png', transparent=True, bbox_inches='tight', dpi=300)
 # plt.savefig('./figs/discharge_ts_regions.pdf', transparent=True, bbox_inches='tight', dpi=300)
@@ -5044,6 +5069,17 @@ D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/sector_err.csv", index_col=0, parse_dates=True)
 coverage = pd.read_csv("./out/sector_coverage.csv", index_col=0, parse_dates=True)
 
+def pad_df(df):
+    df = df.append(pd.DataFrame(index=np.array(['1986-01-01']).astype('datetime64[ns]')))
+    idx = str(df.index.year.max())+'-12-31'
+    df = df.append(pd.DataFrame(index=np.array([idx]).astype('datetime64[ns]')))
+    df = df.sort_index()
+    return df
+
+D = pad_df(D)
+err = pad_df(err)
+coverage = pad_df(coverage)
+
 ### Take annual average from daily interpolated rather than the existing samples.
 D_day_year = D.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
 err_day_year=err.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
@@ -5111,17 +5147,17 @@ for g in LABELS.keys(): # for each glacier
                          # alpha=0.5,
                          color=C)
 
-yl = ax_D.get_ylim()
-
-import matplotlib.dates as mdates
-ax_D.xaxis.set_major_locator(mdates.YearLocator())
+# yl = ax_D.get_ylim()
 
 ax_D.legend(fontsize=8, ncol=2, loc=(0.0, 0.82), fancybox=False, frameon=False)
 ax_D.set_xlabel('Time [Years]')
 ax_D.set_ylabel('Discharge [Gt yr$^{-1}$]')
 
-ax_D.xaxis.set_tick_params(rotation=66)
-ax_D.set_xlim(np.array(ax_D.get_xlim())+[365,-365])
+import matplotlib.dates as mdates
+ax_D.xaxis.set_major_locator(mdates.YearLocator())
+ax_D.xaxis.set_tick_params(rotation=-90)
+for tick in ax_D.xaxis.get_majorticklabels():
+    tick.set_horizontalalignment("left")
 
 ax_coverage.set_ylabel('Coverage [%]')
 ax_coverage.set_ylim([0,100])
