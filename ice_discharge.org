@@ -3616,7 +3616,7 @@ th_ts = th_ts[vel.columns]
 # Re-adjust th_ts where thickness < 20 m.
 bad = th_ts.min(axis=1) < 20 # Pixels with bad thickness somewhere in the time series
 for px in bad[bad == True].index:
-    th_ts.loc[px] = fits.predict(np.log10([1,vel_baseline.iloc[px]]))
+    th_ts.loc[px] = fits.predict(np.log10([1,vel_baseline.iloc[px].values[0]]))
 #+END_SRC
 
 #+RESULTS:
