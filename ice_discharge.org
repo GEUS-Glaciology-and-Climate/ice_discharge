@@ -1198,10 +1198,10 @@ mkdir -p ${VRTROOT}
 for year in $(seq 1985 2016); do
   for month in $(seq -w 1 12); do
     if [[ ! -f ${VRTROOT}/${year}_${month}_vx.vrt ]]; then # VRT file does not exist?
-      LIST=$(find ${ROOT} -name "*${year}-${month}_vx_v02.1.tif")
+      LIST=$(find ${ROOT} -name "*${year}-${month}_vx_*.tif")
       if [[ ! -z ${LIST} ]]; then
         MSG_OK "Building VRTs for ${year} ${month}"
-        parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_v02.1.tif"\) ::: vx vy ex ey
+        parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_*.tif"\) ::: vx vy ex ey
       fi
     fi
   done
