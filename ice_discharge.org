@@ -352,7 +352,7 @@ At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are
 
 # In the NO, NE and SW regions, which contribute a minority of ice-sheet discharge, low coverage (large data gaps) is evident in the coverage chart (Fig. [[fig:discharge_ts_regions]], only NO of these three regions is shown for clarity), and as linear trends with data point centers and error bars transparent. These indicators of gap-filling are also evident in the NW region but only in 2014 & 2015. They are more clearly evident in the NE, NO, and SW (see data).
 
-Focusing on the top eight contributors (mean of last year) at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~52 Gt yr^{-1} in 2012 to ~45 Gt yr^{-1} in 2016 and ~38 Gt yr^{-1} in 2017, likely due to ocean cooling citep:khazendar_2019_interruption. We exclude Ikertivaq from the top 8 because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. The 2013 to 2016 slowdown of Sermeq Kujalleq (Fig. [[fig:discharge_ts_topfew]]) is compensated by the many glaciers that make up the NW region (Fig. [[fig:discharge_ts_regions]]). The large 2017 and 2018 reduction in discharge at Sermeq Kujalleq is partially offset by a large increase in the 2nd largest contributor, Helheim Gletsjer (Fig. [[fig:discharge_ts_topfew]]).
+Focusing on eight major contributors at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~52 Gt yr^{-1} in 2012 to ~45 Gt yr^{-1} in 2016 and ~38 Gt yr^{-1} in 2017, likely due to ocean cooling citep:khazendar_2019_interruption. We exclude Ikertivaq from the top 8 because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. The 2013 to 2016 slowdown of Sermeq Kujalleq (Fig. [[fig:discharge_ts_topfew]]) is compensated by the many glaciers that make up the NW region (Fig. [[fig:discharge_ts_regions]]). The large 2017 and 2018 reduction in discharge at Sermeq Kujalleq is partially offset by a large increase in the 2nd largest contributor, Helheim Gletsjer (Fig. [[fig:discharge_ts_topfew]]).
 
 * Discussion
 
@@ -420,7 +420,7 @@ Funding was provided by the Programme for Monitoring of the Greenland Ice Sheet 
 
 #+NAME: fig:overview
 #+ATTR_LATEX: :width 0.4\textwidth :placement [!h]
-#+CAPTION: Overview showing fast-flowing ice (orange, greater than 100 m yr^{-1}) and the gates for the top eight discharging glaciers (Fig. [[fig:discharge_ts_topfew]]). Gates are shown as black lines in inset images. Each inset is 30 x 30 km and all have the same color scaling, but different than the main map. Insets pair with nearest label and box. On the main map, regions from citet:mouginot_2019_glacier are designated by thicker black lines and large bold labels. Sectors (same source) are delineated with thinner gray lines, and the top discharging glaciers are labeled with smaller font. H = Helheim Gletsjer, KB = (Køge Bugt), KG = Kangerlussuaq Gletsjer, KS = Kangilliup Sermia (Rink Isbræ), N = (Nioghalvfjerdsbræ), P = Petermann Gletsjer, SK = Sermeq Kujalleq (Jakobshavn Isbræ), and Z = Zachariae Isstrøm. Basemap terrain (gray), ocean bathymetry (blues), and ice mask (white) come from BedMachine.
+#+CAPTION: Overview showing fast-flowing ice (orange, greater than 100 m yr^{-1}) and the gates for eight major discharging glaciers (Fig. [[fig:discharge_ts_topfew]]). Gates are shown as black lines in inset images. Each inset is 30 x 30 km and all have the same color scaling, but different than the main map. Insets pair with nearest label and box. On the main map, regions from citet:mouginot_2019_glacier are designated by thicker black lines and large bold labels. Sectors (same source) are delineated with thinner gray lines, and the top discharging glaciers are labeled with smaller font. H = Helheim Gletsjer, KB = (Køge Bugt), KG = Kangerlussuaq Gletsjer, KS = Kangilliup Sermia (Rink Isbræ), N = (Nioghalvfjerdsbræ), P = Petermann Gletsjer, SK = Sermeq Kujalleq (Jakobshavn Isbræ), and Z = Zachariae Isstrøm. Basemap terrain (gray), ocean bathymetry (blues), and ice mask (white) come from BedMachine.
 [[./figs/overview.png]]
 
 
@@ -513,7 +513,7 @@ plt.savefig('./figs/h_v_histogram.png', transparent=True, dpi=300)
 
 #+NAME: fig:discharge_ts_topfew
 #+ATTR_LATEX: :width \textwidth :placement [!h]
-#+CAPTION: Bottom panel: Time series of ice discharge showing top eight (mean of last year) discharging glaciers. Same graphical properties as Fig. [[fig:discharge_ts]]. Only an example high (Kangerlussuaq Gletsjer) and low (Nioghalvfjerdsbræ) coverage shown to reduce clutter.
+#+CAPTION: Bottom panel: Time series of ice discharge showing the eight major discharging glaciers from Figure [[fig:overview]]. Same graphical properties as Fig. [[fig:discharge_ts]]. Only an example high (Kangerlussuaq Gletsjer) and low (Nioghalvfjerdsbræ) coverage shown to reduce clutter.
 [[./figs/discharge_ts_topfew.png]]
 
 * Appendix                                                :ignore:
