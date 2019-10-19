@@ -4,8 +4,11 @@
 #+Options: toc:nil ^:t {}:t
 
 #+PROPERTY: header-args: :comments both
-#+PROPERTY: header-args:bash :eval no-export :noweb yes
-#+PROPERTY: header-args:jupyter-python :eval no-export :noweb yes
+#+PROPERTY: header-args:org :eval no
+#+PROPERTY: header-args:PSMAP :eval no
+#+PROPERTY: header-args:elisp :eval no :tangle no
+#+PROPERTY: header-args:bash :eval no :noweb yes
+#+PROPERTY: header-args:jupyter-python :eval no :noweb yes
 #+PROPERTY: header-args: :session ice_discharge
 
 #+MACRO: JAKO @@latex:Sermeq Kujalleq@@
@@ -72,6 +75,10 @@ To recreate this work
 + Tangle the embedded code blocks.
 + Execute =make= to run the contents of the [[#sec:makefile][Makefile]].
 
+After updates, re-run make, and also recreate RESULTS blocks with:
++ Cleaning all result blocks with =C-u C-c C-v k= or (org-babel-remove-result-one-or-many), then
++ Executing all blocks (without =:eval no=) using =C-c C-v C-b= or (org-babel-execute-buffer)
+
 * Summary                                               :noexport:
 
 # A short summary [...] 500-character (incl. spaces) non-technical text that may be used to promote your work to a broader audience. It should highlight your main conclusions and results, and what the implications are. If possible, please also summarize briefly why you did the research and how you did it.
@@ -80,9 +87,10 @@ We have produced an open and reproducible estimate of Greenland ice sheet solid 
 
 * What's new in this version
 
-#+BEGIN_SRC bash :results verbatim
+#+BEGIN_SRC bash :results verbatim :eval no-export
 ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l
 #+END_SRC
+
 #+RESULTS:
 : 48
 
@@ -127,9 +135,6 @@ import numpy as np
 np.mean(unumpy.uarray([231,293,265,267], [40,39,39,38]))
 #+END_SRC
 
-#+RESULTS:
-: 264.0+/-19.503204864842086
-
 # error %
 # Rignot: 19.5/264*100 = 7.38636363636
 # Enderlin: 18/265*100 = 6.79245283019
@@ -161,21 +166,44 @@ The discharge gates in this study are generated using only surface speed and an 
 
 For ice thickness estimates, we use surface elevation from GIMP (citet:howat_2014_greenland,NSIDC_0715; NSIDC data set ID 0715), adjusted through time with surface elevation change from citet:khan_2016_geodetic and bed elevations from BedMachine v3 replaced by citet:millan_2018_vulnerability where available. Ice sector and region delineation is from citet:mouginot_2019_glacier. Ice velocity data are obtained from a variety of products including Sentinel 1A & 1B derived by PROMICE (see Appendix), MEaSUREs 0478, MEaSUREs 0646 citep:NSIDC_0646, citet:mouginot_2018_1972to1990, and citet:mouginot_2018_1991to2000. Official glacier names come from citet:bjork_2015_brief. Other glacier names come from citet:mouginot_2019_glacier. See Table [[tab:data]] for an overview of data sets used in this work.
 
-#+BEGIN_SRC bash :results verbatim
-echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l)
-echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep -v 19|wc -l)
-echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2016|wc -l)
-echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2017|wc -l)
-echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2018|wc -l)
-echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | grep 2019|wc -l)
+#+BEGIN_SRC bash :results verbatim :eval no-export
+echo "times  all: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l)
+echo "times 19XX: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff_19" | wc -l)
+echo "times 20XX: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff_20" |wc -l)
+for Y in $(seq 2000 2022); do 
+  echo "times ${Y}: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff_${Y}" |wc -l)
+done
 #+END_SRC
+
 #+RESULTS:
-: times:  404
-: times:  313
-: times:  36
-: times:  69
-: times:  42
-: times:  17
+#+begin_example
+times  all:  413
+times 19XX:  71
+times 20XX:  342
+times 2000:  12
+times 2001:  9
+times 2002:  10
+times 2003:  9
+times 2004:  8
+times 2005:  9
+times 2006:  9
+times 2007:  9
+times 2008:  9
+times 2009:  9
+times 2010:  8
+times 2011:  8
+times 2012:  10
+times 2013:  11
+times 2014:  14
+times 2015:  26
+times 2016:  37
+times 2017:  70
+times 2018:  43
+times 2019:  22
+times 2020:  0
+times 2021:  0
+times 2022:  0
+#+end_example
 
 This work uses 356 different velocity maps, biased toward the last 500 days of the time series when six-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is 1 to a few velocity map per year from 1986 to 2000, 9 to 13 velocity maps per year from 2000 through 2015, 36 in 2016, and 69 in 2017, 42 in 2018, and 17 in 2019.
 
@@ -282,7 +310,7 @@ We use \(\rho = 917\) kg m^{-3} because the gates are near the terminus in the a
 * Results
 ** Gates
 
-#+BEGIN_SRC bash :results verbatim :exports none
+#+BEGIN_SRC bash :results verbatim :exports none :eval no-export
 echo "pixels: " $(wc -l tmp/dat_100_5000.csv)
 
 # head -n1 tmp/dat_100_5000.csv | tr ',' '\n' | cat -n | grep clump
@@ -294,11 +322,12 @@ echo "sectors: " $(cut -d"," -f9 tmp/dat_100_5000.csv | sort -n | uniq | wc -l)
 # times
 echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l)
 #+END_SRC
+
 #+RESULTS:
 : pixels:  6003 tmp/dat_100_5000.csv
 : gates:  277
 : sectors:  177
-: times:  319
+: times:  413
 
 Our gate placement algorithm generates 6002 pixels making up 276 gates, assigned to 176 ice-sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 230 gates citep:king_2018_seasonal and 178 gates citep:enderlin_2014_improved.
 
@@ -501,7 +530,7 @@ Traditional and mathematically valid uncertainty treatments divide errors into t
 
 The decision to have \(R\) random samples (where \(R\) is the number of regions, usually ~18 based on citet:zwally_2012_sectors) is also arbitrary. Mathematical treatment of random errors means that even if the error is 50 %, 18 measurements reduces it to only 11.79 %.
 
-#+BEGIN_SRC jupyter-python :results output :exports none
+#+BEGIN_SRC jupyter-python :session err_example :results output :exports none :eval no-export
 import numpy as np
 from uncertainties import unumpy
 val = 1 # arbitrary
@@ -515,6 +544,7 @@ for i in [1,2,10,18,100,176,276,6002]:
     xerr.append(u.s)
     print(i, u.n, u.s, np.round(u.s/u.n*100,2))
 #+END_SRC
+
 #+RESULTS:
 : 1 1.0 1.0 100.0
 : 2 2.0 1.4142135623730951 70.71
@@ -573,7 +603,7 @@ df.round(0).astype(np.int)
 | 50%   |           487 |          171 |
 | 75%   |           972 |          281 |
 | max   |         10044 |         1423 |
-:end:
+:END:
 
 # NOTE: Manual cleaning performed for above table
 
@@ -599,47 +629,38 @@ We adjust these thickness using a poor fit (correlation coefficient: 0.3) of the
 Table [[tab:thick_treatments]] shows the estimated baseline discharge to these four treatments:
 
 #+NAME: tab:thick_treatments
-#+BEGIN_SRC jupyter-python :exports results :results raw drawer :display text/org :session thick_adj2
-
+#+BEGIN_SRC jupyter-python :session thick_treat :exports results :results raw drawer :display text/org
 <<load_data>>
 <<millan_2018>>
 <<adjust_thickness>>
+
 <<adjust_thickness_fit>>
-<<discharge>>
+<<discharge_th>>
 
-C = 'Discharge [Gt]'
-df = pd.DataFrame(index=['NoMillan', 'NoAdj','300','400','fit'], columns=[C], dtype=np.str)
-df.index.name = "Treatment"
-D_th2 = D_th.copy(deep=True)
-D_th2['NoMillan_err'] = D_th['NoAdj_err']
-for r in df.index:
-    val = D_th2[r].sum(axis=0).round(0).astype(np.int)
-    err = D_th2[r+'_err'].sum(axis=0).round(0).astype(np.int)
-    df.loc[r,C] = val.astype(np.str) + ' \(\pm\)' + err.astype(np.str)
+D_tmp = D_th.sum(axis=0).astype(np.int).astype(np.str)
 
-df.rename({'fit':'Fit'}, inplace=True) 
-    
-print("#+LATEX_ATTR: :placement [!h]")
-print("#+CAPTION: Effect of different thickness adjustments on baseline discharge")
-print("#+NAME: tab:thick_treatments")
+df = pd.DataFrame(columns=['Discharge (Gt)'], index=['NoAdj','NoAdj+Millan',300,400,'Fit'])
+df.loc['NoAdj'] = D_tmp['NoMillan'] + ' \pm ' + D_tmp['NoAdj_err']
+df.loc['NoAdj+Millan'] = D_tmp['NoAdj'] + ' \pm ' + D_tmp['NoAdj_err']
+df.loc[300] = D_tmp['300'] + ' \pm ' + D_tmp['300_err']
+df.loc[400] = D_tmp['400'] + ' \pm ' + D_tmp['400_err']
+df.loc['Fit'] = D_tmp['fit'] + ' \pm ' + D_tmp['fit_err']
+qdf.index.name = 'Treatment'
+
 df
 #+END_SRC
 
-#+RESULTS: tab:thick_treatments
-:RESULTS:
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Effect of different thickness adjustments on baseline discharge
 #+NAME: tab:thick_treatments
-| Treatment   | Discharge [Gt]   |
-|-------------+------------------|
-| NoMillan    | 472 \(\pm\)49    |
-| NoAdj       | 480 \(\pm\)49    |
-| 300         | 488 \(\pm\)49    |
-| 400         | 495 \(\pm\)51    |
-| Fit         | 492 \(\pm\)51    |
-:END:
-
-# NOTE: Manual cleaning performed for above table
+#+RESULTS: tab:thick_treatments
+| Treatment    | Discharge (Gt) |
+|--------------+----------------|
+| NoAdj        | 472 \pm 49     |
+| NoAdj+Millan | 480 \pm 49     |
+| 300          | 488 \pm 48     |
+| 400          | 494 \pm 51     |
+| Fit          | 492 \pm 50     |
 
 Finally, Figure [[fig:gate_map]] shows the geospatial locations, concentration, and speed of gates with and without bad pixels.
 
@@ -662,10 +683,6 @@ This treatment is applied at the pixel level and then weight-averaged to the gat
 #+BEGIN_SRC bash :results verbatim
 inkscape -z ./figs/gate_weight_schematic.svg -e ./figs/gate_weight_schematic.png
 #+END_SRC
-#+RESULTS:
-: Background RRGGBBAA: ffffff00
-: Area 0:0:325.387:185.463 exported to 325 x 185 pixels (96 dpi)
-: Bitmap saved as: ./figs/gate_weight_schematic.png
 
 
 #+NAME: fig:coverage_schematic
@@ -731,7 +748,7 @@ This work was performed using only open-source software, primarily =GRASS GIS= c
 
 This code, and all code files in this project, are derived products tangled from the ice_discharge.org source file.
 
-#+BEGIN_SRC makefile :tangle Makefile
+#+BEGIN_SRC makefile :tangle Makefile :eval no
 all: G run dist
 
 G:
@@ -757,9 +774,6 @@ FORCE: # dummy target
 clean:
 	rm -fR G tmp out ice_discharge.zip
 #+END_SRC
-#+RESULTS:
-
-
 
 ** Misc Helper
 *** Support pretty messages
@@ -773,7 +787,6 @@ MSG_OK() { printf "${GREEN}${1}${NC}\n"; }
 MSG_WARN() { printf "${ORANGE}WARNING: ${1}${NC}\n"; }
 MSG_ERR() { echo "${RED}ERROR: ${1}${NC}\n" >&2; }
 #+END_SRC
-#+RESULTS:
 
 *** GRASS config
 
@@ -803,19 +816,16 @@ fi
 
 set -x # print commands to STDOUT before running them
 #+END_SRC
-#+RESULTS:
-
 
 ** Import Data
 :PROPERTIES:
 :header-args:bash+: :tangle import.sh
 :END:
 
-#+BEGIN_SRC bash :results verbatim
+#+BEGIN_SRC bash :results verbatim 
 <<MSGS_pretty_print>>
 <<GRASS_config>>
 #+END_SRC
-#+RESULTS:
 
 *** Bed and Surface
 **** BedMachine v3
@@ -841,7 +851,7 @@ r.colors map=mask color=haxby
 
 r.mapcalc "mask_ice = if(mask == 2, 1, null())"
 #+END_SRC
-#+RESULTS:
+
 **** Bamber 2013
 #+BEGIN_SRC bash :results verbatim
 MSG_OK "Bamber 2013"
@@ -849,7 +859,6 @@ g.mapset -c Bamber_2013
 r.in.gdal input=${DATADIR}/Bamber_2013/IceThickness.tif output=thickness
 r.null thickness null=0
 #+END_SRC
-#+RESULTS:
 
 **** Millan 2018
 #+BEGIN_SRC bash :results verbatim
@@ -911,7 +920,6 @@ d.rast diff_old
 d.rast diff_new
 d.vect gates_final@gates_50_2500
 #+END_SRC
-#+RESULTS:
 
 ***** Testing Millan v. BedMachine for Ikertivaq
 #+BEGIN_SRC bash :results verbatim :tangle no
@@ -928,7 +936,6 @@ d.vect gates_final@gates_50_2500
 
 g.copy vector=gates_final@gates_50_2500,gates
 #+END_SRC
-#+RESULTS:
 
 **** GIMP 0715
 #+BEGIN_SRC bash :results verbatim
@@ -956,7 +963,6 @@ r.patch -s input=$(g.list type=raster pattern=tile_?_?_reg_30m_err separator=,),
 
 r.null map=day null=0
 #+END_SRC
-#+RESULTS:
 
 ***** Display
 #+BEGIN_SRC bash :results verbatim :tangle no
@@ -972,7 +978,6 @@ d.vect gate_xy@Enderlin_2014
 d.rast gates_final@gates_50_2500
 d.vect gates_final@gates_50_2500 color=red
 #+END_SRC
-#+RESULTS:
 
 
 *** Sectors
@@ -1015,7 +1020,7 @@ r.mapcalc "regions = @regions_tmp"
 
 # # mask
 #+END_SRC
-#+RESULTS:
+
 ***** Test
 #+BEGIN_SRC bash :results verbatim :tangle no
 grass74 ./G/Mouginot_2019
@@ -1025,7 +1030,7 @@ d.rast sectors
 d.vect sectors_all fill_color=none color=red
 d.vect sectors fill_color=none
 #+END_SRC
-#+RESULTS:
+
 *** 2D Area Error
 + EPSG:3413 has projection errors of \(\pm\) ~8% in Greenland
 + Method
@@ -1062,7 +1067,6 @@ fi
 # sayav done
 g.region -d
 #+END_SRC
-#+RESULTS:
 
 *** Velocity
 **** MEaSUREs 
@@ -1119,7 +1123,7 @@ for VX in $(find ${ROOT} -name "*mosaic500_*vx*"); do
   parallel --verbose --bar r.null map={}_${DATE} null=0 ::: VX VY EX EY
 done
 #+END_SRC
-#+RESULTS:
+
 ****** Baseline: Average of 2015-2017
 #+BEGIN_SRC bash :results verbatim
 MSG_OK "Baseline"
@@ -1152,7 +1156,6 @@ EOF
 parallel --verbose --bar r.null map={}_baseline setnull=0 ::: vx vy vel ex ey vel_err
 r.colors -e map=vel_baseline,vel_err_baseline color=viridis
 #+END_SRC
-#+RESULTS:
 
 ****** Fill in holes
 + There are holes in the velocity data which will create false gates. Fill them in.
@@ -1173,7 +1176,7 @@ r.mask -r
 g.rename raster=vel_baseline_filled,vel_baseline --o
 r.colors map=vel_baseline -e color=viridis
 #+END_SRC
-#+RESULTS:
+
 ******* Display
 #+BEGIN_SRC bash :results verbatim :tangle no
 d.mon start=wx0
@@ -1181,7 +1184,6 @@ d.erase
 d.rast vel
 d.rast vel_filled
 #+END_SRC
-#+RESULTS:
 
 ***** 0646.002
 + MEaSUREs Greenland Ice Velocity: Selected Glacier Site Velocity Maps from Optical Images, Version 2
@@ -1207,7 +1209,6 @@ for year in $(seq 1985 2016); do
   done
 done
 #+END_SRC
-#+RESULTS:
 
 ****** Import VRTs
 #+BEGIN_SRC bash :results verbatim
@@ -1230,7 +1231,6 @@ done
 g.region raster=VX_${DATE} -pa
 # g.list type=raster mapset=MEaSUREs.0646
 #+END_SRC
-#+RESULTS:
 
 
 
@@ -1262,7 +1262,6 @@ for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif"); do
 done
 g.region raster=VX_${DATE} -pa
 #+END_SRC
-#+RESULTS:
 
 
 **** Sentinel 1
@@ -1272,26 +1271,6 @@ DIR=${DATADIR}/Sentinel1/Sentinel1_IV_maps
 (cd ${DIR}; ls *.nc | head)
 (cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")
 #+END_SRC
-#+RESULTS:
-#+begin_example
-IV_20160913_20161006.nc
-IV_20160925_20161018.nc
-IV_20161007_20161030.nc
-IV_20161013_20161105.nc
-IV_20161019_20161111.nc
-IV_20161031_20161123.nc
-IV_20161106_20161129.nc
-IV_20161118_20161211.nc
-IV_20161124_20161217.nc
-IV_20161130_20161223.nc
-	float land_ice_surface_easting_velocity(time, y, x) ;
-	float land_ice_surface_northing_velocity(time, y, x) ;
-	float land_ice_surface_vertical_velocity(time, y, x) ;
-	float land_ice_surface_velocity_magnitude(time, y, x) ;
-	float land_ice_surface_easting_velocity_std(time, y, x) ;
-	float land_ice_surface_northing_velocity_std(time, y, x) ;
-	float land_ice_surface_velocity_magnitude_std(time, y, x) ;
-#+end_example
 
 ***** Import data                                                  :noexport:
 + Read in all the data
@@ -1324,7 +1303,6 @@ for FILE in $(find ${ROOT} -name "*.nc"); do
   r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}
 done
 #+END_SRC
-#+RESULTS:
 
 **** Mouginot 2018 (pre-2000 velocities)
 + See citet:mouginot_2018_1972to1990 and citet:mouginot_2018_1991to2000
@@ -1357,7 +1335,6 @@ done
 #   r.external -o source="NetCDF:${FILE}:VY" output=vy_${DATE}
 # done
 #+END_SRC
-#+RESULTS:
 
 ***** Display
 #+BEGIN_SRC bash :results verbatim :tangle no
@@ -1375,7 +1352,6 @@ d.erase; d.rast vx_1997-07-01
 d.erase; d.rast vx_1998-07-01
 d.erase; d.rast vx_1999-07-01
 #+END_SRC
-#+RESULTS:
 
 
 *** Glacier Names
@@ -1393,14 +1369,12 @@ cat ${ROOT}/GreenlandGlacierNames_GGNv01.csv |  iconv -c -f utf-8 -t ascii | gre
 
 # db.select table=names | tr '|' ',' > ./tmp/Bjork_2015_names.csv
 #+END_SRC
-#+RESULTS:
 **** Mouginot 2019
 #+BEGIN_SRC bash :results verbatim
 g.mapset Mouginot_2019
 db.select table=sectors | head
 # v.out.ascii -c input=sectors output=./tmp/Mouginot_2019_names.csv columns=NAME,SUBREGION1
 #+END_SRC
-#+RESULTS:
 
 
 *** Elevation
@@ -1451,7 +1425,6 @@ done
 
 # for Y in $(seq 1995 2015); do r.info dh_${Y}| grep "Range"; done
 #+END_SRC
-#+RESULTS:
 
 ** Find Gates
 :PROPERTIES:
@@ -1481,7 +1454,6 @@ VELOCITY_CUTOFF=100
 BUFFER_DIST=5000
 . ./gate_IO.sh
 #+END_SRC
-#+RESULTS:
 
 Create a new mapset for this specific velocity cutoff and buffer distance
 
@@ -1546,7 +1518,6 @@ r.colors map=gates_maybe color=grey
 r.colors map=gates_outside color=blue
 r.colors map=gates_IO color=viridis
 #+END_SRC
-#+RESULTS:
 
 + For each gate, split into two for the vector components of the velocity, then...
 + If flow is from gate to INSIDE, it is discharged
@@ -1594,7 +1565,6 @@ r.null map=gates_y null=0 # OR r.null map=gates_y setnull=0
 #+BEGIN_SRC bash :results verbatim
 r.mapcalc "gates_xy_clean0 = if((gates_x == 1) || (gates_y == 1), 1, null())" --o
 #+END_SRC
-#+RESULTS:
 
 **** Remove small areas (clusters <X cells)
 #+BEGIN_SRC bash :results verbatim
@@ -1606,7 +1576,6 @@ r.reclass.area -d input=gates_gateID output=gates_area value=9 mode=lesser metho
 
 r.mapcalc "gates_xy_clean1 = if(isnull(gates_area), gates_xy_clean0, null())" --o
 #+END_SRC
-#+RESULTS:
 
 
 **** Limit to Mouginot 2019 mask
@@ -1633,13 +1602,11 @@ r.mask -r
 r.univar map=gates_xy_clean2
 r.univar map=gates_xy_clean3
 #+END_SRC
-#+RESULTS:
 
 *** Final Gates
 #+BEGIN_SRC bash :results verbatim
 g.copy "gates_xy_clean3,gates_final" --o
 #+end_src
-#+RESULTS:
 
 *** Add meta-data to gates
 Add:
@@ -1673,7 +1640,6 @@ v.what.rast map=gates_final raster=gates_gateID column=gate type=centroid
 # v.db.addcolumn map=gates_final_pts columns="gate INT"
 # v.what.rast map=gates_final_pts raster=gates_gateID column=gate type=point
 #+END_SRC
-#+RESULTS:
 **** Mean x,y
 #+BEGIN_SRC bash :results verbatim
 v.db.addcolumn map=gates_final columns="x INT, y INT, mean_x INT, mean_y INT, area INT"
@@ -1693,14 +1659,12 @@ v.db.update map=gates_final_pts column=gate query_column=cat
 v.db.addcolumn map=gates_final_pts columns="mean_x INT, mean_y INT"
 v.to.db map=gates_final_pts option=coor columns=mean_x,mean_y units=meters
 #+END_SRC
-#+RESULTS:
 
 Here we have:
 #+BEGIN_SRC bash :results verbatim :tangle no
 db.select table=gates_final|head -n10 # cat|gate|x|y|mean_x|mean_y
 db.select table=gates_final_pts|head # cat|gate|mean_x|mean_y
 #+END_SRC
-#+RESULTS:
 
 **** Mean lon,lat
 #+BEGIN_SRC bash :results verbatim
@@ -1713,7 +1677,6 @@ for G in $(db.select -c sql="select gate from gates_final"|sort -n|uniq); do
     db.execute sql="UPDATE gates_final SET mean_lat=(SELECT lat FROM gates_final_pts WHERE gate = ${G}) where gate = ${G}"
 done
 #+END_SRC
-#+RESULTS:
 
 **** Sector, Region, Names, etc.
 + Sector Number
@@ -1754,25 +1717,22 @@ done
 db.dropcolumn -f table=gates_final column=area
 # db.dropcolumn -f table=gates_final column=cat
 #+END_SRC
-#+RESULTS:
 
 **** Export as metadata CSV
 #+BEGIN_SRC bash :results verbatim
 mkdir -p out
 db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019 from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
 #+END_SRC
-#+RESULTS:
 
 *** Export Gates to KML                                            :noexport:
 #+BEGIN_SRC bash :results verbatim
 v.out.ogr input=gates_final output=./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml format=KML --o
 # open ./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml
 #+END_SRC
-#+RESULTS:
 
 *** Sensitivity of results to gate distance and cutoff velocity
 :PROPERTIES:
-:header-args:bash: :tangle no
+:header-args:bash+: :tangle no
 :END:
 
 Run the gate detection algorithm at a variety of cutoff velocities and buffer distances
@@ -1783,7 +1743,6 @@ for VELOCITY_CUTOFF in $(echo 10 20 30 40 50 60 70 80 90 100 125 150); do
   done
 done
 #+END_SRC
-#+RESULTS:
 
 **** Heatmap
 ***** Compute
@@ -1887,7 +1846,6 @@ df.round()
 <<MSGS_pretty_print>>
 <<GRASS_config>>
 #+END_SRC
-#+RESULTS:
 
 
 *** NOTDONE All Mapsets
@@ -1928,7 +1886,6 @@ done
 
 
 #+END_SRC
-#+RESULTS:
 
 *** Just one velocity cutoff & buffer distance 
 #+BEGIN_SRC bash :results verbatim
@@ -2013,7 +1970,6 @@ done
 # fix return code of this script so make continues
 MSG_OK "vel_eff DONE" 
 #+END_SRC
-#+RESULTS:
 
 ** Export all data to CSV
 :PROPERTIES:
@@ -2024,7 +1980,6 @@ MSG_OK "vel_eff DONE"
 <<MSGS_pretty_print>>
 <<GRASS_config>>
 #+END_SRC
-#+RESULTS:
 
 #+BEGIN_SRC bash :results output
 MSG_OK "Exporting..."
@@ -2059,39 +2014,6 @@ ulimit -n 2048
 time (echo x,y,${LIST}; r.out.xyz input=${LIST} separator=comma) > ./tmp/dat_100_5000.csv
 r.mask -r
 #+END_SRC
-#+RESULTS:
-*** Testing
-#+BEGIN_SRC bash :results verbatim :tangle no
-g.mapset PERMANENT
-g.region -dp
-MAPSET=gates_100_5000
-
-VEL_baseline=vel_baseline@MEaSUREs.0478,vx_baseline@MEaSUREs.0478,vy_baseline@MEaSUREs.0478,vel_err_baseline@MEaSUREs.0478,ex_baseline@MEaSUREs.0478,ey_baseline@MEaSUREs.0478
-VEL_0478=$(g.list -m mapset=MEaSUREs.0478 type=raster pattern=vel_eff_????_??_?? separator=,)
-ERR_0478=$(g.list -m mapset=MEaSUREs.0478 type=raster pattern=err_eff_????_??_?? separator=,)
-VEL_0646=$(g.list -m mapset=MEaSUREs.0646 type=raster pattern=vel_eff_????_??_?? separator=,)
-ERR_0646=$(g.list -m mapset=MEaSUREs.0646 type=raster pattern=err_eff_????_??_?? separator=,)
-VEL_SENTINEL=$(g.list -m mapset=Sentinel1 type=raster pattern=vel_eff_????_??_?? separator=,)
-ERR_SENTINEL=$(g.list -m mapset=Sentinel1 type=raster pattern=err_eff_????_??_?? separator=,)
-VEL_MOUGINOT=$(g.list -m mapset=Mouginot_pre2000 type=raster pattern=vel_eff_????_??_?? separator=,)
-THICK=$(g.list -m mapset=Khan_2016 type=raster pattern=dh_???? separator=,)
-GIMP_0715=dem@GIMP.0715,day@GIMP.0715 # ,err@GIMP.0715
-
-LIST=lon,lat,err_2D,gates_x@${MAPSET},gates_y@${MAPSET},gates_gateID@${MAPSET},sectors@Mouginot_2019,regions@Mouginot_2019,bed@BedMachine,thickness@BedMachine,surface@BedMachine,thickness@Bamber_2013,bed_0@Millan_2018,thickness_0@Millan_2018,${THICK},${GIMP_0715},${VEL_baseline},${VEL_0478},${VEL_0646},${VEL_SENTINEL},${VEL_MOUGINOT},errbed@BedMachine,${ERR_0478},${ERR_0646},${ERR_SENTINEL}
-
-r.mask gates_final@${MAPSET} --o
-
-# test
-# for v in $(echo $LIST | tr ',' '\n'); do n=$(r.univar $v|grep "^n:"); echo ${v}: ${n}; done
-
-date
-MSG_WARN "Exporting: $(echo $LIST|tr ',' '\n' |wc -l) columns"
-ulimit -n 2048
-time (echo x,y,${LIST}; r.out.xyz input=${LIST} separator=comma) > ./tmp/dat_100_5000.csv
-r.mask -r
-
-#+END_SRC
-#+RESULTS:
 
 ** Compute Errors
 :PROPERTIES:
@@ -2107,7 +2029,7 @@ import numpy as np
 
 df = pd.read_csv("./tmp/dat_100_5000.csv")
 
-thick = df['thickness@BedMachine']
+thick = df['thickness@BedMachine'].copy()
 thick[thick < 50] = 50  # IS THIS REASONABLE? IMPORTANT?
 thick[thick == 0] = 1
 thick_err = np.abs(df['errbed@BedMachine'].values)
@@ -2127,42 +2049,6 @@ print((vel_err/vel*100).describe())
 # plt.xlabel('Relative Thickness Error [Log_10]')
 # plt.ylabel('Relative Velocity Error [Log_10]')
 #+END_SRC
-
-#+RESULTS:
-#+begin_example
-Relative thickness error:
-count    6002.000000
-mean       53.964693
-std       106.454983
-min         1.104972
-25%         6.041824
-50%        11.801709
-75%        29.629630
-max       598.000000
-Name: thickness@BedMachine, dtype: float64
-
-
-Relative velocity error:
-count    6002.000000
-mean        4.259675
-std         9.464333
-min         0.018398
-25%         0.545081
-50%         1.294552
-75%         4.029445
-max       166.474276
-dtype: float64
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/ipykernel_launcher.py:7: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame
-
-See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
-  import sys
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/ipykernel_launcher.py:8: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame
-
-See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
-#+end_example
-
 
 *** Do velocity errors scale w/ velocity?
 + ANS: Not really.
@@ -2203,7 +2089,7 @@ plt.ylabel("Velocity Error [m yr$^{-1}$]")
 #+END_SRC
 
 *** Results (GIS)
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :tangle no
+#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :tangle no :eval no-export
 from uncertainties import unumpy
 import pandas as pd
 import numpy as np
@@ -2246,22 +2132,20 @@ df_out
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-| Method            | Val                 | Unit   |
-|-------------------+---------------------+--------|
-| D                 | 471.3101008797073   | Gt     |
-| Err (Thickness)   | 49.18553057313633   | Gt     |
-| Err (Thickness %) | 10.435916922071224  | %      |
-| Err (Velocity)    | 3.307065561689056   | Gt     |
-| Err (Velocity %)  | 0.7016750872761626  | %      |
-| Err (Combined)    | 52.49259613482539   | Gt     |
-| Err (%)           | 11.137592009347387  | %      |
-| Random Errors     | 471.3+/-1.3         | Gt     |
-| Random Errors (%) | 0.27298289176587875 | %      |
-:END:
+| Method            |                 Val | Unit |
+|-------------------+---------------------+------|
+| D                 |   471.3101008797073 | Gt   |
+| Err (Thickness)   |   49.18553057313633 | Gt   |
+| Err (Thickness %) |  10.435916922071224 | %    |
+| Err (Velocity)    |   3.307065561689056 | Gt   |
+| Err (Velocity %)  |  0.7016750872761626 | %    |
+| Err (Combined)    |   52.49259613482539 | Gt   |
+| Err (%)           |  11.137592009347387 | %    |
+| Random Errors     |         471.3+/-1.3 | Gt   |
+| Random Errors (%) | 0.27298289176587875 | %    |
 
 *** Results (Mouginot 2019 Sector)
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org
+#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
 from uncertainties import unumpy
 import pandas as pd
 import numpy as np
@@ -2296,190 +2180,188 @@ err_sector
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-| Sector   |        D [Gt] |   Error [Gt] |   Error [%] |
-|----------+---------------+--------------+-------------|
-| 1        |   1.13296     |   0.119511   |    10.5486  |
-| 2        |   0.259001    |   0.109302   |    42.2015  |
-| 3        |  13.9562      |   0.900377   |     6.45147 |
-| 4        |   1.81572     |   0.268763   |    14.802   |
-| 6        |   6.29835     |   0.47056    |     7.47117 |
-| 7        |   0.759871    |   0.0538301  |     7.08411 |
-| 8        |   0.643772    |   0.0480392  |     7.46214 |
-| 9        |   8.93733     |   0.687491   |     7.69236 |
-| 10       |   1.9844      |   0.151168   |     7.61786 |
-| 14       |   2.93346     |   0.299862   |    10.2221  |
-| 15       |   0.450661    |   0.0507318  |    11.2572  |
-| 16       |   4.98386     |   0.521496   |    10.4637  |
-| 17       |   0.122299    |   0.167712   |   137.133   |
-| 19       |   0.117655    |   0.0335031  |    28.4758  |
-| 20       |   0.448198    |   0.0389468  |     8.68963 |
-| 21       |   0.826369    |   0.0878104  |    10.6261  |
-| 22       |   0.805537    |   0.137715   |    17.096   |
-| 23       |   1.16484     |   0.115224   |     9.89176 |
-| 25       |   0.0965041   |   0.0129959  |    13.4666  |
-| 26       |   1.01834     |   0.059183   |     5.81173 |
-| 27       |   5.78016     |   0.247551   |     4.28277 |
-| 28       |   0.625812    |   0.0235983  |     3.77083 |
-| 29       |   1.90508     |   0.120741   |     6.33787 |
-| 30       |   1.74007     |   0.140262   |     8.06072 |
-| 31       |   0.723047    |   0.0591468  |     8.18022 |
-| 32       |   5.25837     |   0.378481   |     7.19768 |
-| 33       |   7.24029     |   0.8001     |    11.0507  |
-| 34       |   4.43932     |   0.397848   |     8.9619  |
-| 35       |   8.90903     |   0.995605   |    11.1752  |
-| 36       |   4.35454     |   0.381813   |     8.76817 |
-| 37       |   5.9467      |   0.315895   |     5.31211 |
-| 38       |   4.80213     |   0.538872   |    11.2215  |
-| 41       |   2.36772     |   0.196327   |     8.29182 |
-| 42       |   1.01938     |   0.0670365  |     6.57618 |
-| 43       |   6.58061     |   0.266743   |     4.05347 |
-| 44       |   1.00854     |   0.0598935  |     5.93862 |
-| 45       |   0.802593    |   0.0552257  |     6.8809  |
-| 47       |   1.55381     |   0.191847   |    12.3469  |
-| 48       |   2.40729     |   0.338863   |    14.0765  |
-| 49       |   0.765042    |   0.0350007  |     4.575   |
-| 50       |   5.69884     |   0.304978   |     5.35159 |
-| 53       |   3.06926     |   0.162114   |     5.28187 |
-| 55       |   0.129045    |   0.0216342  |    16.7648  |
-| 56       |   0.416233    |   0.0805611  |    19.3548  |
-| 58       |  12.4341      |   0.652429   |     5.24708 |
-| 59       |  13.2393      |   1.28662    |     9.71819 |
-| 60       |   8.7061      |   0.619988   |     7.12131 |
-| 61       |   0.575287    |   0.0981973  |    17.0693  |
-| 62       |   0.690076    |   0.0283109  |     4.10257 |
-| 63       |  28.2323      |   2.11523    |     7.49223 |
-| 64       |   5.28086     |   0.470461   |     8.90879 |
-| 65       |   4.27645     |   0.153325   |     3.58533 |
-| 66       |   0.000223683 |   0.0378539  | 16923       |
-| 67       |   0.00495062  |   0.629357   | 12712.7     |
-| 68       |   3.60124     |   0.558295   |    15.5029  |
-| 69       |   1.89908     |   0.182147   |     9.59135 |
-| 72       |   1.39015     |   0.114702   |     8.25104 |
-| 73       |   0.00306625  |   0.550745   | 17961.5     |
-| 74       |   4.70061     |   0.564929   |    12.0182  |
-| 75       |   0.112515    |   0.0317329  |    28.2032  |
-| 76       |   1.66594     |   0.28158    |    16.9022  |
-| 77       |   0.000443706 |   0.060892   | 13723.5     |
-| 78       |   1.95408     |   0.132811   |     6.79659 |
-| 80       |   8.0312      |   0.668299   |     8.32129 |
-| 81       |   7.30356     |   0.624366   |     8.54879 |
-| 82       |   1.46381     |   0.0909655  |     6.2143  |
-| 83       |   4.32513     |   0.598528   |    13.8384  |
-| 84       |   1.57504     |   0.253256   |    16.0794  |
-| 85       |   0.0574275   |   0.0119868  |    20.8729  |
-| 86       |   7.17275     |   0.75337    |    10.5032  |
-| 88       |   0.0540345   |   0.290302   |   537.253   |
-| 93       |   2.72698     |   0.220433   |     8.08342 |
-| 94       |   1.19425     |   0.349332   |    29.2511  |
-| 95       |  10.7311      |   0.294127   |     2.74088 |
-| 96       |   5.27952     |   0.905431   |    17.1499  |
-| 97       |   0.00490425  |   0.0141609  |   288.746   |
-| 98       |   1.46695     |   0.233396   |    15.9102  |
-| 100      |   0.248149    |   0.164958   |    66.4752  |
-| 102      |  21.8453      |   1.1401     |     5.21898 |
-| 103      |   0.362388    |   0.038987   |    10.7584  |
-| 104      |   0.593113    |   0.0901735  |    15.2034  |
-| 105      |   0.0986737   |   0.0174753  |    17.7102  |
-| 106      |  14.603       |   1.02355    |     7.00916 |
-| 107      |   4.2366      |   0.354421   |     8.36571 |
-| 108      |   0.494752    |   0.166467   |    33.6466  |
-| 109      |   0.045015    |   0.0362538  |    80.5373  |
-| 110      |   0.373132    |   0.0188092  |     5.0409  |
-| 111      |   0.00113236  |   0.11948    | 10551.4     |
-| 112      |   6.05528e-05 |   0.00906305 | 14967.2     |
-| 113      |   0.0787378   |   0.396151   |   503.127   |
-| 114      |   1.64988     |   0.164249   |     9.95517 |
-| 115      |   0.977219    |   0.228715   |    23.4047  |
-| 116      |   0.000509676 |   0.0818634  | 16061.8     |
-| 117      |   4.31234     |   0.4248     |     9.8508  |
-| 118      |   0.00135411  |   0.257555   | 19020.3     |
-| 120      |   0.431738    |   0.125198   |    28.9985  |
-| 121      |   1.54498     |   0.35171    |    22.7647  |
-| 122      |   0.00274319  |   0.462101   | 16845.3     |
-| 123      |   0.000521908 |   0.0460695  |  8827.13    |
-| 124      |   0.00228764  |   0.324143   | 14169.3     |
-| 125      |   1.27373     |   0.105741   |     8.30173 |
-| 126      |   1.60821     |   0.247405   |    15.3839  |
-| 127      |   9.07181     |   0.456823   |     5.03563 |
-| 128      |   0.00255097  |   0.403067   | 15800.5     |
-| 132      |   0.193615    |   0.150296   |    77.6262  |
-| 134      |   1.7019      |   1.01124    |    59.4183  |
-| 136      |   0.000397048 |   0.099331   | 25017.4     |
-| 138      |   0.0378695   |   0.0237563  |    62.7321  |
-| 139      |   0.0983967   |   0.0360802  |    36.6681  |
-| 140      |   0.300546    |   0.141292   |    47.0119  |
-| 141      |   0.0553563   |   0.0241199  |    43.572   |
-| 142      |   0.0668502   |   0.0335327  |    50.161   |
-| 144      |   0.000758416 |   0.00862726 |  1137.54    |
-| 146      |   0.278089    |   0.0226055  |     8.12888 |
-| 147      |   2.19185     |   0.234455   |    10.6967  |
-| 148      |   1.27653     |   0.0910306  |     7.13111 |
-| 150      |   0.0880221   |   0.0304034  |    34.5406  |
-| 151      |   0.500292    |   0.100487   |    20.0857  |
-| 152      |   0.146082    |   0.0533827  |    36.5429  |
-| 153      |   0.263117    |   0.108511   |    41.2405  |
-| 154      |   0.144576    |   0.0701505  |    48.5217  |
-| 156      |   0.00348091  |   0.10433    |  2997.21    |
-| 157      |   0.0684098   |   0.0342677  |    50.0919  |
-| 158      |   0.153157    |   0.0322337  |    21.0462  |
-| 164      |   0.0253565   |   0.0459476  |   181.207   |
-| 172      |   0.00717637  |   0.0260229  |   362.62    |
-| 174      |   0.000181888 |   0.0214308  | 11782.4     |
-| 183      |   0.342336    |   0.0593268  |    17.33    |
-| 185      |   0.528683    |   0.0885119  |    16.742   |
-| 186      |   0.694426    |   0.534415   |    76.9578  |
-| 187      |   0.0037427   |   0.0449016  |  1199.71    |
-| 188      |   0.00974053  |   0.0670818  |   688.687   |
-| 189      |   7.33242     |   0.401675   |     5.47807 |
-| 190      |   4.68559     |   1.7709     |    37.7946  |
-| 191      |   0.00025485  |   0.0533937  | 20951       |
-| 192      |   4.25385     |   0.243481   |     5.72377 |
-| 193      |   2.08273     |   0.118326   |     5.68128 |
-| 195      |   0.267033    |   0.0566183  |    21.2027  |
-| 196      |   0.0144472   |   0.00938492 |    64.96    |
-| 197      |   0.700724    |   0.119247   |    17.0177  |
-| 199      |   0.458465    |   0.560215   |   122.194   |
-| 200      |   0.00278076  |   0.0434554  |  1562.72    |
-| 203      |   0.824135    |   0.0919874  |    11.1617  |
-| 204      |   0.00338184  |   0.0175625  |   519.317   |
-| 207      |   6.69919     |   0.830237   |    12.3931  |
-| 208      |   2.84014     |   0.226375   |     7.97057 |
-| 209      |   0.834729    |   0.134416   |    16.103   |
-| 210      |   0.681866    |   0.130944   |    19.2038  |
-| 211      |   2.86473     |   0.287411   |    10.0327  |
-| 212      |   5.7736      |   0.430977   |     7.46462 |
-| 213      |   4.62881     |   0.489463   |    10.5743  |
-| 214      |   8.9976      |   0.919488   |    10.2193  |
-| 215      |   0.0391676   |   0.073413   |   187.433   |
-| 216      |   0.583004    |   0.0874796  |    15.005   |
-| 218      |  51.2607      |   4.69356    |     9.15625 |
-| 219      |   0.189514    |   0.0455555  |    24.0381  |
-| 222      |   0.0506244   |   0.0257404  |    50.8459  |
-| 223      |  11.2588      |   0.472191   |     4.19398 |
-| 224      |   0.494333    |   0.256009   |    51.7889  |
-| 231      |   0.874542    |   0.110348   |    12.6178  |
-| 232      |   0.000323121 |   0.0677302  | 20961.3     |
-| 233      |   4.46378     |   0.328824   |     7.3665  |
-| 234      |   0.00192408  |   0.00125117 |    65.027   |
-| 236      |   0.000371668 |   0.0692465  | 18631.3     |
-| 237      |   0.145481    |   0.36019    |   247.585   |
-| 239      |   0.0939576   |   0.0281907  |    30.0036  |
-| 240      |   0.103579    |   0.024599   |    23.749   |
-| 243      |   1.61214     |   0.225554   |    13.9909  |
-| 248      |   5.33103     |   0.233721   |     4.38416 |
-| 249      |   1.14162     |   0.12377    |    10.8416  |
-| 251      |   0.0179124   |   0.00989957 |    55.2667  |
-| 252      |   0.00405105  |   0.00457811 |   113.01    |
-| 254      |   0.0793327   |   0.0381313  |    48.0651  |
-| 255      |   0.900182    |   0.0940261  |    10.4452  |
-| 257      |   0.000594161 |   0.0912149  | 15351.9     |
-| 259      |   0.000308847 |   0.0471869  | 15278.4     |
-| GIS      | 472.086       |  49.393      |    10.4627  |
-:END:
+| Sector |      D [Gt] | Error [Gt] | Error [%] |
+|--------+-------------+------------+-----------|
+|      1 |     1.13296 |   0.119511 |   10.5486 |
+|      2 |    0.259001 |   0.109302 |   42.2015 |
+|      3 |     13.9562 |   0.900377 |   6.45147 |
+|      4 |     1.81572 |   0.268763 |    14.802 |
+|      6 |     6.29835 |    0.47056 |   7.47117 |
+|      7 |    0.759871 |  0.0538301 |   7.08411 |
+|      8 |    0.643772 |  0.0480392 |   7.46214 |
+|      9 |     8.93733 |   0.687491 |   7.69236 |
+|     10 |      1.9844 |   0.151168 |   7.61786 |
+|     14 |     2.93346 |   0.299862 |   10.2221 |
+|     15 |    0.450661 |  0.0507318 |   11.2572 |
+|     16 |     4.98386 |   0.521496 |   10.4637 |
+|     17 |    0.122299 |   0.167712 |   137.133 |
+|     19 |    0.117655 |  0.0335031 |   28.4758 |
+|     20 |    0.448198 |  0.0389468 |   8.68963 |
+|     21 |    0.826369 |  0.0878104 |   10.6261 |
+|     22 |    0.805537 |   0.137715 |    17.096 |
+|     23 |     1.16484 |   0.115224 |   9.89176 |
+|     25 |   0.0965041 |  0.0129959 |   13.4666 |
+|     26 |     1.01834 |   0.059183 |   5.81173 |
+|     27 |     5.78016 |   0.247551 |   4.28277 |
+|     28 |    0.625812 |  0.0235983 |   3.77083 |
+|     29 |     1.90508 |   0.120741 |   6.33787 |
+|     30 |     1.74007 |   0.140262 |   8.06072 |
+|     31 |    0.723047 |  0.0591468 |   8.18022 |
+|     32 |     5.25837 |   0.378481 |   7.19768 |
+|     33 |     7.24029 |     0.8001 |   11.0507 |
+|     34 |     4.43932 |   0.397848 |    8.9619 |
+|     35 |     8.90903 |   0.995605 |   11.1752 |
+|     36 |     4.35454 |   0.381813 |   8.76817 |
+|     37 |      5.9467 |   0.315895 |   5.31211 |
+|     38 |     4.80213 |   0.538872 |   11.2215 |
+|     41 |     2.36772 |   0.196327 |   8.29182 |
+|     42 |     1.01938 |  0.0670365 |   6.57618 |
+|     43 |     6.58061 |   0.266743 |   4.05347 |
+|     44 |     1.00854 |  0.0598935 |   5.93862 |
+|     45 |    0.802593 |  0.0552257 |    6.8809 |
+|     47 |     1.55381 |   0.191847 |   12.3469 |
+|     48 |     2.40729 |   0.338863 |   14.0765 |
+|     49 |    0.765042 |  0.0350007 |     4.575 |
+|     50 |     5.69884 |   0.304978 |   5.35159 |
+|     53 |     3.06926 |   0.162114 |   5.28187 |
+|     55 |    0.129045 |  0.0216342 |   16.7648 |
+|     56 |    0.416233 |  0.0805611 |   19.3548 |
+|     58 |     12.4341 |   0.652429 |   5.24708 |
+|     59 |     13.2393 |    1.28662 |   9.71819 |
+|     60 |      8.7061 |   0.619988 |   7.12131 |
+|     61 |    0.575287 |  0.0981973 |   17.0693 |
+|     62 |    0.690076 |  0.0283109 |   4.10257 |
+|     63 |     28.2323 |    2.11523 |   7.49223 |
+|     64 |     5.28086 |   0.470461 |   8.90879 |
+|     65 |     4.27645 |   0.153325 |   3.58533 |
+|     66 | 0.000223683 |  0.0378539 |     16923 |
+|     67 |  0.00495062 |   0.629357 |   12712.7 |
+|     68 |     3.60124 |   0.558295 |   15.5029 |
+|     69 |     1.89908 |   0.182147 |   9.59135 |
+|     72 |     1.39015 |   0.114702 |   8.25104 |
+|     73 |  0.00306625 |   0.550745 |   17961.5 |
+|     74 |     4.70061 |   0.564929 |   12.0182 |
+|     75 |    0.112515 |  0.0317329 |   28.2032 |
+|     76 |     1.66594 |    0.28158 |   16.9022 |
+|     77 | 0.000443706 |   0.060892 |   13723.5 |
+|     78 |     1.95408 |   0.132811 |   6.79659 |
+|     80 |      8.0312 |   0.668299 |   8.32129 |
+|     81 |     7.30356 |   0.624366 |   8.54879 |
+|     82 |     1.46381 |  0.0909655 |    6.2143 |
+|     83 |     4.32513 |   0.598528 |   13.8384 |
+|     84 |     1.57504 |   0.253256 |   16.0794 |
+|     85 |   0.0574275 |  0.0119868 |   20.8729 |
+|     86 |     7.17275 |    0.75337 |   10.5032 |
+|     88 |   0.0540345 |   0.290302 |   537.253 |
+|     93 |     2.72698 |   0.220433 |   8.08342 |
+|     94 |     1.19425 |   0.349332 |   29.2511 |
+|     95 |     10.7311 |   0.294127 |   2.74088 |
+|     96 |     5.27952 |   0.905431 |   17.1499 |
+|     97 |  0.00490425 |  0.0141609 |   288.746 |
+|     98 |     1.46695 |   0.233396 |   15.9102 |
+|    100 |    0.248149 |   0.164958 |   66.4752 |
+|    102 |     21.8453 |     1.1401 |   5.21898 |
+|    103 |    0.362388 |   0.038987 |   10.7584 |
+|    104 |    0.593113 |  0.0901735 |   15.2034 |
+|    105 |   0.0986737 |  0.0174753 |   17.7102 |
+|    106 |      14.603 |    1.02355 |   7.00916 |
+|    107 |      4.2366 |   0.354421 |   8.36571 |
+|    108 |    0.494752 |   0.166467 |   33.6466 |
+|    109 |    0.045015 |  0.0362538 |   80.5373 |
+|    110 |    0.373132 |  0.0188092 |    5.0409 |
+|    111 |  0.00113236 |    0.11948 |   10551.4 |
+|    112 | 6.05528e-05 | 0.00906305 |   14967.2 |
+|    113 |   0.0787378 |   0.396151 |   503.127 |
+|    114 |     1.64988 |   0.164249 |   9.95517 |
+|    115 |    0.977219 |   0.228715 |   23.4047 |
+|    116 | 0.000509676 |  0.0818634 |   16061.8 |
+|    117 |     4.31234 |     0.4248 |    9.8508 |
+|    118 |  0.00135411 |   0.257555 |   19020.3 |
+|    120 |    0.431738 |   0.125198 |   28.9985 |
+|    121 |     1.54498 |    0.35171 |   22.7647 |
+|    122 |  0.00274319 |   0.462101 |   16845.3 |
+|    123 | 0.000521908 |  0.0460695 |   8827.13 |
+|    124 |  0.00228764 |   0.324143 |   14169.3 |
+|    125 |     1.27373 |   0.105741 |   8.30173 |
+|    126 |     1.60821 |   0.247405 |   15.3839 |
+|    127 |     9.07181 |   0.456823 |   5.03563 |
+|    128 |  0.00255097 |   0.403067 |   15800.5 |
+|    132 |    0.193615 |   0.150296 |   77.6262 |
+|    134 |      1.7019 |    1.01124 |   59.4183 |
+|    136 | 0.000397048 |   0.099331 |   25017.4 |
+|    138 |   0.0378695 |  0.0237563 |   62.7321 |
+|    139 |   0.0983967 |  0.0360802 |   36.6681 |
+|    140 |    0.300546 |   0.141292 |   47.0119 |
+|    141 |   0.0553563 |  0.0241199 |    43.572 |
+|    142 |   0.0668502 |  0.0335327 |    50.161 |
+|    144 | 0.000758416 | 0.00862726 |   1137.54 |
+|    146 |    0.278089 |  0.0226055 |   8.12888 |
+|    147 |     2.19185 |   0.234455 |   10.6967 |
+|    148 |     1.27653 |  0.0910306 |   7.13111 |
+|    150 |   0.0880221 |  0.0304034 |   34.5406 |
+|    151 |    0.500292 |   0.100487 |   20.0857 |
+|    152 |    0.146082 |  0.0533827 |   36.5429 |
+|    153 |    0.263117 |   0.108511 |   41.2405 |
+|    154 |    0.144576 |  0.0701505 |   48.5217 |
+|    156 |  0.00348091 |    0.10433 |   2997.21 |
+|    157 |   0.0684098 |  0.0342677 |   50.0919 |
+|    158 |    0.153157 |  0.0322337 |   21.0462 |
+|    164 |   0.0253565 |  0.0459476 |   181.207 |
+|    172 |  0.00717637 |  0.0260229 |    362.62 |
+|    174 | 0.000181888 |  0.0214308 |   11782.4 |
+|    183 |    0.342336 |  0.0593268 |     17.33 |
+|    185 |    0.528683 |  0.0885119 |    16.742 |
+|    186 |    0.694426 |   0.534415 |   76.9578 |
+|    187 |   0.0037427 |  0.0449016 |   1199.71 |
+|    188 |  0.00974053 |  0.0670818 |   688.687 |
+|    189 |     7.33242 |   0.401675 |   5.47807 |
+|    190 |     4.68559 |     1.7709 |   37.7946 |
+|    191 |  0.00025485 |  0.0533937 |     20951 |
+|    192 |     4.25385 |   0.243481 |   5.72377 |
+|    193 |     2.08273 |   0.118326 |   5.68128 |
+|    195 |    0.267033 |  0.0566183 |   21.2027 |
+|    196 |   0.0144472 | 0.00938492 |     64.96 |
+|    197 |    0.700724 |   0.119247 |   17.0177 |
+|    199 |    0.458465 |   0.560215 |   122.194 |
+|    200 |  0.00278076 |  0.0434554 |   1562.72 |
+|    203 |    0.824135 |  0.0919874 |   11.1617 |
+|    204 |  0.00338184 |  0.0175625 |   519.317 |
+|    207 |     6.69919 |   0.830237 |   12.3931 |
+|    208 |     2.84014 |   0.226375 |   7.97057 |
+|    209 |    0.834729 |   0.134416 |    16.103 |
+|    210 |    0.681866 |   0.130944 |   19.2038 |
+|    211 |     2.86473 |   0.287411 |   10.0327 |
+|    212 |      5.7736 |   0.430977 |   7.46462 |
+|    213 |     4.62881 |   0.489463 |   10.5743 |
+|    214 |      8.9976 |   0.919488 |   10.2193 |
+|    215 |   0.0391676 |   0.073413 |   187.433 |
+|    216 |    0.583004 |  0.0874796 |    15.005 |
+|    218 |     51.2607 |    4.69356 |   9.15625 |
+|    219 |    0.189514 |  0.0455555 |   24.0381 |
+|    222 |   0.0506244 |  0.0257404 |   50.8459 |
+|    223 |     11.2588 |   0.472191 |   4.19398 |
+|    224 |    0.494333 |   0.256009 |   51.7889 |
+|    231 |    0.874542 |   0.110348 |   12.6178 |
+|    232 | 0.000323121 |  0.0677302 |   20961.3 |
+|    233 |     4.46378 |   0.328824 |    7.3665 |
+|    234 |  0.00192408 | 0.00125117 |    65.027 |
+|    236 | 0.000371668 |  0.0692465 |   18631.3 |
+|    237 |    0.145481 |    0.36019 |   247.585 |
+|    239 |   0.0939576 |  0.0281907 |   30.0036 |
+|    240 |    0.103579 |   0.024599 |    23.749 |
+|    243 |     1.61214 |   0.225554 |   13.9909 |
+|    248 |     5.33103 |   0.233721 |   4.38416 |
+|    249 |     1.14162 |    0.12377 |   10.8416 |
+|    251 |   0.0179124 | 0.00989957 |   55.2667 |
+|    252 |  0.00405105 | 0.00457811 |    113.01 |
+|    254 |   0.0793327 |  0.0381313 |   48.0651 |
+|    255 |    0.900182 |  0.0940261 |   10.4452 |
+|    257 | 0.000594161 |  0.0912149 |   15351.9 |
+|    259 | 0.000308847 |  0.0471869 |   15278.4 |
+|    GIS |     472.086 |     49.393 |   10.4627 |
 
 *** Results (Mouginot 2019 Region)
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org
+#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
 from uncertainties import unumpy
 import pandas as pd
 import numpy as np
@@ -2513,23 +2395,19 @@ err_sector
 #+END_SRC
 
 #+RESULTS:
-:results:
-# Out[19]:
-# text/org
-| Sector   |   D [Gt] |   Error [Gt] |   Error [%] |
-|----------+----------+--------------+-------------|
-| 1        |  24.1364 |      1.80701 |     7.48665 |
-| 2        |  27.0622 |      2.30435 |     8.51501 |
-| 3        |  66.6954 |      6.47462 |     9.70775 |
-| 4        | 135.024  |     17.6865  |    13.0988  |
-| 5        |  14.4604 |      2.95814 |    20.4568  |
-| 6        |  88.5004 |      7.62999 |     8.62142 |
-| 7        | 115.431  |     10.3249  |     8.9446  |
-| GIS      | 471.31   |     49.1855  |    10.4359  |
-:end:
+| Sector |  D [Gt] | Error [Gt] | Error [%] |
+|--------+---------+------------+-----------|
+|      1 | 24.1364 |    1.80701 |   7.48665 |
+|      2 | 27.0622 |    2.30435 |   8.51501 |
+|      3 | 66.6954 |    6.47462 |   9.70775 |
+|      4 | 135.024 |    17.6865 |   13.0988 |
+|      5 | 14.4604 |    2.95814 |   20.4568 |
+|      6 | 88.5004 |    7.62999 |   8.62142 |
+|      7 | 115.431 |    10.3249 |    8.9446 |
+|    GIS |  471.31 |    49.1855 |   10.4359 |
 
 *** Results (Gate)                                                 :noexport:
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org
+#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
 from uncertainties import unumpy
 import pandas as pd
 import numpy as np
@@ -2569,308 +2447,305 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-:results:
-# Out[38]:
-# text/org
-| Gate   |        D [Gt] |   Error [Gt] |   Error [%] | name                             |
-|--------+---------------+--------------+-------------+----------------------------------|
-| 1      |   0.000242779 |   0.030608   | 12607.4     | JUNGERSEN_HENSON_NARAVANA        |
-| 3      |   0.00010155  |   0.0153045  | 15071       | JUNGERSEN_HENSON_NARAVANA        |
-| 4      |   0.123399    |   0.0207551  |    16.8195  | MARIE_SOPHIE_GLETSCHER           |
-| 5      |   0.570673    |   0.0769139  |    13.4778  | HAGEN_BRAE                       |
-| 6      |   0.0308782   |   0.0581098  |   188.191   | BRIKKERNE_GLETSCHER              |
-| 7      |   0.430717    |   0.08547    |    19.8437  | ACADEMY                          |
-| 8      |   0.0445647   |   0.0359111  |    80.5819  | HARDER_GLETSCHER                 |
-| 10     |   2.56798     |   0.10477    |     4.07984 | RYDER_GLETSCHER                  |
-| 11     |   1.56763     |   0.15128    |     9.65019 | OSTENFELD_GLETSCHER              |
-| 12     |   0.306089    |   0.0243717  |     7.96228 | STEENSBY_GLETSCHER               |
-| 17     |   0.0463436   |   0.0407937  |    88.0245  | OSTENFELD_GLETSCHER              |
-| 19     |   0.0449537   |   0.0489306  |   108.847   | OSTENFELD_GLETSCHER              |
-| 22     |   0.208659    |   0.0173091  |     8.2954  | RYDER_GLETSCHER                  |
-| 23     |   0.277659    |   0.0390611  |    14.068   | RYDER_GLETSCHER                  |
-| 25     |   0.0256916   |   0.0819198  |   318.858   | PETERMANN_GLETSCHER_N            |
-| 26     |   0.489938    |   0.169616   |    34.6199  | PETERMANN_GLETSCHER_N            |
-| 27     |  11.3084      |   0.48615    |     4.299   | PETERMANN_GLETSCHER              |
-| 28     |   5.81144     |   0.308143   |     5.30235 | HUMBOLDT_GLETSCHER               |
-| 29     |   0.0965288   |   0.00284121 |     2.94338 | HUMBOLDT_GLETSCHER               |
-| 30     |  12.2803      |   0.662151   |     5.39196 | NIOGHALVFJERDSFJORDEN            |
-| 31     |   0.184463    |   0.00874956 |     4.74326 | HUMBOLDT_GLETSCHER               |
-| 32     |  14.2076      |   1.37361    |     9.6681  | ZACHARIAE_ISSTROM                |
-| 33     |   7.399e-05   |   0.00760604 | 10279.8     | DIEBITSCH                        |
-| 34     |   0.000111118 |   0.0141656  | 12748.2     | DIEBITSCH                        |
-| 35     |   0.00730055  |   0.0264451  |   362.235   | MORRIS_JESUP                     |
-| 36     |   0.0273209   |   0.0508885  |   186.262   | BOWDOIN                          |
-| 37     |   0.75569     |   0.115062   |    15.226   | MELVILLE_GLETSCHER               |
-| 38     |   0.106608    |   0.0189026  |    17.7309  | SHARP                            |
-| 39     |   0.484742    |   0.0523378  |    10.797   | FARQUHAR_GLETSCHER               |
-| 40     |   2.59612     |   0.360908   |    13.9018  | TRACY_GLETSCHER                  |
-| 41     |   1.61629     |   0.202593   |    12.5344  | HEILPRIN_GLETSCHER               |
-| 48     |   0.887973    |   0.0415969  |     4.68448 | HARALD_MOLTKE_BRAE               |
-| 49     |   0.0115047   |   0.00239869 |    20.8496  | SAVISSUAQ_WW                     |
-| 50     |   0.0957547   |   0.0231554  |    24.1819  | SAVISSUAQ_WW                     |
-| 51     |   0.391447    |   0.0693461  |    17.7153  | SAVISSUAQ_WWWW                   |
-| 52     |   0.0844815   |   0.0232816  |    27.5582  | SAVISSUAQ_W                      |
-| 53     |   0.0264578   |   0.00951808 |    35.9746  | SAVISSUAQ_W                      |
-| 54     |   0.555191    |   0.0914293  |    16.4681  | SAVISSUAQ                        |
-| 55     |   0.263227    |   0.0557872  |    21.1936  | YNGVAR_NIELSEN_BRAE_W            |
-| 56     |   0.68171     |   0.113537   |    16.6548  | YNGVAR_NIELSEN_BRAE              |
-| 57     |   0.835121    |   0.0533348  |     6.38648 | CARLOS                           |
-| 59     |   0.00382726  |   0.00519325 |   135.691   | CARLOS                           |
-| 60     |   0.0144374   |   0.00938091 |    64.9765  | HELLAND                          |
-| 61     |   2.37829     |   0.241055   |    10.1357  | GADE-MORELL                      |
-| 62     |   0.0433492   |   0.025323   |    58.4162  | GADE-MORELL                      |
-| 63     |   0.00955888  |   0.00246878 |    25.8271  | DOCKER_SMITH_GLETSCHER_W         |
-| 64     |   1.41693     |   0.0933727  |     6.58978 | DOCKER_SMITH_GLETSCHER_W         |
-| 65     |   1.61348     |   0.108635   |     6.73294 | DOCKER_SMITH_GLETSCHER           |
-| 66     |   0.257332    |   0.019505   |     7.57969 | DOCKER_SMITH_GLETSCHER           |
-| 68     |   1.08707     |   0.064738   |     5.95526 | RINK_GLETSCHER                   |
-| 69     |   3.48082     |   0.177199   |     5.09073 | ISSUUARSUIT_SERMIA               |
-| 71     |   1.0023      |   0.0280765  |     2.8012  | ISSUUARSUIT_SERMIA               |
-| 72     |   1.05992     |   0.0392134  |     3.69965 | ISSUUARSUIT_SERMIA               |
-| 73     |   1.09225     |   0.0727899  |     6.66423 | NONAME_NORTH_OSCAR               |
-| 74     |   8.37833     |   0.428752   |     5.1174  | KONG_OSCAR_GLETSCHER             |
-| 78     |   0.0425836   |   0.0024955  |     5.86023 | KONG_OSCAR_GLETSCHER             |
-| 79     |   0.0623227   |   0.0026047  |     4.17937 | NORDENSKIOLD_GLESCHER_NW         |
-| 80     |   7.13103     |   0.41994    |     5.88891 | NORDENSKIOLD_GLESCHER_NW         |
-| 89     |   0.486803    |   0.042913   |     8.81527 | NANSEN_GLETSCHER                 |
-| 90     |   0.072116    |   0.0139877  |    19.3961  | SVERDRUP_GLETSCHER               |
-| 91     |   5.36468     |   0.440891   |     8.21841 | SVERDRUP_GLETSCHER               |
-| 92     |   1.2727      |   0.156588   |    12.3036  | STEENSTRUP-DIETRICHSON           |
-| 93     |   1.06929     |   0.100174   |     9.36822 | STEENSTRUP-DIETRICHSON           |
-| 94     |   3.29302     |   0.370044   |    11.2372  | STEENSTRUP-DIETRICHSON           |
-| 95     |   6.58815     |   0.771847   |    11.7157  | KJER_GLETSCHER                   |
-| 96     |   0.234172    |   0.0336786  |    14.382   | HAYES_GLETSCHER_N_NN             |
-| 98     |   0.154598    |   0.0161649  |    10.456   | HAYES_GLETSCHER_N_NN             |
-| 99     |   0.583881    |   0.0318647  |     5.45739 | HAYES_GLETSCHER_N_NN             |
-| 101    |   0.764497    |   0.0387761  |     5.07211 | HAYES_GLETSCHER_N_NN             |
-| 102    |   7.80946     |   0.861176   |    11.0273  | HAYES_GLETSCHER_N_NN             |
-| 103    |   3.27963     |   0.300765   |     9.1707  | HAYES_GLETSCHER_M_SS             |
-| 111    |   0.550768    |   0.0386663  |     7.02044 | HAYES_GLETSCHER_M_SS             |
-| 112    |   0.143022    |   0.0130102  |     9.09666 | HAYES_GLETSCHER_M_SS             |
-| 113    |   5.67861     |   0.621164   |    10.9387  | ALISON_GLETSCHER                 |
-| 114    |   0.111175    |   0.0403181  |    36.2655  | WALTERSHAUSEN                    |
-| 115    |   1.50209     |   0.163485   |    10.8839  | ALISON_GLETSCHER                 |
-| 116    |   0.0328206   |   0.0206552  |    62.9336  | ADOLF_HOEL                       |
-| 117    |   5.21698     |   0.374311   |     7.17486 | ILLULLIP_SERMIA                  |
-| 118    |   0.456206    |   0.0409648  |     8.97946 | CORNELL_GLETSCHER                |
-| 119    |   0.238665    |   0.0132572  |     5.55473 | CORNELL_GLETSCHER                |
-| 120    |   0.302417    |   0.142394   |    47.0854  | GERARD_DE_GEER                   |
-| 122    |   0.978693    |   0.0841493  |     8.59813 | USSING_BRAEER_N                  |
-| 123    |   0.967159    |   0.0744336  |     7.69611 | USSING_BRAEER_N                  |
-| 124    |   0.0609109   |   0.0262416  |    43.0819  | JAETTEGLETSCHER                  |
-| 125    |   1.7352      |   0.103243   |     5.9499  | USSING_BRAEER                    |
-| 126    |   0.147957    |   0.0206948  |    13.9871  | USSING_BRAEER                    |
-| 127    |   0.722277    |   0.0267532  |     3.70401 | QEQERTARSUUP_SERMIA              |
-| 128    |   0.0664664   |   0.0332622  |    50.0436  | NORDENSKIOLD_NE                  |
-| 129    |   6.21848     |   0.256494   |     4.1247  | KAKIVFAAT_SERMIAT                |
-| 130    |   0.04207     |   0.00444826 |    10.5735  | KAKIVFAAT_SERMIAT                |
-| 131    |   0.000504298 |   0.00572415 |  1135.07    | HISINGER_GLETSCHER               |
-| 132    |   1.14576     |   0.0662401  |     5.78134 | NUNATAKASSAAP_SERMIA             |
-| 133    |   0.606772    |   0.0762735  |    12.5704  | UPERNAVIK_ISSTROM_N              |
-| 134    |   7.49194     |   0.770461   |    10.2839  | UPERNAVIK_ISSTROM_N              |
-| 135    |   6.64584     |   0.826002   |    12.4289  | UPERNAVIK_ISSTROM_C              |
-| 136    |   2.76336     |   0.221      |     7.99752 | UPERNAVIK_ISSTROM_S              |
-| 137    |   0.111059    |   0.0151142  |    13.6092  | UPERNAVIK_ISSTROM_SS             |
-| 138    |   0.898969    |   0.100764   |    11.2088  | F_GRAAE                          |
-| 139    |   0.00332712  |   0.0173174  |   520.492   | CHARCOT                          |
-| 140    |   9.50652     |   0.681882   |     7.17278 | DAUGAARD-JENSEN                  |
-| 141    |   1.27855     |   0.124804   |     9.76137 | INNGIA_ISBRAE                    |
-| 142    |   1.31589     |   0.137993   |    10.4867  | UMIAMMAKKU_ISBRAE                |
-| 143    |  12.9161      |   0.860943   |     6.66564 | RINK_ISBRAE                      |
-| 144    |   0.0284199   |   0.0102236  |    35.9735  | EIELSON_HARE_FJORD-ROLIGE        |
-| 145    |   1.73059     |   0.252957   |    14.6168  | KANGERLUSSUUP_SERMERSUA          |
-| 146    |   0.582089    |   0.0938946  |    16.1306  | EIELSON_HARE_FJORD-ROLIGE        |
-| 147    |   0.157873    |   0.0763918  |    48.388   | BREDEGLETSJER                    |
-| 149    |   0.0666042   |   0.0138273  |    20.7604  | KANGERLUARSUUP_SERMIA            |
-| 150    |   0.00317286  |   0.0895822  |  2823.39    | GEIKIE3                          |
-| 153    |   0.263847    |   0.108678   |    41.1899  | SYDBR                            |
-| 154    |   0.668659    |   0.0350659  |     5.24422 | SERMEQ_SILARLEQ                  |
-| 155    |   1.9771      |   0.337389   |    17.0648  | VESTFJORD                        |
-| 156    |   2.56442     |   0.243065   |     9.47835 | SERMEQ_SILARLEQ                  |
-| 157    |   2.59729     |   0.155423   |     5.98405 | SERMEQ_SILARLEQ                  |
-| 158    |   1.59047     |   0.250703   |    15.7628  | MAGGA_DAN_GLETSCHER              |
-| 159    |   0.751903    |   0.0531029  |     7.06247 | CW_NONAME2                       |
-| 160    |   0.218979    |   0.0734166  |    33.5267  | GEIKIE_UNNAMED_VESTFORD_S        |
-| 161    |   0.00739597  |   0.00607013 |    82.0734  | GEIKIE_UNNAMED_VESTFORD_S        |
-| 162    |   0.0558706   |   0.0361039  |    64.6205  | GEIKIE_UNNAMED_VESTFORD_S        |
-| 163    |   0.523165    |   0.0359505  |     6.87173 | LILLE_GLETSCHER                  |
-| 164    |   0.181546    |   0.016093   |     8.86444 | LILLE_GLETSCHER                  |
-| 165    |   0.351213    |   0.0176866  |     5.03587 | STORE_GLETSCHER                  |
-| 166    |   0.0507093   |   0.0148463  |    29.2773  | DENDRITGLETSCHER                 |
-| 167    |   0.0987294   |   0.0167473  |    16.9629  | DENDRITGLETSCHER                 |
-| 168    |   8.37552     |   0.669684   |     7.99573 | STORE_GLETSCHER                  |
-| 169    |   0.00209469  |   0.00135255 |    64.5706  | GEIKIE7                          |
-| 170    |   1.97443     |   0.158261   |     8.01552 | SERMEQ_AVANNARLEQ2               |
-| 172    |   7.45363     |   0.632841   |     8.49037 | SERMEQ_KUJALLEQ                  |
-| 173    |   0.055432    |   0.0271794  |    49.032   | GEIKIE6                          |
-| 178    |   0.999155    |   0.0487067  |     4.87479 | KANGILERNGATA_SERMIA             |
-| 179    |   1.16795     |   0.0962233  |     8.23863 | EQIP_SERMIA                      |
-| 182    |   0.177637    |   0.0655021  |    36.8741  | BORGGRAVEN                       |
-| 183    |   0.0128347   |   0.00732208 |    57.0492  | SERMEQ_AVANNARLEQ                |
-| 184    |   0.0350119   |   0.0167663  |    47.8875  | SERMEQ_AVANNARLEQ                |
-| 185    |   0.266693    |   0.0638888  |    23.9559  | KRONBORG                         |
-| 186    |  45.9601      |   4.27592    |     9.30355 | JAKOBSHAVN_ISBRAE                |
-| 187    |   0.0983969   |   0.0358237  |    36.4073  | ROSENBORG                        |
-| 188    |   0.0209153   |   0.0054144  |    25.8873  | ROSENBORG                        |
-| 189    |   0.121413    |   0.0036937  |     3.04227 | KONG_CHRISTIAN                   |
-| 190    |   0.0180087   |   0.00992784 |    55.1281  | STYRTE                           |
-| 191    |   3.19292     |   0.387732   |    12.1435  | KONG_CHRISTIAN                   |
-| 192    |  25.1468      |   1.2993     |     5.16687 | KANGERLUSSUAQ                    |
-| 193    |   0.00365628  |   0.00413155 |   112.999   | COURTAULD                        |
-| 194    |   0.797613    |   0.0319491  |     4.00558 | UNNAMED_KANGER_W                 |
-| 195    |   0.149501    |   0.0421936  |    28.2229  | SORGENFRI                        |
-| 196    |   0.00499414  |   0.0143874  |   288.086   | UNNAMED_KANGER_E                 |
-| 197    |   0.170237    |   0.0401522  |    23.586   | SAQQARLIUP_ALANGORLIUP           |
-| 199    |   0.199083    |   0.133361   |    66.9875  | FREDERIKSBORG_GLETSCHER          |
-| 202    |   0.00214098  |   0.00716085 |   334.465   | UNNAMED_DECEPTION_N              |
-| 204    |   0.00230142  |   0.00453713 |   197.144   | UNNAMED_DECEPTION_N              |
-| 205    |   0.0720322   |   0.00738748 |    10.2558  | UNNAMED_DECEPTION_N              |
-| 206    |   0.00615882  |   0.00802063 |   130.23    | UNNAMED_DECEPTION_N              |
-| 207    |   1.29726     |   0.0759682  |     5.85604 | POLARIC-DECEPTION_O_N            |
-| 208    |   0.0343321   |   0.0058739  |    17.1091  | POLARIC-DECEPTION_O_N            |
-| 209    |   0.0639358   |   0.0539933  |    84.4493  | POLARIC-DECEPTION_O_N            |
-| 210    |   0.001269    |   0.193065   | 15213.9     | UNNAMED_POLARIC_S                |
-| 211    |   0.00109478  |   0.153219   | 13995.4     | UNNAMED_POLARIC_S                |
-| 212    |   7.55157e-05 |   0.00353036 |  4675       | UNNAMED_POLARIC_S                |
-| 213    |   9.04978     |   0.246587   |     2.72478 | UNNAMED_DECEPTION_O_CN_CS        |
-| 214    |   4.85333     |   0.212367   |     4.37569 | UNNAMED_UUNARTIT_ISLANDS         |
-| 215    |   0.788414    |   0.0391102  |     4.96062 | KRUUSE_FJORD                     |
-| 216    |   0.165063    |   0.0466749  |    28.2771  | KRUUSE_FJORD                     |
-| 217    |   0.00325578  |   0.00513041 |   157.579   | KRUUSE_FJORD                     |
-| 218    |   0.000585518 |   0.0508575  |  8685.9     | LAUBE_GLETSCHER                  |
-| 219    |   0.000245903 |   0.040796   | 16590.2     | UNNAMED_LAUBE_S                  |
-| 223    |   0.000650151 |   0.104006   | 15997.2     | UNNAMED_LAUBE_S                  |
-| 225    |   0.00182813  |   0.313983   | 17175.1     | UNNAMED_LAUBE_S                  |
-| 226    |   4.65263     |   0.795364   |    17.0949  | KIV_STEENSTRUP_NODRE_BRAE        |
-| 227    |   0.0003607   |   0.0671429  | 18614.6     | KIV_STEENSTRUP_SONDRE_BRAE       |
-| 228    |   0.000300914 |   0.0459726  | 15277.6     | NIGERTULUUP_KATTILERTARPIA       |
-| 229    |   0.000639405 |   0.0983331  | 15378.8     | GLACIERDEFRANCE                  |
-| 230    |   1.23429     |   0.348222   |    28.2123  | MIDGARDGLETSCHER                 |
-| 231    |   6.44917e-05 |   0.0076296  | 11830.4     | MIDGARDGLETSCHER                 |
-| 232    |   2.74239     |   0.221404   |     8.07341 | FENRISGLETSCHER                  |
-| 233    |  28.307       |   2.12532    |     7.50812 | HELHEIMGLETSCHER                 |
-| 235    |   0.00388564  |   0.0469587  |  1208.52    | APUSEERAJIK                      |
-| 238    |   0.463106    |   0.567007   |   122.436   | HEIM_GLETSCHER                   |
-| 239    |   0.00271756  |   0.0443609  |  1632.38    | BRCKNER_GLETSCHER                |
-| 240    |   0.734125    |   0.553775   |    75.4333  | NONAME_IKERTIVAQ_N               |
-| 241    |   7.8092      |   0.765558   |     9.80329 | IKERTIVAQ_NN                     |
-| 242    |  10.4887      |   0.949496   |     9.05253 | IKERTIVAQ_M                      |
-| 245    |   0.00992406  |   0.0688171  |   693.437   | NONAME_IKERTIVAQ_S               |
-| 246    |   0.00300063  |   0.159131   |  5303.26    | SE_NONAME1                       |
-| 247    |   3.90797     |   0.571938   |    14.6352  | KOGE_BUGT_N                      |
-| 248    |  16.999       |   1.22285    |     7.19366 | KOGE_BUGT_C                      |
-| 250    |   0.0593096   |   0.0675393  |   113.876   | SE_NONAME1                       |
-| 253    |   0.00166484  |   0.0362639  |  2178.22    | SE_NONAME1                       |
-| 255    |   0.286414    |   0.012137   |     4.23755 | KOGE_BUGT_S                      |
-| 260    |   6.27373     |   0.338655   |     5.39799 | KOGE_BUGT_S                      |
-| 261    |   0.405083    |   0.0310792  |     7.6723  | KOGE_BUGT_S                      |
-| 263    |   0.000516315 |   0.0950138  | 18402.3     | KOGE_BUGT_SS                     |
-| 266    |   0.000943541 |   0.165326   | 17521.9     | KOGE_BUGT_SS                     |
-| 267    |   0.00166026  |   0.11882    |  7156.68    | KOGE_BUGT_SS                     |
-| 268    |   0.00375699  |   0.264724   |  7046.18    | UMIIVIK_FJORD                    |
-| 269    |   0.00702439  |   0.0733914  |  1044.81    | UMIIVIK_FJORD                    |
-| 271    |   2.5632      |   0.260519   |    10.1638  | NARSAP_SERMIA                    |
-| 272    |   0.0150389   |   0.192821   |  1282.15    | UMIIVIK_FJORD                    |
-| 273    |   4.4488      |   1.04037    |    23.3855  | UMIIVIK_FJORD                    |
-| 274    |   0.153855    |   0.0978981  |    63.6302  | UMIIVIK_FJORD                    |
-| 278    |   0.498188    |   0.0555729  |    11.155   | AKULLERSUUP-QAMANAARSUUP         |
-| 279    |   0.000274782 |   0.0575628  | 20948.5     | APUSEERSERPIA                    |
-| 280    |   4.21919     |   0.586934   |    13.9111  | GRAULV                           |
-| 282    |   0.269382    |   0.0362142  |    13.4434  | GRAULV                           |
-| 283    |   5.06237     |   0.526477   |    10.3998  | KANGIATA_NUNAATA_SERMIA          |
-| 284    |   4.58791     |   0.268957   |     5.86229 | GYLDENLOVE                       |
-| 285    |   0.150007    |   0.277036   |   184.682   | GYLDENLOVE_S                     |
-| 286    |   0.00034279  |   0.0719289  | 20983.4     | GYLDENLOVE_SS                    |
-| 287    |   0.000454846 |   0.0715212  | 15724.3     | GYLDENLOVE_S                     |
-| 289    |   3.29127e-05 |   0.00523086 | 15893.1     | SE_NONAME2                       |
-| 290    |   7.61328e-05 |   0.0116113  | 15251.4     | SE_NONAME2                       |
-| 291    |   0.000866503 |   0.154398   | 17818.6     | SE_NONAME2                       |
-| 292    |   0.00051318  |   0.0943305  | 18381.6     | SE_NONAME2                       |
-| 293    |   0.000532712 |   0.066162   | 12419.8     | FIMBULGETLSCHER                  |
-| 294    |   0.00212486  |   0.354715   | 16693.6     | FIMBULGETLSCHER                  |
-| 295    |   7.2802e-05  |   0.00889059 | 12212       | SE_NONAME2                       |
-| 296    |   0.00094828  |   0.185566   | 19568.7     | SE_NONAME2                       |
-| 297    |   3.85746     |   0.301947   |     7.8276  | AP_BERNSTOFF_GLETSCHER           |
-| 298    |   1.14415     |   0.0667781  |     5.83647 | AP_BERNSTOFF_GLETSCHER           |
-| 301    |   0.000255828 |   0.0436295  | 17054.2     | SE_NONAME2                       |
-| 304    |   0.000252462 |   0.0424767  | 16825       | SE_NONAME2                       |
-| 306    |   0.127045    |   0.0316944  |    24.9473  | MAELKEVEJEN                      |
-| 310    |   0.927038    |   0.215917   |    23.2911  | MAELKEVEJEN                      |
-| 311    |   0.00277807  |   0.012022   |   432.748   | SKINFAXE                         |
-| 313    |   1.55004     |   0.224873   |    14.5075  | SKINFAXE                         |
-| 314    |   1.85274     |   0.106221   |     5.73321 | RIMFAXE                          |
-| 315    |   1.40774     |   0.116474   |     8.27383 | HEIMDAL_GLETSCHER                |
-| 316    |   0.0490824   |   0.00838582 |    17.0852  | TINGMIARMIUT_FJORD               |
-| 317    |   8.04856     |   0.664796   |     8.25982 | TINGMIARMIUT_FJORD               |
-| 318    |   0.0767972   |   0.0146471  |    19.0725  | MOGENS_HEINESEN_N                |
-| 319    |   2.08105     |   0.28327    |    13.6118  | MOGENS_HEINESEN_N                |
-| 320    |   0.87322     |   0.109203   |    12.5058  | MOGENS_HEINESEN_C                |
-| 321    |   4.72381     |   0.168764   |     3.57263 | MOGENS_HEINESEN_S                |
-| 322    |   0.000286124 |   0.052938   | 18501.8     | MOGENS_HEINESEN_SS_SSS           |
-| 323    |   0.128705    |   0.0322384  |    25.0483  | AVANNARLEQ-NIGERLIKASIK          |
-| 325    |   0.450794    |   0.0641945  |    14.2403  | MOGENS_HEINESEN_SS_SSS           |
-| 326    |   0.000160574 |   0.0448814  | 27950.7     | MOGENS_HEINESEN_SS_SSS           |
-| 327    |   0.0113678   |   0.0059108  |    51.9958  | AVANNARLEQ-NIGERLIKASIK          |
-| 328    |   4.37535     |   0.367043   |     8.38889 | PUISORTOQ_N                      |
-| 329    |   1.80255     |   0.172765   |     9.58448 | UKAASORSUAQ                      |
-| 330    |   0.823701    |   0.125904   |    15.2851  | PUISORTOQ_S                      |
-| 331    |   0.00571661  |   0.00689541 |   120.621   | PUISORTOQ_S                      |
-| 332    |   0.374217    |   0.0651766  |    17.4168  | NAPASORSUAQ_N                    |
-| 335    |   0.349705    |   0.0723664  |    20.6936  | NAPASORSUAQ_N                    |
-| 337    |   7.64832e-05 |   0.0160352  | 20965.6     | NAPASORSUAQ_C_S                  |
-| 338    |   0.000108454 |   0.0172894  | 15941.7     | NAPASORSUAQ_C_S                  |
-| 339    |   6.43811e-05 |   0.00945635 | 14688.1     | NAPASORSUAQ_C_S                  |
-| 340    |   4.71132     |   0.390471   |     8.28792 | ANORITUUP_KANGERLUA              |
-| 341    |   0.487766    |   0.0422666  |     8.66534 | SERMILIGAARSSUK_BRAE             |
-| 342    |   6.48975e-05 |   0.00752451 | 11594.5     | ANORITUUP_KANGERLUA              |
-| 343    |   0.356953    |   0.100031   |    28.0236  | ANORITUUP_KANGERLUA              |
-| 345    |   0.00136043  |   0.259424   | 19069.3     | UNNAMED_ANORITUUP_KANGERLUA_S    |
-| 346    |   0.000125657 |   0.0235513  | 18742.6     | UNNAMED_ANORITUUP_KANGERLUA_SS   |
-| 347    |   0.000157755 |   0.0272631  | 17281.9     | UNNAMED_ANORITUUP_KANGERLUA_SS   |
-| 348    |   0.000215261 |   0.028888   | 13420       | UNNAMED_ANORITUUP_KANGERLUA_SS   |
-| 349    |   0.686977    |   0.0736333  |    10.7184  | QAJUUTTAP_SERMIA                 |
-| 350    |   0.965747    |   0.226052   |    23.407   | UNNAMED_HERLUF_TROLLE_N          |
-| 351    |   0.127861    |   0.0347248  |    27.1583  | EQALORUTSIT_KILLIIT_SERMIAT      |
-| 352    |   1.87522     |   1.18394    |    63.136   | EQALORUTSIT_KILLIIT_SERMIAT      |
-| 354    |   0.888318    |   0.15148    |    17.0525  | KIATTUUT-QOOQQUP                 |
-| 355    |   1.64062     |   0.163468   |     9.96379 | UNNAMED_HERLUF_TROLLE_S          |
-| 357    |   0.0751754   |   0.324192   |   431.247   | UNNAMED_KANGERLULUK              |
-| 358    |   0.000406285 |   0.101505   | 24983.6     | NAAJAT_SERMIAT                   |
-| 359    |   0.193933    |   0.151796   |    78.2728  | SERMILIK                         |
-| 360    |   5.21983e-05 |   0.00781245 | 14966.9     | HERLUF_TROLLE-KANGERLULUK-DANELL |
-| 361    |   0.000292309 |   0.038651   | 13222.6     | UNNAMED_KANGERLULUK              |
-| 362    |   0.000101103 |   0.0131135  | 12970.4     | UNNAMED_KANGERLULUK              |
-| 364    |   0.440709    |   0.128063   |    29.0585  | UNNAMED_DANELL_FJORD             |
-| 365    |   0.131109    |   0.00674577 |     5.14515 | UNNAMED_SOUTH_DANELL_FJORD       |
-| 366    |   0.122957    |   0.144721   |   117.701   | SW_NONAME1                       |
-| 368    |   0.0105897   |   0.0205935  |   194.466   | SW_NONAME1                       |
-| 369    |   0.000111339 |   0.0174474  | 15670.6     | SOUTHERN_TIP                     |
-| 370    |   0.000162942 |   0.0297611  | 18264.9     | SOUTHERN_TIP                     |
-| 371    |   4.75215e-05 |   0.00141861 |  2985.19    | SOUTHERN_TIP                     |
-| 372    |   6.6866e-05  |   0.00864522 | 12929.2     | SOUTHERN_TIP                     |
-| 373    |   0.000116932 |   0.0148475  | 12697.5     | SOUTHERN_TIP                     |
-| 374    |   0.000311045 |   0.0340177  | 10936.6     | SOUTHERN_TIP                     |
-| GIS    | 471.31        |  49.1855     |    10.4359  |                                  |
-:end:
+| Gate |      D [Gt] | Error [Gt] | Error [%] | name                             |
+|------+-------------+------------+-----------+----------------------------------|
+|    1 | 0.000242779 |   0.030608 |   12607.4 | JUNGERSEN_HENSON_NARAVANA        |
+|    3 |  0.00010155 |  0.0153045 |     15071 | JUNGERSEN_HENSON_NARAVANA        |
+|    4 |    0.123399 |  0.0207551 |   16.8195 | MARIE_SOPHIE_GLETSCHER           |
+|    5 |    0.570673 |  0.0769139 |   13.4778 | HAGEN_BRAE                       |
+|    6 |   0.0308782 |  0.0581098 |   188.191 | BRIKKERNE_GLETSCHER              |
+|    7 |    0.430717 |    0.08547 |   19.8437 | ACADEMY                          |
+|    8 |   0.0445647 |  0.0359111 |   80.5819 | HARDER_GLETSCHER                 |
+|   10 |     2.56798 |    0.10477 |   4.07984 | RYDER_GLETSCHER                  |
+|   11 |     1.56763 |    0.15128 |   9.65019 | OSTENFELD_GLETSCHER              |
+|   12 |    0.306089 |  0.0243717 |   7.96228 | STEENSBY_GLETSCHER               |
+|   17 |   0.0463436 |  0.0407937 |   88.0245 | OSTENFELD_GLETSCHER              |
+|   19 |   0.0449537 |  0.0489306 |   108.847 | OSTENFELD_GLETSCHER              |
+|   22 |    0.208659 |  0.0173091 |    8.2954 | RYDER_GLETSCHER                  |
+|   23 |    0.277659 |  0.0390611 |    14.068 | RYDER_GLETSCHER                  |
+|   25 |   0.0256916 |  0.0819198 |   318.858 | PETERMANN_GLETSCHER_N            |
+|   26 |    0.489938 |   0.169616 |   34.6199 | PETERMANN_GLETSCHER_N            |
+|   27 |     11.3084 |    0.48615 |     4.299 | PETERMANN_GLETSCHER              |
+|   28 |     5.81144 |   0.308143 |   5.30235 | HUMBOLDT_GLETSCHER               |
+|   29 |   0.0965288 | 0.00284121 |   2.94338 | HUMBOLDT_GLETSCHER               |
+|   30 |     12.2803 |   0.662151 |   5.39196 | NIOGHALVFJERDSFJORDEN            |
+|   31 |    0.184463 | 0.00874956 |   4.74326 | HUMBOLDT_GLETSCHER               |
+|   32 |     14.2076 |    1.37361 |    9.6681 | ZACHARIAE_ISSTROM                |
+|   33 |   7.399e-05 | 0.00760604 |   10279.8 | DIEBITSCH                        |
+|   34 | 0.000111118 |  0.0141656 |   12748.2 | DIEBITSCH                        |
+|   35 |  0.00730055 |  0.0264451 |   362.235 | MORRIS_JESUP                     |
+|   36 |   0.0273209 |  0.0508885 |   186.262 | BOWDOIN                          |
+|   37 |     0.75569 |   0.115062 |    15.226 | MELVILLE_GLETSCHER               |
+|   38 |    0.106608 |  0.0189026 |   17.7309 | SHARP                            |
+|   39 |    0.484742 |  0.0523378 |    10.797 | FARQUHAR_GLETSCHER               |
+|   40 |     2.59612 |   0.360908 |   13.9018 | TRACY_GLETSCHER                  |
+|   41 |     1.61629 |   0.202593 |   12.5344 | HEILPRIN_GLETSCHER               |
+|   48 |    0.887973 |  0.0415969 |   4.68448 | HARALD_MOLTKE_BRAE               |
+|   49 |   0.0115047 | 0.00239869 |   20.8496 | SAVISSUAQ_WW                     |
+|   50 |   0.0957547 |  0.0231554 |   24.1819 | SAVISSUAQ_WW                     |
+|   51 |    0.391447 |  0.0693461 |   17.7153 | SAVISSUAQ_WWWW                   |
+|   52 |   0.0844815 |  0.0232816 |   27.5582 | SAVISSUAQ_W                      |
+|   53 |   0.0264578 | 0.00951808 |   35.9746 | SAVISSUAQ_W                      |
+|   54 |    0.555191 |  0.0914293 |   16.4681 | SAVISSUAQ                        |
+|   55 |    0.263227 |  0.0557872 |   21.1936 | YNGVAR_NIELSEN_BRAE_W            |
+|   56 |     0.68171 |   0.113537 |   16.6548 | YNGVAR_NIELSEN_BRAE              |
+|   57 |    0.835121 |  0.0533348 |   6.38648 | CARLOS                           |
+|   59 |  0.00382726 | 0.00519325 |   135.691 | CARLOS                           |
+|   60 |   0.0144374 | 0.00938091 |   64.9765 | HELLAND                          |
+|   61 |     2.37829 |   0.241055 |   10.1357 | GADE-MORELL                      |
+|   62 |   0.0433492 |   0.025323 |   58.4162 | GADE-MORELL                      |
+|   63 |  0.00955888 | 0.00246878 |   25.8271 | DOCKER_SMITH_GLETSCHER_W         |
+|   64 |     1.41693 |  0.0933727 |   6.58978 | DOCKER_SMITH_GLETSCHER_W         |
+|   65 |     1.61348 |   0.108635 |   6.73294 | DOCKER_SMITH_GLETSCHER           |
+|   66 |    0.257332 |   0.019505 |   7.57969 | DOCKER_SMITH_GLETSCHER           |
+|   68 |     1.08707 |   0.064738 |   5.95526 | RINK_GLETSCHER                   |
+|   69 |     3.48082 |   0.177199 |   5.09073 | ISSUUARSUIT_SERMIA               |
+|   71 |      1.0023 |  0.0280765 |    2.8012 | ISSUUARSUIT_SERMIA               |
+|   72 |     1.05992 |  0.0392134 |   3.69965 | ISSUUARSUIT_SERMIA               |
+|   73 |     1.09225 |  0.0727899 |   6.66423 | NONAME_NORTH_OSCAR               |
+|   74 |     8.37833 |   0.428752 |    5.1174 | KONG_OSCAR_GLETSCHER             |
+|   78 |   0.0425836 |  0.0024955 |   5.86023 | KONG_OSCAR_GLETSCHER             |
+|   79 |   0.0623227 |  0.0026047 |   4.17937 | NORDENSKIOLD_GLESCHER_NW         |
+|   80 |     7.13103 |    0.41994 |   5.88891 | NORDENSKIOLD_GLESCHER_NW         |
+|   89 |    0.486803 |   0.042913 |   8.81527 | NANSEN_GLETSCHER                 |
+|   90 |    0.072116 |  0.0139877 |   19.3961 | SVERDRUP_GLETSCHER               |
+|   91 |     5.36468 |   0.440891 |   8.21841 | SVERDRUP_GLETSCHER               |
+|   92 |      1.2727 |   0.156588 |   12.3036 | STEENSTRUP-DIETRICHSON           |
+|   93 |     1.06929 |   0.100174 |   9.36822 | STEENSTRUP-DIETRICHSON           |
+|   94 |     3.29302 |   0.370044 |   11.2372 | STEENSTRUP-DIETRICHSON           |
+|   95 |     6.58815 |   0.771847 |   11.7157 | KJER_GLETSCHER                   |
+|   96 |    0.234172 |  0.0336786 |    14.382 | HAYES_GLETSCHER_N_NN             |
+|   98 |    0.154598 |  0.0161649 |    10.456 | HAYES_GLETSCHER_N_NN             |
+|   99 |    0.583881 |  0.0318647 |   5.45739 | HAYES_GLETSCHER_N_NN             |
+|  101 |    0.764497 |  0.0387761 |   5.07211 | HAYES_GLETSCHER_N_NN             |
+|  102 |     7.80946 |   0.861176 |   11.0273 | HAYES_GLETSCHER_N_NN             |
+|  103 |     3.27963 |   0.300765 |    9.1707 | HAYES_GLETSCHER_M_SS             |
+|  111 |    0.550768 |  0.0386663 |   7.02044 | HAYES_GLETSCHER_M_SS             |
+|  112 |    0.143022 |  0.0130102 |   9.09666 | HAYES_GLETSCHER_M_SS             |
+|  113 |     5.67861 |   0.621164 |   10.9387 | ALISON_GLETSCHER                 |
+|  114 |    0.111175 |  0.0403181 |   36.2655 | WALTERSHAUSEN                    |
+|  115 |     1.50209 |   0.163485 |   10.8839 | ALISON_GLETSCHER                 |
+|  116 |   0.0328206 |  0.0206552 |   62.9336 | ADOLF_HOEL                       |
+|  117 |     5.21698 |   0.374311 |   7.17486 | ILLULLIP_SERMIA                  |
+|  118 |    0.456206 |  0.0409648 |   8.97946 | CORNELL_GLETSCHER                |
+|  119 |    0.238665 |  0.0132572 |   5.55473 | CORNELL_GLETSCHER                |
+|  120 |    0.302417 |   0.142394 |   47.0854 | GERARD_DE_GEER                   |
+|  122 |    0.978693 |  0.0841493 |   8.59813 | USSING_BRAEER_N                  |
+|  123 |    0.967159 |  0.0744336 |   7.69611 | USSING_BRAEER_N                  |
+|  124 |   0.0609109 |  0.0262416 |   43.0819 | JAETTEGLETSCHER                  |
+|  125 |      1.7352 |   0.103243 |    5.9499 | USSING_BRAEER                    |
+|  126 |    0.147957 |  0.0206948 |   13.9871 | USSING_BRAEER                    |
+|  127 |    0.722277 |  0.0267532 |   3.70401 | QEQERTARSUUP_SERMIA              |
+|  128 |   0.0664664 |  0.0332622 |   50.0436 | NORDENSKIOLD_NE                  |
+|  129 |     6.21848 |   0.256494 |    4.1247 | KAKIVFAAT_SERMIAT                |
+|  130 |     0.04207 | 0.00444826 |   10.5735 | KAKIVFAAT_SERMIAT                |
+|  131 | 0.000504298 | 0.00572415 |   1135.07 | HISINGER_GLETSCHER               |
+|  132 |     1.14576 |  0.0662401 |   5.78134 | NUNATAKASSAAP_SERMIA             |
+|  133 |    0.606772 |  0.0762735 |   12.5704 | UPERNAVIK_ISSTROM_N              |
+|  134 |     7.49194 |   0.770461 |   10.2839 | UPERNAVIK_ISSTROM_N              |
+|  135 |     6.64584 |   0.826002 |   12.4289 | UPERNAVIK_ISSTROM_C              |
+|  136 |     2.76336 |      0.221 |   7.99752 | UPERNAVIK_ISSTROM_S              |
+|  137 |    0.111059 |  0.0151142 |   13.6092 | UPERNAVIK_ISSTROM_SS             |
+|  138 |    0.898969 |   0.100764 |   11.2088 | F_GRAAE                          |
+|  139 |  0.00332712 |  0.0173174 |   520.492 | CHARCOT                          |
+|  140 |     9.50652 |   0.681882 |   7.17278 | DAUGAARD-JENSEN                  |
+|  141 |     1.27855 |   0.124804 |   9.76137 | INNGIA_ISBRAE                    |
+|  142 |     1.31589 |   0.137993 |   10.4867 | UMIAMMAKKU_ISBRAE                |
+|  143 |     12.9161 |   0.860943 |   6.66564 | RINK_ISBRAE                      |
+|  144 |   0.0284199 |  0.0102236 |   35.9735 | EIELSON_HARE_FJORD-ROLIGE        |
+|  145 |     1.73059 |   0.252957 |   14.6168 | KANGERLUSSUUP_SERMERSUA          |
+|  146 |    0.582089 |  0.0938946 |   16.1306 | EIELSON_HARE_FJORD-ROLIGE        |
+|  147 |    0.157873 |  0.0763918 |    48.388 | BREDEGLETSJER                    |
+|  149 |   0.0666042 |  0.0138273 |   20.7604 | KANGERLUARSUUP_SERMIA            |
+|  150 |  0.00317286 |  0.0895822 |   2823.39 | GEIKIE3                          |
+|  153 |    0.263847 |   0.108678 |   41.1899 | SYDBR                            |
+|  154 |    0.668659 |  0.0350659 |   5.24422 | SERMEQ_SILARLEQ                  |
+|  155 |      1.9771 |   0.337389 |   17.0648 | VESTFJORD                        |
+|  156 |     2.56442 |   0.243065 |   9.47835 | SERMEQ_SILARLEQ                  |
+|  157 |     2.59729 |   0.155423 |   5.98405 | SERMEQ_SILARLEQ                  |
+|  158 |     1.59047 |   0.250703 |   15.7628 | MAGGA_DAN_GLETSCHER              |
+|  159 |    0.751903 |  0.0531029 |   7.06247 | CW_NONAME2                       |
+|  160 |    0.218979 |  0.0734166 |   33.5267 | GEIKIE_UNNAMED_VESTFORD_S        |
+|  161 |  0.00739597 | 0.00607013 |   82.0734 | GEIKIE_UNNAMED_VESTFORD_S        |
+|  162 |   0.0558706 |  0.0361039 |   64.6205 | GEIKIE_UNNAMED_VESTFORD_S        |
+|  163 |    0.523165 |  0.0359505 |   6.87173 | LILLE_GLETSCHER                  |
+|  164 |    0.181546 |   0.016093 |   8.86444 | LILLE_GLETSCHER                  |
+|  165 |    0.351213 |  0.0176866 |   5.03587 | STORE_GLETSCHER                  |
+|  166 |   0.0507093 |  0.0148463 |   29.2773 | DENDRITGLETSCHER                 |
+|  167 |   0.0987294 |  0.0167473 |   16.9629 | DENDRITGLETSCHER                 |
+|  168 |     8.37552 |   0.669684 |   7.99573 | STORE_GLETSCHER                  |
+|  169 |  0.00209469 | 0.00135255 |   64.5706 | GEIKIE7                          |
+|  170 |     1.97443 |   0.158261 |   8.01552 | SERMEQ_AVANNARLEQ2               |
+|  172 |     7.45363 |   0.632841 |   8.49037 | SERMEQ_KUJALLEQ                  |
+|  173 |    0.055432 |  0.0271794 |    49.032 | GEIKIE6                          |
+|  178 |    0.999155 |  0.0487067 |   4.87479 | KANGILERNGATA_SERMIA             |
+|  179 |     1.16795 |  0.0962233 |   8.23863 | EQIP_SERMIA                      |
+|  182 |    0.177637 |  0.0655021 |   36.8741 | BORGGRAVEN                       |
+|  183 |   0.0128347 | 0.00732208 |   57.0492 | SERMEQ_AVANNARLEQ                |
+|  184 |   0.0350119 |  0.0167663 |   47.8875 | SERMEQ_AVANNARLEQ                |
+|  185 |    0.266693 |  0.0638888 |   23.9559 | KRONBORG                         |
+|  186 |     45.9601 |    4.27592 |   9.30355 | JAKOBSHAVN_ISBRAE                |
+|  187 |   0.0983969 |  0.0358237 |   36.4073 | ROSENBORG                        |
+|  188 |   0.0209153 |  0.0054144 |   25.8873 | ROSENBORG                        |
+|  189 |    0.121413 |  0.0036937 |   3.04227 | KONG_CHRISTIAN                   |
+|  190 |   0.0180087 | 0.00992784 |   55.1281 | STYRTE                           |
+|  191 |     3.19292 |   0.387732 |   12.1435 | KONG_CHRISTIAN                   |
+|  192 |     25.1468 |     1.2993 |   5.16687 | KANGERLUSSUAQ                    |
+|  193 |  0.00365628 | 0.00413155 |   112.999 | COURTAULD                        |
+|  194 |    0.797613 |  0.0319491 |   4.00558 | UNNAMED_KANGER_W                 |
+|  195 |    0.149501 |  0.0421936 |   28.2229 | SORGENFRI                        |
+|  196 |  0.00499414 |  0.0143874 |   288.086 | UNNAMED_KANGER_E                 |
+|  197 |    0.170237 |  0.0401522 |    23.586 | SAQQARLIUP_ALANGORLIUP           |
+|  199 |    0.199083 |   0.133361 |   66.9875 | FREDERIKSBORG_GLETSCHER          |
+|  202 |  0.00214098 | 0.00716085 |   334.465 | UNNAMED_DECEPTION_N              |
+|  204 |  0.00230142 | 0.00453713 |   197.144 | UNNAMED_DECEPTION_N              |
+|  205 |   0.0720322 | 0.00738748 |   10.2558 | UNNAMED_DECEPTION_N              |
+|  206 |  0.00615882 | 0.00802063 |    130.23 | UNNAMED_DECEPTION_N              |
+|  207 |     1.29726 |  0.0759682 |   5.85604 | POLARIC-DECEPTION_O_N            |
+|  208 |   0.0343321 |  0.0058739 |   17.1091 | POLARIC-DECEPTION_O_N            |
+|  209 |   0.0639358 |  0.0539933 |   84.4493 | POLARIC-DECEPTION_O_N            |
+|  210 |    0.001269 |   0.193065 |   15213.9 | UNNAMED_POLARIC_S                |
+|  211 |  0.00109478 |   0.153219 |   13995.4 | UNNAMED_POLARIC_S                |
+|  212 | 7.55157e-05 | 0.00353036 |      4675 | UNNAMED_POLARIC_S                |
+|  213 |     9.04978 |   0.246587 |   2.72478 | UNNAMED_DECEPTION_O_CN_CS        |
+|  214 |     4.85333 |   0.212367 |   4.37569 | UNNAMED_UUNARTIT_ISLANDS         |
+|  215 |    0.788414 |  0.0391102 |   4.96062 | KRUUSE_FJORD                     |
+|  216 |    0.165063 |  0.0466749 |   28.2771 | KRUUSE_FJORD                     |
+|  217 |  0.00325578 | 0.00513041 |   157.579 | KRUUSE_FJORD                     |
+|  218 | 0.000585518 |  0.0508575 |    8685.9 | LAUBE_GLETSCHER                  |
+|  219 | 0.000245903 |   0.040796 |   16590.2 | UNNAMED_LAUBE_S                  |
+|  223 | 0.000650151 |   0.104006 |   15997.2 | UNNAMED_LAUBE_S                  |
+|  225 |  0.00182813 |   0.313983 |   17175.1 | UNNAMED_LAUBE_S                  |
+|  226 |     4.65263 |   0.795364 |   17.0949 | KIV_STEENSTRUP_NODRE_BRAE        |
+|  227 |   0.0003607 |  0.0671429 |   18614.6 | KIV_STEENSTRUP_SONDRE_BRAE       |
+|  228 | 0.000300914 |  0.0459726 |   15277.6 | NIGERTULUUP_KATTILERTARPIA       |
+|  229 | 0.000639405 |  0.0983331 |   15378.8 | GLACIERDEFRANCE                  |
+|  230 |     1.23429 |   0.348222 |   28.2123 | MIDGARDGLETSCHER                 |
+|  231 | 6.44917e-05 |  0.0076296 |   11830.4 | MIDGARDGLETSCHER                 |
+|  232 |     2.74239 |   0.221404 |   8.07341 | FENRISGLETSCHER                  |
+|  233 |      28.307 |    2.12532 |   7.50812 | HELHEIMGLETSCHER                 |
+|  235 |  0.00388564 |  0.0469587 |   1208.52 | APUSEERAJIK                      |
+|  238 |    0.463106 |   0.567007 |   122.436 | HEIM_GLETSCHER                   |
+|  239 |  0.00271756 |  0.0443609 |   1632.38 | BRCKNER_GLETSCHER                |
+|  240 |    0.734125 |   0.553775 |   75.4333 | NONAME_IKERTIVAQ_N               |
+|  241 |      7.8092 |   0.765558 |   9.80329 | IKERTIVAQ_NN                     |
+|  242 |     10.4887 |   0.949496 |   9.05253 | IKERTIVAQ_M                      |
+|  245 |  0.00992406 |  0.0688171 |   693.437 | NONAME_IKERTIVAQ_S               |
+|  246 |  0.00300063 |   0.159131 |   5303.26 | SE_NONAME1                       |
+|  247 |     3.90797 |   0.571938 |   14.6352 | KOGE_BUGT_N                      |
+|  248 |      16.999 |    1.22285 |   7.19366 | KOGE_BUGT_C                      |
+|  250 |   0.0593096 |  0.0675393 |   113.876 | SE_NONAME1                       |
+|  253 |  0.00166484 |  0.0362639 |   2178.22 | SE_NONAME1                       |
+|  255 |    0.286414 |   0.012137 |   4.23755 | KOGE_BUGT_S                      |
+|  260 |     6.27373 |   0.338655 |   5.39799 | KOGE_BUGT_S                      |
+|  261 |    0.405083 |  0.0310792 |    7.6723 | KOGE_BUGT_S                      |
+|  263 | 0.000516315 |  0.0950138 |   18402.3 | KOGE_BUGT_SS                     |
+|  266 | 0.000943541 |   0.165326 |   17521.9 | KOGE_BUGT_SS                     |
+|  267 |  0.00166026 |    0.11882 |   7156.68 | KOGE_BUGT_SS                     |
+|  268 |  0.00375699 |   0.264724 |   7046.18 | UMIIVIK_FJORD                    |
+|  269 |  0.00702439 |  0.0733914 |   1044.81 | UMIIVIK_FJORD                    |
+|  271 |      2.5632 |   0.260519 |   10.1638 | NARSAP_SERMIA                    |
+|  272 |   0.0150389 |   0.192821 |   1282.15 | UMIIVIK_FJORD                    |
+|  273 |      4.4488 |    1.04037 |   23.3855 | UMIIVIK_FJORD                    |
+|  274 |    0.153855 |  0.0978981 |   63.6302 | UMIIVIK_FJORD                    |
+|  278 |    0.498188 |  0.0555729 |    11.155 | AKULLERSUUP-QAMANAARSUUP         |
+|  279 | 0.000274782 |  0.0575628 |   20948.5 | APUSEERSERPIA                    |
+|  280 |     4.21919 |   0.586934 |   13.9111 | GRAULV                           |
+|  282 |    0.269382 |  0.0362142 |   13.4434 | GRAULV                           |
+|  283 |     5.06237 |   0.526477 |   10.3998 | KANGIATA_NUNAATA_SERMIA          |
+|  284 |     4.58791 |   0.268957 |   5.86229 | GYLDENLOVE                       |
+|  285 |    0.150007 |   0.277036 |   184.682 | GYLDENLOVE_S                     |
+|  286 |  0.00034279 |  0.0719289 |   20983.4 | GYLDENLOVE_SS                    |
+|  287 | 0.000454846 |  0.0715212 |   15724.3 | GYLDENLOVE_S                     |
+|  289 | 3.29127e-05 | 0.00523086 |   15893.1 | SE_NONAME2                       |
+|  290 | 7.61328e-05 |  0.0116113 |   15251.4 | SE_NONAME2                       |
+|  291 | 0.000866503 |   0.154398 |   17818.6 | SE_NONAME2                       |
+|  292 |  0.00051318 |  0.0943305 |   18381.6 | SE_NONAME2                       |
+|  293 | 0.000532712 |   0.066162 |   12419.8 | FIMBULGETLSCHER                  |
+|  294 |  0.00212486 |   0.354715 |   16693.6 | FIMBULGETLSCHER                  |
+|  295 |  7.2802e-05 | 0.00889059 |     12212 | SE_NONAME2                       |
+|  296 |  0.00094828 |   0.185566 |   19568.7 | SE_NONAME2                       |
+|  297 |     3.85746 |   0.301947 |    7.8276 | AP_BERNSTOFF_GLETSCHER           |
+|  298 |     1.14415 |  0.0667781 |   5.83647 | AP_BERNSTOFF_GLETSCHER           |
+|  301 | 0.000255828 |  0.0436295 |   17054.2 | SE_NONAME2                       |
+|  304 | 0.000252462 |  0.0424767 |     16825 | SE_NONAME2                       |
+|  306 |    0.127045 |  0.0316944 |   24.9473 | MAELKEVEJEN                      |
+|  310 |    0.927038 |   0.215917 |   23.2911 | MAELKEVEJEN                      |
+|  311 |  0.00277807 |   0.012022 |   432.748 | SKINFAXE                         |
+|  313 |     1.55004 |   0.224873 |   14.5075 | SKINFAXE                         |
+|  314 |     1.85274 |   0.106221 |   5.73321 | RIMFAXE                          |
+|  315 |     1.40774 |   0.116474 |   8.27383 | HEIMDAL_GLETSCHER                |
+|  316 |   0.0490824 | 0.00838582 |   17.0852 | TINGMIARMIUT_FJORD               |
+|  317 |     8.04856 |   0.664796 |   8.25982 | TINGMIARMIUT_FJORD               |
+|  318 |   0.0767972 |  0.0146471 |   19.0725 | MOGENS_HEINESEN_N                |
+|  319 |     2.08105 |    0.28327 |   13.6118 | MOGENS_HEINESEN_N                |
+|  320 |     0.87322 |   0.109203 |   12.5058 | MOGENS_HEINESEN_C                |
+|  321 |     4.72381 |   0.168764 |   3.57263 | MOGENS_HEINESEN_S                |
+|  322 | 0.000286124 |   0.052938 |   18501.8 | MOGENS_HEINESEN_SS_SSS           |
+|  323 |    0.128705 |  0.0322384 |   25.0483 | AVANNARLEQ-NIGERLIKASIK          |
+|  325 |    0.450794 |  0.0641945 |   14.2403 | MOGENS_HEINESEN_SS_SSS           |
+|  326 | 0.000160574 |  0.0448814 |   27950.7 | MOGENS_HEINESEN_SS_SSS           |
+|  327 |   0.0113678 |  0.0059108 |   51.9958 | AVANNARLEQ-NIGERLIKASIK          |
+|  328 |     4.37535 |   0.367043 |   8.38889 | PUISORTOQ_N                      |
+|  329 |     1.80255 |   0.172765 |   9.58448 | UKAASORSUAQ                      |
+|  330 |    0.823701 |   0.125904 |   15.2851 | PUISORTOQ_S                      |
+|  331 |  0.00571661 | 0.00689541 |   120.621 | PUISORTOQ_S                      |
+|  332 |    0.374217 |  0.0651766 |   17.4168 | NAPASORSUAQ_N                    |
+|  335 |    0.349705 |  0.0723664 |   20.6936 | NAPASORSUAQ_N                    |
+|  337 | 7.64832e-05 |  0.0160352 |   20965.6 | NAPASORSUAQ_C_S                  |
+|  338 | 0.000108454 |  0.0172894 |   15941.7 | NAPASORSUAQ_C_S                  |
+|  339 | 6.43811e-05 | 0.00945635 |   14688.1 | NAPASORSUAQ_C_S                  |
+|  340 |     4.71132 |   0.390471 |   8.28792 | ANORITUUP_KANGERLUA              |
+|  341 |    0.487766 |  0.0422666 |   8.66534 | SERMILIGAARSSUK_BRAE             |
+|  342 | 6.48975e-05 | 0.00752451 |   11594.5 | ANORITUUP_KANGERLUA              |
+|  343 |    0.356953 |   0.100031 |   28.0236 | ANORITUUP_KANGERLUA              |
+|  345 |  0.00136043 |   0.259424 |   19069.3 | UNNAMED_ANORITUUP_KANGERLUA_S    |
+|  346 | 0.000125657 |  0.0235513 |   18742.6 | UNNAMED_ANORITUUP_KANGERLUA_SS   |
+|  347 | 0.000157755 |  0.0272631 |   17281.9 | UNNAMED_ANORITUUP_KANGERLUA_SS   |
+|  348 | 0.000215261 |   0.028888 |     13420 | UNNAMED_ANORITUUP_KANGERLUA_SS   |
+|  349 |    0.686977 |  0.0736333 |   10.7184 | QAJUUTTAP_SERMIA                 |
+|  350 |    0.965747 |   0.226052 |    23.407 | UNNAMED_HERLUF_TROLLE_N          |
+|  351 |    0.127861 |  0.0347248 |   27.1583 | EQALORUTSIT_KILLIIT_SERMIAT      |
+|  352 |     1.87522 |    1.18394 |    63.136 | EQALORUTSIT_KILLIIT_SERMIAT      |
+|  354 |    0.888318 |    0.15148 |   17.0525 | KIATTUUT-QOOQQUP                 |
+|  355 |     1.64062 |   0.163468 |   9.96379 | UNNAMED_HERLUF_TROLLE_S          |
+|  357 |   0.0751754 |   0.324192 |   431.247 | UNNAMED_KANGERLULUK              |
+|  358 | 0.000406285 |   0.101505 |   24983.6 | NAAJAT_SERMIAT                   |
+|  359 |    0.193933 |   0.151796 |   78.2728 | SERMILIK                         |
+|  360 | 5.21983e-05 | 0.00781245 |   14966.9 | HERLUF_TROLLE-KANGERLULUK-DANELL |
+|  361 | 0.000292309 |   0.038651 |   13222.6 | UNNAMED_KANGERLULUK              |
+|  362 | 0.000101103 |  0.0131135 |   12970.4 | UNNAMED_KANGERLULUK              |
+|  364 |    0.440709 |   0.128063 |   29.0585 | UNNAMED_DANELL_FJORD             |
+|  365 |    0.131109 | 0.00674577 |   5.14515 | UNNAMED_SOUTH_DANELL_FJORD       |
+|  366 |    0.122957 |   0.144721 |   117.701 | SW_NONAME1                       |
+|  368 |   0.0105897 |  0.0205935 |   194.466 | SW_NONAME1                       |
+|  369 | 0.000111339 |  0.0174474 |   15670.6 | SOUTHERN_TIP                     |
+|  370 | 0.000162942 |  0.0297611 |   18264.9 | SOUTHERN_TIP                     |
+|  371 | 4.75215e-05 | 0.00141861 |   2985.19 | SOUTHERN_TIP                     |
+|  372 |  6.6866e-05 | 0.00864522 |   12929.2 | SOUTHERN_TIP                     |
+|  373 | 0.000116932 |  0.0148475 |   12697.5 | SOUTHERN_TIP                     |
+|  374 | 0.000311045 |  0.0340177 |   10936.6 | SOUTHERN_TIP                     |
+|  GIS |      471.31 |    49.1855 |   10.4359 |                                  |
 
 
 ** Raw data to discharge product
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle raw2discharge.py :session raw2discharge
+:header-args:jupyter-python+: :tangle raw2discharge.py :session discharge
 :END:
 *** Load data
 
 + What columns are in the file?
 + Don't show all the "vel_eff_YYYY_MM_DD" and "err_eff_YYYY_MM_DD" columns.
-#+BEGIN_SRC bash :results verbatim :tangle no
+#+BEGIN_SRC bash :results verbatim :tangle no :eval no-export
 head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep -v "vel_eff_*" | grep -v "err_eff_*" | grep -v "dh_*" | sort | uniq | tr '\n' '\t'
 echo "also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc."
 #+END_SRC
+
 #+RESULTS:
 : bed_0@Millan_2018	bed@BedMachine	day@GIMP.0715	dem@GIMP.0715	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_100_5000	gates_x@gates_100_5000	gates_y@gates_100_5000	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness_0@Millan_2018	thickness@Bamber_2013	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
 
 #+NAME: load_data
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer
+#+BEGIN_SRC jupyter-python :exports none :results none
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -3015,45 +2890,6 @@ D = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=
 D.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_area='inside').resample('A').mean()
 #+END_SRC
 
-#+RESULTS: load_data
-#+begin_example
-1985-12-31    366.513535
-1986-12-31    375.755071
-1987-12-31    375.464187
-1988-12-31    371.502576
-1989-12-31    374.419049
-1990-12-31    370.962210
-1991-12-31    368.800622
-1992-12-31    371.283426
-1993-12-31    373.966629
-1994-12-31    372.115812
-1995-12-31    366.201837
-1996-12-31    372.471276
-1997-12-31    378.800381
-1998-12-31    381.143531
-1999-12-31    391.551121
-2000-12-31    397.503762
-2001-12-31    398.169010
-2002-12-31    414.841587
-2003-12-31    423.171843
-2004-12-31    437.418305
-2005-12-31    453.106953
-2006-12-31    444.754577
-2007-12-31    439.759682
-2008-12-31    442.204001
-2009-12-31    449.709653
-2010-12-31    456.580146
-2011-12-31    460.768076
-2012-12-31    461.379067
-2013-12-31    468.002236
-2014-12-31    472.103875
-2015-12-31    472.799419
-2016-12-31    468.922413
-2017-12-31    474.600359
-2018-12-31    466.250926
-2019-12-31    469.114691
-Freq: A-DEC, dtype: float64
-#+end_example
 
 *** Adjust thickness 
 **** Millan 2018
@@ -3072,12 +2908,6 @@ D_tmp['Max'] = vel_baseline.apply(lambda c: c * th['thick_max'].values, axis=0) 
 D_tmp.index.name = "Discharge [Gt]"
 D_tmp[D_tmp['Millan'] != 0].sum(axis=0)
 #+END_SRC
-
-#+RESULTS: millan_2018
-: BedMachine    101.664973
-: Millan        110.146378
-: Max           117.419139
-: dtype: float64
 
 
 
@@ -3101,7 +2931,7 @@ For testing, gate clumps 9 (all bad) and 546 (some bad)
 #+CALL: load_data[:results none]()
 
 #+NAME: adjust_thickness
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :exports none :results none
 
 # Patch in Millan (2018) where that data set has thickness > 0.
 th.loc[th['thickness@Millan_2018'] > 0, 'thick'] = th.loc[th['thickness@Millan_2018'] > 0, 'thickness@Millan_2018']
@@ -3125,53 +2955,37 @@ th['thick_adj_400'] = [400 if T <= 50 else T for T in th['thick']]
 th['thick_adj_400_err'] = [400/2. if T[0] <= 50 else T[1] for T in zip(th['thick'],th['err'])]
 #+END_SRC
 
-#+RESULTS: adjust_thickness
 
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge :tangle no
+#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge :tangle no :eval no-export
 <<load_data>>
 <<millan_2018>>
 <<adjust_thickness>>
 
-print(th.describe())
+th.describe().T
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-             gates  bed@BedMachine        thick  surface@BedMachine  bed@Millan_2018  \
-count  6002.000000     6002.000000  6002.000000         6002.000000      6002.000000   
-mean    168.306398       42.703099   404.833499          441.314562        90.434342   
-std     103.096612      395.702530   260.601610          248.583263       231.987699   
-min       1.000000    -1129.000000     0.000000           61.000000      -946.148190   
-25%      80.000000     -223.750000   210.687670          257.000000         0.000000   
-50%     163.000000       -2.000000   409.649870          399.000000         0.000000   
-75%     246.000000      328.000000   584.000000          562.750000         0.000000   
-max     374.000000     1465.000000  1477.000000         1587.000000      1444.466800   
+|                       | count |    mean |     std |      min |     25% |     50% |     75% |     max |
+|-----------------------+-------+---------+---------+----------+---------+---------+---------+---------|
+| gates                 |  6002 | 168.306 | 103.097 |        1 |      80 |     163 |     246 |     374 |
+| bed@BedMachine        |  6002 | 42.7031 | 395.703 |    -1129 | -223.75 |      -2 |     328 |    1465 |
+| thick                 |  6002 | 404.833 | 260.602 |        0 | 210.688 |  409.65 |     584 |    1477 |
+| surface@BedMachine    |  6002 | 441.315 | 248.583 |       61 |     257 |     399 |  562.75 |    1587 |
+| bed@Millan_2018       |  6002 | 90.4343 | 231.988 | -946.148 |       0 |       0 |       0 | 1444.47 |
+| thickness@Millan_2018 |  6002 | 96.5463 | 205.604 | -53.3075 |       0 |       0 | 2.20683 | 1295.15 |
+| err                   |  6002 | 67.1893 | 58.7073 |       10 |      27 |      48 |      86 |     305 |
+| dem@GIMP.0715         |  6002 | 461.711 | 256.669 |  72.2317 | 269.829 | 408.804 | 598.707 | 1616.26 |
+| day@GIMP.0715         |  6002 | 4770.78 | 1324.63 |        0 |    4549 |    5224 |    5550 |    5782 |
+| thick_max             |  6002 | 410.315 | 262.792 |        0 | 216.352 |     416 |     588 |    1477 |
+| thick_adj_300         |  6002 | 432.288 | 230.639 |       21 |     300 |  409.65 |     584 |    1477 |
+| thick_adj_300_err     |  6002 | 67.2023 | 55.3749 |       10 |      27 |      49 |      90 |     305 |
+| thick_adj_400         |  6002 | 457.119 | 210.502 |  50.4298 |     347 |  409.65 |     584 |    1477 |
+| thick_adj_400_err     |  6002 | 75.7458 | 66.4326 |       10 |      28 |      51 |      95 |     305 |
 
-       thickness@Millan_2018          err  dem@GIMP.0715  day@GIMP.0715    thick_max  \
-count            6002.000000  6002.000000    6002.000000    6002.000000  6002.000000   
-mean               96.546331    67.189270     461.711131    4770.782073   410.314916   
-std               205.603627    58.707289     256.669219    1324.627790   262.792015   
-min               -53.307507    10.000000      72.231743       0.000000     0.000000   
-25%                 0.000000    27.000000     269.828997    4549.000000   216.351658   
-50%                 0.000000    48.000000     408.804415    5224.000000   416.000000   
-75%                 2.206833    86.000000     598.706865    5550.000000   588.000000   
-max              1295.148200   305.000000    1616.262000    5782.000000  1477.000000   
-
-       thick_adj_300  thick_adj_300_err  thick_adj_400  thick_adj_400_err  
-count    6002.000000        6002.000000    6002.000000        6002.000000  
-mean      432.288209          67.202266     457.119268          75.745751  
-std       230.638613          55.374865     210.502317          66.432581  
-min        21.000000          10.000000      50.429825          10.000000  
-25%       300.000000          27.000000     347.000000          28.000000  
-50%       409.649870          49.000000     409.649870          51.000000  
-75%       584.000000          90.000000     584.000000          95.000000  
-max      1477.000000         305.000000    1477.000000         305.000000  
-#+end_example
-
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge
+#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge :eval no-export
 D0 = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=0) * 917 / 1E12
 D1 = (vel).apply(lambda c: c * (200 * th['thick_adj_300'] * meta['err_2D'].values), axis=0) * 917 / 1E12
-D0 = D0.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_area='inside',).resample('A').mean()
+D0 = D0.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_area='inside').resample('A').mean()
 D1 = D1.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_area='inside').resample('A').mean()
 pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 #+END_SRC
@@ -3179,50 +2993,47 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 #+RESULTS:
 |                     | BedMachine |     300 |    diff |
 |---------------------+------------+---------+---------|
-| 1985-12-31 00:00:00 |    374.375 | 382.212 | 7.83762 |
-| 1986-12-31 00:00:00 |    383.616 | 391.454 | 7.83762 |
-| 1987-12-31 00:00:00 |    383.325 | 391.163 | 7.83762 |
-| 1988-12-31 00:00:00 |    379.364 | 387.201 | 7.83762 |
-| 1989-12-31 00:00:00 |     382.28 | 390.118 | 7.83762 |
-| 1990-12-31 00:00:00 |    378.823 | 386.661 | 7.83762 |
-| 1991-12-31 00:00:00 |    376.662 | 384.578 | 7.91649 |
-| 1992-12-31 00:00:00 |    378.871 | 386.748 | 7.87661 |
-| 1993-12-31 00:00:00 |    381.563 | 389.228 | 7.66483 |
-| 1994-12-31 00:00:00 |    380.443 | 388.131 | 7.68873 |
-| 1995-12-31 00:00:00 |    375.421 | 383.299 | 7.87824 |
-| 1996-12-31 00:00:00 |    381.479 | 389.671 | 8.19185 |
-| 1997-12-31 00:00:00 |    386.988 | 394.988 |  8.0001 |
-| 1998-12-31 00:00:00 |    389.026 | 396.698 | 7.67141 |
-| 1999-12-31 00:00:00 |    399.215 | 406.817 | 7.60238 |
-| 2000-12-31 00:00:00 |    406.172 | 413.258 | 7.08638 |
-| 2001-12-31 00:00:00 |    406.827 | 414.011 | 7.18404 |
-| 2002-12-31 00:00:00 |    423.918 | 431.258 | 7.34085 |
-| 2003-12-31 00:00:00 |    432.797 | 440.325 | 7.52853 |
-| 2004-12-31 00:00:00 |    445.856 | 453.639 | 7.78348 |
-| 2005-12-31 00:00:00 |     461.54 | 469.381 | 7.84087 |
-| 2006-12-31 00:00:00 |    452.738 | 460.448 | 7.71049 |
-| 2007-12-31 00:00:00 |    447.368 | 454.952 | 7.58416 |
-| 2008-12-31 00:00:00 |    449.842 | 457.529 |  7.6877 |
-| 2009-12-31 00:00:00 |    457.887 | 465.822 | 7.93424 |
-| 2010-12-31 00:00:00 |    464.412 | 472.294 | 7.88247 |
-| 2011-12-31 00:00:00 |    468.867 |  476.68 |  7.8125 |
-| 2012-12-31 00:00:00 |    469.047 | 476.763 | 7.71556 |
-| 2013-12-31 00:00:00 |    476.106 | 483.929 | 7.82219 |
-| 2014-12-31 00:00:00 |    480.596 | 488.134 | 7.53853 |
-| 2015-12-31 00:00:00 |    481.411 | 488.858 | 7.44767 |
-| 2016-12-31 00:00:00 |    477.181 |  484.39 | 7.20893 |
-| 2017-12-31 00:00:00 |    483.633 | 490.606 | 6.97237 |
-| 2018-12-31 00:00:00 |    475.305 | 482.377 |  7.0715 |
-| 2019-12-31 00:00:00 |    478.865 | 486.098 | 7.23311 |
+| 1985-12-31 00:00:00 |    374.371 | 382.184 | 7.81319 |
+| 1986-12-31 00:00:00 |    383.613 | 391.426 | 7.81319 |
+| 1987-12-31 00:00:00 |    383.322 | 391.135 | 7.81319 |
+| 1988-12-31 00:00:00 |     379.36 | 387.173 | 7.81319 |
+| 1989-12-31 00:00:00 |    382.277 |  390.09 | 7.81319 |
+| 1990-12-31 00:00:00 |     378.82 | 386.633 | 7.81319 |
+| 1991-12-31 00:00:00 |    376.658 |  384.55 | 7.89206 |
+| 1992-12-31 00:00:00 |    378.868 |  386.72 |  7.8522 |
+| 1993-12-31 00:00:00 |     381.56 | 389.201 | 7.64044 |
+| 1994-12-31 00:00:00 |    380.439 | 388.104 | 7.66437 |
+| 1995-12-31 00:00:00 |    375.418 | 383.271 |  7.8539 |
+| 1996-12-31 00:00:00 |    381.476 | 389.643 | 8.16754 |
+| 1997-12-31 00:00:00 |    386.984 |  394.96 | 7.97591 |
+| 1998-12-31 00:00:00 |    389.023 |  396.67 | 7.64743 |
+| 1999-12-31 00:00:00 |    399.212 |  406.79 |  7.5786 |
+| 2000-12-31 00:00:00 |    406.169 | 413.231 | 7.06234 |
+| 2001-12-31 00:00:00 |    406.823 | 413.977 | 7.15354 |
+| 2002-12-31 00:00:00 |    423.914 | 431.216 | 7.30192 |
+| 2003-12-31 00:00:00 |    432.783 | 440.264 | 7.48117 |
+| 2004-12-31 00:00:00 |    445.835 | 453.562 | 7.72769 |
+| 2005-12-31 00:00:00 |    461.499 | 469.279 | 7.77935 |
+| 2006-12-31 00:00:00 |    452.843 |  460.49 | 7.64694 |
+| 2007-12-31 00:00:00 |    447.597 | 455.133 | 7.53684 |
+| 2008-12-31 00:00:00 |    453.239 |  461.06 | 7.82148 |
+| 2009-12-31 00:00:00 |    458.969 |  466.91 | 7.94128 |
+| 2010-12-31 00:00:00 |    464.838 | 472.675 |  7.8371 |
+| 2011-12-31 00:00:00 |    468.871 | 476.634 | 7.76317 |
+| 2012-12-31 00:00:00 |    469.002 | 476.679 |  7.6772 |
+| 2013-12-31 00:00:00 |    476.614 | 484.408 | 7.79454 |
+| 2014-12-31 00:00:00 |    481.149 | 488.693 | 7.54444 |
+| 2015-12-31 00:00:00 |    481.917 | 489.283 | 7.36621 |
+| 2016-12-31 00:00:00 |     477.24 | 484.362 | 7.12225 |
+| 2017-12-31 00:00:00 |    483.507 | 490.465 | 6.95731 |
+| 2018-12-31 00:00:00 |    474.744 | 481.787 | 7.04246 |
+| 2019-12-31 00:00:00 |    476.781 | 484.007 | 7.22576 |
 
 
 **** Adjust thickness w thickness v. velocity fit.
 
-https://towardsdatascience.com/simple-and-multiple-linear-regression-in-python-c928425168f9
-https://www.statsmodels.org/dev/examples/notebooks/generated/ols.html
-
 #+NAME: adjust_thickness_fit
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/plain
+#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/plain :eval no-export
 CUTOFF = 20
 df = vel_baseline.join(th['thick'])
 max_vel = df.loc[df['thick'] <= CUTOFF, 'vel'].max() # limit fit to velocities where data is missing
@@ -3248,7 +3059,7 @@ sdev, lower, upper = wls_prediction_std(fits, exog=XX, alpha=0.05)
 fig = plt.figure(1, figsize=(4,4)) # w,h
 # get_current_fig_manager().window.move(0,0)
 fig.clf()
-fig.set_tight_layout(True)
+# fig.set_tight_layout(True)
 
 ax = fig.add_subplot(111)
 im = ax.scatter(X['vel'], y, alpha=0.1, color='k')
@@ -3284,52 +3095,44 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 
 #+RESULTS: adjust_thickness_fit
 :RESULTS:
-: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/numpy/core/fromnumeric.py:52: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
-:   return getattr(obj, method)(*args, **kwds)
-: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-:   warnings.warn("This figure includes Axes that are not compatible "
-: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-:   warnings.warn("This figure includes Axes that are not compatible "
 #+begin_example
                    300         fit      diff
-1985-12-31  382.212214  385.190263  2.978049
-1986-12-31  391.453750  394.431799  2.978049
-1987-12-31  391.162866  394.140915  2.978049
-1988-12-31  387.201255  390.179304  2.978049
-1989-12-31  390.117728  393.095777  2.978049
-1990-12-31  386.660889  389.638937  2.978049
-1991-12-31  384.578171  387.610159  3.031988
-1992-12-31  386.747774  389.762390  3.014616
-1993-12-31  389.228259  392.104511  2.876252
-1994-12-31  388.131312  390.976866  2.845554
-1995-12-31  383.299107  386.186263  2.887155
-1996-12-31  389.670965  392.879998  3.209033
-1997-12-31  394.988013  398.517121  3.529108
-1998-12-31  396.697697  400.358936  3.661238
-1999-12-31  406.817321  410.546617  3.729296
-2000-12-31  413.258337  416.605503  3.347166
-2001-12-31  414.010682  417.330430  3.319749
-2002-12-31  431.258369  434.605964  3.347595
-2003-12-31  440.325347  443.764340  3.438994
-2004-12-31  453.639182  457.171313  3.532130
-2005-12-31  469.380729  472.911717  3.530988
-2006-12-31  460.448223  463.963638  3.515415
-2007-12-31  454.952244  458.458540  3.506296
-2008-12-31  457.529257  461.075662  3.546405
-2009-12-31  465.821710  469.381440  3.559730
-2010-12-31  472.294315  475.878673  3.584358
-2011-12-31  476.679815  480.323403  3.643588
-2012-12-31  476.762530  480.452683  3.690152
-2013-12-31  483.928674  487.618053  3.689379
-2014-12-31  488.134346  491.790862  3.656516
-2015-12-31  488.858485  492.386053  3.527568
-2016-12-31  484.389720  487.851666  3.461946
-2017-12-31  490.605855  493.876778  3.270922
-2018-12-31  482.376713  485.659618  3.282905
-2019-12-31  486.098008  489.498529  3.400520
+1985-12-31  382.184414  385.165386  2.980972
+1986-12-31  391.425950  394.406922  2.980972
+1987-12-31  391.135066  394.116039  2.980972
+1988-12-31  387.173455  390.154428  2.980972
+1989-12-31  390.089928  393.070900  2.980972
+1990-12-31  386.633089  389.614061  2.980972
+1991-12-31  384.550371  387.585283  3.034912
+1992-12-31  386.720001  389.737720  3.017719
+1993-12-31  389.200539  392.080255  2.879716
+1994-12-31  388.103645  390.953022  2.849377
+1995-12-31  383.271494  386.162832  2.891338
+1996-12-31  389.643253  392.856829  3.213576
+1997-12-31  394.960307  398.495554  3.535248
+1998-12-31  396.670254  400.340472  3.670218
+1999-12-31  406.790150  410.531266  3.741116
+2000-12-31  413.230970  416.592744  3.361774
+2001-12-31  413.976670  417.313062  3.336392
+2002-12-31  431.215689  434.581722  3.366034
+2003-12-31  440.263750  443.722979  3.459229
+2004-12-31  453.562319  457.116482  3.554164
+2005-12-31  469.278676  472.833947  3.555271
+2006-12-31  460.489694  464.035120  3.545426
+2007-12-31  455.133379  458.698063  3.564684
+2008-12-31  461.060429  464.696234  3.635805
+2009-12-31  466.910248  470.513178  3.602930
+2010-12-31  472.675044  476.276984  3.601940
+2011-12-31  476.634048  480.258009  3.623961
+2012-12-31  476.679144  480.333945  3.654801
+2013-12-31  484.408271  488.073011  3.664740
+2014-12-31  488.692948  492.360990  3.668042
+2015-12-31  489.283389  492.804319  3.520930
+2016-12-31  484.362036  487.778446  3.416410
+2017-12-31  490.464761  493.725959  3.261198
+2018-12-31  481.786769  485.051109  3.264340
+2019-12-31  484.006525  487.427767  3.421242
 #+end_example
-: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-:   warnings.warn("This figure includes Axes that are not compatible "
 : <Figure size 288x288 with 1 Axes>
 :END:
 
@@ -3338,7 +3141,7 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 :ID:       62f5d28c-c704-422d-9e9b-c0771d5b86ee
 :END:
 
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :eval no-export
 th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 #+END_SRC
 
@@ -3355,7 +3158,6 @@ th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 | max   |    1477 |          1477 |          1477 |    1477 |
 
 
-
 **** Baseline discharge values for various thickness adjustments
 Here we calculate:
 + D_baseline_th_noadj :: Discharge with no thickness adjustment
@@ -3365,7 +3167,7 @@ Here we calculate:
 + D_baseline :: The baseline discharge - picked from our favorite of the above. TBD
 
 #+NAME: discharge_th
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer
+#+BEGIN_SRC jupyter-python :exports none :results raw drawer :eval no-export
 D_th = pd.DataFrame(index=th.index,
                     columns=['NoAdj','NoAdj_err','300','300_err','400','400_err','fit','fit_err'])
 
@@ -3540,46 +3342,12 @@ print(tmp[th['bad'] == 0]['vel'].describe())
 print(tmp[th['bad'] > 0]['vel'].describe())
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-#+begin_example
-Gates:  276
-Gates w/ any bad pixels:  89
-Gates w/ >50% bad pixels:  65
-Gates w/ all bad pixels:  61
-Gates w/ all bad pixels:  61
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-  warnings.warn("This figure includes Axes that are not compatible "
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-  warnings.warn("This figure includes Axes that are not compatible "
-count     5366.000000
-mean       821.290794
-std       1040.254586
-min        100.116739
-25%        229.867897
-50%        487.465244
-75%        972.494886
-max      10044.146554
-Name: vel, dtype: float64
-count     636.000000
-mean      265.870956
-std       235.284065
-min       100.521579
-25%       128.675465
-50%       171.290958
-75%       281.274382
-max      1423.016866
-Name: vel, dtype: float64
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-  warnings.warn("This figure includes Axes that are not compatible "
-#+end_example
-[[file:./.ob-jupyter/ee14e5e3da592eb54875dadec3aeeca04d77c5b7.png]]
-:END:
-
 **** Temporal changes in thickness
 + For each pixel, make daily time series of thickness changes from citet:khan_2016_geodetic
 + Then set 0 to GIMP.0715 date for each pixel
 + Then add them together
+
+#+NAME: adjust_thickness_ts
 #+BEGIN_SRC jupyter-python :exports none :results raw drawer
 dhdt_ts = dhdt.copy(deep=True)
 # dhdt_ts[2016] = dhdt_ts[2015] # assume annual dh/dt continues at fixed rate
@@ -3619,8 +3387,6 @@ for px in bad[bad == True].index:
     th_ts.loc[px] = fits.predict(np.log10([1,vel_baseline.iloc[px].values[0]]))
 #+END_SRC
 
-#+RESULTS:
-
 *** Discharge
 
 And more importantly and long-term, we calculate the following time series discharge products, using our preferred method (fill w/ 300 m):
@@ -3651,12 +3417,6 @@ no_filled_weighted_D = no_filled_D / filled_D.sum()
 r = ((filled_D*fill)/filled_D.sum()).sum()
 r.round(2)                        
 #+END_SRC
-
-#+RESULTS:
-: t1    1.00
-: t3    0.82
-: t4    1.00
-: dtype: float64
 
 #+NAME: discharge
 #+BEGIN_SRC jupyter-python :exports none :results raw drawer
@@ -3742,8 +3502,6 @@ for c in D.columns:
     D_all_fill_weight.loc[c] = (fill[c] * (D[c] / D[c].sum())).sum()
 #+END_SRC
 
-#+RESULTS: discharge
-
 *** SAVE & RESTORE STATE
 
 #+BEGIN_SRC jupyter-python :results raw drawer :tangle no
@@ -3765,29 +3523,6 @@ for c in D.columns:
 %store meta
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out[796]:
-# output
-Stored 'D' (DataFrame)
-Stored 'D_err' (DataFrame)
-Stored 'fill' (DataFrame)
-Stored 'D_gates' (DataFrame)
-Stored 'D_gates_err' (DataFrame)
-Stored 'D_gates_fill_weight' (DataFrame)
-Stored 'D_sectors' (DataFrame)
-Stored 'D_sectors_err' (DataFrame)
-Stored 'D_sectors_fill_weight' (DataFrame)
-Stored 'D_regions' (DataFrame)
-Stored 'D_regions_err' (DataFrame)
-Stored 'D_regions_fill_weight' (DataFrame)
-Stored 'D_all' (Series)
-Stored 'D_all_err' (Series)
-Stored 'D_all_fill_weight' (Series)
-Stored 'meta' (DataFrame)
-
-:end:
-
 #+BEGIN_SRC jupyter-python :results raw drawer :tangle no
 %store -r
 
@@ -3807,11 +3542,6 @@ D_all = D_all.T['2000':].T
 D_all_err = D_all_err.T['2000':].T
 D_all_fill_weight = D_all_fill_weight.T['2000':].T
 #+END_SRC
-
-#+RESULTS:
-:results:
-# Out[278]:
-:end:
 
 
 *** Export Data
@@ -3836,8 +3566,6 @@ D_all_err = D_all_err.T[STARTDATE:].T
 D_all_fill_weight = D_all_fill_weight.T[STARTDATE:].T
 
 #+END_SRC
-
-#+RESULTS:
 
 **** README
 
@@ -3925,11 +3653,6 @@ D_gates_errT.to_csv('./out/gate_err.csv')
 D_gates_fill_weightT.to_csv('./out/gate_coverage.csv')
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out[118]:
-:end:
-
 **** Sectors
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
 # meta_sector = pd.DataFrame(index=meta.groupby('sectors').first().index)
@@ -3986,11 +3709,6 @@ D_all_err.to_csv('./out/GIS_err.csv', float_format='%.5f', header=["Discharge Er
 D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.5f', header=["Coverage [unit]"])
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out[114]:
-:end:
-
 **** Gates
 #+BEGIN_SRC bash :results verbatim :tangle gate_export.sh
 g.mapset gates_100_5000
@@ -3998,7 +3716,6 @@ g.mapset gates_100_5000
 v.out.ogr input=gates_final output=./out/gates.kml format=KML --o
 v.out.ogr input=gates_final output=./out/gates.gpkg format=GPKG --o
 #+END_SRC
-#+RESULTS:
 
 **** Elevation change
 
@@ -4019,7 +3736,6 @@ zip -e /media/kdm/promicedata/ice_discharge/code/mankoff_et_al.zip ice_discharge
 cp ${DATADIR}/Khan_2016/dhdt_1995-2015_GrIS.txt /media/kdm/promicedata/ice_discharge/surface_elevation_change
 
 #+END_SRC
-#+RESULTS:
 
 
 ** Figures
@@ -4032,15 +3748,18 @@ cp ${DATADIR}/Khan_2016/dhdt_1995-2015_GrIS.txt /media/kdm/promicedata/ice_disch
 :header-args:jupyter-python+: :tangle no
 :END:
 **** Top contributors
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
 import pandas as pd
 
-df = pd.read_csv('./out/sector_D.csv', index_col=0, parse_dates=True)
-df = df.resample('1D').mean().\
-     interpolate(method='time').\
-     resample('A').mean()
+# annual average
+df = pd.read_csv('./out/sector_D.csv', index_col=0, parse_dates=True)\
+       .resample('1D')\
+       .mean()\
+       .interpolate(method='time')\
+       .resample('A')\
+       .mean()\
 
-top8 = df.iloc[-1,:].sort_values(ascending=False).head(9)
+top_few = df.iloc[-1].sort_values(ascending=False).head(8)
 # names = {}
 # for m in mouginot_names: names[m] = ""
 # names["JAKOBSHAVN_ISBRAE"] = "Sermeq Kujalleq (Jakobshavn Isbræ)"
@@ -4051,8 +3770,9 @@ top8 = df.iloc[-1,:].sort_values(ascending=False).head(9)
 
 meta = pd.read_csv("./out/gate_meta.csv")
 
-out = pd.DataFrame(index=top8.index, columns=["x","y"])
+out = pd.DataFrame(index=top_few.index, columns=["D","x","y"])
 for name in out.index:
+    out.loc[name]["D"] = top_few[name]
     out.loc[name]["x"] = meta[meta["Mouginot_2019"] == name]["mean_x"].values[0]
     out.loc[name]["y"] = meta[meta["Mouginot_2019"] == name]["mean_y"].values[0]
 
@@ -4061,17 +3781,16 @@ out
 #+END_SRC
 
 #+RESULTS:
-|                       |       x |            y |
-|-----------------------+---------+--------------|
-| JAKOBSHAVN_ISBRAE     | -181992 |  -2.2678e+06 |
-| HELHEIMGLETSCHER      |  303757 | -2.57624e+06 |
-| KANGERLUSSUAQ         |  484506 | -2.28798e+06 |
-| KOGE_BUGT_C           |  182821 |  -2.7211e+06 |
-| ZACHARIAE_ISSTROM     |  487875 | -1.10175e+06 |
-| NIOGHALVFJERDSFJORDEN |  439187 |  -1.0736e+06 |
-| RINK_ISBRAE           | -224240 | -1.97637e+06 |
-| IKERTIVAQ_M           |  227847 | -2.67781e+06 |
-| PETERMANN_GLETSCHER   | -261888 |      -996839 |
+|                       |       D |       x |            y |
+|-----------------------+---------+---------+--------------|
+| JAKOBSHAVN_ISBRAE     | 35.2545 | -181992 |  -2.2678e+06 |
+| HELHEIMGLETSCHER      | 33.5947 |  303757 | -2.57624e+06 |
+| KANGERLUSSUAQ         | 25.2548 |  484506 | -2.28798e+06 |
+| KOGE_BUGT_C           |  15.972 |  182821 |  -2.7211e+06 |
+| ZACHARIAE_ISSTROM     | 15.7058 |  487875 | -1.10175e+06 |
+| NIOGHALVFJERDSFJORDEN | 13.6723 |  439187 |  -1.0736e+06 |
+| RINK_ISBRAE           | 12.3645 | -224240 | -1.97637e+06 |
+| PETERMANN_GLETSCHER   | 12.2903 | -261888 |      -996839 |
 
 **** Prep data
 #+BEGIN_SRC bash :results verbatim
@@ -4277,7 +3996,6 @@ g.region -d
  
 
 #+END_SRC
-#+RESULTS:
 **** ps.map overview
 + create named regions with
   + d.mon start=wx0
@@ -4291,7 +4009,6 @@ g.mapset fig_overview
 g.list type=region mapset=.
 # g.remove -f type=region pattern=*
 #+END_SRC
-#+RESULTS:
 
 
 #+BEGIN_SRC PSMAP :tangle overview.psmap
@@ -4333,7 +4050,6 @@ for region in $(g.list type=region mapset=.); do
   # o ./figs/psmap/${region}.png
 done
 #+END_SRC
-#+RESULTS:
 **** Configure in Inkscape
 
 Manually align and adjust in Inkscape, add text, boxes, etc. then...
@@ -4341,11 +4057,10 @@ Manually align and adjust in Inkscape, add text, boxes, etc. then...
 #+BEGIN_SRC bash :results verbatim
 inkscape -z ./figs/overview.svg -e ./figs/overview.png
 #+END_SRC
-#+RESULTS:
 
 *** Discharge Time Series - GIS
 #+NAME: fig:discharge_ts
-#+BEGIN_SRC jupyter-python :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export
 import matplotlib.gridspec as gridspec
 import numpy as np
 import pandas as pd
@@ -4373,9 +4088,9 @@ coverage = pd.read_csv("./out/GIS_coverage.csv", index_col=0, parse_dates=True)
 
 # Add t0 and t_end so that graph covers a nice time span
 def pad_df(df):
-    df = df.append(pd.DataFrame(index=np.array(['1986-01-01']).astype('datetime64[ns]')))
+    df = df.append(pd.DataFrame(index=np.array(['1986-01-01']).astype('datetime64[ns]')), sort=True)
     idx = str(df.index.year.max())+'-12-31'
-    df = df.append(pd.DataFrame(index=np.array([idx]).astype('datetime64[ns]')))
+    df = df.append(pd.DataFrame(index=np.array([idx]).astype('datetime64[ns]')), sort=True)
     df = df.sort_index()
     return df
 
@@ -4432,86 +4147,55 @@ disp
 #+END_SRC
 
 #+RESULTS: fig:discharge_ts
-| Year |       D |     err |
-|------+---------+---------|
-| 1986 | 468.248 | 49.8858 |
-| 1987 | 462.964 | 47.8856 |
-| 1988 | 449.364 | 45.7149 |
-| 1989 |  450.46 | 46.0803 |
-| 1990 |  450.96 | 47.0429 |
-| 1991 | 437.582 | 44.6957 |
-| 1992 | 441.447 | 44.6899 |
-| 1993 | 447.097 | 44.7508 |
-| 1994 | 462.136 | 46.2996 |
-| 1995 | 436.023 | 43.8788 |
-| 1996 | 431.661 | 43.7931 |
-| 1997 | 440.167 | 44.6272 |
-| 1998 | 450.737 | 45.6766 |
-| 1999 | 446.107 | 45.0479 |
-| 2000 | 447.842 | 44.3503 |
-| 2001 | 448.504 | 44.3367 |
-| 2002 | 465.703 | 45.8123 |
-| 2003 | 479.474 | 47.0676 |
-| 2004 | 490.437 | 48.4284 |
-| 2005 | 499.661 | 48.8314 |
-| 2006 | 491.952 | 48.1938 |
-| 2007 |  482.88 | 47.6601 |
-| 2008 | 483.831 | 48.0782 |
-| 2009 | 490.576 | 48.8829 |
-| 2010 | 494.336 | 49.4459 |
-| 2011 | 496.192 | 49.9389 |
-| 2012 | 494.536 | 50.1181 |
-| 2013 |  497.75 | 50.1675 |
-| 2014 | 498.825 | 50.3269 |
-| 2015 |  501.56 | 50.4287 |
-| 2016 | 497.031 | 50.0212 |
-| 2017 | 503.429 |  50.237 |
-| 2018 | 495.627 | 49.2744 |
-| 2019 | 499.256 |  50.209 |
+:RESULTS:
+#+begin_example
+               D        err
+Year                       
+1986  437.137927  43.377344
+1987  433.394970  42.870028
+1988  428.594983  42.616775
+1989  430.907590  42.839462
+1990  426.928186  42.513197
+1991  424.475874  42.291496
+1992  426.447232  42.535755
+1993  428.157815  42.610219
+1994  426.210745  42.891387
+1995  420.511500  42.398044
+1996  427.164611  43.347198
+1997  432.969352  44.011864
+1998  434.854024  43.935954
+1999  445.682647  44.838323
+2000  451.485271  44.739273
+2001  451.179717  44.503312
+2002  467.967363  45.911490
+2003  475.889710  46.700900
+2004  488.263521  48.144551
+2005  502.811578  48.971071
+2006  491.119237  48.162144
+2007  483.632408  47.704732
+2008  488.093181  48.621682
+2009  491.983033  49.101788
+2010  495.679122  49.669552
+2011  497.044260  49.907438
+2012  494.268296  50.036806
+2013  500.751228  50.447196
+2014  502.491277  50.750035
+2015  501.461894  50.418117
+2016  496.156796  49.959507
+2017  503.297250  50.222606
+2018  495.009945  49.206377
+2019  497.886393  50.031865
+#+end_example
+: <Figure size 648x360 with 2 Axes>
+:END:
 
 
 
 
-**** Filtered v. unfiltered
-| Year | filtered | unfiltered | diff [Gt] |    diff [%] |
-|------+----------+------------+-----------+-------------|
-| 1986 |  437.954 |    467.434 |     29.48 |  -6.7313005 |
-| 1987 |  434.214 |    457.426 |    23.212 |  -5.3457512 |
-| 1988 |  429.421 |    448.697 |    19.276 |  -4.4888350 |
-| 1989 |   431.74 |    460.618 |    28.878 |  -6.6887479 |
-| 1990 |  427.765 |    457.693 |    29.928 |  -6.9963648 |
-| 1991 |  425.336 |     431.99 |     6.654 |  -1.5644103 |
-| 1992 |  427.346 |    430.197 |     2.851 | -0.66714091 |
-| 1993 |  429.094 |    433.901 |     4.807 |  -1.1202674 |
-| 1994 |  427.136 |    436.287 |     9.151 |  -2.1424090 |
-| 1995 |  421.375 |    421.163 |    -0.212 | 0.050311480 |
-| 1996 |  427.977 |    423.235 |    -4.742 |   1.1080035 |
-| 1997 |  433.854 |    429.534 |     -4.32 |  0.99572667 |
-| 1998 |  435.777 |    437.337 |      1.56 | -0.35798126 |
-| 1999 |  446.558 |    451.861 |     5.303 |  -1.1875277 |
-| 2000 |  452.377 |    461.442 |     9.065 |  -2.0038596 |
-| 2001 |  452.084 |    457.837 |     5.753 |  -1.2725511 |
-| 2002 |  468.846 |    475.337 |     6.491 |  -1.3844631 |
-| 2003 |   476.82 |    497.393 |    20.573 |  -4.3146261 |
-| 2004 |  489.334 |    499.104 |      9.77 |  -1.9965913 |
-| 2005 |  504.017 |    513.761 |     9.744 |  -1.9332681 |
-| 2006 |  492.232 |    497.707 |     5.475 |  -1.1122804 |
-| 2007 |  484.564 |    495.699 |    11.135 |  -2.2979421 |
-| 2008 |  485.528 |        493 |     7.472 |  -1.5389432 |
-| 2009 |  492.206 |    496.611 |     4.405 | -0.89495049 |
-| 2010 |  496.914 |     503.48 |     6.566 |  -1.3213554 |
-| 2011 |  498.946 |    518.767 |    19.821 |  -3.9725742 |
-| 2012 |  496.274 |    502.503 |     6.229 |  -1.2551534 |
-| 2013 |  502.511 |    518.619 |    16.108 |  -3.2055020 |
-| 2014 |  503.128 |    508.178 |      5.05 |  -1.0037207 |
-| 2015 |  501.615 |    506.752 |     5.137 |  -1.0240922 |
-| 2016 |  494.365 |    500.796 |     6.431 |  -1.3008607 |
-| 2017 |  499.647 |    502.387 |      2.74 | -0.54838716 |
-#+TBLFM: $4=$3-$2::$5=100-($3/$2)*100
 
 *** Discharge Time Series - Regions
 #+NAME: fig:discharge_ts_regions
-#+BEGIN_SRC jupyter-python :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export
 import matplotlib.gridspec as gridspec
 import numpy as np
 import pandas as pd
@@ -4540,9 +4224,9 @@ err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
 coverage = pd.read_csv("./out/region_coverage.csv", index_col=0, parse_dates=True)
 
 def pad_df(df):
-    df = df.append(pd.DataFrame(index=np.array(['1986-01-01']).astype('datetime64[ns]')))
+    df = df.append(pd.DataFrame(index=np.array(['1986-01-01']).astype('datetime64[ns]')), sort=True)
     idx = str(df.index.year.max())+'-12-31'
-    df = df.append(pd.DataFrame(index=np.array([idx]).astype('datetime64[ns]')))
+    df = df.append(pd.DataFrame(index=np.array([idx]).astype('datetime64[ns]')), sort=True)
     df = df.sort_index()
     return df
 
@@ -4612,42 +4296,46 @@ tbl
 #+END_SRC
 
 #+RESULTS: fig:discharge_ts_regions
-|      | CE (Err %) | CW (Err %) | NE (Err %) | NO (Err %) | NW (Err %) | SE (Err %) | SW (Err %) |
-|------+------------+------------+------------+------------+------------+------------+------------|
-| 1986 | 68 (10)    | 74 (9)     | 22 (8)     | 23 (9)     | 98 (8)     | 160 (13)   | 22 (14)    |
-| 1987 | 68 (10)    | 72 (9)     | 23 (8)     | 24 (8)     | 93 (8)     | 161 (13)   | 22 (14)    |
-| 1988 | 69 (10)    | 69 (8)     | 22 (8)     | 23 (7)     | 95 (8)     | 148 (12)   | 22 (14)    |
-| 1989 | 70 (10)    | 70 (8)     | 22 (8)     | 23 (8)     | 102 (9)    | 141 (13)   | 22 (14)    |
-| 1990 | 71 (11)    | 69 (9)     | 22 (8)     | 22 (8)     | 102 (9)    | 142 (13)   | 22 (14)    |
-| 1991 | 69 (10)    | 65 (8)     | 22 (8)     | 22 (8)     | 93 (8)     | 145 (12)   | 22 (14)    |
-| 1992 | 69 (10)    | 64 (8)     | 22 (8)     | 22 (8)     | 91 (8)     | 151 (12)   | 23 (14)    |
-| 1993 | 67 (10)    | 65 (8)     | 22 (8)     | 23 (7)     | 93 (8)     | 155 (12)   | 21 (14)    |
-| 1994 | 66 (10)    | 68 (8)     | 23 (8)     | 24 (9)     | 97 (8)     | 163 (12)   | 20 (14)    |
-| 1995 | 65 (10)    | 64 (8)     | 22 (8)     | 24 (8)     | 92 (8)     | 149 (12)   | 20 (13)    |
-| 1996 | 67 (10)    | 65 (8)     | 22 (8)     | 22 (7)     | 90 (8)     | 144 (13)   | 21 (14)    |
-| 1997 | 70 (10)    | 67 (8)     | 22 (8)     | 21 (8)     | 91 (8)     | 148 (13)   | 21 (14)    |
-| 1998 | 71 (10)    | 75 (8)     | 22 (8)     | 22 (7)     | 93 (8)     | 149 (13)   | 20 (13)    |
-| 1999 | 69 (10)    | 76 (8)     | 22 (8)     | 24 (7)     | 90 (8)     | 145 (13)   | 20 (14)    |
-| 2000 | 67 (10)    | 80 (8)     | 23 (8)     | 23 (7)     | 91 (8)     | 143 (12)   | 21 (14)    |
-| 2001 | 68 (10)    | 81 (8)     | 25 (8)     | 21 (7)     | 91 (8)     | 143 (12)   | 20 (14)    |
-| 2002 | 68 (10)    | 82 (8)     | 28 (8)     | 23 (8)     | 93 (8)     | 151 (12)   | 20 (14)    |
-| 2003 | 70 (10)    | 85 (8)     | 26 (8)     | 24 (7)     | 94 (9)     | 159 (11)   | 21 (14)    |
-| 2004 | 74 (10)    | 85 (8)     | 24 (8)     | 24 (7)     | 97 (9)     | 165 (11)   | 21 (15)    |
-| 2005 | 84 (9)     | 84 (8)     | 25 (8)     | 23 (7)     | 97 (8)     | 166 (11)   | 22 (15)    |
-| 2006 | 83 (9)     | 86 (8)     | 24 (8)     | 24 (7)     | 97 (9)     | 155 (12)   | 21 (15)    |
-| 2007 | 80 (9)     | 87 (9)     | 25 (8)     | 24 (8)     | 97 (9)     | 150 (12)   | 21 (15)    |
-| 2008 | 78 (10)    | 87 (9)     | 25 (8)     | 24 (7)     | 98 (9)     | 151 (12)   | 20 (15)    |
-| 2009 | 77 (10)    | 90 (9)     | 25 (8)     | 23 (7)     | 100 (9)    | 156 (12)   | 20 (15)    |
-| 2010 | 76 (10)    | 89 (9)     | 25 (8)     | 25 (7)     | 103 (9)    | 157 (12)   | 19 (16)    |
-| 2011 | 77 (10)    | 88 (9)     | 26 (8)     | 25 (7)     | 106 (9)    | 154 (12)   | 21 (15)    |
-| 2012 | 76 (10)    | 93 (9)     | 26 (8)     | 24 (7)     | 105 (9)    | 150 (12)   | 20 (15)    |
-| 2013 | 76 (10)    | 95 (9)     | 26 (8)     | 24 (7)     | 107 (9)    | 150 (12)   | 20 (14)    |
-| 2014 | 74 (10)    | 93 (9)     | 27 (8)     | 25 (7)     | 111 (9)    | 149 (12)   | 20 (15)    |
-| 2015 | 74 (10)    | 93 (9)     | 28 (8)     | 25 (7)     | 110 (9)    | 152 (12)   | 20 (15)    |
-| 2016 | 73 (10)    | 92 (9)     | 28 (8)     | 25 (7)     | 113 (9)    | 147 (12)   | 19 (15)    |
-| 2017 | 75 (9)     | 83 (9)     | 29 (8)     | 26 (7)     | 116 (9)    | 154 (12)   | 19 (15)    |
-| 2018 | 76 (9)     | 77 (9)     | 30 (8)     | 27 (7)     | 115 (9)    | 151 (12)   | 19 (15)    |
-| 2019 | 75 (10)    | 77 (9)     | 30 (8)     | 28 (8)     | 113 (9)    | 156 (12)   | 19 (15)    |
+:RESULTS:
+#+begin_example
+     CE (Err %) CW (Err %) NE (Err %) NO (Err %) NW (Err %) SE (Err %) SW (Err %)
+1986    65 (10)     69 (9)     21 (8)     24 (7)     89 (8)   148 (12)    19 (13)
+1987    65 (10)     67 (9)     21 (8)     24 (7)     88 (8)   148 (12)    19 (13)
+1988    65 (10)     66 (8)     22 (8)     23 (7)     88 (8)   146 (12)    19 (13)
+1989    67 (10)     68 (8)     22 (8)     24 (7)     88 (8)   143 (12)    19 (13)
+1990    67 (10)     66 (8)     22 (8)     22 (7)     88 (8)   143 (12)    19 (13)
+1991    69 (10)     64 (8)     22 (8)     21 (7)     88 (8)   141 (12)    19 (13)
+1992    70 (10)     63 (8)     22 (8)     22 (7)     91 (8)   140 (12)    19 (13)
+1993    69 (10)     64 (8)     22 (8)     22 (7)     93 (8)   139 (12)    19 (13)
+1994    66 (10)     65 (8)     22 (8)     23 (9)     92 (8)   140 (12)    18 (13)
+1995    64 (10)     65 (8)     22 (8)     23 (8)     90 (8)   139 (12)    18 (13)
+1996    65 (10)     66 (8)     22 (8)     22 (7)     89 (8)   143 (13)    19 (13)
+1997    67 (10)     66 (8)     23 (8)     22 (7)     90 (8)   145 (13)    20 (13)
+1998    68 (10)     71 (8)     23 (8)     23 (7)     89 (8)   142 (13)    19 (13)
+1999    68 (10)     76 (8)     23 (8)     25 (7)     90 (8)   145 (12)    19 (14)
+2000    67 (10)     80 (8)     24 (8)     23 (7)     91 (8)   146 (12)    21 (14)
+2001    68 (10)     82 (8)     26 (8)     23 (7)     91 (8)   141 (12)    20 (14)
+2002    69 (10)     82 (8)     29 (8)     25 (7)     92 (8)   150 (12)    21 (14)
+2003    70 (10)     85 (8)     26 (8)     23 (7)     93 (8)   158 (11)    21 (14)
+2004    74 (10)     84 (8)     24 (8)     24 (7)     96 (9)   166 (11)    21 (15)
+2005     85 (9)     84 (8)     25 (8)     25 (7)     97 (9)   166 (11)    21 (15)
+2006     84 (9)     87 (8)     24 (8)     23 (7)     97 (9)   155 (12)    21 (15)
+2007     80 (9)     87 (9)     25 (8)     24 (8)     97 (9)   151 (12)    20 (15)
+2008    78 (10)     89 (9)     26 (8)     26 (8)     99 (9)   153 (12)    19 (15)
+2009    77 (10)     90 (9)     25 (8)     23 (7)    100 (9)   156 (12)    20 (15)
+2010    76 (10)     90 (9)     25 (8)     25 (7)    103 (9)   157 (12)    20 (16)
+2011    78 (10)     89 (9)     25 (8)     25 (7)    107 (9)   153 (12)    21 (15)
+2012    76 (10)     94 (9)     26 (8)     24 (7)    105 (9)   150 (12)    20 (16)
+2013    76 (10)     95 (9)     26 (8)     24 (7)    108 (9)   153 (12)    20 (14)
+2014    75 (10)     93 (9)     27 (8)     26 (7)    112 (9)   150 (12)    20 (15)
+2015    74 (10)     93 (9)     28 (8)     25 (7)    111 (9)   151 (12)    20 (15)
+2016    72 (10)     93 (9)     28 (8)     25 (7)    113 (9)   146 (12)    19 (15)
+2017     75 (9)     83 (9)     29 (8)     26 (7)    116 (9)   154 (12)    19 (15)
+2018     76 (9)     77 (9)     30 (8)     27 (7)    115 (9)   151 (12)    19 (15)
+2019    75 (10)     77 (9)     30 (8)     28 (8)    111 (9)   156 (12)    19 (15)
+#+end_example
+: <Figure size 648x504 with 2 Axes>
+:END:
 
 *** Region & Catchment Contributions
 :PROPERTIES:
@@ -4658,7 +4346,7 @@ tbl
 :PROPERTIES:
 :ID:       eca400fe-cffc-4e6b-8fc1-694945093adb
 :END:
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
 D = pd.read_csv("./out/GIS_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/GIS_err.csv", index_col=0, parse_dates=True)
 
@@ -4679,14 +4367,14 @@ print(err.values)
 #+END_SRC
 
 #+RESULTS:
-: [488.44884769]
-: [48.60211048]
+: [488.69292496]
+: [48.6410459]
 
 
 
 
 **** Discharge time series
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
 D = pd.read_csv("./out/GIS_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/GIS_err.csv", index_col=0, parse_dates=True)
 
@@ -4697,64 +4385,55 @@ df = pd.DataFrame(index=D.index)
 df['D'] = D
 df['err'] = err
 
-print("Min: ", df.loc[df['D'].argmin()])
-print("Max: ", df.loc[df['D'].argmax()])
+print("Min: ", df.loc[df['D'].idxmin])
+print("Max: ", df.loc[df['D'].idxmin])
 df
 #+END_SRC
 
 #+RESULTS:
 :RESULTS:
-#+begin_example
-Min:  D      420.540625
-err     42.410435
-Name: 1995-12-31 00:00:00, dtype: float64
-Max:  D      504.999339
-err     50.511728
-Name: 2018-12-31 00:00:00, dtype: float64
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/ipykernel_launcher.py:11: FutureWarning: 'argmin' is deprecated, use 'idxmin' instead. The behavior of 'argmin'
-will be corrected to return the positional minimum in the future.
-Use 'series.values.argmin' to get the position of the minimum now.
-  # This is added back by InteractiveShellApp.init_path()
-/home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/ipykernel_launcher.py:12: FutureWarning: 'argmax' is deprecated, use 'idxmax' instead. The behavior of 'argmax'
-will be corrected to return the positional maximum in the future.
-Use 'series.values.argmax' to get the position of the maximum now.
-  if sys.path[0] == '':
-#+end_example
+: Min:  D      420.511500
+: err     42.398044
+: Name: 1995-12-31 00:00:00, dtype: float64
+: Max:  D      420.511500
+: err     42.398044
+: Name: 1995-12-31 00:00:00, dtype: float64
 | Date                |       D |     err |
 |---------------------+---------+---------|
-| 1986-12-31 00:00:00 | 437.168 | 43.3904 |
-| 1987-12-31 00:00:00 | 433.425 | 42.8831 |
-| 1988-12-31 00:00:00 | 428.625 | 42.6298 |
-| 1989-12-31 00:00:00 | 430.938 | 42.8525 |
-| 1990-12-31 00:00:00 | 426.959 | 42.5263 |
-| 1991-12-31 00:00:00 | 424.506 | 42.3046 |
-| 1992-12-31 00:00:00 | 426.478 | 42.5487 |
-| 1993-12-31 00:00:00 | 428.188 | 42.623  |
-| 1994-12-31 00:00:00 | 426.24  | 42.904  |
-| 1995-12-31 00:00:00 | 420.541 | 42.4104 |
-| 1996-12-31 00:00:00 | 427.194 | 43.3595 |
-| 1997-12-31 00:00:00 | 432.996 | 44.0224 |
-| 1998-12-31 00:00:00 | 434.877 | 43.943  |
-| 1999-12-31 00:00:00 | 445.702 | 44.8418 |
-| 2000-12-31 00:00:00 | 451.501 | 44.7395 |
-| 2001-12-31 00:00:00 | 451.201 | 44.504  |
-| 2002-12-31 00:00:00 | 467.996 | 45.9138 |
-| 2003-12-31 00:00:00 | 475.938 | 46.7059 |
-| 2004-12-31 00:00:00 | 488.322 | 48.1511 |
-| 2005-12-31 00:00:00 | 502.878 | 48.9798 |
-| 2006-12-31 00:00:00 | 491.059 | 48.1582 |
-| 2007-12-31 00:00:00 | 483.344 | 47.6454 |
-| 2008-12-31 00:00:00 | 484.462 | 48.1241 |
-| 2009-12-31 00:00:00 | 490.687 | 48.9173 |
-| 2010-12-31 00:00:00 | 495.197 | 49.5894 |
-| 2011-12-31 00:00:00 | 497.126 | 49.9305 |
-| 2012-12-31 00:00:00 | 494.392 | 50.0738 |
-| 2013-12-31 00:00:00 | 500.327 | 50.429  |
-| 2014-12-31 00:00:00 | 501.804 | 50.6444 |
-| 2015-12-31 00:00:00 | 501.309 | 50.3954 |
-| 2016-12-31 00:00:00 | 496.269 | 49.9868 |
-| 2017-12-31 00:00:00 | 503.878 | 50.2857 |
-| 2018-12-31 00:00:00 | 504.999 | 50.5117 |
+| 1986-12-31 00:00:00 | 437.138 | 43.3773 |
+| 1987-12-31 00:00:00 | 433.395 | 42.87   |
+| 1988-12-31 00:00:00 | 428.595 | 42.6168 |
+| 1989-12-31 00:00:00 | 430.908 | 42.8395 |
+| 1990-12-31 00:00:00 | 426.928 | 42.5132 |
+| 1991-12-31 00:00:00 | 424.476 | 42.2915 |
+| 1992-12-31 00:00:00 | 426.447 | 42.5358 |
+| 1993-12-31 00:00:00 | 428.158 | 42.6102 |
+| 1994-12-31 00:00:00 | 426.211 | 42.8914 |
+| 1995-12-31 00:00:00 | 420.511 | 42.398  |
+| 1996-12-31 00:00:00 | 427.165 | 43.3472 |
+| 1997-12-31 00:00:00 | 432.969 | 44.0119 |
+| 1998-12-31 00:00:00 | 434.854 | 43.936  |
+| 1999-12-31 00:00:00 | 445.683 | 44.8383 |
+| 2000-12-31 00:00:00 | 451.485 | 44.7393 |
+| 2001-12-31 00:00:00 | 451.18  | 44.5033 |
+| 2002-12-31 00:00:00 | 467.967 | 45.9115 |
+| 2003-12-31 00:00:00 | 475.89  | 46.7009 |
+| 2004-12-31 00:00:00 | 488.264 | 48.1446 |
+| 2005-12-31 00:00:00 | 502.812 | 48.9711 |
+| 2006-12-31 00:00:00 | 491.119 | 48.1621 |
+| 2007-12-31 00:00:00 | 483.632 | 47.7047 |
+| 2008-12-31 00:00:00 | 488.093 | 48.6217 |
+| 2009-12-31 00:00:00 | 491.983 | 49.1018 |
+| 2010-12-31 00:00:00 | 495.679 | 49.6696 |
+| 2011-12-31 00:00:00 | 497.044 | 49.9074 |
+| 2012-12-31 00:00:00 | 494.268 | 50.0368 |
+| 2013-12-31 00:00:00 | 500.751 | 50.4472 |
+| 2014-12-31 00:00:00 | 502.491 | 50.75   |
+| 2015-12-31 00:00:00 | 501.462 | 50.4181 |
+| 2016-12-31 00:00:00 | 496.157 | 49.9595 |
+| 2017-12-31 00:00:00 | 503.297 | 50.2226 |
+| 2018-12-31 00:00:00 | 495.01  | 49.2064 |
+| 2019-12-31 00:00:00 | 497.886 | 50.0319 |
 :END:
 
 
@@ -4775,67 +4454,6 @@ df['SEerr'] = err['SE']
 df
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-#+begin_example
-D SE described:
- count     33.000000
-mean     148.775833
-std        7.111016
-min      138.758834
-25%      142.972414
-50%      148.249142
-75%      152.878415
-max      166.262388
-Name: SE, dtype: float64
-
-D SE err percent: count    33.000000
-mean     11.914561
-std       0.347710
-min      11.367979
-25%      11.683121
-50%      11.848489
-75%      12.088603
-max      12.717230
-Name: SE, dtype: float64
-#+end_example
-| Date                |      SE |   SEerr |
-|---------------------+---------+---------|
-| 1986-12-31 00:00:00 | 148.249 | 17.1599 |
-| 1987-12-31 00:00:00 | 147.832 | 17.154  |
-| 1988-12-31 00:00:00 | 145.674 | 17.0682 |
-| 1989-12-31 00:00:00 | 143.292 | 16.978  |
-| 1990-12-31 00:00:00 | 142.863 | 16.9946 |
-| 1991-12-31 00:00:00 | 141.104 | 16.924  |
-| 1992-12-31 00:00:00 | 139.889 | 16.9106 |
-| 1993-12-31 00:00:00 | 139.108 | 16.9568 |
-| 1994-12-31 00:00:00 | 139.642 | 17.0754 |
-| 1995-12-31 00:00:00 | 138.759 | 17.0589 |
-| 1996-12-31 00:00:00 | 142.972 | 18.0841 |
-| 1997-12-31 00:00:00 | 145.35  | 18.4844 |
-| 1998-12-31 00:00:00 | 141.826 | 17.9258 |
-| 1999-12-31 00:00:00 | 145.235 | 18.0454 |
-| 2000-12-31 00:00:00 | 146.081 | 17.4915 |
-| 2001-12-31 00:00:00 | 140.549 | 16.8309 |
-| 2002-12-31 00:00:00 | 150.129 | 17.4641 |
-| 2003-12-31 00:00:00 | 157.618 | 18.0291 |
-| 2004-12-31 00:00:00 | 165.713 | 18.9262 |
-| 2005-12-31 00:00:00 | 166.262 | 18.9007 |
-| 2006-12-31 00:00:00 | 155.219 | 18.0591 |
-| 2007-12-31 00:00:00 | 150.38  | 17.5777 |
-| 2008-12-31 00:00:00 | 151.96  | 17.8184 |
-| 2009-12-31 00:00:00 | 155.669 | 18.187  |
-| 2010-12-31 00:00:00 | 157.03  | 18.4568 |
-| 2011-12-31 00:00:00 | 152.878 | 18.2838 |
-| 2012-12-31 00:00:00 | 149.551 | 18.1449 |
-| 2013-12-31 00:00:00 | 152.467 | 18.2772 |
-| 2014-12-31 00:00:00 | 149.941 | 17.9267 |
-| 2015-12-31 00:00:00 | 151.965 | 17.8598 |
-| 2016-12-31 00:00:00 | 146.365 | 17.3233 |
-| 2017-12-31 00:00:00 | 154.374 | 17.9661 |
-| 2018-12-31 00:00:00 | 153.655 | 18.0683 |
-:END:
-
 **** Contribution from SE relative to the total
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
 D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
@@ -4852,55 +4470,6 @@ print((D_SE/D_rest*100).describe())
 print("")
 print(D_SE/D_rest*100)
 #+END_SRC
-
-#+RESULTS:
-#+begin_example
-count    33.000000
-mean     32.141980
-std       1.343697
-min      29.492955
-25%      31.112378
-50%      32.487698
-75%      33.239571
-max      34.107794
-dtype: float64
-
-Date
-1986-12-31    33.911235
-1987-12-31    34.107794
-1988-12-31    33.986268
-1989-12-31    33.251294
-1990-12-31    33.460657
-1991-12-31    33.239571
-1992-12-31    32.801043
-1993-12-31    32.487698
-1994-12-31    32.761421
-1995-12-31    32.995346
-1996-12-31    33.467834
-1997-12-31    33.568323
-1998-12-31    32.613001
-1999-12-31    32.585595
-2000-12-31    32.354605
-2001-12-31    31.150065
-2002-12-31    32.079101
-2003-12-31    33.117350
-2004-12-31    33.935142
-2005-12-31    33.062147
-2006-12-31    31.609082
-2007-12-31    31.112378
-2008-12-31    31.366802
-2009-12-31    31.724742
-2010-12-31    31.710610
-2011-12-31    30.752459
-2012-12-31    30.249408
-2013-12-31    30.473438
-2014-12-31    29.880472
-2015-12-31    30.313547
-2016-12-31    29.492955
-2017-12-31    30.637229
-2018-12-31    30.426714
-Freq: A-DEC, dtype: float64
-#+end_example
 
 
 
@@ -4931,53 +4500,6 @@ print("\nNW increase:", D['NW'])
 # print(D_SE/D_rest*100)
 #+END_SRC
 
-#+RESULTS:
-#+begin_example
-
-NO+NE+NW: min    131.370560
-max    173.853117
-dtype: float64
-
-NO+NE+NW%: mean    31.265545
-dtype: float64
-
-NW increase: Date
-1986-12-31     89.266607
-1987-12-31     87.887951
-1988-12-31     87.755948
-1989-12-31     88.003587
-1990-12-31     87.970189
-1991-12-31     88.318031
-1992-12-31     90.820857
-1993-12-31     93.255615
-1994-12-31     92.216468
-1995-12-31     89.532762
-1996-12-31     89.010885
-1997-12-31     90.087152
-1998-12-31     89.374234
-1999-12-31     89.848937
-2000-12-31     91.000814
-2001-12-31     91.267369
-2002-12-31     92.300144
-2003-12-31     93.070720
-2004-12-31     95.848259
-2005-12-31     96.652487
-2006-12-31     97.336640
-2007-12-31     97.167896
-2008-12-31     98.775077
-2009-12-31    100.553273
-2010-12-31    103.437822
-2011-12-31    106.913302
-2012-12-31    104.927507
-2013-12-31    107.567319
-2014-12-31    111.865685
-2015-12-31    109.958876
-2016-12-31    112.876595
-2017-12-31    115.845978
-2018-12-31    116.952454
-Freq: A-DEC, Name: NW, dtype: float64
-#+end_example
-
 **** Sermeq Kujalleq (Jakobshavn Isbræ)
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
 D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
@@ -4995,57 +4517,8 @@ df['err'] = err
 df
 #+END_SRC
 
-#+RESULTS:
-:RESULTS:
-: Jakobshavn described:
-:  count    33.000000
-: mean     36.314192
-: std       9.775048
-: min      22.612427
-: 25%      25.573804
-: 50%      37.077133
-: 75%      44.844775
-: max      51.502856
-: Name: JAKOBSHAVN_ISBRAE, dtype: float64
-| Date                |    Jako |     err |
-|---------------------+---------+---------|
-| 1986-12-31 00:00:00 | 28.4839 | 2.96734 |
-| 1987-12-31 00:00:00 | 26.5038 | 2.72569 |
-| 1988-12-31 00:00:00 | 25.5183 | 2.59409 |
-| 1989-12-31 00:00:00 | 27.1045 | 2.72013 |
-| 1990-12-31 00:00:00 | 25.5329 | 2.48419 |
-| 1991-12-31 00:00:00 | 23.0622 | 2.2238  |
-| 1992-12-31 00:00:00 | 22.6124 | 2.20058 |
-| 1993-12-31 00:00:00 | 24.2377 | 2.30753 |
-| 1994-12-31 00:00:00 | 25.3483 | 2.36384 |
-| 1995-12-31 00:00:00 | 24.1369 | 2.22583 |
-| 1996-12-31 00:00:00 | 25.4817 | 2.31369 |
-| 1997-12-31 00:00:00 | 25.5738 | 2.30127 |
-| 1998-12-31 00:00:00 | 29.1732 | 2.63433 |
-| 1999-12-31 00:00:00 | 32.4494 | 2.88293 |
-| 2000-12-31 00:00:00 | 35.8264 | 3.15287 |
-| 2001-12-31 00:00:00 | 37.0771 | 3.25229 |
-| 2002-12-31 00:00:00 | 38.567  | 3.3948  |
-| 2003-12-31 00:00:00 | 40.8969 | 3.63303 |
-| 2004-12-31 00:00:00 | 42.2548 | 3.79803 |
-| 2005-12-31 00:00:00 | 43.4011 | 3.95143 |
-| 2006-12-31 00:00:00 | 44.8035 | 4.12136 |
-| 2007-12-31 00:00:00 | 44.8448 | 4.15351 |
-| 2008-12-31 00:00:00 | 44.425  | 4.14756 |
-| 2009-12-31 00:00:00 | 46.1771 | 4.31207 |
-| 2010-12-31 00:00:00 | 46.6126 | 4.37313 |
-| 2011-12-31 00:00:00 | 46.0907 | 4.34717 |
-| 2012-12-31 00:00:00 | 51.5029 | 4.91911 |
-| 2013-12-31 00:00:00 | 50.5796 | 4.92402 |
-| 2014-12-31 00:00:00 | 48.9888 | 4.81342 |
-| 2015-12-31 00:00:00 | 48.2833 | 4.81539 |
-| 2016-12-31 00:00:00 | 47.9106 | 4.7594  |
-| 2017-12-31 00:00:00 | 39.5751 | 3.96052 |
-| 2018-12-31 00:00:00 | 35.3322 | 3.52634 |
-:END:
-
 *** Discharge Time Series - Sectors
-#+BEGIN_SRC jupyter-python :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export :async yes
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
@@ -5180,6 +4653,82 @@ tbl
 #+END_SRC
 
 #+RESULTS:
+:results:
+#+begin_example
+     JAKOBSHAVN_ISBRAE (%) HELHEIMGLETSCHER (%) KANGERLUSSUAQ (%) KOGE_BUGT_C (%)  \
+1986               28 (10)               32 (5)            17 (5)          18 (6)   
+1987               27 (10)               32 (6)            17 (5)          18 (6)   
+1988               26 (10)               30 (6)            17 (5)          18 (6)   
+1989               27 (10)               27 (6)            19 (5)          18 (6)   
+1990               26 (10)               27 (6)            19 (5)          18 (6)   
+1991               23 (10)               25 (6)            20 (5)          18 (6)   
+1992               23 (10)               25 (6)            20 (5)          18 (6)   
+1993               24 (10)               25 (6)            20 (5)          18 (6)   
+1994                25 (9)               25 (7)            19 (5)          18 (6)   
+1995                24 (9)               24 (7)            18 (5)          18 (6)   
+1996                25 (9)               23 (7)            19 (5)          19 (6)   
+1997                26 (9)               23 (7)            19 (5)          18 (6)   
+1998                29 (9)               24 (7)            20 (5)          16 (6)   
+1999                32 (9)               24 (7)            20 (5)          15 (6)   
+2000                36 (9)               24 (7)            20 (5)          16 (6)   
+2001                37 (9)               24 (7)            21 (5)          17 (7)   
+2002                39 (9)               28 (7)            21 (5)          17 (7)   
+2003                41 (9)               30 (7)            22 (5)          18 (7)   
+2004                42 (9)               32 (7)            25 (5)          19 (7)   
+2005                43 (9)               34 (7)            35 (5)          19 (7)   
+2006                45 (9)               29 (7)            34 (5)          18 (7)   
+2007                45 (9)               29 (7)            30 (5)          16 (7)   
+2008                46 (9)               27 (7)            28 (5)          17 (7)   
+2009                46 (9)               29 (7)            27 (5)          19 (7)   
+2010                47 (9)               29 (7)            26 (5)          19 (7)   
+2011                46 (9)               28 (7)            28 (5)          18 (7)   
+2012               52 (10)               26 (7)            27 (5)          17 (7)   
+2013               51 (10)               27 (7)            27 (5)          17 (7)   
+2014               50 (10)               26 (7)            25 (5)          18 (7)   
+2015               49 (10)               29 (7)            25 (5)          17 (8)   
+2016               49 (10)               28 (7)            24 (5)          15 (7)   
+2017               40 (10)               33 (7)            26 (5)          16 (7)   
+2018               34 (10)               31 (7)            27 (5)          16 (7)   
+2019               35 (10)               34 (7)            25 (5)          16 (7)   
+
+     ZACHARIAE_ISSTROM (%) RINK_ISBRAE (%) NIOGHALVFJERDSFJORDEN (%) PETERMANN_GLETSCHER (%)  
+1986                 9 (9)          12 (6)                    11 (5)                  12 (4)  
+1987                 9 (9)          12 (6)                    11 (5)                  13 (4)  
+1988                 9 (9)          12 (6)                    11 (5)                  11 (4)  
+1989                 9 (9)          12 (6)                    12 (5)                  12 (4)  
+1990                 9 (9)          12 (6)                    12 (5)                  11 (4)  
+1991                 9 (9)          12 (6)                    12 (5)                  11 (4)  
+1992                 9 (9)          12 (6)                    12 (5)                  11 (4)  
+1993                10 (9)          12 (6)                    12 (5)                  11 (4)  
+1994                10 (9)          12 (6)                    12 (5)                  11 (4)  
+1995                10 (9)          13 (6)                    12 (5)                  11 (4)  
+1996                10 (9)          13 (6)                    12 (5)                  11 (4)  
+1997                10 (9)          13 (6)                    12 (5)                  11 (4)  
+1998                10 (9)          13 (6)                    12 (5)                  11 (4)  
+1999                10 (9)          14 (6)                    12 (5)                  12 (4)  
+2000                10 (9)          13 (7)                    13 (5)                  11 (4)  
+2001                12 (9)          14 (7)                    14 (6)                  11 (4)  
+2002                15 (9)          14 (7)                    13 (5)                  13 (4)  
+2003                11 (9)          13 (7)                    14 (5)                  11 (4)  
+2004                11 (9)          13 (7)                    12 (5)                  11 (4)  
+2005                12 (9)          13 (7)                    12 (5)                  12 (4)  
+2006                11 (9)          14 (7)                    12 (5)                  11 (4)  
+2007                12 (9)          13 (7)                    12 (5)                  11 (4)  
+2008                13 (9)          14 (7)                    12 (5)                  12 (4)  
+2009                12 (9)          13 (7)                    12 (5)                  11 (4)  
+2010                12 (9)          13 (7)                    12 (5)                  11 (4)  
+2011                13 (9)          13 (7)                    12 (5)                  12 (4)  
+2012                13 (9)          13 (7)                    12 (5)                  12 (4)  
+2013                13 (9)          13 (7)                    12 (5)                  12 (4)  
+2014                14 (9)          13 (7)                    12 (5)                  12 (4)  
+2015               14 (10)          13 (6)                    13 (5)                  12 (4)  
+2016               15 (10)          14 (6)                    13 (5)                  12 (4)  
+2017               15 (10)          13 (6)                    13 (5)                  12 (4)  
+2018               15 (10)          13 (7)                    13 (5)                  12 (4)  
+2019               16 (10)          12 (7)                    14 (5)                  12 (4)  
+#+end_example
+: <Figure size 648x360 with 2 Axes>
+:end:
 
 *** Køge Bugt
 :PROPERTIES:
@@ -5289,19 +4838,13 @@ plt.savefig('./figs/koge_bugt.png', transparent=True, bbox_inches='tight', dpi=3
 plt.savefig('./figs/koge_bugt.pdf', transparent=True, bbox_inches='tight', dpi=300)
 #+END_SRC
 
-#+RESULTS:
-: GRASSBIN: /usr/bin/grass74
-: GISBASE: /usr/lib/grass74
-: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/matplotlib/figure.py:2369: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
-:   warnings.warn("This figure includes Axes that are not compatible "
-
 * Supplementary Material                                :noexport:
 :PROPERTIES:
 :header-args:jupyter-python+: :tangle no
 :END:
 ** Errors by gate sorted by total D, err, err %
 **** Top by Discharge
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org
+#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
 import pandas as pd
 import numpy as np
 
@@ -5318,38 +4861,36 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-|   Gate |   D [Gt] |   Error [Gt] |   Error [%] | name                      |
-|--------+----------+--------------+-------------+---------------------------|
-|    186 | 45.9601  |     4.27592  |     9.30355 | JAKOBSHAVN_ISBRAE         |
-|    233 | 28.307   |     2.12532  |     7.50812 | HELHEIMGLETSCHER          |
-|    192 | 25.1468  |     1.2993   |     5.16687 | KANGERLUSSUAQ             |
-|    248 | 16.999   |     1.22285  |     7.19366 | KOGE_BUGT_C               |
-|     32 | 14.2076  |     1.37361  |     9.6681  | ZACHARIAE_ISSTROM         |
-|    143 | 12.9161  |     0.860943 |     6.66564 | RINK_ISBRAE               |
-|     30 | 12.2803  |     0.662151 |     5.39196 | NIOGHALVFJERDSFJORDEN     |
-|     27 | 11.3084  |     0.48615  |     4.299   | PETERMANN_GLETSCHER       |
-|    242 | 10.4887  |     0.949496 |     9.05253 | IKERTIVAQ_M               |
-|    140 |  9.50652 |     0.681882 |     7.17278 | DAUGAARD-JENSEN           |
-|    213 |  9.04978 |     0.246587 |     2.72478 | UNNAMED_DECEPTION_O_CN_CS |
-|     74 |  8.37833 |     0.428752 |     5.1174  | KONG_OSCAR_GLETSCHER      |
-|    168 |  8.37552 |     0.669684 |     7.99573 | STORE_GLETSCHER           |
-|    317 |  8.04856 |     0.664796 |     8.25982 | TINGMIARMIUT_FJORD        |
-|    102 |  7.80946 |     0.861176 |    11.0273  | HAYES_GLETSCHER_N_NN      |
-|    241 |  7.8092  |     0.765558 |     9.80329 | IKERTIVAQ_NN              |
-|    134 |  7.49194 |     0.770461 |    10.2839  | UPERNAVIK_ISSTROM_N       |
-|    172 |  7.45363 |     0.632841 |     8.49037 | SERMEQ_KUJALLEQ           |
-|     80 |  7.13103 |     0.41994  |     5.88891 | NORDENSKIOLD_GLESCHER_NW  |
-|    135 |  6.64584 |     0.826002 |    12.4289  | UPERNAVIK_ISSTROM_C       |
-|     95 |  6.58815 |     0.771847 |    11.7157  | KJER_GLETSCHER            |
-|    260 |  6.27373 |     0.338655 |     5.39799 | KOGE_BUGT_S               |
-|    129 |  6.21848 |     0.256494 |     4.1247  | KAKIVFAAT_SERMIAT         |
-|     28 |  5.81144 |     0.308143 |     5.30235 | HUMBOLDT_GLETSCHER        |
-|    113 |  5.67861 |     0.621164 |    10.9387  | ALISON_GLETSCHER          |
-:END:
+| Gate |  D [Gt] | Error [Gt] | Error [%] | name                      |
+|------+---------+------------+-----------+---------------------------|
+|  186 | 45.9601 |    4.27592 |   9.30355 | JAKOBSHAVN_ISBRAE         |
+|  233 |  28.307 |    2.12532 |   7.50812 | HELHEIMGLETSCHER          |
+|  192 | 25.1468 |     1.2993 |   5.16687 | KANGERLUSSUAQ             |
+|  248 |  16.999 |    1.22285 |   7.19366 | KOGE_BUGT_C               |
+|   32 | 14.2076 |    1.37361 |    9.6681 | ZACHARIAE_ISSTROM         |
+|  143 | 12.9161 |   0.860943 |   6.66564 | RINK_ISBRAE               |
+|   30 | 12.2803 |   0.662151 |   5.39196 | NIOGHALVFJERDSFJORDEN     |
+|   27 | 11.3084 |    0.48615 |     4.299 | PETERMANN_GLETSCHER       |
+|  242 | 10.4887 |   0.949496 |   9.05253 | IKERTIVAQ_M               |
+|  140 | 9.50652 |   0.681882 |   7.17278 | DAUGAARD-JENSEN           |
+|  213 | 9.04978 |   0.246587 |   2.72478 | UNNAMED_DECEPTION_O_CN_CS |
+|   74 | 8.37833 |   0.428752 |    5.1174 | KONG_OSCAR_GLETSCHER      |
+|  168 | 8.37552 |   0.669684 |   7.99573 | STORE_GLETSCHER           |
+|  317 | 8.04856 |   0.664796 |   8.25982 | TINGMIARMIUT_FJORD        |
+|  102 | 7.80946 |   0.861176 |   11.0273 | HAYES_GLETSCHER_N_NN      |
+|  241 |  7.8092 |   0.765558 |   9.80329 | IKERTIVAQ_NN              |
+|  134 | 7.49194 |   0.770461 |   10.2839 | UPERNAVIK_ISSTROM_N       |
+|  172 | 7.45363 |   0.632841 |   8.49037 | SERMEQ_KUJALLEQ           |
+|   80 | 7.13103 |    0.41994 |   5.88891 | NORDENSKIOLD_GLESCHER_NW  |
+|  135 | 6.64584 |   0.826002 |   12.4289 | UPERNAVIK_ISSTROM_C       |
+|   95 | 6.58815 |   0.771847 |   11.7157 | KJER_GLETSCHER            |
+|  260 | 6.27373 |   0.338655 |   5.39799 | KOGE_BUGT_S               |
+|  129 | 6.21848 |   0.256494 |    4.1247 | KAKIVFAAT_SERMIAT         |
+|   28 | 5.81144 |   0.308143 |   5.30235 | HUMBOLDT_GLETSCHER        |
+|  113 | 5.67861 |   0.621164 |   10.9387 | ALISON_GLETSCHER          |
 
 **** Top by Error [Gt]
-#+BEGIN_SRC jupyter-python :results table :session discharge :display text/org
+#+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
 from tabulate import tabulate
 import pandas as pd
 err_gate = pd.read_csv('./tmp/err_gate.csv', index_col=0)
@@ -5367,37 +4908,37 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-| :RESULTS: |          |            |           |                             |
-|      Gate |   D [Gt] | Error [Gt] | Error [%] | name                        |
-|-----------+----------+------------+-----------+-----------------------------|
-|       186 |  45.9601 |    4.27592 |   9.30355 | JAKOBSHAVN_ISBRAE           |
-|       233 |   28.307 |    2.12532 |   7.50812 | HELHEIMGLETSCHER            |
-|        32 |  14.2076 |    1.37361 |    9.6681 | ZACHARIAE_ISSTROM           |
-|       192 |  25.1468 |     1.2993 |   5.16687 | KANGERLUSSUAQ               |
-|       248 |   16.999 |    1.22285 |   7.19366 | KOGE_BUGT_C                 |
-|       352 |  1.87522 |    1.18394 |    63.136 | EQALORUTSIT_KILLIIT_SERMIAT |
-|       273 |   4.4488 |    1.04037 |   23.3855 | UMIIVIK_FJORD               |
-|       242 |  10.4887 |   0.949496 |   9.05253 | IKERTIVAQ_M                 |
-|       102 |  7.80946 |   0.861176 |   11.0273 | HAYES_GLETSCHER_N_NN        |
-|       143 |  12.9161 |   0.860943 |   6.66564 | RINK_ISBRAE                 |
-|       135 |  6.64584 |   0.826002 |   12.4289 | UPERNAVIK_ISSTROM_C         |
-|       226 |  4.65263 |   0.795364 |   17.0949 | KIV_STEENSTRUP_NODRE_BRAE   |
-|        95 |  6.58815 |   0.771847 |   11.7157 | KJER_GLETSCHER              |
-|       134 |  7.49194 |   0.770461 |   10.2839 | UPERNAVIK_ISSTROM_N         |
-|       241 |   7.8092 |   0.765558 |   9.80329 | IKERTIVAQ_NN                |
-|       140 |  9.50652 |   0.681882 |   7.17278 | DAUGAARD-JENSEN             |
-|       168 |  8.37552 |   0.669684 |   7.99573 | STORE_GLETSCHER             |
-|       317 |  8.04856 |   0.664796 |   8.25982 | TINGMIARMIUT_FJORD          |
-|        30 |  12.2803 |   0.662151 |   5.39196 | NIOGHALVFJERDSFJORDEN       |
-|       172 |  7.45363 |   0.632841 |   8.49037 | SERMEQ_KUJALLEQ             |
-|       113 |  5.67861 |   0.621164 |   10.9387 | ALISON_GLETSCHER            |
-|       280 |  4.21919 |   0.586934 |   13.9111 | GRAULV                      |
-|       247 |  3.90797 |   0.571938 |   14.6352 | KOGE_BUGT_N                 |
-|       238 | 0.463106 |   0.567007 |   122.436 | HEIM_GLETSCHER              |
-|       240 | 0.734125 |   0.553775 |   75.4333 | NONAME_IKERTIVAQ_N          |
+| Gate |   D [Gt] | Error [Gt] | Error [%] | name                        |
+|------+----------+------------+-----------+-----------------------------|
+|  186 |  45.9601 |    4.27592 |   9.30355 | JAKOBSHAVN_ISBRAE           |
+|  233 |   28.307 |    2.12532 |   7.50812 | HELHEIMGLETSCHER            |
+|   32 |  14.2076 |    1.37361 |    9.6681 | ZACHARIAE_ISSTROM           |
+|  192 |  25.1468 |     1.2993 |   5.16687 | KANGERLUSSUAQ               |
+|  248 |   16.999 |    1.22285 |   7.19366 | KOGE_BUGT_C                 |
+|  352 |  1.87522 |    1.18394 |    63.136 | EQALORUTSIT_KILLIIT_SERMIAT |
+|  273 |   4.4488 |    1.04037 |   23.3855 | UMIIVIK_FJORD               |
+|  242 |  10.4887 |   0.949496 |   9.05253 | IKERTIVAQ_M                 |
+|  102 |  7.80946 |   0.861176 |   11.0273 | HAYES_GLETSCHER_N_NN        |
+|  143 |  12.9161 |   0.860943 |   6.66564 | RINK_ISBRAE                 |
+|  135 |  6.64584 |   0.826002 |   12.4289 | UPERNAVIK_ISSTROM_C         |
+|  226 |  4.65263 |   0.795364 |   17.0949 | KIV_STEENSTRUP_NODRE_BRAE   |
+|   95 |  6.58815 |   0.771847 |   11.7157 | KJER_GLETSCHER              |
+|  134 |  7.49194 |   0.770461 |   10.2839 | UPERNAVIK_ISSTROM_N         |
+|  241 |   7.8092 |   0.765558 |   9.80329 | IKERTIVAQ_NN                |
+|  140 |  9.50652 |   0.681882 |   7.17278 | DAUGAARD-JENSEN             |
+|  168 |  8.37552 |   0.669684 |   7.99573 | STORE_GLETSCHER             |
+|  317 |  8.04856 |   0.664796 |   8.25982 | TINGMIARMIUT_FJORD          |
+|   30 |  12.2803 |   0.662151 |   5.39196 | NIOGHALVFJERDSFJORDEN       |
+|  172 |  7.45363 |   0.632841 |   8.49037 | SERMEQ_KUJALLEQ             |
+|  113 |  5.67861 |   0.621164 |   10.9387 | ALISON_GLETSCHER            |
+|  280 |  4.21919 |   0.586934 |   13.9111 | GRAULV                      |
+|  247 |  3.90797 |   0.571938 |   14.6352 | KOGE_BUGT_N                 |
+|  238 | 0.463106 |   0.567007 |   122.436 | HEIM_GLETSCHER              |
+|  240 | 0.734125 |   0.553775 |   75.4333 | NONAME_IKERTIVAQ_N          |
+
 
 **** Top by Error [%]
-#+BEGIN_SRC jupyter-python :results table  :session discharge :display text/org
+#+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
 from tabulate import tabulate
 import pandas as pd
 err_gate = pd.read_csv('./tmp/err_gate.csv', index_col=0)
@@ -5415,37 +4956,36 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-| :RESULTS: |             |            |           |                                |
-|      Gate |      D [Gt] | Error [Gt] | Error [%] | name                           |
-|-----------+-------------+------------+-----------+--------------------------------|
-|       326 | 0.000160574 |  0.0448814 |   27950.7 | MOGENS_HEINESEN_SS_SSS         |
-|       358 | 0.000406285 |   0.101505 |   24983.6 | NAAJAT_SERMIAT                 |
-|       286 |  0.00034279 |  0.0719289 |   20983.4 | GYLDENLOVE_SS                  |
-|       337 | 7.64832e-05 |  0.0160352 |   20965.6 | NAPASORSUAQ_C_S                |
-|       279 | 0.000274782 |  0.0575628 |   20948.5 | APUSEERSERPIA                  |
-|       296 |  0.00094828 |   0.185566 |   19568.7 | SE_NONAME2                     |
-|       345 |  0.00136043 |   0.259424 |   19069.3 | UNNAMED_ANORITUUP_KANGERLUA_S  |
-|       346 | 0.000125657 |  0.0235513 |   18742.6 | UNNAMED_ANORITUUP_KANGERLUA_SS |
-|       227 |   0.0003607 |  0.0671429 |   18614.6 | KIV_STEENSTRUP_SONDRE_BRAE     |
-|       322 | 0.000286124 |   0.052938 |   18501.8 | MOGENS_HEINESEN_SS_SSS         |
-|       263 | 0.000516315 |  0.0950138 |   18402.3 | KOGE_BUGT_SS                   |
-|       292 |  0.00051318 |  0.0943305 |   18381.6 | SE_NONAME2                     |
-|       370 | 0.000162942 |  0.0297611 |   18264.9 | SOUTHERN_TIP                   |
-|       291 | 0.000866503 |   0.154398 |   17818.6 | SE_NONAME2                     |
-|       266 | 0.000943541 |   0.165326 |   17521.9 | KOGE_BUGT_SS                   |
-|       347 | 0.000157755 |  0.0272631 |   17281.9 | UNNAMED_ANORITUUP_KANGERLUA_SS |
-|       225 |  0.00182813 |   0.313983 |   17175.1 | UNNAMED_LAUBE_S                |
-|       301 | 0.000255828 |  0.0436295 |   17054.2 | SE_NONAME2                     |
-|       304 | 0.000252462 |  0.0424767 |     16825 | SE_NONAME2                     |
-|       294 |  0.00212486 |   0.354715 |   16693.6 | FIMBULGETLSCHER                |
-|       219 | 0.000245903 |   0.040796 |   16590.2 | UNNAMED_LAUBE_S                |
-|       223 | 0.000650151 |   0.104006 |   15997.2 | UNNAMED_LAUBE_S                |
-|       338 | 0.000108454 |  0.0172894 |   15941.7 | NAPASORSUAQ_C_S                |
-|       289 | 3.29127e-05 | 0.00523086 |   15893.1 | SE_NONAME2                     |
-|       287 | 0.000454846 |  0.0715212 |   15724.3 | GYLDENLOVE_S                   |
+| Gate |      D [Gt] | Error [Gt] | Error [%] | name                           |
+|------+-------------+------------+-----------+--------------------------------|
+|  326 | 0.000160574 |  0.0448814 |   27950.7 | MOGENS_HEINESEN_SS_SSS         |
+|  358 | 0.000406285 |   0.101505 |   24983.6 | NAAJAT_SERMIAT                 |
+|  286 |  0.00034279 |  0.0719289 |   20983.4 | GYLDENLOVE_SS                  |
+|  337 | 7.64832e-05 |  0.0160352 |   20965.6 | NAPASORSUAQ_C_S                |
+|  279 | 0.000274782 |  0.0575628 |   20948.5 | APUSEERSERPIA                  |
+|  296 |  0.00094828 |   0.185566 |   19568.7 | SE_NONAME2                     |
+|  345 |  0.00136043 |   0.259424 |   19069.3 | UNNAMED_ANORITUUP_KANGERLUA_S  |
+|  346 | 0.000125657 |  0.0235513 |   18742.6 | UNNAMED_ANORITUUP_KANGERLUA_SS |
+|  227 |   0.0003607 |  0.0671429 |   18614.6 | KIV_STEENSTRUP_SONDRE_BRAE     |
+|  322 | 0.000286124 |   0.052938 |   18501.8 | MOGENS_HEINESEN_SS_SSS         |
+|  263 | 0.000516315 |  0.0950138 |   18402.3 | KOGE_BUGT_SS                   |
+|  292 |  0.00051318 |  0.0943305 |   18381.6 | SE_NONAME2                     |
+|  370 | 0.000162942 |  0.0297611 |   18264.9 | SOUTHERN_TIP                   |
+|  291 | 0.000866503 |   0.154398 |   17818.6 | SE_NONAME2                     |
+|  266 | 0.000943541 |   0.165326 |   17521.9 | KOGE_BUGT_SS                   |
+|  347 | 0.000157755 |  0.0272631 |   17281.9 | UNNAMED_ANORITUUP_KANGERLUA_SS |
+|  225 |  0.00182813 |   0.313983 |   17175.1 | UNNAMED_LAUBE_S                |
+|  301 | 0.000255828 |  0.0436295 |   17054.2 | SE_NONAME2                     |
+|  304 | 0.000252462 |  0.0424767 |     16825 | SE_NONAME2                     |
+|  294 |  0.00212486 |   0.354715 |   16693.6 | FIMBULGETLSCHER                |
+|  219 | 0.000245903 |   0.040796 |   16590.2 | UNNAMED_LAUBE_S                |
+|  223 | 0.000650151 |   0.104006 |   15997.2 | UNNAMED_LAUBE_S                |
+|  338 | 0.000108454 |  0.0172894 |   15941.7 | NAPASORSUAQ_C_S                |
+|  289 | 3.29127e-05 | 0.00523086 |   15893.1 | SE_NONAME2                     |
+|  287 | 0.000454846 |  0.0715212 |   15724.3 | GYLDENLOVE_S                   |
 
 **** Bottom by Error [%]
-#+BEGIN_SRC jupyter-python :results table  :session discharge :display text/org
+#+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
 from tabulate import tabulate
 import pandas as pd
 err_gate = pd.read_csv('./tmp/err_gate.csv', index_col=0)
@@ -5463,34 +5003,33 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-| :RESULTS: |           |            |           |                            |
-|      Gate |    D [Gt] | Error [Gt] | Error [%] | name                       |
-|-----------+-----------+------------+-----------+----------------------------|
-|       213 |   9.04978 |   0.246587 |   2.72478 | UNNAMED_DECEPTION_O_CN_CS  |
-|        71 |    1.0023 |  0.0280765 |    2.8012 | ISSUUARSUIT_SERMIA         |
-|        29 | 0.0965288 | 0.00284121 |   2.94338 | HUMBOLDT_GLETSCHER         |
-|       189 |  0.121413 |  0.0036937 |   3.04227 | KONG_CHRISTIAN             |
-|       321 |   4.72381 |   0.168764 |   3.57263 | MOGENS_HEINESEN_S          |
-|        72 |   1.05992 |  0.0392134 |   3.69965 | ISSUUARSUIT_SERMIA         |
-|       127 |  0.722277 |  0.0267532 |   3.70401 | QEQERTARSUUP_SERMIA        |
-|       194 |  0.797613 |  0.0319491 |   4.00558 | UNNAMED_KANGER_W           |
-|        10 |   2.56798 |    0.10477 |   4.07984 | RYDER_GLETSCHER            |
-|       129 |   6.21848 |   0.256494 |    4.1247 | KAKIVFAAT_SERMIAT          |
-|        79 | 0.0623227 |  0.0026047 |   4.17937 | NORDENSKIOLD_GLESCHER_NW   |
-|       255 |  0.286414 |   0.012137 |   4.23755 | KOGE_BUGT_S                |
-|        27 |   11.3084 |    0.48615 |     4.299 | PETERMANN_GLETSCHER        |
-|       214 |   4.85333 |   0.212367 |   4.37569 | UNNAMED_UUNARTIT_ISLANDS   |
-|        48 |  0.887973 |  0.0415969 |   4.68448 | HARALD_MOLTKE_BRAE         |
-|        31 |  0.184463 | 0.00874956 |   4.74326 | HUMBOLDT_GLETSCHER         |
-|       178 |  0.999155 |  0.0487067 |   4.87479 | KANGILERNGATA_SERMIA       |
-|       215 |  0.788414 |  0.0391102 |   4.96062 | KRUUSE_FJORD               |
-|       165 |  0.351213 |  0.0176866 |   5.03587 | STORE_GLETSCHER            |
-|       101 |  0.764497 |  0.0387761 |   5.07211 | HAYES_GLETSCHER_N_NN       |
-|        69 |   3.48082 |   0.177199 |   5.09073 | ISSUUARSUIT_SERMIA         |
-|        74 |   8.37833 |   0.428752 |    5.1174 | KONG_OSCAR_GLETSCHER       |
-|       365 |  0.131109 | 0.00674577 |   5.14515 | UNNAMED_SOUTH_DANELL_FJORD |
-|       192 |   25.1468 |     1.2993 |   5.16687 | KANGERLUSSUAQ              |
-|       154 |  0.668659 |  0.0350659 |   5.24422 | SERMEQ_SILARLEQ            |
+| Gate |    D [Gt] | Error [Gt] | Error [%] | name                       |
+|------+-----------+------------+-----------+----------------------------|
+|  213 |   9.04978 |   0.246587 |   2.72478 | UNNAMED_DECEPTION_O_CN_CS  |
+|   71 |    1.0023 |  0.0280765 |    2.8012 | ISSUUARSUIT_SERMIA         |
+|   29 | 0.0965288 | 0.00284121 |   2.94338 | HUMBOLDT_GLETSCHER         |
+|  189 |  0.121413 |  0.0036937 |   3.04227 | KONG_CHRISTIAN             |
+|  321 |   4.72381 |   0.168764 |   3.57263 | MOGENS_HEINESEN_S          |
+|   72 |   1.05992 |  0.0392134 |   3.69965 | ISSUUARSUIT_SERMIA         |
+|  127 |  0.722277 |  0.0267532 |   3.70401 | QEQERTARSUUP_SERMIA        |
+|  194 |  0.797613 |  0.0319491 |   4.00558 | UNNAMED_KANGER_W           |
+|   10 |   2.56798 |    0.10477 |   4.07984 | RYDER_GLETSCHER            |
+|  129 |   6.21848 |   0.256494 |    4.1247 | KAKIVFAAT_SERMIAT          |
+|   79 | 0.0623227 |  0.0026047 |   4.17937 | NORDENSKIOLD_GLESCHER_NW   |
+|  255 |  0.286414 |   0.012137 |   4.23755 | KOGE_BUGT_S                |
+|   27 |   11.3084 |    0.48615 |     4.299 | PETERMANN_GLETSCHER        |
+|  214 |   4.85333 |   0.212367 |   4.37569 | UNNAMED_UUNARTIT_ISLANDS   |
+|   48 |  0.887973 |  0.0415969 |   4.68448 | HARALD_MOLTKE_BRAE         |
+|   31 |  0.184463 | 0.00874956 |   4.74326 | HUMBOLDT_GLETSCHER         |
+|  178 |  0.999155 |  0.0487067 |   4.87479 | KANGILERNGATA_SERMIA       |
+|  215 |  0.788414 |  0.0391102 |   4.96062 | KRUUSE_FJORD               |
+|  165 |  0.351213 |  0.0176866 |   5.03587 | STORE_GLETSCHER            |
+|  101 |  0.764497 |  0.0387761 |   5.07211 | HAYES_GLETSCHER_N_NN       |
+|   69 |   3.48082 |   0.177199 |   5.09073 | ISSUUARSUIT_SERMIA         |
+|   74 |   8.37833 |   0.428752 |    5.1174 | KONG_OSCAR_GLETSCHER       |
+|  365 |  0.131109 | 0.00674577 |   5.14515 | UNNAMED_SOUTH_DANELL_FJORD |
+|  192 |   25.1468 |     1.2993 |   5.16687 | KANGERLUSSUAQ              |
+|  154 |  0.668659 |  0.0350659 |   5.24422 | SERMEQ_SILARLEQ            |
 
 
 ** Annual averages from observations or linear interpolation
@@ -5500,7 +5039,7 @@ Compute the annual average for all GIS and some other glaciers using two methods
 
 NOTE - do this with the "rawest" velocity product prior to any interpolation.
 
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :session avgmethod :exports both :results raw drawer :display text/org :async yes
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -5539,61 +5078,8 @@ print(ann.describe())
 ann
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out[85]:
-# output
-              obs       daily          diff      diff [%]
-count   33.000000   33.000000  3.300000e+01  3.300000e+01
-mean   199.417777  207.352863 -7.935085e+00 -4.367376e+00
-std     98.991770  101.339903  1.059513e+01  5.021360e+00
-min     58.748239   61.499036 -2.927808e+01 -1.784780e+01
-25%     85.353493   90.873619 -1.593002e+01 -9.058464e+00
-50%    215.110409  230.668093 -2.750798e+00 -2.768276e+00
-75%    264.767221  286.765963 -5.684342e-14 -2.842171e-14
-max    429.197880  427.689462  9.298093e+00  3.180242e+00
-
-# text/org
-|                     |      obs |    daily |          diff |      diff [%] |
-|---------------------+----------+----------+---------------+---------------|
-| 1985-12-31 00:00:00 |  74.9168 |  76.7606 |  -1.84377     |  -2.46109     |
-| 1986-12-31 00:00:00 |  69.3422 |  70.4385 |  -1.09632     |  -1.58103     |
-| 1987-12-31 00:00:00 |  58.7482 |  61.499  |  -2.7508      |  -4.68235     |
-| 1988-12-31 00:00:00 |  65.366  |  70.6574 |  -5.29132     |  -8.0949      |
-| 1989-12-31 00:00:00 |  73.2416 |  75.2692 |  -2.02753     |  -2.76828     |
-| 1990-12-31 00:00:00 |  64.4267 |  67.0241 |  -2.59743     |  -4.0316      |
-| 1991-12-31 00:00:00 |  85.3535 |  85.3535 |   0           |   0           |
-| 1992-12-31 00:00:00 | 197.829  | 197.829  |   1.13687e-13 |   5.68434e-14 |
-| 1993-12-31 00:00:00 | 117.695  | 117.695  |  -1.27898e-13 |  -1.13687e-13 |
-| 1994-12-31 00:00:00 |  77.111  |  90.8736 | -13.7626      | -17.8478      |
-| 1995-12-31 00:00:00 | 178.747  | 178.747  |   2.84217e-13 |   1.56319e-13 |
-| 1996-12-31 00:00:00 | 255.303  | 255.303  |   2.27374e-13 |   8.52651e-14 |
-| 1997-12-31 00:00:00 | 230.668  | 230.668  |  -5.68434e-14 |  -2.84217e-14 |
-| 1998-12-31 00:00:00 |  72.0978 |  73.4101 |  -1.31223     |  -1.82007     |
-| 1999-12-31 00:00:00 | 129.912  | 141.812  | -11.9005      |  -9.16046     |
-| 2000-12-31 00:00:00 | 209.108  | 206.484  |   2.62333     |   1.25453     |
-| 2001-12-31 00:00:00 | 215.11   | 231.677  | -16.5666      |  -7.70146     |
-| 2002-12-31 00:00:00 | 178.319  | 194.486  | -16.167       |  -9.06635     |
-| 2003-12-31 00:00:00 | 162.266  | 182.339  | -20.0724      | -12.37        |
-| 2004-12-31 00:00:00 | 267.362  | 295.416  | -28.0538      | -10.4928      |
-| 2005-12-31 00:00:00 | 264.767  | 268.027  |  -3.25938     |  -1.23104     |
-| 2006-12-31 00:00:00 | 303.666  | 295.971  |   7.69537     |   2.53416     |
-| 2007-12-31 00:00:00 | 299.047  | 314.399  | -15.3521      |  -5.13366     |
-| 2008-12-31 00:00:00 | 253.288  | 278.197  | -24.9091      |  -9.83432     |
-| 2009-12-31 00:00:00 | 302.695  | 318.625  | -15.93        |  -5.26273     |
-| 2010-12-31 00:00:00 | 262.313  | 291.591  | -29.2781      | -11.1615      |
-| 2011-12-31 00:00:00 | 240.121  | 261.872  | -21.7513      |  -9.05846     |
-| 2012-12-31 00:00:00 | 292.371  | 283.072  |   9.29809     |   3.18024     |
-| 2013-12-31 00:00:00 | 260.693  | 286.766  | -26.0727      | -10.0013      |
-| 2014-12-31 00:00:00 | 242.024  | 247.054  |  -5.02959     |  -2.07813     |
-| 2015-12-31 00:00:00 | 319.28   | 334.912  | -15.6324      |  -4.89615     |
-| 2016-12-31 00:00:00 | 328.401  | 330.727  |  -2.32597     |  -0.708269    |
-| 2017-12-31 00:00:00 | 429.198  | 427.689  |   1.50842     |   0.351451    |
-:end:
-
-
 ** Køge Bugt Y2K
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
+#+BEGIN_SRC jupyter-python :session kb_y2k :exports both :results raw drawer :display text/org
 D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/sector_err.csv", index_col=0, parse_dates=True)
 
@@ -5610,167 +5096,32 @@ df['err'] = err
 df
 #+END_SRC
 
-#+RESULTS:
-:results:
-# Out[324]:
-# output
-Køge Bugt C described:
- count    32.000000
-mean     17.748575
-std       1.038257
-min      15.098256
-25%      17.267486
-50%      18.236337
-75%      18.443478
-max      19.077853
-Name: KOGE_BUGT_C, dtype: float64
-
-# text/org
-| Date                |      KB |      err |
-|---------------------+---------+----------|
-| 1986-12-31 00:00:00 | 18.4098 | 1.07501  |
-| 1987-12-31 00:00:00 | 18.4098 | 1.07501  |
-| 1988-12-31 00:00:00 | 18.4098 | 1.07501  |
-| 1989-12-31 00:00:00 | 18.4102 | 1.07501  |
-| 1990-12-31 00:00:00 | 18.4204 | 1.07501  |
-| 1991-12-31 00:00:00 | 18.4408 | 1.07501  |
-| 1992-12-31 00:00:00 | 18.4614 | 1.07501  |
-| 1993-12-31 00:00:00 | 18.4516 | 1.07427  |
-| 1994-12-31 00:00:00 | 18.4076 | 1.07278  |
-| 1995-12-31 00:00:00 | 18.3655 | 1.07129  |
-| 1996-12-31 00:00:00 | 18.5187 | 1.07793  |
-| 1997-12-31 00:00:00 | 17.8199 | 1.0406   |
-| 1998-12-31 00:00:00 | 15.8305 | 0.961628 |
-| 1999-12-31 00:00:00 | 17.9254 | 1.05717  |
-| 2000-12-31 00:00:00 | 16.3663 | 1.04274  |
-| 2001-12-31 00:00:00 | 16.3612 | 1.07282  |
-| 2002-12-31 00:00:00 | 17.3179 | 1.14493  |
-| 2003-12-31 00:00:00 | 18.6225 | 1.21182  |
-| 2004-12-31 00:00:00 | 19.0779 | 1.28109  |
-| 2005-12-31 00:00:00 | 18.949  | 1.2861   |
-| 2006-12-31 00:00:00 | 18.1071 | 1.2402   |
-| 2007-12-31 00:00:00 | 16.0185 | 1.08725  |
-| 2008-12-31 00:00:00 | 17.1162 | 1.16671  |
-| 2009-12-31 00:00:00 | 18.5829 | 1.29226  |
-| 2010-12-31 00:00:00 | 18.7028 | 1.33     |
-| 2011-12-31 00:00:00 | 17.5419 | 1.28836  |
-| 2012-12-31 00:00:00 | 17.9601 | 1.3163   |
-| 2013-12-31 00:00:00 | 17.5486 | 1.2603   |
-| 2014-12-31 00:00:00 | 17.5678 | 1.29832  |
-| 2015-12-31 00:00:00 | 16.861  | 1.25562  |
-| 2016-12-31 00:00:00 | 15.0983 | 1.11953  |
-| 2017-12-31 00:00:00 | 15.873  | 1.18621  |
-:end:
-
-:results:
-# Out[323]:
-# output
-Køge Bugt C described:
- count    32.000000
-mean     17.748575
-std       1.038257
-min      15.098256
-25%      17.267486
-50%      18.236337
-75%      18.443478
-max      19.077853
-Name: KOGE_BUGT_C, dtype: float64
-
-# text/plain
-:                    KB       err
-: Date                           
-: 1986-12-31  18.409819  1.075015
-: 1987-12-31  18.409819  1.075015
-: 1988-12-31  18.409819  1.075015
-: 1989-12-31  18.410180  1.075015
-: 1990-12-31  18.420363  1.075015
-: 1991-12-31  18.440757  1.075015
-: 1992-12-31  18.461401  1.075015
-: 1993-12-31  18.451643  1.074272
-: 1994-12-31  18.407605  1.072781
-: 1995-12-31  18.365531  1.071291
-: 1996-12-31  18.518715  1.077929
-: 1997-12-31  17.819938  1.040603
-: 1998-12-31  15.830453  0.961628
-: 1999-12-31  17.925379  1.057169
-: 2000-12-31  16.366273  1.042741
-: 2001-12-31  16.361203  1.072815
-: 2002-12-31  17.317914  1.144929
-: 2003-12-31  18.622540  1.211825
-: 2004-12-31  19.077853  1.281091
-: 2005-12-31  18.949015  1.286105
-: 2006-12-31  18.107142  1.240200
-: 2007-12-31  16.018466  1.087247
-: 2008-12-31  17.116200  1.166711
-: 2009-12-31  18.582891  1.292257
-: 2010-12-31  18.702845  1.330004
-: 2011-12-31  17.541919  1.288357
-: 2012-12-31  17.960070  1.316301
-: 2013-12-31  17.548620  1.260296
-: 2014-12-31  17.567834  1.298322
-: 2015-12-31  16.860994  1.255622
-: 2016-12-31  15.098256  1.119534
-: 2017-12-31  15.872952  1.186213
-
-
-** Grids
-+ Display different grids of different products
-#+BEGIN_SRC bash :results verbatim
-g.mapset -c tmp_grids
-
-g.mapsets -l | tr ' ' '\n' | grep -v "gates_"
-
-# zoom in somewhere arbitracy
-g.region n=-2269600 s=-2296400 w=-179600 e=-152800 -p
-
-g.list type=raster mapset=BedMachine
-r.to.vect input=bed@BedMachine output=BedMachine type=area --o
-
-g.list type=raster mapset=GIMP.0715 | grep -v tile
-r.to.vect input=dem@GIMP.0715 output=GIMP_0715 type=area --o
-
-g.list type=raster mapset=Khan_2016 | head
-r.to.vect input=dh_1995@Khan_2016 output=Khan_2016 type=area --o
-
-g.list type=raster mapset=Sentinel1 pattern=vel_eff* | head -n3
-r.to.vect input=vy_2016_10_18@Sentinel1 output=Sentinel1 type=area --o
-
-d.mon start=wx0
-d.erase
-g.list type=vector
-
-d.vect Sentinel1 fill_color=none color=blue
-d.vect BedMachine fill_color=none color=green
-d.vect GIMP_0715 fill_color=none color=red
-d.vect Khan_2016 fill_color=none color=gray width=3
-#+END_SRC
-#+RESULTS:
-
 * Meta                                                  :noexport:
-:PROPERTIES:
-:header-args: :tangle no
-:END:
 
 This document probably uses code - python, octave, and/or R. Below I provide the version of the software(s) used to create this document in order to support the goal of reproduciblity. 
 *** Emacs
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :export both :eval no-export
 (emacs-version)
 #+END_SRC
+
 #+RESULTS:
-: GNU Emacs 25.2.2 (x86_64-pc-linux-gnu, GTK+ Version 3.22.21)
-:  of 2017-09-22, modified by Debian
+: GNU Emacs 26.3 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.22.30)
+:  of 2019-09-16
+
 *** Org Mode
-#+BEGIN_SRC elisp
+#+BEGIN_SRC elisp :export both :eval no-export
 (org-version nil t)
 #+END_SRC
+
 #+RESULTS:
-: Org mode version 9.2.3 (9.2.3-7-g222408-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20190415/)
+: Org mode version 9.2.6 (9.2.6-4-ge30905-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20191014/)
 
 *** Python
-#+BEGIN_SRC bash :cmdline -i :results verbatim
+#+BEGIN_SRC bash :cmdline -i :results verbatim :exports both :eval no-export:
 . /home/kdm/local/anaconda/etc/profile.d/conda.sh
 conda env export --name sci
 #+END_SRC
+
 #+RESULTS:
 #+begin_example
 name: sci
@@ -6016,9 +5367,10 @@ prefix: /home/kdm/local/anaconda/envs/sci
 #+end_example
 
 *** LaTeX
-#+BEGIN_SRC bash :cmdline "-i" :results verbatim
+#+BEGIN_SRC bash :cmdline "-i" :results verbatim :exports both :eval no-export
 pdflatex --version
 #+END_SRC
+
 #+RESULTS:
 #+begin_example
 pdfTeX 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian)
@@ -6068,6 +5420,7 @@ Compiled with poppler version 0.62.0
 
 (setq-local org-latex-title-command "")
 #+END_SRC
+
 #+RESULTS: copernicus-latex-setup
 
 * TODO QC                                               :noexport:
@@ -6078,12 +5431,12 @@ Compiled with poppler version 0.62.0
 
 Export as ASCII, then,
 
-#+BEGIN_SRC elisp :results none :eval no-export
+#+BEGIN_SRC elisp :results none :eval no
 (setq org-ascii-text-width 80)
 (org-ascii-export-to-ascii)
 #+END_SRC
 
-#+BEGIN_SRC bash :cmdline "-i" :results output :eval no-export :exports none
+#+BEGIN_SRC bash :cmdline "-i" :results output :exports none :eval no
 this='ice_discharge.txt'
 # aspell list < $this | sort | uniq
 echo "\n"
@@ -6096,10 +5449,9 @@ for cmd in "${cmds[@]}"; do
     echo "\n"
 done
 #+END_SRC
-#+RESULTS:
 
 * LaTeXdiff                                             :noexport:
-#+BEGIN_SRC bash :results verbatim :results none :eval no-export
+#+BEGIN_SRC bash :results verbatim :results none
 
 OLD=ice_discharge.2537c3a.tex
 NEW=ice_discharge.tex
@@ -6110,11 +5462,10 @@ latexdiff --disable-citation-markup --append-safecmd="textcite,autocite" --confi
 
 # latexmk diff.tex
 #+END_SRC
-#+RESULTS:
 
 * Release                                               :noexport:
 ** Share w/ Coauthors
-#+BEGIN_SRC bash :results verbatim
+#+BEGIN_SRC bash :results verbatim :eval no
 bibexport -o ice_discharge.bib ice_discharge.aux
 pandoc -f latex -i ice_discharge.tex -t DOCX -o ice_discharge.docx --bibliography ./ice_discharge.bib
 
@@ -6125,11 +5476,3 @@ alias pbcopy='xsel --clipboard --input'
 alias pbpaste='xsel --clipboard --output'
 dropbox sharelink ~/Dropbox/out/ice_discharge.zip | pbcopy; pbpaste
 #+END_SRC
-#+RESULTS:
-: This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
-: The top-level auxiliary file: bibexp.1548456057.aux
-: The style file: export.bst
-: Database file #1: /home/kdm/Documents/Papers/library.bib
-:   adding: ice_discharge.pdf (deflated 11%)
-:   adding: ice_discharge.docx (deflated 0%)
-: https://www.dropbox.com/s/opxvww4sty3sv5v/ice_discharge.zip?dl=0
