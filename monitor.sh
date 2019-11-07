@@ -21,7 +21,7 @@ MSG_ERR() { echo "${RED}ERROR: ${1}${NC}\n" >&2; }
 
 URL=https://promice.org/PromiceDataPortal/api/download/92ce7cf4-59b8-4a3f-8f75-93d166f5a7ca/Greenland_IV
 IV_web=$(curl -s ${URL} --list-only | grep zip | sed -e 's/<[^>]*>//g' | cut -d"." -f1)
-IV_local=$(cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps; ls | cut -d"." -f1)
+IV_local=$(cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps; ls *.nc | cut -d"." -f1)
 diff <(echo $IV_web|tr ' ' '\n') <(echo $IV_local|tr ' ' '\n') &> /dev/null
 if [ $? -ne 0 ]; then # difference.
   MSG_WARN "Local Sentinel1 Velocities do not match remote."

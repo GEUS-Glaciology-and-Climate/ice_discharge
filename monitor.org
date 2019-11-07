@@ -76,7 +76,7 @@ IV_web=$(curl -s ${URL} --list-only | grep zip | sed -e 's/<[^>]*>//g' | cut -d"
 
 #+NAME: generate_local_IV_list
 #+BEGIN_SRC sh :results verbatim
-IV_local=$(cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps; ls | cut -d"." -f1)
+IV_local=$(cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps; ls *.nc | cut -d"." -f1)
 #+END_SRC
 
 
