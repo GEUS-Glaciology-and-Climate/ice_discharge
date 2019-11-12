@@ -19,9 +19,9 @@ cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps
 ls | cut -d"." -f1 | tail -n3
 #+END_SRC
 #+RESULTS:
-: IV_20190711_20190804
-: IV_20190723_20190816
-: IV_20190804_20190828
+: IV_20190909_20191003
+: IV_20190921_20191015
+: IV_20191003_20191027
 
 A list of the files on the Promice Data Portal
 1. Manually go to https://www.promice.org/PromiceDataPortal/#Sentinel1Greenlandicevelocity
@@ -30,12 +30,12 @@ A list of the files on the Promice Data Portal
 List contents there
 #+BEGIN_SRC sh :results verbatim
 URL=https://promice.org/PromiceDataPortal/api/download/92ce7cf4-59b8-4a3f-8f75-93d166f5a7ca/Greenland_IV
-curl -s ${URL} --list-only | grep zip | sed -e 's/<[^>]*>//g' | cut -d"." -f1 | tail -n3
+curl -s ${URL} --list-only | grep \.nc | sed -e 's/<[^>]*>//g' | cut -d"." -f1 | tail -n3
 #+END_SRC
 #+RESULTS:
-:     IV_20190711_20190804
-:     IV_20190723_20190816
-:     IV_20190804_20190828
+:     IV_20190909_20191003
+:     IV_20190921_20191015
+:     IV_20191003_20191027
 
 * Algorithm
 :PROPERTIES:
@@ -71,7 +71,7 @@ This code block is the top level pseudo-code description of the monitoring and u
 #+NAME: fetch_IV_list_from_web
 #+BEGIN_SRC sh :results verbatim
 URL=https://promice.org/PromiceDataPortal/api/download/92ce7cf4-59b8-4a3f-8f75-93d166f5a7ca/Greenland_IV
-IV_web=$(curl -s ${URL} --list-only | grep zip | sed -e 's/<[^>]*>//g' | cut -d"." -f1)
+IV_web=$(curl -s ${URL} --list-only | grep \.nc | sed -e 's/<[^>]*>//g' | cut -d"." -f1)
 #+END_SRC
 
 #+NAME: generate_local_IV_list
@@ -105,16 +105,14 @@ Could use =comm -23= instead of =diff= & =grep=?
 missing_local=$(diff <(echo $IV_web|tr ' ' '\n') <(echo $IV_local|tr ' ' '\n') | grep "^<" | cut -c2-)
 for file in $(echo ${missing_local} | tr ' ' '\n'); do
   MSG_OK "Fetching ${file}"
-  wget -np --continue ${URL}/${file}.zip -O ./tmp_S1.zip
-  unzip -n -j tmp_S1.zip ${file}/${file}.nc -d ${Sentinel1_IV_DATA_DIR}
-  rm ./tmp_S1.zip
+  wget -np --continue ${URL}/${file}.nc -O ${Sentinel1_IV_DATA_DIR}/${file}.nc
 done
 #+END_SRC
 #+RESULTS:
 
 #+NAME: update_ice_discharge
 #+BEGIN_SRC sh :results verbatim
-make
+echo make
 #+END_SRC
 #+RESULTS:
 

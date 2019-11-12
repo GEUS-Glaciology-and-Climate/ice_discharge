@@ -20,7 +20,7 @@ MSG_WARN() { printf "${ORANGE}WARNING: ${1}${NC}\n"; }
 MSG_ERR() { echo "${RED}ERROR: ${1}${NC}\n" >&2; }
 
 URL=https://promice.org/PromiceDataPortal/api/download/92ce7cf4-59b8-4a3f-8f75-93d166f5a7ca/Greenland_IV
-IV_web=$(curl -s ${URL} --list-only | grep zip | sed -e 's/<[^>]*>//g' | cut -d"." -f1)
+IV_web=$(curl -s ${URL} --list-only | grep \.nc | sed -e 's/<[^>]*>//g' | cut -d"." -f1)
 IV_local=$(cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps; ls *.nc | cut -d"." -f1)
 diff <(echo $IV_web|tr ' ' '\n') <(echo $IV_local|tr ' ' '\n') &> /dev/null
 if [ $? -ne 0 ]; then # difference.
@@ -29,11 +29,9 @@ if [ $? -ne 0 ]; then # difference.
   missing_local=$(diff <(echo $IV_web|tr ' ' '\n') <(echo $IV_local|tr ' ' '\n') | grep "^<" | cut -c2-)
   for file in $(echo ${missing_local} | tr ' ' '\n'); do
     MSG_OK "Fetching ${file}"
-    wget -np --continue ${URL}/${file}.zip -O ./tmp_S1.zip
-    unzip -n -j tmp_S1.zip ${file}/${file}.nc -d ${Sentinel1_IV_DATA_DIR}
-    rm ./tmp_S1.zip
+    wget -np --continue ${URL}/${file}.nc -O ${Sentinel1_IV_DATA_DIR}/${file}.nc
   done
-  make
+  echo make
 else 
   MSG_OK "Local velocities match remote."
   MSG_OK "No action taken"
