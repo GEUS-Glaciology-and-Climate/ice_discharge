@@ -15,7 +15,7 @@
 #+EXCLUDE_TAGS: noexport
 
 #+BEGIN_EXPORT LaTeX
-\title{Greenland Ice Sheet solid ice discharge from 1986 through October 2019}
+\title{Greenland Ice Sheet solid ice discharge from 1986 through 2019}
 \Author[1]{Kenneth D.}{Mankoff}
 \Author[1]{William}{Colgan}
 \Author[1]{Anne}{Solgaard}
@@ -42,10 +42,10 @@
 
 
 #+BEGIN_abstract
-We present a 1986 through October 2019 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional hand-picked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and ends with near-complete spatial coverage and six-day updates to velocity. The 2010 through 2018 average ice discharge through the flux-gates is ~488 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the NW region. As part of the journal's living archive option, all input data, code, and results from this study will be updated when new input data are accessible and made freely available at doi:10.22008/promice/data/ice_discharge.
+We present a 1986 through 2019 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional hand-picked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and ends with near-complete spatial coverage and twelve-day updates to velocity. The 2010 through 2019 average ice discharge through the flux-gates is ~487 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the NW region. As part of the journal's living archive option and our goal to make an operational product, all input data, code, and results from this study will be updated as needed (when new input data are available, as new features are added, or to fix bugs) and made freely available at doi:10.22008/promice/data/ice_discharge and at http://github.com/mankoff/ice_discharge.
 #+END_abstract
 
-# For 2000 to 2018 mean see LINK: [[id:eca400fe-cffc-4e6b-8fc1-694945093adb][2000 to 2018 mean]]
+# For 2000 to present mean see LINK: id:eca400fe-cffc-4e6b-8fc1-694945093adb
 
 * README                                                :noexport:
 
@@ -75,27 +75,23 @@ After updates, re-run make, and also recreate RESULTS blocks with:
 
 # A short summary [...] 500-character (incl. spaces) non-technical text that may be used to promote your work to a broader audience. It should highlight your main conclusions and results, and what the implications are. If possible, please also summarize briefly why you did the research and how you did it.
 
-We have produced an open and reproducible estimate of Greenland ice sheet solid ice discharge from 1986 through October 2019. Our results show three modes at the total ice-sheet scale: Steady discharge from 1986 through 2000, increasing discharge from 2000 through 2005, steady discharge from 2005 through 2019. The behavior of individual sectors and glaciers is more complicated. This work was done to provide a 100% reproducible estimate to help constrain mass balance and sea level rise estimates. 
+We have produced an open and reproducible estimate of Greenland ice sheet solid ice discharge from 1986 through 2019. Our results show three modes at the total ice-sheet scale: Steady discharge from 1986 through 2000, increasing discharge from 2000 through 2005, steady discharge from 2005 through 2019. The behavior of individual sectors and glaciers is more complicated. This work was done to provide a 100% reproducible estimate to help constrain mass balance and sea level rise estimates. 
 
 * What's new in this version
 
 The data has been updated repeatedly between the first version of this paper citep:mankoff_2019_ice and this version. The data will continue to be updated, often sub-monthly, although reference papers will only come out once or twice a year. Therefore users are encouraged to regularly check for data updates at doi:10.22008/promice/data/ice_discharge when using the data.
 
-A post-peer-review website is available at https://github.com/mankoff/ice_discharge where we document changes to the paper and use the GitHub Issues feature to collect suggested improvements to the paper, document those improvements as they are implemented, document problems that made it through review, and mention similar papers that have been published since this was accepted.
+A post-peer-review website is available at https://github.com/mankoff/ice_discharge where we document changes to the paper and use the GitHub Issues feature to collect suggested improvements to the paper, document those improvements as they are implemented, document problems that made it through review, and mention similar papers that have been published since this was accepted. The git commit for this version of the paper is \input{|"git describe --always --dirty='*'"}.
 
-In this version the NSIDC 0478 data citep:NSIDC_0478 has been updated from v2 to v2.1. This data is used for the baseline velocity and gate selection, and therefore gate locations, number of gate pixels, and number of gates have all changed. The effect of this change is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{wc -l < tmp/dat_100_5000.csv} {{{results(=5830=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | sort | uniq | wc -l} {{{results(=268=)}}}  gates.
+In this version the NSIDC 0478 ice velocity data citep:NSIDC_0478 have been updated from v2 to v2.1. These data are used for the baseline velocity and gate selection, and therefore gate locations have shifted slightly, and number of gate pixels and number of gates have changed. The effect of this change is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{wc -l < tmp/dat_100_5000.csv} {{{results(=5830=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | sort | uniq | wc -l} {{{results(=268=)}}}  gates.
 
-The NSIDC 0646 data citep:NSIDC_0646 has been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %). 
+The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet wide differences between velocity products can be non-trival. The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=54=)}}} Sentinel 1 velocity maps from 2018 through present (src_bash[:eval yes]{date --iso} {{{results(=2019-11-12=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
 
-The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=54=)}}} Sentinel 1 velocity maps from 2018 through present (src_bash[:eval yes]{date --iso} {{{results(=2019-11-05=)}}}).
-
-We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
-
-We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any point where coverage is < 50 % is discarded from the graphic (low coverage data is still included in the downloadable data). Annual average is only computed if there are three or more samples in a year. Coverage is now shown as points, and coverage is shown for all points shown in the discharge time series.
+We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate-, region-, or ice-sheet wide) where coverage is < 50 % is discarded from the graphic although low coverage data is still included in the downloadable data, and annual average is only computed if there are three or more samples in a year. 
 
 Finally, the supplemental material includes significantly more meta-data about the input data used in this work to aid in both reproducibility by third-parties, and in tracking the impact of updates to input data on future versions of this work.
 
-Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and they are now approximately tied for the 3rd largest discharging sector. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continued its rapid discharge decline in 2017 and 2018 returning to, approximately, its discharge from year 2000. For a while in 2018 Helheim was the top Greenlandic glacier contributing to sea level, until the 2019 discharge increase from Sermeq Kujalleq.
+Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and CE and CW are now approximately tied for the 3rd largest discharging region. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continued its rapid discharge decline in 2017 and 2018 returning to approximately its discharge from year 2000, until increasing again in 2019. For a while in 2018 Helheim was the top Greenlandic glacier contributing to sea level rise.
 
 * Introduction
 :PROPERTIES:
@@ -149,13 +145,13 @@ where \(\rho\) is the average density of ice, \(V\) is depth-average gate-perpen
 
 Conventional methods of gate selection involve hand-picking gate locations, generally as linear features (e.g. citet:enderlin_2014_improved) or visually approximating ice-orthogonal gates at one point in time (e.g. citet:king_2018_seasonal). Manual gate definition is sub-optimal. For example, the largest discharging glaciers draw from an upstream radially-diffusing region that may not easily be represented by a single linear gate. Approximately flow-orthogonal curved gates may not be flow-orthogonal on the multi-decade time scale due to changing flow directions. Manual gate selection makes it difficult to update gate locations, corresponding with glacier termini retreat or advance, in a systematic and reproducible fashion. We therefore adopt an algorithmic approach to generate gates based on a range of criteria.
 
-Here, we present a discharge dataset based on gates selected in a reproducible fashion by a new algorithm. Relative to previous studies, we employ ice velocity observation over a longer period with higher temporal frequency and denser spatial coverage. We use ice velocity from 1986 through 2019 including six-day velocities for the last ~500 days of the time series, and discharge at 200 m pixel resolution capturing all ice flowing faster than 100 m yr^{-1} that crosses glacier termini into fjords.
+Here, we present a discharge dataset based on gates selected in a reproducible fashion by a new algorithm. Relative to previous studies, we employ ice velocity observation over a longer period with higher temporal frequency and denser spatial coverage. We use ice velocity from 1986 through 2019 including twelve-day velocities for the last ~500 days of the time series, and discharge at 200 m pixel resolution capturing all ice flowing faster than 100 m yr^{-1} that crosses glacier termini into fjords.
 
 * Input data
 
 Historically, discharge gates were selected along well-constrained flight-lines of airborne radar data citep:enderlin_2014_improved. Recent advances in ice thickness estimates through NASA Operation IceBridge citep:millan_2018_vulnerability, NASA Oceans Melting Greenland (OMG; citet:fenty_2016_oceans), fjord bathymetry citep:tinto_2015_bathymetry, and methods to estimate thickness from surface properties (e.g. citet:mcnabb_2012_using,james_2016_automated) have been combined into digital bed elevation models such as BedMachine v3 citep:morlighem_2017_bedmachine,NSIDC_BedMachine or released as independent datasets citep:millan_2018_vulnerability. From these advances, digital bed elevation models have become more robust at tidewater glacier termini and grounding lines. The incorporation of flight-line ice thickness data into higher-level products that include additional methods and data means gates are no longer limited to flight-lines (e.g. citet:king_2018_seasonal).
 
-Ice velocity data are available with increasing spatial and temporal resolution (e.g. citet:vijay_2019_resolving). Until recently, ice velocity mosaics were limited to once per year during winter citep:joughin_2010_greenland, and they are still temporally limited, often to annual resolution, prior to 2000 (e.g. citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000). Focusing on recent times, ice-sheet wide velocity mosaics from the Sentinel 1A & 1B are now available every six days (http://PROMICE.org). The increased availability of satellite data has improved ice velocity maps both spatially and temporally thereby decreasing the need to rely on spatial and temporal interpolation of velocities from annual/winter mosaics citep:andersen_2015_basin-scale,king_2018_seasonal.
+Ice velocity data are available with increasing spatial and temporal resolution (e.g. citet:vijay_2019_resolving). Until recently, ice velocity mosaics were limited to once per year during winter citep:joughin_2010_greenland, and they are still temporally limited, often to annual resolution, prior to 2000 (e.g. citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000). Focusing on recent times, ice-sheet wide velocity mosaics from the Sentinel 1A & 1B are now available every twelve days (http://PROMICE.org). The increased availability of satellite data has improved ice velocity maps both spatially and temporally thereby decreasing the need to rely on spatial and temporal interpolation of velocities from annual/winter mosaics citep:andersen_2015_basin-scale,king_2018_seasonal.
 
 The discharge gates in this study are generated using only surface speed and an ice mask. We use the MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2 citep:joughin_2010_greenland,NSIDC_0478, hereafter termed "MEaSUREs 0478" due to the National Snow and Ice Data Center (NSIDC) date set ID number. We use the BedMachine v3 citep:morlighem_2017_bedmachine,NSIDC_BedMachine ice mask.
 
@@ -200,7 +196,7 @@ times 2021:  0
 times 2022:  0
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=453=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 36 in 2016, 69 in 2017, 42 in 2018, and 22 in 2019.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=453=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 36 in 2016, 69 in 2017, 42 in 2018, and 24 in 2019.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -210,7 +206,7 @@ This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n'
 | Basal Topography               | BedMachine               | citet:morlighem_2017_bedmachine,NSIDC_BedMachine               |
 | Basal Topography for Southeast |                          | citet:millan_2018_vulnerability                                |
 | Surface Elevation              | GIMP 0715                | citet:howat_2014_greenland,NSIDC_0715                          |
-| Surface Elevation Change       | Surface Elevation Change | citet:khan_2016_geodetic                                       |
+| Surface Elevation Change       | Surface Elevation Change | citet:khan_2016_geodetic,GEUS_discharge_paper_elevation_change |
 | Baseline Velocity              | MEaSUREs 0478            | citet:NSIDC_0478                                               |
 | Velocity                       | Sentinel                 | Appendix                                                       |
 | Velocity                       | MEaSUREs 0646            | citet:NSIDC_0646                                               |
@@ -373,7 +369,7 @@ This work in its entirety is available at doi:10.22008/promice/data/ice_discharg
 
 * Conclusions
 
-We have presented a novel dataset of flux gates and 1986 through October 2019 glacier-scale ice discharge estimate for the Greenland ice sheet. These data are underpinned by an algorithm that both selects gates for ice flux and then computes ice discharges. 
+We have presented a novel dataset of flux gates and 1986 through 2019 glacier-scale ice discharge estimate for the Greenland ice sheet. These data are underpinned by an algorithm that both selects gates for ice flux and then computes ice discharges. 
 
 Our results are similar to the most recent discharge estimate citep:king_2018_seasonal but begin in 1986 - although there is low coverage and few samples prior to 2000. From our discharge estimate we show that over the past ~30 years, ice sheet discharge was ~430 Gt yr^{-1} prior to 2000, rose to over 500 Gt yr^{-1} from 2000 to 2005, and has held roughly steady since 2005 at near 500 Gt yr^{-1}. However, when viewed at a region or sector scale, the system appears more dynamic with spatial and temporal increases and decreases canceling each other out to produce the more stable ice sheet discharge. We note that there does not appear to be any dynamic connection among the regions, and any increase in one region that was offset by a decrease in another has likely been due to chance. If in coming years when changes occur the signals have matching signs, then ice sheet discharge would decrease or increase, rather than remain fairly steady.
 
@@ -394,7 +390,8 @@ Transparency in data and methodology are critical to move beyond a focus of esti
 
 
 #+BEGIN_acknowledgements
-Funding was provided by the Programme for Monitoring of the Greenland Ice Sheet (PROMICE). Ice velocity maps were produced from ESA Sentinel-1 remote sensing data as part of PROMICE and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org. Parts of this work were funded by the INTAROS project under the European Union's Horizon 2020 research and innovation program under grant agreement No. 727890. We thank the reviewers for their constructive input that helped improve the paper. 
+Funding was provided by the Programme for Monitoring of the Greenland Ice Sheet (PROMICE). Sentinel ice
+velocity maps were produced from Copernicus Sentinel-1 image data, processed by ESA data as part of PROMICE, and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org. Parts of this work were funded by the INTAROS project under the European Union's Horizon 2020 research and innovation program under grant agreement No. 727890. We thank the reviewers for their constructive input that helped improve the paper. 
 #+END_acknowledgements
 
 
@@ -663,7 +660,7 @@ df
 :RESULTS:
 #+NAME: tab:thick_treatments
 #+LATEX_ATTR: :placement [!h]
-#+CAPTION: Effect of different thickness adjustments on baseline discharge
+#+CAPTION: Effect of different thickness adjustments on baseline discharge\label{tab:thick_treatments}
 | Treatment    | Discharge (Gt)   |
 |--------------+------------------|
 | NoAdj        | 472 \pm 49       |
@@ -747,7 +744,7 @@ Our work takes place in a projected coordinate system (EPSG 3413) and therefore 
 :clearpage: t
 :END:
 
-We use ESA Sentinel-1 synthetic aperture radar (SAR) data to derive ice velocity maps covering the Greenland Ice Sheet margin using offset tracking citep:strozzi_2002_glacier assuming surface parallel flow using the digital elevation model from the Greenland Ice Mapping Project (GIMP DEM, NSIDC 0645) by citet:howat_2014_greenland,NSIDC_0645. The operational interferometric post processing (IPP) chain citep:dall_2015_ice,kusk_2018_system, developed at the Technical University of Denmark (DTU) Space and upgraded with offset tracking for ESA’s Climate Change Initiative (CCI) Greenland project, was employed to derive the surface movement. The Sentinel-1 satellites have a repeat cycle of 12 days, and due to their constellation, each track has a six-day repeat cycle. We produce a Greenland wide product that spans two repeat cycles of Sentinel-1 A. The product is a mosaic of all the ice velocity maps based on 12 day pairs produced from all the tracks from Sentinel-1 A and B covering Greenland during those two cycles. The product thus has a total time span of 24 days. Six day pairs are also included in each mosaic from track 90, 112 and 142 covering the ice sheet margin in the south as well as other tracks on an irregular basis in order to increase the spatial resolution. citet:rathmann_2017_highly and citet:vijay_2019_resolving have exploited the high temporal resolution of the product to investigate dynamics of glaciers. The maps are available from 2016-09-13 and onward, are updated regularly, and are freely available from http://promice.dk.
+We use ESA Sentinel-1 synthetic aperture radar (SAR) data to derive ice velocity maps covering the Greenland Ice Sheet margin using offset tracking citep:strozzi_2002_glacier assuming surface parallel flow using the digital elevation model from the Greenland Ice Mapping Project (GIMP DEM, NSIDC 0645) by citet:howat_2014_greenland,NSIDC_0645. The operational interferometric post processing (IPP) chain citep:dall_2015_ice,kusk_2018_system, developed at the Technical University of Denmark (DTU) Space and upgraded with offset tracking for ESA’s Climate Change Initiative (CCI) Greenland project, was employed to derive the surface movement. The Sentinel-1 satellites have a repeat cycle of 12 days, and due to their constellation, each track has a twelve-day repeat cycle. We produce a Greenland wide product that spans two repeat cycles of Sentinel-1 A. The product is a mosaic of all the ice velocity maps based on 12 day pairs produced from all the tracks from Sentinel-1 A and B covering Greenland during those two cycles. The product thus has a total time span of 24 days. Twelve-day pairs are also included in each mosaic from track 90, 112 and 142 covering the ice sheet margin in the south as well as other tracks on an irregular basis in order to increase the spatial resolution. citet:rathmann_2017_highly and citet:vijay_2019_resolving have exploited the high temporal resolution of the product to investigate dynamics of glaciers. The maps are available from 2016-09-13 and onward, are updated regularly, and are freely available from http://promice.dk.
 
 
 ** Software
@@ -4345,7 +4342,7 @@ tbl
 :PROPERTIES:
 :header-args:jupyter-python+: :tangle no
 :END:
-**** 2000 to 2017 mean
+**** 2000 to present mean
 :PROPERTIES:
 :ID:       eca400fe-cffc-4e6b-8fc1-694945093adb
 :END:

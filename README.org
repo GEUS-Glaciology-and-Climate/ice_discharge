@@ -1,7 +1,7 @@
 
-* Greenland Ice Sheet solid ice discharge from 1986 through July 2019
+* Greenland Ice Sheet solid ice discharge from 1986 through 2019
 
-This is the source for "Greenland Ice Sheet solid ice discharge from 1986 through 2017" and subsequent versions. 
+This is the source for "Greenland Ice Sheet solid ice discharge from 1986 through 2019" and previous and subsequent versions. 
 + The original paper is located at [[http://dx.doi.org/10.5194/essd-11-769-2019][doi:10.5194/essd-11-769-2019]].
 + The data sets are located at [[http://dx.doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
 
