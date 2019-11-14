@@ -560,7 +560,7 @@ We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1
 
 #+header: :eval no-export
 #+NAME: tab:thick_adjust
-#+BEGIN_SRC jupyter-python :display text/org :exports results :results raw drawer :session thick_adj :noweb yes
+#+BEGIN_SRC jupyter-python :display text/org :exports results :results raw drawer :session thick_adj :noweb yes :post rem_colon(data=*this*)
 
 <<load_data>>
 <<millan_2018>>
@@ -571,16 +571,14 @@ df['Good Pixels'] = vel_baseline.loc[~th['bad']].describe()
 df['Bad Pixels'] = vel_baseline.loc[th['bad']].describe()
 
 print("#+LATEX_ATTR: :placement [!h]")
-print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed [m yr^{-1}] except for the \"count\" row.")
-print("#+NAME: tab:thick_adjust")
+print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed [m yr^{-1}] except for the \"count\" row\label{tab:thick_adjust}.")
 df.round(0).astype(np.int)
 #+END_SRC
 
 #+RESULTS: tab:thick_adjust
 :RESULTS:
-: #+LATEX_ATTR: :placement [!h]
-: #+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed [m yr^{-1}] except for the "count" row.
-: #+NAME: tab:thick_adjust
+#+LATEX_ATTR: :placement [!h]
+#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed [m yr^{-1}] except for the "count" row\label{tab:thick_adjust}.
 |       |   Good Pixels |   Bad Pixels |
 |-------+---------------+--------------|
 | count |          5205 |          624 |
@@ -592,6 +590,8 @@ df.round(0).astype(np.int)
 | 75%   |           995 |          291 |
 | max   |         10044 |         1505 |
 :END:
+
+
 
 # NOTE: Manual cleaning performed for above table
 
