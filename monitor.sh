@@ -31,7 +31,7 @@ if [ $? -ne 0 ]; then # difference.
     MSG_OK "Fetching ${file}"
     wget -np --continue ${URL}/${file}.nc -O ${Sentinel1_IV_DATA_DIR}/${file}.nc
   done
-  echo make
+  make
 else 
   MSG_OK "Local velocities match remote."
   MSG_OK "No action taken"

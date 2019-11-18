@@ -112,7 +112,7 @@ done
 
 #+NAME: update_ice_discharge
 #+BEGIN_SRC sh :results verbatim
-echo make
+make
 #+END_SRC
 #+RESULTS:
 
