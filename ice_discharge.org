@@ -616,9 +616,6 @@ We adjust these thickness using a poor fit (correlation coefficient: 0.3) of the
 
 Table [[tab:thick_treatments]] shows the estimated baseline discharge to these four treatments:
 
-# #+LATEX_ATTR: :placement [!h]
-# #+CAPTION: Effect of different thickness adjustments on baseline discharge
-
 #+name: rem_colon
 #+BEGIN_SRC bash :var data="" :results drawer :eval no-export
 # echo "${data}"
@@ -651,7 +648,7 @@ df.index.name = 'Treatment'
 
 print('#+NAME: tab:thick_treatments')
 print('#+LATEX_ATTR: :placement [!h]')
-print('#+CAPTION: Effect of different thickness adjustments on baseline discharge')
+print('#+CAPTION: Effect of different thickness adjustments on baseline discharge\label{tab:thick_treatments}')
 
 df
 #+END_SRC
@@ -3072,6 +3069,9 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 #+END_SRC
 
 #+RESULTS: adjust_thickness_fit
+:RESULTS:
+: /home/kdm/local/anaconda/envs/sci/lib/python3.6/site-packages/numpy/core/fromnumeric.py:52: FutureWarning: Method .ptp is deprecated and will be removed in a future version. Use numpy.ptp instead.
+:   return getattr(obj, method)(*args, **kwds)
 #+begin_example
                    300         fit      diff
 1985-12-31  400.097463  404.194558  4.097095
