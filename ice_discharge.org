@@ -19,6 +19,7 @@
 \Author[1]{Kenneth D.}{Mankoff}
 \Author[1]{William}{Colgan}
 \Author[1]{Anne}{Solgaard}
+\Author[1]{Andreas P.}{Ahlstrøm}
 \Author[2]{Shfaqat Abbas}{Khan}
 \Author[1]{Robert S.}{Fausto}
 \affil[1]{Department of Glaciology and Climate, Geological Survey of Denmark and Greenland (GEUS), Copenhagen, Denmark}
@@ -85,13 +86,13 @@ A post-peer-review website is available at https://github.com/mankoff/ice_discha
 
 In this version the NSIDC 0478 ice velocity data citep:NSIDC_0478 have been updated from v2 to v2.1. These data are used for the baseline velocity and gate selection, and therefore gate locations have shifted slightly, and number of gate pixels and number of gates have changed. The effect of this change is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{wc -l < tmp/dat_100_5000.csv} {{{results(=5830=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | sort | uniq | wc -l} {{{results(=268=)}}}  gates.
 
-The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet wide differences between velocity products can be non-trival. The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=55=)}}} Sentinel 1 velocity maps from 2018 through present (src_bash[:eval yes]{date --iso} {{{results(=2019-11-18=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
+The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet wide differences between velocity products can be non-trivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=56=)}}} Sentinel 1 velocity maps from 2018 through present (src_bash[:eval yes]{date --iso} {{{results(=2019-11-26=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
 
-We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate-, region-, or ice-sheet wide) where coverage is < 50 % is discarded from the graphic although low coverage data is still included in the downloadable data, and annual average is only computed if there are three or more samples in a year. 
+We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate-, region-, or ice-sheet wide) where coverage is < 50 % is discarded from the graphic (low coverage data is still included in the downloadable data), and annual average is only computed if there are three or more samples in a year. 
 
-Finally, the supplemental material includes significantly more meta-data about the input data used in this work to aid in both reproducibility by third-parties, and in tracking the impact of updates to input data on future versions of this work.
+Finally, the supplemental material includes significantly more meta-data about the input data used in this work to aid in both reproducibility by third-parties, and in tracking the impact of additional and updated input data on future versions of this work.
 
-Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and CE and CW are now approximately tied for the 3rd largest discharging region. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continued its rapid discharge decline in 2017 and 2018 returning to approximately its discharge from year 2000, until increasing again in 2019. For a while in 2018 Helheim was the top Greenlandic glacier contributing to sea level rise.
+Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and CE and CW are now approximately tied for the 3rd largest discharging region. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continued its rapid discharge decline in 2017 and 2018 returning to approximately its discharge from year 2000, until increasing again in 2019. For some time in 2018 Helheim was the top Greenlandic glacier contributing to sea level rise.
 
 * Introduction
 :PROPERTIES:
@@ -134,7 +135,7 @@ np.mean(unumpy.uarray([231,293,265,267], [40,39,39,38]))
 # When ice-sheet wide MB does agree between two independent studies, there may be spatially and/or temporally compensating errors underlying this outward agreement. Spatial discrepancies include, for example, citet:enderlin_2014_improved and citet:king_2018_seasonal. Temporal discrepancies include, for example, ???. A substantial portion of underlying spatial and temporal discrepancies may be associated with sampling bias. Underlying sampling discrepancy includes, for example, demonstrating agreement between satellite gravimetry derived mass loss estimates that sample Greenland peripheral glaciers and an input-output assessment that does not sample these disproportionately high mass loss glaciers citep:xu_2016_improved,noel_2017_greenland.
 
 
-Discharge may be calculated through several methods, including mass flow rate through gates (e.g. citet:enderlin_2014_improved,king_2018_seasonal), or solving as a residual from independent mass balance terms (e.g. citet:kjaer_2012_aerial,kjeldsen_2015_spatial). The gate method that we use in this study incorporates ice thickness and an estimated vertical profile from the observed surface velocity to calculate the discharge. A typical formulation of discharge across a gate \(D_g\) is,
+Discharge may be calculated through several methods, including mass flow rate through gates (e.g. citet:enderlin_2014_improved,king_2018_seasonal,mouginot_2019_forty), or solving as a residual from independent mass balance terms (e.g. citet:kjaer_2012_aerial,kjeldsen_2015_spatial). The gate method that we use in this study incorporates ice thickness and an estimated vertical profile from the observed surface velocity to calculate the discharge. A typical formulation of discharge across a gate \(D_g\) is,
 
 #+NAME: eq:Q
 \begin{equation}
@@ -151,7 +152,7 @@ Here, we present a discharge dataset based on gates selected in a reproducible f
 
 Historically, discharge gates were selected along well-constrained flight-lines of airborne radar data citep:enderlin_2014_improved. Recent advances in ice thickness estimates through NASA Operation IceBridge citep:millan_2018_vulnerability, NASA Oceans Melting Greenland (OMG; citet:fenty_2016_oceans), fjord bathymetry citep:tinto_2015_bathymetry, and methods to estimate thickness from surface properties (e.g. citet:mcnabb_2012_using,james_2016_automated) have been combined into digital bed elevation models such as BedMachine v3 citep:morlighem_2017_bedmachine,NSIDC_BedMachine or released as independent datasets citep:millan_2018_vulnerability. From these advances, digital bed elevation models have become more robust at tidewater glacier termini and grounding lines. The incorporation of flight-line ice thickness data into higher-level products that include additional methods and data means gates are no longer limited to flight-lines (e.g. citet:king_2018_seasonal).
 
-Ice velocity data are available with increasing spatial and temporal resolution (e.g. citet:vijay_2019_resolving). Until recently, ice velocity mosaics were limited to once per year during winter citep:joughin_2010_greenland, and they are still temporally limited, often to annual resolution, prior to 2000 (e.g. citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000). Focusing on recent times, ice-sheet wide velocity mosaics from the Sentinel 1A & 1B are now available every twelve days (http://PROMICE.org). The increased availability of satellite data has improved ice velocity maps both spatially and temporally thereby decreasing the need to rely on spatial and temporal interpolation of velocities from annual/winter mosaics citep:andersen_2015_basin-scale,king_2018_seasonal.
+Ice velocity data are available with increasing spatial and temporal resolution (e.g. citet:vijay_2019_resolving). Until recently, ice velocity mosaics were limited to once per year during winter citep:joughin_2010_greenland, and they are still temporally limited, often to annual resolution, prior to 2000 (e.g. citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000). Focusing on recent times, ice-sheet wide velocity mosaics from the Sentinel 1A & 1B are now available every twelve days (http://PROMICE.org). The increased availability of satellite data has improved ice velocity maps both spatially and temporally thereby decreasing the need to rely on spatial and temporal interpolation of velocities from annual/winter mosaics citep:andersen_2015_basin-scale,king_2018_seasonal,mouginot_2019_forty.
 
 The discharge gates in this study are generated using only surface speed and an ice mask. We use the MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2 citep:joughin_2010_greenland,NSIDC_0478, hereafter termed "MEaSUREs 0478" due to the National Snow and Ice Data Center (NSIDC) date set ID number. We use the BedMachine v3 citep:morlighem_2017_bedmachine,NSIDC_BedMachine ice mask.
 
@@ -320,7 +321,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : sectors:  174
 : times:  455
 
-Our gate placement algorithm generates src_bash[:eval yes]{wc -l < tmp/dat_100_5000.csv} {{{results(=5830=)}}} pixels making up src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv  | sort | uniq | wc -l} {{{results(=268=)}}} gates, assigned to src_bash[:eval yes]{cut -d"," -f9 tmp/dat_100_5000.csv  | sort | uniq | wc -l} {{{results(=174=)}}} ice-sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 230 gates citep:king_2018_seasonal and 178 gates citep:enderlin_2014_improved.
+Our gate placement algorithm generates src_bash[:eval yes]{wc -l < tmp/dat_100_5000.csv} {{{results(=5830=)}}} pixels making up src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv  | sort | uniq | wc -l} {{{results(=268=)}}} gates, assigned to src_bash[:eval yes]{cut -d"," -f9 tmp/dat_100_5000.csv  | sort | uniq | wc -l} {{{results(=174=)}}} ice-sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
 The widest gate (~47 km) is Sermersuaq (Humboldt Gletsjer), the 2nd widest (~34 km) is Sermeq Kujalleq (Jakobshavn Isbræ). 23 additional glaciers have gate lengths longer than 10 km. The minimum gate width is 3 pixels (600 m) by definition in the algorithm. 
 
@@ -328,20 +329,181 @@ The widest gate (~47 km) is Sermersuaq (Humboldt Gletsjer), the 2nd widest (~34 
 
 The average unadjusted thickness gates is 401 m with a standard deviation of 258. The average thickness after adjustment is 436 m with a standard deviation of 223. A histogram of unadjusted and adjusted thickness at all gate locations is shown in Fig. [[fig:h_v_histogram]].
 
-** TODO Discharge
+** Discharge
 :PROPERTIES:
 :CUSTOM_ID: sec:results_flow_rate
 :END:
 
-Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 461 \(\pm\) 49 Gt in 1986, has a minimum of 428 \(\pm\) 44 Gt in 1996, increases to 443 \(\pm\) 44 in 2000, further to 498 \(\pm\) 50 Gt/yr in 2005, after which annual discharge remains approximately steady at 481 to 505 \(\pm\) ~50 Gt/yr during the 2005 to 2019 period.
+#+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
+import pandas as pd
 
-At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 136 to 164 (\(\pm\) 11 %) Gt yr^{-1} of discharge (29 to 34 % of ice-sheet wide discharge) over the 1986 to 2019 period. By comparison, the predominantly land-terminating NO, NE and SW together were also responsible for 132 to 172 of discharge (~31 % of ice-sheet wide discharge) during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady or declining for the past decade. The NW is the only region exhibiting a persistent increase in discharge -- From ~89 to 115 Gt yr^{-1} (23 % increase) over the 1999 through 2017 period (+ ~1.4 Gt yr^{-1} or + ~1.2 % yr^{-1}). This persistent increase in NW discharge offsets declining discharge from other regions. The largest contributing region, SE, contributed a high of 164 \(\pm\) 19 Gt in 2004, but dropped to ~150 \pm 18 Gt yr^{-1} for the past decade.
+t = pd.read_csv('./out/GIS_D.csv', index_col=0, parse_dates=True)\
+      .resample('AS')\
+      .mean()
+t_err = pd.read_csv('./out/GIS_err.csv', index_col=0, parse_dates=True)\
+          .resample('AS')\
+          .mean()
+t = t.merge(t_err, left_index=True, right_index=True)\
+     .rename({'Discharge [Gt yr-1]' : 'D',
+              'Discharge Error [Gt yr-1]' : 'err'}, axis='columns')
+
+print("Initial:\n", t.loc['1986-01-01'])
+print("\nMinimum\n", t.loc[t['D'].idxmin().strftime('%Y-%m-%d')])
+print("\nY2K\n", t.loc['2000-01-01'])
+print("\n2005\n", t.loc['2005-01-01'])
+
+t[t.index.year > 2005]
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+#+begin_example
+Initial:
+ D      460.216930
+err     49.343214
+Name: 1986-01-01 00:00:00, dtype: float64
+
+Minimum
+ D      428.266078
+err     43.863797
+Name: 1996-01-01 00:00:00, dtype: float64
+
+Y2K
+ D      443.351557
+err     44.243102
+Name: 2000-01-01 00:00:00, dtype: float64
+
+2005
+ D      499.784169
+err     49.793951
+Name: 2005-01-01 00:00:00, dtype: float64
+#+end_example
+| Date                |       D |     err |
+|---------------------+---------+---------|
+| 2006-01-01 00:00:00 | 490.314 | 49.0887 |
+| 2007-01-01 00:00:00 | 482.689 | 48.6632 |
+| 2008-01-01 00:00:00 | 487.026 | 49.6212 |
+| 2009-01-01 00:00:00 | 490.512 | 49.9098 |
+| 2010-01-01 00:00:00 | 495.194 | 50.616  |
+| 2011-01-01 00:00:00 | 498.306 | 51.1133 |
+| 2012-01-01 00:00:00 | 493.505 | 51.243  |
+| 2013-01-01 00:00:00 | 496.611 | 51.2218 |
+| 2014-01-01 00:00:00 | 498.389 | 51.2817 |
+| 2015-01-01 00:00:00 | 501.014 | 51.3676 |
+| 2016-01-01 00:00:00 | 496.637 | 50.9641 |
+| 2017-01-01 00:00:00 | 505.181 | 51.4244 |
+| 2018-01-01 00:00:00 | 497.575 | 50.6203 |
+| 2019-01-01 00:00:00 | 497.58  | 50.9224 |
+:END:
+
+Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 460 \(\pm\) 49 Gt in 1986, has a minimum of 428 \(\pm\) 44 Gt in 1996, increases to 443 \(\pm\) 44 in 2000, further to 500 \(\pm\) 50 Gt/yr in 2005, after which annual discharge remains approximately steady at 483 to 505 \(\pm\) ~50 Gt/yr during the 2005 to 2019 period.
+
+#+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
+import pandas as pd
+
+r = pd.read_csv('./out/region_D.csv', index_col=0, parse_dates=True)\
+      .resample('AS')\
+      .mean()
+r_err = pd.read_csv('./out/region_err.csv', index_col=0, parse_dates=True)\
+          .resample('AS')\
+          .mean()
+# t = t.merge(t_err, left_index=True, right_index=True)\
+#      .rename({'Discharge [Gt yr-1]' : 'D',
+#               'Discharge Error [Gt yr-1]' : 'err'}, axis='columns')
+
+print("SE range: ", r['SE'].min(), r['SE'].max(), r_err['SE'].min(), r_err['SE'].max())
+print("SE %: ", r['SE'].mean() / r.sum(axis='columns').mean()*100)
+print("NE,NO,NW %:",r[['NE','NO','NW']].sum(axis='columns').mean()/r.sum(axis='columns').mean()*100)
+print("\nNW inclease\n:", r.loc['1999-01-01':,'NW'])
+print("\nSE max and last:", r['SE'].max(), '\n', r['SE'].iloc[-10:].describe())
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+SE range:  136.89817864567837 164.0806614945274 16.384596710318373 20.359786654847913
+SE %:  31.639738391922673
+NE,NO,NW %: 31.400564158583883
+
+NW inclease
+: Date
+1999-01-01     89.895524
+2000-01-01     90.619253
+2001-01-01     90.316087
+2002-01-01     91.836265
+2003-01-01     93.505979
+2004-01-01     97.256420
+2005-01-01     96.612584
+2006-01-01     96.996893
+2007-01-01     96.735046
+2008-01-01     98.671409
+2009-01-01     99.953113
+2010-01-01    102.641733
+2011-01-01    105.616384
+2012-01-01    104.381310
+2013-01-01    106.648704
+2014-01-01    109.266479
+2015-01-01    109.462139
+2016-01-01    112.952807
+2017-01-01    115.527230
+2018-01-01    114.803222
+2019-01-01    109.545758
+Freq: AS-JAN, Name: NW, dtype: float64
+
+SE max and last: 164.0806614945274 
+ count     10.000000
+mean     150.669710
+std        3.221664
+min      145.710365
+25%      148.236643
+50%      150.148105
+75%      153.062687
+max      155.814590
+Name: SE, dtype: float64
+#+end_example
+
+
+At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 136 to 164 (\(\pm\) 12 %) Gt yr^{-1} of discharge (approximately one third of ice-sheet wide discharge) over the 1986 to 2019 period. By comparison, the predominantly land-terminating NO, NE and SW together were also responsible for about one third of total ice-sheet discharge during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady or declining for the past decade. The NW is the only region exhibiting a persistent increase in discharge -- From ~89 to 115 Gt yr^{-1} (23 % increase) over the 1999 through 2017 period (+ ~1.4 Gt yr^{-1} or + ~1.2 % yr^{-1}). This 1999 to 2017 annual average increase in NW discharge offsets declining discharge from other regions, but the NW increase stopped in 2018 and discharge in the NW dropped by 5 Gt yr^{-1} (4 %) in 2019. The largest contributing region, SE, contributed a high of 164 \(\pm\) 19 Gt in 2004, but dropped to ~150 \pm 18 Gt yr^{-1} for the past decade.
 
 # 100 - 89/115*100 = 22.6086956522
 # (115-89+1)/(2017-1999+1) = 1.42105263158
 # (22/(2017-1999+1)) = 1.15789473684
 
-Focusing on eight major contributors at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~50 Gt yr^{-1} in 2013 to ~34 Gt yr^{-1} in 2018, likely due to ocean cooling citep:khazendar_2019_interruption. We exclude Ikertivaq from the top 8 because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. The 2013 to 2016 slowdown of Sermeq Kujalleq (Fig. [[fig:discharge_ts_topfew]]) is compensated by the many glaciers that make up the NW region (Fig. [[fig:discharge_ts_regions]]). The large 2017 and 2018 reduction in discharge at Sermeq Kujalleq is partially offset by a large increase in the 2nd largest contributor, Helheim Gletsjer (Fig. [[fig:discharge_ts_topfew]]).
+#+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
+import pandas as pd
+
+s = pd.read_csv('./out/sector_D.csv', index_col=0, parse_dates=True)\
+      .resample('AS')\
+      .mean()
+s_err = pd.read_csv('./out/sector_err.csv', index_col=0, parse_dates=True)\
+          .resample('AS')\
+          .mean()
+
+print(s['JAKOBSHAVN_ISBRAE'].idxmax())
+print(s.loc['2013-01-01', 'JAKOBSHAVN_ISBRAE'], s_err.loc['2013-01-01', 'JAKOBSHAVN_ISBRAE'])
+print(s.loc['2013-01-01':, 'JAKOBSHAVN_ISBRAE'].idxmin())
+print(s.loc['2018-01-01', 'JAKOBSHAVN_ISBRAE'], s_err.loc['2013-01-01', 'JAKOBSHAVN_ISBRAE'])
+print(s.loc['2013-01-01':, 'JAKOBSHAVN_ISBRAE'])
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+2013-01-01 00:00:00
+50.8390752444449 4.9370534109167235
+2018-01-01 00:00:00
+34.00077155841409 4.9370534109167235
+Date
+2013-01-01    50.839075
+2014-01-01    49.724479
+2015-01-01    48.403514
+2016-01-01    47.416126
+2017-01-01    39.526946
+2018-01-01    34.000772
+2019-01-01    36.063573
+Freq: AS-JAN, Name: JAKOBSHAVN_ISBRAE, dtype: float64
+#+end_example
+
+
+Focusing on eight major contributors at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~51 Gt yr^{-1} in 2013 to ~34 Gt yr^{-1} in 2018, likely due to ocean cooling citep:khazendar_2019_interruption. We exclude Ikertivaq from the top 8 because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. The 2013 to 2016 slowdown of Sermeq Kujalleq (Fig. [[fig:discharge_ts_topfew]]) is compensated by the many glaciers that make up the NW region (Fig. [[fig:discharge_ts_regions]]). The large 2017 and 2018 reduction in discharge at Sermeq Kujalleq is partially offset by a large increase in the 2nd largest contributor, Helheim Gletsjer (Fig. [[fig:discharge_ts_topfew]]) and a small increase in the 3rd largest contributor, Kangerlussuaq citep:bevan_2019_impact.
 
 * Discussion
 
@@ -351,21 +513,21 @@ The algorithm-generated gates we present offer some advantages over traditional 
 
 ** Comparison with past studies                           :ignore:
 
-The total ice discharge we estimate is ~10 % less than the total discharge of two previous estimates citep:enderlin_2014_improved,rignot_2008_mass, and similar to that of citet:king_2018_seasonal, who attributes their discrepancy with citet:enderlin_2014_improved to the latter using only summer velocities, which have higher annual average values than seasonally-comprehensive velocity products. The gate locations also differ among studies, and glaciers with baseline velocity less than 100 m yr^{-1} are not included in our study due to our velocity cutoff threshold, but this should not lead to substantially different discharge estimates (Fig. [[fig:heatmap]]).
+The total ice discharge we estimate is ~10 % less than the total discharge of two previous estimates citep:mouginot_2019_forty,enderlin_2014_improved, and similar to that of citet:king_2018_seasonal, who attributes their discrepancy with citet:enderlin_2014_improved to the latter using only summer velocities, which have higher annual average values than seasonally-comprehensive velocity products. The gate locations also differ among studies, and glaciers with baseline velocity less than 100 m yr^{-1} are not included in our study due to our velocity cutoff threshold, but this should not lead to substantially different discharge estimates (Fig. [[fig:heatmap]]).
 
 Our gate selection algorithm also does not place gates in northeast Greenland at Storstrømmen, Bredebræ, or their confluence, because during the baseline period that surge glacier was in a slow phase. We do not manually add gates at these glaciers. The last surge ended in 1984 citep:reeh_1994_surge,mouginot_2018_insights, prior to the beginning of our time series, and these glaciers are therefore not likely to contribute substantial discharge even in the early period of discharge estimates.
 
-We instead attribute the majority of our discrepancy with citet:enderlin_2014_improved to the use of differing bed topography in southeast Greenland. When we compare our top ten highest discharging glaciers in 2000 with those reported by citet:enderlin_2014_improved, we find that the Køge Bugt discharge reported by citet:enderlin_2014_improved is ~31 Gt, but our estimate is only ~16 Gt (and ~17 Gt in citet:king_2018_seasonal). The citet:bamber_2013_bed bed elevation dataset that likely uses the same bed data employed by citet:enderlin_2014_improved has a major depression in the central Køge Bugt bed. This region of enhanced ice thicknesses is not present in the BedMachine dataset that we and citet:king_2018_seasonal employ (Fig. [[fig:koge_bugt_bamber]]). If the Køge Bugt gates of citet:enderlin_2014_improved are in this location, then those gates overlie citet:bamber_2013_bed ice thicknesses that are about twice those reported in BedMachine v3. With all other values held constant, this results in roughly twice the discharge. Although we do not know whether BedMachine or citet:bamber_2013_bed is more correct, conservation of mass suggests that a substantial subglacial depression should be evident as either depressed surface elevation or velocity citep:morlighem_2016_improving.
+We instead attribute the majority of our discrepancy with citet:enderlin_2014_improved to the use of differing bed topography in southeast Greenland. When we compare our top ten highest discharging glaciers in 2000 with those reported by citet:enderlin_2014_improved, we find that the Køge Bugt discharge reported by citet:enderlin_2014_improved is ~31 Gt, but our estimate is only ~16 Gt (~17 Gt in citet:king_2018_seasonal, and similar in citet:mouginot_2019_forty). The citet:bamber_2013_bed bed elevation dataset that likely uses the same bed data employed by citet:enderlin_2014_improved has a major depression in the central Køge Bugt bed. This region of enhanced ice thicknesses is not present in the BedMachine dataset that we and citet:king_2018_seasonal and citet:mouginot_2019_forty employ (Fig. [[fig:koge_bugt_bamber]]). If the Køge Bugt gates of citet:enderlin_2014_improved are in this location, then those gates overlie citet:bamber_2013_bed ice thicknesses that are about twice those reported in BedMachine v3. With all other values held constant, this results in roughly twice the discharge. Although we do not know whether BedMachine or citet:bamber_2013_bed is more correct, conservation of mass suggests that a substantial subglacial depression should be evident as either depressed surface elevation or velocity citep:morlighem_2016_improving.
 
-We are unable to attribute the remaining discrepancy between our discharge estimates and those by citet:enderlin_2014_improved. It is likely a combination of differing seasonal velocity sampling citep:king_2018_seasonal, our evolving surface elevation from citet:khan_2016_geodetic, or other previously-unpublished algorithmic or data differences, of which many possibilities exist.
+We are unable to attribute the remaining discrepancy between our discharge estimates and those by citet:enderlin_2014_improved. It is likely a combination of different seasonal velocity sampling citep:king_2018_seasonal, our evolving surface elevation from citet:khan_2016_geodetic, or other previously-unpublished algorithmic or data differences, of which many possibilities exist.
 
-Our ice discharge estimates agree well with the most recently published discharge estimate citep:king_2018_seasonal, except that our discharge is slightly less. We note that our uncertainty estimates include the citet:king_2018_seasonal estimates, but the opposite does not appear be true. The minor differences are likely due to different methods. citet:king_2018_seasonal use seasonally varying ice thicknesses, derived from seasonally varying surface elevations, and a Monte Carlo method to temporally interpolate missing velocity data to produce discharge estimates. In comparison, we use linear interpolation of both yearly surface elevation estimates and temporal data gaps. It is not clear whether linear or higher-order statistical approaches are best-suited for interpolation as annual cycles begin to shift, as is the case with Sermeq Kujalleq (Jakobshavn Isbræ) after 2015. There are benefits and deficiencies with both methods. Linear interpolation may alias large changes if there are no other observations nearby in time. Statistical models of past glacier behavior may not be appropriate when glacier behavior changes.
+Our ice discharge estimates agree well with the most recently published discharge estimate (citet:king_2018_seasonal, also used by citet:bamber_2018_landice), except that our discharge is slightly less. We note that our uncertainty estimates include the citet:king_2018_seasonal estimates, but the opposite does not appear be true. The minor differences are likely due to different methods. citet:king_2018_seasonal use seasonally varying ice thicknesses, derived from seasonally varying surface elevations, and a Monte Carlo method to temporally interpolate missing velocity data to produce discharge estimates. In comparison, we use linear interpolation of both yearly surface elevation estimates and temporal data gaps. It is not clear whether linear or higher-order statistical approaches are best-suited for interpolation as annual cycles begin to shift, as is the case with Sermeq Kujalleq (Jakobshavn Isbræ) after 2015. There are benefits and deficiencies with both methods. Linear interpolation may alias large changes if there are no other observations nearby in time. Statistical models of past glacier behavior may not be appropriate when glacier behavior changes.
 
 It is unlikely that discharge estimates using gates that are only approximately flow-orthogonal and time-invariant citep:king_2018_seasonal have large errors due to this, because it is unlikely that glacier flow direction changes significantly, but our gate-orthogonal treatment may be the cause of some differences among our approach and other works. Discharge calculated using non-orthogonal methodology would overestimate true discharge.
 
 * Data availability
 
-This work in its entirety is available at doi:10.22008/promice/data/ice_discharge citep:GEUS_discharge_paper. The glacier-scale, sector, region, and Greenland summed ice sheet discharge dataset is available at doi:10.22008/promice/data/ice_discharge/d/v0.0.1 citep:GEUS_discharge_paper_d, where it will be updated as more velocity data become available. The gates can be found at doi:10.22008/promice/data/ice_discharge/gates/v0.0.1 citep:GEUS_discharge_paper_gates, the code at doi:10.22008/promice/data/ice_discharge/code/v0.0.1 citep:GEUS_discharge_paper_code, and the surface elevation change at doi:10.22008/promice/data/DTU/surface_elevation_change/v1.0.0 citep:GEUS_discharge_paper_elevation_change.
+This work in its entirety is available at doi:10.22008/promice/data/ice_discharge citep:GEUS_discharge_paper. The glacier-scale, sector, region, and Greenland summed ice sheet discharge dataset is available at doi:10.22008/promice/data/ice_discharge/d/v02 citep:GEUS_discharge_paper_d, where it will be updated as more velocity data become available. The gates can be found at doi:10.22008/promice/data/ice_discharge/gates/v02 citep:GEUS_discharge_paper_gates, the code at doi:10.22008/promice/data/ice_discharge/code/v0.0.1 citep:GEUS_discharge_paper_code, and the surface elevation change at doi:10.22008/promice/data/DTU/surface_elevation_change/v1.0.0 citep:GEUS_discharge_paper_elevation_change.
 
 * Conclusions
 
@@ -593,6 +755,7 @@ df.round(0).astype(np.int)
 
 
 
+
 # NOTE: Manual cleaning performed for above table
 
 # src_jupyter-python[:session thick_adj]{th['gates'].unique().size} {{{results(=267=)}}}
@@ -668,6 +831,7 @@ df
 | 400          | 495 \pm 52       |
 | Fit          | 493 \pm 51       |
 :END:
+
 
 
 
@@ -3548,14 +3712,9 @@ D_all_fill_weight = D_all_fill_weight.T[STARTDATE:].T
 **** README
 
 #+BEGIN_SRC org :tangle ./out/README.txt :mkdirp ./out
-README for "Greenland Ice Sheet solid ice discharge from 1986 through 2018"
-
-Paper Citation: TODO
+README for "Greenland Ice Sheet solid ice discharge from 1986 through 2019"
 
 Original Paper: doi:10.5194/essd-11-769-2019
-
-Data Citation: TODO
-
 Original Data Citations: doi:10.22008/promice/data/ice_discharge
 
 Source: https://github.com/mankoff/ice_discharge
