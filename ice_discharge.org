@@ -636,7 +636,7 @@ from adjust_spines import adjust_spines as adj
 adj(ax1, ['left','bottom'])
 adj(ax2, ['bottom'])
 
-plt.savefig('./figs/h_v_histogram.png', transparent=True, dpi=300)
+plt.savefig('./figs/h_v_histogram.png', transparent=True, dpi=300, bbox_inches='tight')
 #+END_SRC
 
 #+NAME: fig:h_v_histogram
