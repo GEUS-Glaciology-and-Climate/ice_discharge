@@ -17,8 +17,8 @@
 #+BEGIN_EXPORT LaTeX
 \title{Greenland Ice Sheet solid ice discharge from 1986 through 2019}
 \Author[1]{Kenneth D.}{Mankoff}
-\Author[1]{William}{Colgan}
 \Author[1]{Anne}{Solgaard}
+\Author[1]{William}{Colgan}
 \Author[1]{Andreas P.}{Ahlstrøm}
 \Author[2]{Shfaqat Abbas}{Khan}
 \Author[1]{Robert S.}{Fausto}
