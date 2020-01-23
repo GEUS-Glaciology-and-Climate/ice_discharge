@@ -4980,35 +4980,37 @@ SYMBOLS['PETERMANN_GLETSCHER'] ='^'
 MS=4
 Z=99
 for g in LABELS.keys(): # for each glacier
+
+    # scatter of symbols
     e = ax_D.errorbar(D.loc[:,g].index,
                       D.loc[:,g].values,
                       label=LABELS[g],
                       fmt=SYMBOLS[g],
                       mfc='none',
                       ms=MS)
+
+    # Annual average
     C = e.lines[0].get_color()
     D_day_year.loc[:,g].plot(drawstyle='steps', linewidth=2,
                              label='',
                              ax=ax_D,
                              alpha=0.75, color=C, zorder=Z)
 
+    # Error bars, each one w/ custom opacity.
+    # Also, fill symbols w/ same opacity.
     for i,idx in enumerate(D.loc[:,g].index):
         ax_D.errorbar(D.loc[:,g].index[i],
                       D.loc[:,g].values[i],
                       yerr=err.loc[:,g].values[i],
                       alpha=coverage.loc[:,g].values[i],
                       label='',
+                      marker=SYMBOLS[g],
                       ecolor='grey',
                       mfc=C, mec=C,
-                      marker='o', ms=MS)
+                      ms=MS)
 
 
-    # if g in ['NIOGHALVFJERDSFJORDEN', 'KANGERLUSSUAQ']: #, 'JAKOBSHAVN_ISBRAE']:
-    #     ax_coverage.plot(D.loc[:,g].index,
-    #                      coverage.loc[:,g].values*100,
-    #                      drawstyle='steps',
-    #                      # alpha=0.5,
-    #                      color=C)
+    # Coverage scatter on top axis
     ax_coverage.scatter(D.loc[:,g].index,
                         coverage.loc[:,g].values*100,
                         alpha=0.25,
@@ -5119,6 +5121,9 @@ tbl
 2019               16 (10)          12 (7)                    14 (5)                  12 (4)  
 #+end_example
 : <Figure size 648x360 with 2 Axes>
+:end:
+:END:
+:END:
 :end:
 
 *** Køge Bugt
