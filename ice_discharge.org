@@ -3792,9 +3792,9 @@ D_gatesT.index.name = "Date"
 D_gates_errT.index.name = "Date"
 D_gates_fill_weightT.index.name = "Date"
 
-D_gatesT.to_csv('./out/gate_D.csv')
-D_gates_errT.to_csv('./out/gate_err.csv')
-D_gates_fill_weightT.to_csv('./out/gate_coverage.csv')
+D_gatesT.to_csv('./out/gate_D.csv', float_format='%.3f')
+D_gates_errT.to_csv('./out/gate_err.csv', float_format='%.3f')
+D_gates_fill_weightT.to_csv('./out/gate_coverage.csv', float_format='%.3f')
 #+END_SRC
 
 **** Sectors
@@ -3814,9 +3814,9 @@ D_sectors_errT.index.name = "Date"
 D_sectors_fill_weightT.index.name = "Date"
 
 # meta_sector.to_csv('./out/sector_meta.csv')
-D_sectorsT.to_csv('./out/sector_D.csv')
-D_sectors_errT.to_csv('./out/sector_err.csv')
-D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv')
+D_sectorsT.to_csv('./out/sector_D.csv', float_format='%.3f')
+D_sectors_errT.to_csv('./out/sector_err.csv', float_format='%.3f')
+D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv', float_format='%.3f')
 
 # meta_sector.head(10)
 #+END_SRC
@@ -3834,9 +3834,9 @@ D_regions_errT.index.name = "Date"
 D_regions_fill_weightT.index.name = "Date"
 
 # meta_region.to_csv('./out/region_meta.csv')
-D_regionsT.to_csv('./out/region_D.csv')
-D_regions_errT.to_csv('./out/region_err.csv')
-D_regions_fill_weightT.to_csv('./out/region_coverage.csv')
+D_regionsT.to_csv('./out/region_D.csv', float_format='%.3f')
+D_regions_errT.to_csv('./out/region_err.csv', float_format='%.3f')
+D_regions_fill_weightT.to_csv('./out/region_coverage.csv', float_format='%.3f')
 
 # meta_region.head(10)
 #+END_SRC
@@ -3848,9 +3848,9 @@ D_all.index.name = "Date"
 D_all_err.index.name = "Date"
 D_all_fill_weight.index.name = "Date"
 
-D_all.to_csv('./out/GIS_D.csv', float_format='%.5f', header=["Discharge [Gt yr-1]"])
-D_all_err.to_csv('./out/GIS_err.csv', float_format='%.5f', header=["Discharge Error [Gt yr-1]"])
-D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.5f', header=["Coverage [unit]"])
+D_all.to_csv('./out/GIS_D.csv', float_format='%.3f', header=["Discharge [Gt yr-1]"])
+D_all_err.to_csv('./out/GIS_err.csv', float_format='%.3f', header=["Discharge Error [Gt yr-1]"])
+D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.3f', header=["Coverage [unit]"])
 #+END_SRC
 
 **** Gates
