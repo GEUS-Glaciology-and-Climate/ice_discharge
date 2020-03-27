@@ -32,6 +32,11 @@ if [ $? -ne 0 ]; then # difference.
     wget -np --continue ${URL}/${file}.nc -O ${Sentinel1_IV_DATA_DIR}/${file}.nc
   done
   make
+  
+  D=$(date --iso)
+  TARGET=~/Dropbox/shared/RSF/${D}
+  mkdir ${TARGET}
+  cp ice_discharge.zip ./figs/discharge_ts*.png ${TARGET}
 else 
   MSG_OK "Local velocities match remote."
   MSG_OK "No action taken"

@@ -113,6 +113,11 @@ done
 #+NAME: update_ice_discharge
 #+BEGIN_SRC sh :results verbatim
 make
+
+D=$(date --iso)
+TARGET=~/Dropbox/shared/RSF/${D}
+mkdir ${TARGET}
+cp ice_discharge.zip ./figs/discharge_ts*.png ${TARGET}
 #+END_SRC
 #+RESULTS:
 
