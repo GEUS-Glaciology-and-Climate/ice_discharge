@@ -8290,7 +8290,7 @@ bash --version
 *** Python
 #+BEGIN_SRC bash :cmdline -i :results verbatim :exports both :eval no-export
 . /home/kdm/local/miniconda3/etc/profile.d/conda.sh
-conda env export --name ice_discharge
+conda env export --name ice_discharge | tee environment.yml
 #+END_SRC
 
 #+RESULTS:
