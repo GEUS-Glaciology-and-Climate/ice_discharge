@@ -22,6 +22,8 @@ This is optional. All data can be inside the VM. However, if data is outside the
 
 Install OS-provided tools
 
++ Emacs27 is needed with module support if you are going to run =emacs-jupyter= within emacs.
+
 #+BEGIN_SRC bash
 sudo apt install git grass parallel emacs netcdf-bin
 #+END_SRC
