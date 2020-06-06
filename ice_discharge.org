@@ -4305,9 +4305,6 @@ from adjust_spines import adjust_spines as adj
 import matplotlib.pyplot as plt
 import datetime as dt
 
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
-
 plt.close(1)
 
 fig = plt.figure(1, figsize=(9,5)) # w,h
@@ -4374,6 +4371,8 @@ ax_D.xaxis.set_tick_params(rotation=-90) #, ha="left", rotation_mode="anchor")
 for tick in ax_D.xaxis.get_majorticklabels():
     tick.set_horizontalalignment("left")
 
+ax_D.set_xlim(D.index[0], D.index[-1])
+
 ###
 ### Coverage
 ###
@@ -4385,7 +4384,8 @@ ax_coverage.scatter(coverage.index, coverage.values*100,
                   # linewidth=3,
 ax_coverage.set_ylim(45,105)
 ax_coverage.set_yticks([50,100])
-ax_coverage.set_ylabel('Coverage [%]')    
+ax_coverage.spines['left'].set_bounds(ax_coverage.get_ylim()[0],100)
+ax_coverage.set_ylabel('Coverage [%]')
 
 plt.savefig('./figs/discharge_ts.png', transparent=False, bbox_inches='tight', dpi=300)
 
@@ -4513,11 +4513,11 @@ for r in D.columns:
                       mfc=C, mec=C,
                       alpha=coverage.iloc[i][r])
 
-    tx = D_day_year.iloc[-2].name + dt.timedelta(days=50)
-    ty = D_day_year.iloc[-2][r]
-    if r in ['CE', 'SW']: ty=ty-4
-    if r == 'NE': ty=ty+4
-    if r == 'NO': ty=ty-2
+    tx = D.iloc[-1].name + dt.timedelta(days=10)
+    ty = D.iloc[-2][r]
+    # if r in ['CE', 'SW']: ty=ty-4
+    # if r == 'NE': ty=ty+4
+    # if r == 'NO': ty=ty-2
     ax_D.text(tx, ty, r, verticalalignment='center')
 
     # if r in ['CE','NE','SE']:
@@ -4529,6 +4529,7 @@ for r in D.columns:
 ax_coverage.set_ylabel('Coverage [%]')
 ax_coverage.set_ylim(45,105)
 ax_coverage.set_yticks([50,100])
+ax_coverage.spines['left'].set_bounds(ax_coverage.get_ylim()[0],100)
     
 import matplotlib.dates as mdates
 ax_D.xaxis.set_major_locator(mdates.YearLocator())
@@ -4537,6 +4538,8 @@ ax_D.xaxis.set_major_locator(mdates.YearLocator())
 ax_D.legend("", framealpha=0)
 ax_D.set_xlabel('Time [Years]')
 ax_D.set_ylabel('Discharge [Gt yr$^{-1}$]')
+ax_D.set_xlim(D.index[0], D.index[-1])
+ax_D.set_xticklabels(D.index.year.unique())
 # ax_D.set_yscale('log')
 
 ax_D.xaxis.set_tick_params(rotation=-90)
@@ -5119,6 +5122,8 @@ for g in LABELS.keys(): # for each glacier
 ax_D.legend(fontsize=8, ncol=2, loc=(0.0, 0.82), fancybox=False, frameon=False)
 ax_D.set_xlabel('Time [Years]')
 ax_D.set_ylabel('Discharge [Gt yr$^{-1}$]')
+ax_D.set_xlim(D.index[0], D.index[-1])
+ax_D.set_xticklabels(D.index.year.unique())
 
 import matplotlib.dates as mdates
 ax_D.xaxis.set_major_locator(mdates.YearLocator())
@@ -5129,6 +5134,7 @@ for tick in ax_D.xaxis.get_majorticklabels():
 ax_coverage.set_ylabel('Coverage [%]')
 ax_coverage.set_ylim([45,105])
 ax_coverage.set_yticks([50,100])
+ax_coverage.spines['left'].set_bounds(ax_coverage.get_ylim()[0],100)
 
 plt.savefig('./figs/discharge_ts_topfew.png', transparent=False, bbox_inches='tight', dpi=300)
 
