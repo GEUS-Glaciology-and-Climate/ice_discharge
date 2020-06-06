@@ -709,7 +709,7 @@ im = ax2.hexbin(vel_baseline['vel'].values, th['fit'],
                edgecolors='k',  mincnt=1)
 #ax2.set_ylabel('Thickness [m]')
 #ax2.set_xlabel('Velocity [m yr$^{-1}$]')
-cb = fig.colorbar(im, ax=ax2, extend='max')
+cb = fig.colorbar(im, ax=[ax1,ax2], extend='max')
 cb.set_label('Count [#]')
 
 from adjust_spines import adjust_spines as adj
