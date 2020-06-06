@@ -43,7 +43,7 @@
 
 
 #+BEGIN_abstract
-We present a 1986 through March 2020 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional hand-picked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and ends with near-complete spatial coverage and twelve-day updates to velocity. The 2010 through 2019 average ice discharge through the flux-gates is ~487 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the northwest region through 2017, and in the southeast from 2017 through March 2020. As part of the journal's living archive option and our goal to make an operational product, all input data, code, and results from this study will be updated as needed (when new input data are available, as new features are added, or to fix bugs) and made available at doi:10.22008/promice/data/ice_discharge citep:GEUS_discharge_paper and at http://github.com/mankoff/ice_discharge.
+We present a 1986 through March 2020 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional handpicked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and end with near-complete spatial coverage and twelve-day updates to velocity. The 2010 through 2019 average ice discharge through the flux gates is ~487 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, and then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the northwest region through 2017, and in the southeast from 2017 through March 2020. As part of the journal's living archive option and our goal to make an operational product, all input data, code, and results from this study will be updated as needed (when new input data are available, as new features are added, or to fix bugs) and made available at doi:10.22008/promice/data/ice_discharge citep:GEUS_discharge_paper and at http://github.com/mankoff/ice_discharge.
 #+END_abstract
 
 # For 2000 to present mean see LINK: id:eca400fe-cffc-4e6b-8fc1-694945093adb
@@ -158,39 +158,39 @@ We have produced an open and reproducible estimate of Greenland ice sheet solid 
 
 * What's new in this version
 
-The data has been updated repeatedly between the first version of this paper citep:mankoff_2019_ice and this version. The data will continue to be updated (currently every 12 days), although reference papers will only come out when major changes occur in the processing algorithms or input data. Therefore users are encouraged to regularly check for data updates at doi:10.22008/promice/data/ice_discharge when using the data.
+The data have been updated repeatedly between the first version of this paper citep:mankoff_2019_ice and this version. The data will continue to be updated (currently every 12 days), although reference papers will only come out when major changes occur in the processing algorithms or input data. Therefore users are encouraged to regularly check for data updates at doi:10.22008/promice/data/ice_discharge when using the data.
 
 A post-peer-review website is available at https://github.com/mankoff/ice_discharge where we document changes to the paper and use the GitHub Issues feature to collect suggested improvements to the paper, document those improvements as they are implemented, document problems that made it through review, and mention similar papers that have been published since this was accepted. The git commit for this version of the paper is \input{|"git describe --always --dirty='*'"}.
 
-In this version the NSIDC 0478 ice velocity data citep:NSIDC_0478 have been updated from v2 to v2.1. These data are used for the baseline velocity and gate selection. Therefore the gate locations, number of gates, and number of gate pixels have all changed. Overall there are ~3 % fewer pixels, but only 8 fewer gates, and some of the gate reduction is due to combining two gates on the same glacier that had a 1-pixel gap in the previous version. The effect of these changes is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates. Many gates remain the same pixel-for-pixel, but some do not meet the same inclusion criteria applied to this new baseline data, while some glaciers are included in this version that were not in the previous version. Many gates are also a few pixels narrower.
+In this version the NSIDC 0478 ice velocity data citep:NSIDC_0478 have been updated from v2 to v2.1. These data are used for the baseline velocity and gate selection. Therefore the gate locations, number of gates, and number of gate pixels have all changed. Overall there are ~3 % fewer pixels, but only eight fewer gates, and some of the gate reduction is due to combining two gates on the same glacier that had a 1-pixel gap in the previous version. The effect of these changes is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates. Many gates remain the same pixel for pixel, but some do not meet the same inclusion criteria applied to these new baseline data, while some glaciers are included in this version that were not in the previous version. Many gates are also a few pixels narrower.
 
-The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet wide differences between velocity products can be non-trivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=61=)}}} Sentinel 1 velocity maps from 2018 through present (src_bash[:eval yes]{date --iso} {{{results(=2020-05-28=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
+The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet-wide differences between velocity products can be nontrivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=61=)}}} Sentinel 1 velocity maps from 2018 through the present (src_bash[:eval yes]{date --iso} {{{results(=2020-05-28=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
 
-We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate-, region-, or ice-sheet wide) where coverage is < 50 % is discarded from the graphic (low coverage data is still included in the downloadable data), and annual average is only computed if there are three or more samples in a year. 
+We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate, region, or ice sheet wide) where coverage is < 50 % is discarded from the graphic (low-coverage data are still included in the downloadable data), and annual average is only computed if there are three or more samples in a year. 
 
-Finally, the supplemental material includes significantly more meta-data about the input data used in this work to aid in both reproducibility by third-parties, and in tracking the impact of additional and updated input data on future versions of this work.
+Finally, the Supplemental includes significantly more meta-data about the input data used in this work to aid in both reproducibility by third parties, and in tracking the impact of additional and updated input data on future versions of this work.
 
-Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and CE and CW are now approximately tied for the 3rd largest discharging region. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (Jakobshavn Isbræ) continued its rapid discharge decline in 2017 and 2018 returning to approximately its discharge from year 2000, but increased discharge slightly in 2019. For some time in 2018 and all data points so far in 2020 (i.e. though March) Helheim was the top Greenlandic glacier contributing to sea level rise, although not with statistical significance (error bars still overlap).
+Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and CE and CW are now approximately tied for the third-largest discharging region. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (English: Jakobshavn Glacier; Danish: Jakobshavn Isbræ) continued its rapid discharge decline in 2017 and 2018, returning to approximately its discharge from year 2000, but increased discharge slightly in 2019. For some time in 2018 and all data points so far in 2020 (i.e., though March) Helheim was the top Greenlandic glacier contributing to sea-level rise, although not with statistical significance (error bars still overlap).
 
 * Introduction
 
-The mass of the Greenland ice sheet is decreasing (e.g. citet:fettweis_2017_reconstructions,van-den-broeke_2017_greenland,wiese_2016_jpl,khan_2016_geodetic). Most ice sheet mass loss -- as iceberg discharge, submarine melting, and meltwater runoff -- enters the fjords and coastal seas, and therefore ice sheet mass loss directly contributes to sea-level rise citep:wcrp_2018,moon_2018_rising,nerem_2018_climate,chen_2017_increasing. Greenland's total ice loss can be estimated through a variety of independent methods, for example 'direct' mass change estimates from GRACE citep:wiese_2016_jpl or by using satellite altimetry to estimate surface elevation change, which is then converted into mass change (using a firn model, e.g. citet:khan_2016_geodetic). However, partitioning the mass loss between ice discharge (D) and surface mass balance (SMB) remains challenging (c.f. citet:rignot_2008_mass and citet:enderlin_2014_improved). Correctly assessing mass loss, as well as the attribution of this loss (SMB or D) is critical to understanding the process-level response of the Greenland ice sheet to climate change, and thus improving models of future ice-sheet changes and associated sea-level rise citep:moon_2018_rising.
+The mass of the Greenland Ice Sheet is decreasing (e.g. citet:fettweis_2017_reconstructions,van-den-broeke_2017_greenland,wiese_2016_jpl,khan_2016_geodetic). Most ice sheet mass loss -- as iceberg discharge, submarine melting, and meltwater runoff -- enters the fjords and coastal seas, and therefore ice sheet mass loss directly contributes to sea-level rise citep:wcrp_2018,moon_2018_rising,nerem_2018_climate,chen_2017_increasing. Greenland's total ice loss can be estimated through a variety of independent methods, for example direct mass change estimates from GRACE citep:wiese_2016_jpl or by using satellite altimetry to estimate surface elevation change, which is then converted into mass change (using a firn model, e.g., citet:khan_2016_geodetic). However, partitioning the mass loss between ice discharge (D) and surface mass balance (SMB) remains challenging (cf. citet:rignot_2008_mass and citet:enderlin_2014_improved). Correctly assessing mass loss, as well as the attribution of this loss (SMB or D), is critical to understanding the process-level response of the Greenland Ice Sheet to climate change and thus improving models of future ice sheet changes and associated sea-level rise citep:moon_2018_rising.
 
-The total mass of an ice-sheet, or a drainage basin, changes if the mass gain (SMB inputs, primarily snowfall) is not balanced by the mass loss (D and SMB outputs, the latter generally meltwater runoff). This change is typically termed ice-sheet mass balance (MB) and the formal expression for this rate of change in mass is (e.g. citet:cuffey_2010_the-physics),
+The total mass of an ice sheet, or a drainage basin, changes if the mass gain (SMB inputs, primarily snowfall) is not balanced by the mass loss (D and SMB outputs, the latter generally meltwater runoff). This change is typically termed ice sheet mass balance (MB) and the formal expression for this rate of change in mass is (e.g., citet:cuffey_2010_the-physics),
 
 #+NAME: eq:dMdt
 \begin{equation}
 \frac{\mathrm{d}M}{\mathrm{d}t} = \rho \int_A b \, \mathrm{d}A - \int_g Q \, \mathrm{d}g,
 \end{equation}
 
-where \(\rho\) is the average density of ice, \(b\) is an area mass balance, and \(Q\) is the discharge flux. The left hand side of the equation is the rate of change of mass, the first term on the right hand side is the area \(A\) integrated surface mass balance (SMB), and the second term is the discharge \(D\) mass flow rate that drains through gate \(g\). Equation [[eq:dMdt]] is often simplified to
+where \(\rho\) is the average density of ice, \(b\) is an area mass balance, and \(Q\) is the discharge flux. The left-hand side of the equation is the rate of change of mass, the first term on the right-hand side is the area \(A\) integrated surface mass balance (SMB), and the second term is the discharge \(D\) mass flow rate that drains through gate \(g\). Equation [[eq:dMdt]] is often simplified to
 
 #+NAME: eq:MB
 \begin{equation}
 MB = SMB - D
 \end{equation}
 
-where \(MB\) is the mass balance, and referred to as the "input-output" method (e.g. citet:khan_2015_greenland). Virtually all studies agree on the trend of Greenland mass balance, but large discrepancies persist in both the magnitude and attribution. Magnitude discrepancies include, for example, citet:kjeldsen_2015_spatial reporting a mass imbalance of -250 \(\pm\) 21 Gt yr^{-1} during 2003 to 2010, citet:ewert_2012_volume reporting -181 \(\pm\) 28 Gt yr^{-1} during 2003 to 2008, and citet:rignot_2008_mass reporting a mass imbalance of -265 \(\pm\) 19 Gt yr^{-1} during 2004 to 2008. Some of these differences may be due to different ice sheet area masks used in the studies. Attribution discrepancies include, for example, citet:enderlin_2014_improved attributing the majority (64 %) of mass loss to changes in SMB during the 2005 to 2009 period but citet:rignot_2008_mass attributing the majority (85 %) of mass loss to changes in D during the 2004 to 2008 period.
+where \(MB\) is the mass balance, and referred to as the "input--output" method (e.g., citet:khan_2015_greenland). Virtually all studies agree on the trend of Greenland mass balance, but large discrepancies persist in both the magnitude and attribution. Magnitude discrepancies include, for example, citet:kjeldsen_2015_spatial reporting a mass imbalance of -250 \(\pm\) 21 Gt yr^{-1} during 2003 to 2010, citet:ewert_2012_volume reporting -181 \(\pm\) 28 Gt yr^{-1} during 2003 to 2008, and citet:rignot_2008_mass reporting a mass imbalance of -265 \(\pm\) 19 Gt yr^{-1} during 2004 to 2008. Some of these differences may be due to different ice sheet area masks used in the studies. Attribution discrepancies include, for example, citet:enderlin_2014_improved attributing the majority (64 %) of mass loss to changes in SMB during the 2005 to 2009 period but citet:rignot_2008_mass attributing the majority (85 %) of mass loss to changes in D during the 2004 to 2008 period.
 
 # Rignot 2008: TMB (2004-2007) = (231+293+265+267)/4 = 264 Gt yr-1  # Table 1
 # Enderlin 2014: TMB (2005-2009) = 265 \pm 18 Gt yr-1 # text in Section 3
@@ -219,19 +219,19 @@ D_g = \rho \, V \, H \, w,
 
 where \(\rho\) is the average density of ice, \(V\) is depth-average gate-perpendicular velocity, \(H\) is the ice thickness, and \(w\) is the gate width. Uncertainties in \(V\) and \(H\) naturally influence the estimated discharge. At fast-flowing outlet glaciers, \(V\) is typically assumed to be equal at all ice depths, and observed surface velocities can be directly translated into depth-averaged velocities (as in citet:enderlin_2014_improved,king_2018_seasonal). To minimize uncertainty from SMB or basal mass balance corrections downstream of a flux gate, the gate should be at the grounding line of the outlet glacier. Unfortunately, uncertainty in bed elevation (translating to ice thickness uncertainty) increases toward the grounding line.
 
-Conventional methods of gate selection involve hand-picking gate locations, generally as linear features (e.g. citet:enderlin_2014_improved) or visually approximating ice-orthogonal gates at one point in time (e.g. citet:king_2018_seasonal). Manual gate definition is sub-optimal. For example, the largest discharging glaciers draw from an upstream radially-diffusing region that may not easily be represented by a single linear gate. Approximately flow-orthogonal curved gates may not be flow-orthogonal on the multi-decade time scale due to changing flow directions. Manual gate selection makes it difficult to update gate locations, corresponding with glacier termini retreat or advance, in a systematic and reproducible fashion. We therefore adopt an algorithmic approach to generate gates based on a range of criteria.
+Conventional methods of gate selection involve handpicking gate locations, generally as linear features (e.g., citet:enderlin_2014_improved) or visually approximating ice-orthogonal gates at one point in time (e.g., citet:king_2018_seasonal). Manual gate definition is suboptimal. For example, the largest discharging glaciers draw from an upstream radially diffusing region that may not easily be represented by a single linear gate. Approximately flow-orthogonal curved gates may not be flow orthogonal on the multidecade timescale due to changing flow directions. Manual gate selection makes it difficult to update gate locations, corresponding with glacier termini retreat or advance, in a systematic and reproducible fashion. We therefore adopt an algorithmic approach to generate gates based on a range of criteria.
 
 Here, we present a discharge dataset based on gates selected in a reproducible fashion by a new algorithm. Relative to previous studies, we employ ice velocity observation over a longer period with higher temporal frequency and denser spatial coverage. We use ice velocity from 1986 through 2019 including twelve-day velocities for the last ~500 days of the time series, and discharge at 200 m pixel resolution capturing all ice flowing faster than 100 m yr^{-1} that crosses glacier termini into fjords.
 
 * Input data
 
-Historically, discharge gates were selected along well-constrained flight-lines of airborne radar data citep:enderlin_2014_improved. Recent advances in ice thickness estimates through NASA Operation IceBridge citep:millan_2018_vulnerability, NASA Oceans Melting Greenland (OMG; citet:fenty_2016_oceans), fjord bathymetry citep:tinto_2015_bathymetry, and methods to estimate thickness from surface properties (e.g. citet:mcnabb_2012_using,james_2016_automated) have been combined into digital bed elevation models such as BedMachine v3 citep:morlighem_2017_bedmachine,NSIDC_BedMachine or released as independent datasets citep:millan_2018_vulnerability. From these advances, digital bed elevation models have become more robust at tidewater glacier termini and grounding lines. The incorporation of flight-line ice thickness data into higher-level products that include additional methods and data means gates are no longer limited to flight-lines (e.g. citet:king_2018_seasonal).
+Historically, discharge gates were selected along well-constrained flight lines of airborne radar data citep:enderlin_2014_improved. Recent advances in ice thickness estimates through NASA Operation IceBridge citep:millan_2018_vulnerability, NASA Oceans Melting Greenland (OMG; citet:fenty_2016_oceans), fjord bathymetry citep:tinto_2015_bathymetry, and methods to estimate thickness from surface properties (e.g., citet:mcnabb_2012_using,james_2016_automated) have been combined into digital bed elevation models such as BedMachine v3 citep:morlighem_2017_bedmachine,NSIDC_BedMachine or released as independent datasets citep:millan_2018_vulnerability. From these advances, digital bed elevation models have become more robust at tidewater glacier termini and grounding lines. The incorporation of flight-line ice thickness data into higher-level products that include additional methods and data means gates are no longer limited to flight lines (e.g., citet:king_2018_seasonal).
 
-Ice velocity data are available with increasing spatial and temporal resolution (e.g. citet:vijay_2019_resolving). Until recently, ice velocity mosaics were limited to once per year during winter citep:joughin_2010_greenland, and they are still temporally limited, often to annual resolution, prior to 2000 (e.g. citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000). Focusing on recent times, ice-sheet wide velocity mosaics from the Sentinel 1A & 1B are now available every twelve days (http://PROMICE.org). The increased availability of satellite data has improved ice velocity maps both spatially and temporally thereby decreasing the need to rely on spatial and temporal interpolation of velocities from annual/winter mosaics citep:andersen_2015_basin-scale,king_2018_seasonal,mouginot_2019_forty.
+Ice velocity data are available with increasing spatial and temporal resolution (e.g., citet:vijay_2019_resolving). Until recently, ice velocity mosaics were limited to once per year during winter citep:joughin_2010_greenland, and they are still temporally limited, often to annual resolution, prior to 2000 (e.g. citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000). Focusing on recent times, ice-sheet-wide velocity mosaics from the Sentinel-1A & 1B are now available every twelve days (http://PROMICE.org). The increased availability of satellite data has improved ice velocity maps both spatially and temporally, thereby decreasing the need to rely on spatial and temporal interpolation of velocities from annual/winter mosaics citep:andersen_2015_basin-scale,king_2018_seasonal,mouginot_2019_forty.
 
-The discharge gates in this study are generated using only surface speed and an ice mask. We use the MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2 citep:joughin_2010_greenland,NSIDC_0478, hereafter termed "MEaSUREs 0478" due to the National Snow and Ice Data Center (NSIDC) date set ID number. We use the BedMachine v3 citep:morlighem_2017_bedmachine,NSIDC_BedMachine ice mask.
+The discharge gates in this study are generated using only surface speed and an ice mask. We use the MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2 citep:joughin_2010_greenland,NSIDC_0478, hereafter termed "MEaSUREs 0478" due to the National Snow and Ice Data Center (NSIDC) dateset ID number. We use the BedMachine v3 citep:morlighem_2017_bedmachine,NSIDC_BedMachine ice mask.
 
-For ice thickness estimates, we use surface elevation from GIMP (citet:howat_2014_greenland,NSIDC_0715; NSIDC data set ID 0715), adjusted through time with surface elevation change from citet:khan_2016_geodetic and bed elevations from BedMachine v3 replaced by citet:millan_2018_vulnerability where available. Ice sector and region delineation is from citet:mouginot_2019_glacier. Ice velocity data are obtained from a variety of products including Sentinel 1A & 1B derived by PROMICE (see Appendix), MEaSUREs 0478, MEaSUREs 0646 citep:NSIDC_0646, citet:mouginot_2018_1972to1990, and citet:mouginot_2018_1991to2000. Official glacier names come from citet:bjork_2015_brief. Other glacier names come from citet:mouginot_2019_glacier. See Table [[tab:data]] for an overview of data sets used in this work.
+For ice thickness estimates, we use surface elevation from GIMP (citet:howat_2014_greenland,NSIDC_0715; NSIDC dataset ID 0715), adjusted through time with surface elevation change from citet:khan_2016_geodetic and bed elevations from BedMachine v3 replaced by citet:millan_2018_vulnerability where available. Ice sector and region delineation is from citet:mouginot_2019_glacier. Ice velocity data are obtained from a variety of products including Sentinel-1A & 1B derived by PROMICE (see Appendix), MEaSUREs 0478, MEaSUREs 0646 citep:NSIDC_0646, citet:mouginot_2018_1972to1990, and citet:mouginot_2018_1991to2000. Official glacier names come from citet:bjork_2015_brief. Other glacier names come from citet:mouginot_2019_glacier. See Table [[tab:data]] for an overview of datasets used in this work.
 
 #+BEGIN_SRC bash :results verbatim :eval no-export
 echo "times  all: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l)
@@ -279,32 +279,32 @@ This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n'
 #+NAME: tab:data
 | Property                       | Name used in this paper  | Reference                                                      |
 |--------------------------------+--------------------------+----------------------------------------------------------------|
-| Basal Topography               | BedMachine               | citet:morlighem_2017_bedmachine,NSIDC_BedMachine               |
-| Basal Topography for Southeast |                          | citet:millan_2018_vulnerability                                |
-| Surface Elevation              | GIMP 0715                | citet:howat_2014_greenland,NSIDC_0715                          |
-| Surface Elevation Change       | Surface Elevation Change | citet:khan_2016_geodetic,GEUS_discharge_paper_elevation_change |
-| Baseline Velocity              | MEaSUREs 0478            | citet:NSIDC_0478                                               |
+| Basal topography               | BedMachine               | citet:morlighem_2017_bedmachine,NSIDC_BedMachine               |
+| Basal topography for southeast |                          | citet:millan_2018_vulnerability                                |
+| Surface elevation              | GIMP 0715                | citet:howat_2014_greenland,NSIDC_0715                          |
+| Surface elevation Change       | Surface elevation change | citet:khan_2016_geodetic,GEUS_discharge_paper_elevation_change |
+| Baseline velocity              | MEaSUREs 0478            | citet:NSIDC_0478                                               |
 | Velocity                       | Sentinel                 | Appendix                                                       |
 | Velocity                       | MEaSUREs 0646            | citet:NSIDC_0646                                               |
 | Velocity                       | MEaSUREs 0731            | citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland |
 | Velocity                       | pre-2000                 | citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000        |
-| Sectors & Regions              | Sectors & Regions        | citet:mouginot_2019_glacier                                    |
+| Sectors and regions            | Sectors and regions      | citet:mouginot_2019_glacier                                    |
 | Names                          |                          | citet:bjork_2015_brief,mouginot_2019_glacier                   |
 
 * Methods
 ** Terminology 
 
-We use the following terminology, most displayed in Fig. [[fig:overview]]: 
-+ "Pixels" are individual 200 m x 200 m raster discharge grid cells. We use the nearest neighbor when combining data sets that have different grid properties.
+We use the following terminology, displayed in Fig. [[fig:overview]]: 
++ "Pixels" are individual 200 m x 200 m raster discharge grid cells. We use the nearest neighbor when combining datasets that have different grid properties.
 + "Gates" are contiguous (including diagonal) clusters of pixels.
 + "Sectors" are spatial areas that have 0, 1, or > 1 gate(s) plus any upstream source of ice that flows through the gate(s), and come from citet:mouginot_2019_glacier.
-+ "Regions" are groups of sectors, also from citet:mouginot_2019_glacier, and labeled by approximate geographic region.
++ "Regions" are groups of sectors, also from citet:mouginot_2019_glacier, and are labeled by approximate geographic region.
 + The "baseline" period is the average 2015, 2016, and 2017 winter velocity from MEaSUREs 0478.
-+ "Coverage" is the percentage of total, region, sector, or gate discharge observed at any given time. By definition coverage is 100 % during the baseline period. From the baseline data, the contribution to total discharge of each pixel is calculated, and coverage is reported for all other maps that have missing observations (Fig. [[fig:coverage_schematic]]). Total estimated discharge is always reported because missing pixels are gap-filled (see "Missing and invalid data" section below).
++ "Coverage" is the percentage of total, region, sector, or gate discharge observed at any given time. By definition coverage is 100 % during the baseline period. From the baseline data, the contribution to total discharge of each pixel is calculated, and coverage is reported for all other maps that have missing observations (Fig. [[fig:coverage_schematic]]). Total estimated discharge is always reported because missing pixels are gap filled (see "Missing or invalid data" section below).
 + "Fast-flowing ice" is defined as ice that flows more than 100 m yr^{-1}.
-+ Names are reported using the official Greenlandic names from citet:bjork_2015_brief if a nearby name exists, then citet:mouginot_2019_glacier in parentheses.
++ Names are reported using the official Greenlandic names from citet:bjork_2015_brief; if an alternate name exists (e.g. from citet:mouginot_2019_glacier, or an English version), then this is shown in parentheses.
 
-Although we refer to solid ice discharge, and it is in the solid phase when it passes the gates and eventually reaches the termini, submarine melting does occur at the termini and some of the discharge enters the fjord as liquid water citep:enderlin_2013_submarine.
+Although we refer to solid ice discharge, and it is in the solid phase when it passes the gates and eventually reaches the termini, submarine melting occurs at the termini and some of the discharge enters the fjord as liquid water citep:enderlin_2013_submarine.
 
 ** Gate location
 
@@ -312,46 +312,46 @@ Gates are algorithmically generated for fast-flowing ice (greater than 100 m yr^
 
 We select a 100 m yr^{-1} speed cutoff because slower ice, taking longer to reach the terminus, is more influenced by SMB. For the influence of this threshold on our results see the Discussion section and Fig. [[fig:heatmap]]. 
 
-We select gates at 5000 m upstream from the baseline termini, which means that gates are likely > 5000 m from the termini further back in the historical record citep:murray_2015_extensive,wood_2018_ocean-induced. The choice of a 5000 m buffer follows from the fact that it is near-terminus and thus avoids the need for (minor) SMB corrections downstream, yet is not too close to the terminus where discharge results are sensitive to the choice of distance-to-terminus value (Fig. [[fig:heatmap]]), which may be indicative of bed (ice thickness) errors.
+We select gates at 5000 m upstream from the baseline termini, which means that gates are likely > 5000 m from the termini further back in the historical record citep:murray_2015_extensive,wood_2018_ocean-induced. The choice of a 5000 m buffer follows from the fact that it is near terminus and thus avoids the need for (minor) SMB corrections downstream, yet is not too close to the terminus where discharge results are sensitive to the choice of distance-to-terminus value (Fig. [[fig:heatmap]]), which may be indicative of bed (ice thickness) errors.
 
 ** Thickness
 
-We derive thickness from surface and bed elevation. We use GIMP 0715 surface elevations in all locations, and the BedMachine bed elevations in most locations, except southeast Greenland where we use the citet:millan_2018_vulnerability bed. The GIMP 0715 surface elevations are all time-stamped per pixel. We adjust the surface through time by linearly interpolating elevation changes from citet:khan_2016_geodetic, which covers the period from 1995 to 2016. We use the average of the first and last three years for earlier and later times, respectively. Finally, from the fixed bed and temporally varying surface, we calculate the time-dependent ice thickness at each gate pixel.
+We derive thickness from surface and bed elevation. We use GIMP 0715 surface elevations in all locations, and the BedMachine bed elevations in most locations, except southeast Greenland where we use the citet:millan_2018_vulnerability bed. The GIMP 0715 surface elevations are all time stamped per pixel. We adjust the surface through time by linearly interpolating elevation changes from citet:khan_2016_geodetic, which covers the period from 1995 to 2016. We use the average of the first and last 3 years for earlier and later times, respectively. Finally, from the fixed bed and temporally varying surface, we calculate the time-dependent ice thickness at each gate pixel.
 
 ** Missing or invalid data
 
-The baseline data provides velocity at all gate locations by definition, but individual non-baseline velocity maps often have missing or invalid data. Also, thickness provided by BedMachine is clearly incorrect in some places (e.g. fast-flowing ice that is 10 m thick, Fig. [[fig:h_v_histogram]]). We define invalid data and fill in missing data as described below.
+The baseline data provide velocity at all gate locations by definition, but individual nonbaseline velocity maps often have missing or invalid data. Also, thickness provided by BedMachine is clearly incorrect in some places (e.g. fast-flowing ice that is 10 m thick, Fig. [[fig:h_v_histogram]]). We define invalid data and fill in missing data as described below.
 
 *** Invalid velocity
 
-We flag invalid (outlier) velocities by treating each pixel as an individual time series, applying a 30 point rolling window, flagging values more than 2 standard deviations outside the mean, and repeating this filter three times. We also drop the 1972 to 1985 years from citet:mouginot_2018_1972to1990 because there is low coverage and extremely high variability when using our algorithm.
+We flag invalid (outlier) velocities by treating each pixel as an individual time series, applying a 30-point rolling window, flagging values more than 2 standard deviations outside the mean, and repeating this filter three times. We also drop the 1972 to 1985 years from citet:mouginot_2018_1972to1990 because there is low coverage and extremely high variability when using our algorithm.
 
-This outlier detection method appears to correctly flag outliers (see citet:mankoff_2019_ice for un-filtered time series graphs), but likely also flags some true short-term velocity increases. The effect of this filter is a ~1% reduction in discharge most years, but more in years with high discharge -- a reduction of 3.2 % in 2013, 4.3 % in 2003, and more in the 1980s when the data is noisy. Any analysis using this data and focusing on individual glaciers or short-term changes (or lack there-of) should re-evaluate the upstream data sources.
+This outlier detection method appears to correctly flag outliers (see citet:mankoff_2019_ice, for unfiltered time series graphs) but likely also flags some true short-term velocity increases. The effect of this filter is a ~1% reduction in discharge most years but more in years with high discharge -- a reduction of 3.2 % in 2013, 4.3 % in 2003, and more in the 1980s when the data are noisy. Any analysis using these data and focusing on individual glaciers or short-term changes (or lack thereof) should reevaluate the upstream data sources.
 
 *** Missing velocity
 :PROPERTIES:
 :CUSTOM_ID: sec:missing_velocity
 :END:
 
-We generate an ice speed time series by assigning the PROMICE, MEaSUREs 0478, MEaSUREs 0646, and pre-2000 products to their respective reported time stamps (even though these are time-span products), or to the middle of their time span when they cover a long period such as the annual maps from citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000. We ignore that any individual velocity map or pixel has a time span, not a time stamp. Velocities are sampled only where there are gate pixels. Missing pixel velocities are linearly interpolated in time, except for missing data at the beginning of the time series which are back- and forward-filled with the temporally-nearest value for that pixel (Fig. [[fig:coverage_schematic]]). We do not spatially interpolate missing velocities because the spatial changes around a missing data point are most likely larger than the temporal changes. We visually represent the discharge contribution of directly observed pixels, termed coverage (Fig. [[fig:coverage_schematic]]) as time series graphs and opacity of dots and error bars in the figures. The figures only display data where coverage is \(\ge\) 50 %, but the provided data files include coverage from 0 to 100 %. Therefore, the gap-filled discharge contribution at any given time is equal to 100 minus the coverage. Discharge is always reported as estimated total discharge even when coverage is less than 100 %.
+We generate an ice speed time series by assigning the PROMICE, MEaSUREs 0478, MEaSUREs 0646, and pre-2000 products to their respective reported time stamps (even though these are time-span products) or to the middle of their time span when they cover a long period such as the annual maps from citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000. We ignore that any individual velocity map or pixel has a time span and not a time stamp. Velocities are sampled only where there are gate pixels. Missing pixel velocities are linearly interpolated in time, except for missing data at the beginning of the time series which are back- and forward filled with the temporally nearest value for that pixel (Fig. [[fig:coverage_schematic]]). We do not spatially interpolate missing velocities because the spatial changes around a missing data point are most likely larger than the temporal changes. We visually represent the discharge contribution of directly observed pixels, termed coverage (Fig. [[fig:coverage_schematic]]) as time series graphs and opacity of dots and error bars in the figures. The figures only display data where coverage is \(\ge\) 50 %, but the provided data files include coverage from 0 to 100 %. Therefore, the gap-filled discharge contribution at any given time is equal to 100 minus the coverage. Discharge is always reported as estimated total discharge even when coverage is less than 100 %.
 
 *** Invalid thickness
 :PROPERTIES:
 :CUSTOM_ID: sec:invalid_thickness
 :END:
 
-The thickness data appear to be incorrect in some locations. For example, many locations have fast-flowing ice, but report ice thickness as 10 m or less (Fig. [[fig:h_v_histogram]], left panel). We accept all ice thickness greater than 20 m and construct from this a thickness versus log_{10} speed relationship. For all ice thickness less than or equal to 20 m thick we adjust thickness based this relationship (Fig. [[fig:h_v_histogram]], right panel). We selected the 20 m thickness cutoff after visually inspecting the velocity distribution (Fig. [[fig:h_v_histogram]], left panel). This thickness adjustment adds 20 Gt yr^{-1} to our baseline-period discharge estimate with no adjustment. In the Appendix and Table [[tab:thick_treatments]] we discuss the discharge contribution of these adjusted pixels, and a comparison among this and other thickness adjustments.
+The thickness data appear to be incorrect in some locations. For example, many locations have fast-flowing ice but report ice thickness as 10 m or less (Fig. [[fig:h_v_histogram]], left panel). We accept all ice thickness greater than 20 m and construct from this a thickness vs. log_{10}-speed relationship. For all ice thickness less than or equal to 20 m thick we adjust thickness based on this relationship (Fig. [[fig:h_v_histogram]], right panel). We selected the 20 m thickness cutoff after visually inspecting the velocity distribution (Fig. [[fig:h_v_histogram]], left panel). This thickness adjustment adds 20 Gt yr^{-1} to our baseline-period discharge estimate with no adjustment. In the Appendix and Table [[tab:thick_treatments]] we discuss the discharge contribution of these adjusted pixels, and a comparison among this and other thickness adjustments.
 
 
 ** Discharge
 
-We calculate discharge per pixel using density (917 kg m^{-3}), filtered and filled ice speed, projection-corrected pixel width, and adjusted ice thickness derived from time-varying surface elevation and a fixed bed elevation (Eq. [[eq:Q]]). We assume that any change in surface elevation corresponds to a change in ice thickness and thereby neglect basal uplift, erosion, and melt, which combined are orders of magnitude less than surface melting (e.g. citet:cowton_2012_rapid,khan_2007_elastic). We also assume depth-averaged ice velocity is equal to the surface velocity.
+We calculate discharge per pixel using density (917 kg m^{-3}), filtered and filled ice speed, projection-corrected pixel width, and adjusted ice thickness derived from time-varying surface elevation and a fixed bed elevation (Eq. [[eq:Q]]). We assume that any change in surface elevation corresponds to a change in ice thickness and thereby neglect basal uplift, erosion, and melt, which combined are orders of magnitude less than surface melting (e.g., citet:cowton_2012_rapid,khan_2007_elastic). We also assume depth-averaged ice velocity is equal to the surface velocity.
 
-We calculate discharge using the gate-orthogonal velocity at each pixel and at each timestamp -- all velocity estimates are gate-orthogonal at all times, regardless of gate position, orientation, or changing glacier velocity direction over time.
+We calculate discharge using the gate orthogonal velocity at each pixel and at each timestamp -- all velocity estimates are gate-orthogonal at all times, regardless of gate position, orientation, or changing glacier velocity direction over time.
 
-Annual averages are calculated by linearly interpolating to daily, then estimating annual. The difference between this method and averaging only the observed samples is ~3 % median (5 % average, and a maximum of 10 % when examining the entire ice sheet and all years in our data). It is occasionally larger at individual glaciers when a year has few widely-space samples of highly variable velocity.
+Annual averages are calculated by linearly interpolating to daily and then estimating annual. The difference between this method and averaging only the observed samples is ~3 % median (5 % average, and a maximum of 10 % when examining the entire ice sheet and all years in our data). It is occasionally larger at individual glaciers when a year has few widely spaced samples of highly variable velocity.
 
-*** Discharge Uncertainty
+*** Discharge uncertainty
 \label{sec:D_uncertainty}
 
 A longer discussion related to our and others treatments of errors and uncertainty is in the Appendix, but here we describe how we estimate the uncertainty related to the ice discharge following a simplistic approach. This yields an uncertainty of the total ice discharge of approximately 10 % throughout the time series. 
@@ -370,9 +370,9 @@ and minimum discharge, \(D_{\mathrm{min}}\), from
 D_{\mathrm{min}} = \rho \, (V - \sigma_V) \, (H - \sigma_H) \, W,
 \end{equation}
 
-where \(\rho\) is ice density, \(V\) is baseline velocity, \(\sigma_V\) is baseline velocity error, \(H\) is ice thickness, \(\sigma_H\) is ice thickness error, and \(W\) is the width at each pixel. Included in the thickness term is surface elevation change through time (\(\mathrm{d}H/\mathrm{d}t\)). When data sets do not come with error estimates we treat the error as 0.
+where \(\rho\) is ice density, \(V\) is baseline velocity, \(\sigma_V\) is baseline velocity error, \(H\) is ice thickness, \(\sigma_H\) is ice thickness error, and \(W\) is the width at each pixel. Included in the thickness term is surface elevation change through time (\(\mathrm{d}H/\mathrm{d}t\)). When datasets do not come with error estimates we treat the error as 0.
 
-We use \(\rho = 917\) kg m^{-3} because the gates are near the terminus in the ablation zone and ice thickness estimates should not include snow or firn, although regionally ice density may be < 917 kg m^{-3} due to crevasses. We ignore the velocity error \(\sigma_V\) because the proportional thickness error (\(\sigma_H/H\)) is an order of magnitude larger than the proportional velocity error (\(\sigma_V/V\)) yet both contribute linearly to the discharge. \(W\) is location-dependent due to the errors between our working map projection (EPSG 3413) and a more accurate spheroid model of the earth surface. We adjust linear gate width by up to ~4% in the north and ~-2.5% in the south of Greenland (area errors are up to 8%). On a pixel by pixel basis we used the provided thickness uncertainty except where we modified the thickness (H < 20 m) we prescribe an uncertainty of 0.5 times the adjusted thickness. Subsequently, the uncertainty on individual glacier-, sector-, region-, or ice sheet scale is obtained by summing, but not reducing by the square of the sums, the uncertainty related to each pixel. We are conservative with our thickness error estimates, by assuming the uncertainty range is from \(D_{\mathrm{min}}\) to \(D_{\mathrm{max}}\) and not reducing by the sum-of-squares of sectors or regions. 
+We use \(\rho = 917\) kg m^{-3} because the gates are near the terminus in the ablation zone, and ice thickness estimates should not include snow or firn, although regionally ice density may be < 917 kg m^{-3} due to crevasses. We ignore the velocity error \(\sigma_V\) because the proportional thickness error (\(\sigma_H/H\)) is an order of magnitude larger than the proportional velocity error (\(\sigma_V/V\)) yet both contribute linearly to the discharge. \(W\) is location dependent due to the errors between our working map projection (EPSG 3413) and a more accurate spheroid model of the earth surface. We adjust linear gate width by up to ~4% in the north and ~-2.5% in the south of Greenland (area errors are up to 8%). On a pixel-by-pixel basis we used the provided thickness uncertainty except where we modified the thickness (H < 20 m); we prescribe an uncertainty of 0.5 times the adjusted thickness. Subsequently, the uncertainty on individual glacier, sector, region, or ice sheet scale is obtained by summing, but not reducing by the square of the sums, the uncertainty related to each pixel. We are conservative with our thickness error estimates, by assuming the uncertainty range is from \(D_{\mathrm{min}}\) to \(D_{\mathrm{max}}\) and not reducing by the sum of squares of sectors or regions. 
 
 * Results
 ** Gates
@@ -396,9 +396,9 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : sectors:  173
 : times:  495
 
-Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels making up src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv  | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates, assigned to src_bash[:eval yes]{cut -d"," -f9 tmp/dat_100_5000.csv  | tail -n +2 | sort | uniq | wc -l} {{{results(=173=)}}} ice-sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
+Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels making up src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv  | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates, assigned to src_bash[:eval yes]{cut -d"," -f9 tmp/dat_100_5000.csv  | tail -n +2 | sort | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
-The widest gate (~47 km) is Sermersuaq (Humboldt Gletsjer), the 2nd widest (~34 km) is Sermeq Kujalleq (Jakobshavn Isbræ). 23 additional glaciers have gate lengths longer than 10 km. The minimum gate width is 3 pixels (600 m) by definition in the algorithm. 
+The widest gate (~47 km) is Sermersuaq (Humboldt Gletsjer) and the second widest (~34 km) is Sermeq Kujalleq (Jakobshavn Isbræ). A total of 23 additional glaciers have gate lengths longer than 10 km. The minimum gate width is 3 pixels (600 m) by definition in the algorithm. 
 
 # See LINK: [[id:62f5d28c-c704-422d-9e9b-c0771d5b86ee][Table of thickness adjustments]]
 
@@ -472,7 +472,7 @@ Name: 2005-01-01 00:00:00, dtype: float64
 | 2020-01-01 00:00:00 | 506.33  | 52.0244 |
 :END:
 
-Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 460 \(\pm\) 49 Gt in 1986, has a minimum of 428 \(\pm\) 44 Gt in 1996, increases to 443 \(\pm\) 44 in 2000, further to 500 \(\pm\) 50 Gt/yr in 2005, after which annual discharge remains approximately steady at 483 to 505 \(\pm\) ~50 Gt/yr during the 2005 through 2019 period.
+Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 460 \(\pm\) 49 Gt in 1986, has a minimum of 428 \(\pm\) 44 Gt in 1996, and increases to 443 \(\pm\) 44 in 2000 and further to 500 \(\pm\) 50 Gt/yr in 2005, after which annual discharge remains approximately steady at 483 to 505 \(\pm\) ~50 Gt/yr during the 2005 through 2019 period.
 
 #+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
@@ -538,7 +538,7 @@ max      161.227909
 Name: SE, dtype: float64
 #+end_example
 
-At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 136 to 164 (\(\pm\) 12 %) Gt yr^{-1} of discharge (approximately one third of ice-sheet wide discharge) over the 1986 through 2019 period. By comparison, the predominantly land-terminating NO, NE and SW together were also responsible for about one third of total ice-sheet discharge during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady or declining for the past decade. The NW is the only region exhibiting a persistent long-term increase in discharge -- From ~90 to 115 Gt yr^{-1} (22 % increase) over the 1999 through 2017 period (+ ~1.4 Gt yr^{-1} or + ~1.2 % yr^{-1}). This 1999 through 2017 annual average increase in NW discharge offsets declining discharge from other regions, but the NW increase stopped in 2018 and discharge in the NW dropped by 5 Gt yr^{-1} (4 %) in 2019. This NW decline is then offset by a SE region increase. The largest contributing region, SE, contributed a high of 164 \(\pm\) 19 Gt in 2004, but dropped to ~150 \pm 18 Gt yr^{-1} for the past decade.
+At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 136 to 164 (\(\pm\) 12 %) Gt yr^{-1} of discharge (approximately one-third of ice-sheet-wide discharge) over the 1986 through 2019 period. By comparison, the predominantly land-terminating NO, NE, and SW together were also responsible for about one-third of total ice sheet discharge during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady or declining for the past decade. The NW is the only region exhibiting a persistent long-term increase in discharge -- from ~90 to 115 Gt yr^{-1} (22 % increase) over the 1999 through 2017 period (+ ~1.4 Gt yr^{-1} or + ~1.2 % yr^{-1}). This 1999 through 2017 annual average increase in NW discharge offsets declining discharge from other regions, but the NW increase stopped in 2018 and discharge in the NW dropped by 5 Gt yr^{-1} (4 %) in 2019. This NW decline is then offset by a SE region increase. The largest contributing region, SE, contributed a high of 164 \(\pm\) 19 Gt in 2004 but dropped to ~150 \pm 18 Gt yr^{-1} for the past decade.
 
 # 100 - 90/115*100 = 21.7391304348
 # (115-90+1)/(2017-1999+1) = 1.36842105263
@@ -580,27 +580,27 @@ Freq: AS-JAN, Name: JAKOBSHAVN_ISBRAE, dtype: float64
 #+end_example
 
 
-Focusing on eight major contributors at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~51 Gt yr^{-1} in 2013 to ~34 Gt yr^{-1} in 2018, likely due to ocean cooling citep:khazendar_2019_interruption. We exclude Ikertivaq from the top 8 because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. The 2013 to 2016 slowdown of Sermeq Kujalleq (Fig. [[fig:discharge_ts_topfew]]) is compensated by the many glaciers that make up the NW region (Fig. [[fig:discharge_ts_regions]]). The large 2017 and 2018 reduction in discharge at Sermeq Kujalleq is partially offset by a large increase in the 2nd largest contributor, Helheim Gletsjer (Fig. [[fig:discharge_ts_topfew]]) and a small increase in the 3rd largest contributor, Kangerlussuaq citep:bevan_2019_impact. Helheim discharged more ice than Sermeq Kujalleq in early 2018 and for all data estimates to date (through March) in 2020, although error bars still overlap.
+Focusing on eight major contributors at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~51 Gt yr^{-1} in 2013 to ~34 Gt yr^{-1} in 2018, likely due to ocean cooling citep:khazendar_2019_interruption. We exclude Ikertivaq from the top eight because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. The 2013 to 2016 slowdown of Sermeq Kujalleq (Fig. [[fig:discharge_ts_topfew]]) is compensated for by the many glaciers that make up the NW region (Fig. [[fig:discharge_ts_regions]]). The large 2017 and 2018 reduction in discharge at Sermeq Kujalleq is partially offset by a large increase in the second-largest contributor, Helheim Gletsjer (Helheim Glacier; Fig. [[fig:discharge_ts_topfew]]), and a small increase in the third-largest contributor, Kangerlussuaq citep:bevan_2019_impact. Helheim discharged more ice than Sermeq Kujalleq in early 2018 and for all data estimates to date (through March) in 2020, although error bars still overlap.
 
 * Discussion
 
-Different ice discharge estimates among studies likely stem from three categories: 1) changes in true discharge, 2) different input data (ice thickness and velocity), and 3) different assumptions and methods used to analyze data. Improved estimates of true discharge is the goal of this and many other studies, but changes in true discharge (category 1) can happen only when a work extends a time series into the future because historical discharge is fixed. Thus, any inter-study discrepancies in historical discharge must be due to category 2 (different data) or category 3 (different methods). Most studies use both updated data and new or different methods, but do not always provide sufficient information to disentangle the two. This is inefficient. To more quantitatively discuss inter-study discrepancies, it is imperative to explicitly consider all three potential causes of discrepancy. Only when results are fully reproducible -- meaning all necessary data and code are available (c.f. citet:mankoff_2017_past,rezvanbehbahani_2017_predicting,mankoff_2019_ice) -- can new works confidently attribute discrepancies relative to old works. Therefore, in addition to providing new discharge estimates, we attempt to examine discrepancies among our estimates and other recent estimates. Without access to code and data from previous studies, it is challenging to take this examination beyond a qualitative discussion.
+Different ice discharge estimates among studies likely stem from three categories: 1) changes in true discharge, 2) different input data (ice thickness and velocity), and 3) different assumptions and methods used to analyze data. Improved estimates of true discharge are the goal of this and many other studies, but changes in true discharge (category 1) can happen only when a work extends a time series into the future because historical discharge is fixed. Thus, any interstudy discrepancies in historical discharge must be due to category 2 (different data) or category 3 (different methods). Most studies use both updated data and new or different methods, but do not always provide sufficient information to disentangle the two. This is inefficient. To more quantitatively discuss interstudy discrepancies, it is imperative to explicitly consider all three potential causes of discrepancy. Only when results are fully reproducible -- meaning all necessary data and code are available (cf. citet:mankoff_2017_past,rezvanbehbahani_2017_predicting,mankoff_2019_ice) -- can new works confidently attribute discrepancies relative to old works. Therefore, in addition to providing new discharge estimates, we attempt to examine discrepancies among our estimates and other recent estimates. Without access to code and data from previous studies, it is challenging to take this examination beyond a qualitative discussion.
 
-The algorithm-generated gates we present offer some advantages over traditional hand-picked gates. Our gates are shared publicly, are generated by code that can be audited by others, and are easily adjustable within the algorithmic parameter space. This allows both sensitivity testing of gate location (Fig. [[fig:heatmap]]) and allows gate positions to systematically evolve with glacier termini (not done here).
+The algorithm-generated gates we present offer some advantages over traditional handpicked gates. Our gates are shared publicly, are generated by code that can be audited by others, and are easily adjustable within the algorithmic parameter space. This both allows sensitivity testing of gate location (Fig. [[fig:heatmap]]) and allows gate positions to systematically evolve with glacier termini (not done here).
 
 ** Comparison with past studies                           :ignore:
 
-The total ice discharge we estimate is ~10 % less than the total discharge of two previous estimates citep:mouginot_2019_forty,enderlin_2014_improved, and similar to that of citet:king_2018_seasonal, who attributes their discrepancy with citet:enderlin_2014_improved to the latter using only summer velocities, which have higher annual average values than seasonally-comprehensive velocity products. The gate locations also differ among studies, and glaciers with baseline velocity less than 100 m yr^{-1} are not included in our study due to our velocity cutoff threshold, but this should not lead to substantially different discharge estimates (Fig. [[fig:heatmap]]).
+The total ice discharge we estimate is ~10 % less than the total discharge of two previous estimates citep:mouginot_2019_forty,enderlin_2014_improved, and similar to that of citet:king_2018_seasonal, who attributes their discrepancy with citet:enderlin_2014_improved to the latter using only summer velocities, which have higher annual average values than seasonally comprehensive velocity products. The gate locations also differ among studies, and glaciers with baseline velocity less than 100 m yr^{-1} are not included in our study due to our velocity cutoff threshold, but this should not lead to substantially different discharge estimates (Fig. [[fig:heatmap]]).
 
-Our gate selection algorithm also does not place gates in northeast Greenland at Storstrømmen, Bredebræ, or their confluence, because during the baseline period that surge glacier was in a slow phase. We do not manually add gates at these glaciers. The last surge ended in 1984 citep:reeh_1994_surge,mouginot_2018_insights, prior to the beginning of our time series, and these glaciers are therefore not likely to contribute substantial discharge even in the early period of discharge estimates.
+Our gate selection algorithm also does not place gates in northeast Greenland at Storstrømmen, Bredebræ (Bredebrae), or their confluence, because during the baseline period that surge glacier was in a slow phase. We do not manually add gates at these glaciers. The last surge ended in 1984 citep:reeh_1994_surge,mouginot_2018_insights, prior to the beginning of our time series, and these glaciers are therefore not likely to contribute substantial discharge even in the early period of discharge estimates.
 
-We instead attribute the majority of our discrepancy with citet:enderlin_2014_improved to the use of differing bed topography in southeast Greenland. When we compare our top ten highest discharging glaciers in 2000 with those reported by citet:enderlin_2014_improved, we find that the Køge Bugt discharge reported by citet:enderlin_2014_improved is ~31 Gt, but our estimate is only ~16 Gt (~17 Gt in citet:king_2018_seasonal, and similar in citet:mouginot_2019_forty). The citet:bamber_2013_bed bed elevation dataset that likely uses the same bed data employed by citet:enderlin_2014_improved has a major depression in the central Køge Bugt bed. This region of enhanced ice thicknesses is not present in the BedMachine dataset that we and citet:king_2018_seasonal and citet:mouginot_2019_forty employ (Fig. [[fig:koge_bugt_bamber]]). If the Køge Bugt gates of citet:enderlin_2014_improved are in this location, then those gates overlie citet:bamber_2013_bed ice thicknesses that are about twice those reported in BedMachine v3. With all other values held constant, this results in roughly twice the discharge. Although we do not know whether BedMachine or citet:bamber_2013_bed is more correct, conservation of mass suggests that a substantial subglacial depression should be evident as either depressed surface elevation or velocity citep:morlighem_2016_improving.
+We instead attribute the majority of our discrepancy with citet:enderlin_2014_improved to the use of differing bed topography in southeast Greenland. When we compare our top 10 highest discharging glaciers in 2000 with those reported by citet:enderlin_2014_improved, we find that the Køge Bugt (also knows as Køge Bay) discharge reported by citet:enderlin_2014_improved is ~31 Gt, but our estimate is only ~16 Gt (~17 Gt in citet:king_2018_seasonal, and similar in citet:mouginot_2019_forty). The citet:bamber_2013_bed bed elevation dataset that likely uses the same bed data employed by citet:enderlin_2014_improved has a major depression in the central Køge Bugt bed. This region of enhanced ice thicknesses is not present in the BedMachine dataset that we, citet:king_2018_seasonal, and citet:mouginot_2019_forty employ (Fig. [[fig:koge_bugt_bamber]]). If the Køge Bugt gates of citet:enderlin_2014_improved are in this location, then those gates overlie citet:bamber_2013_bed ice thicknesses that are about twice those reported in BedMachine v3. With all other values held constant, this results in roughly twice the discharge. Although we do not know whether BedMachine or citet:bamber_2013_bed is more correct, conservation of mass suggests that a substantial subglacial depression should be evident as either depressed surface elevation or velocity citep:morlighem_2016_improving.
 
-We are unable to attribute the remaining discrepancy between our discharge estimates and those by citet:enderlin_2014_improved. It is likely a combination of different seasonal velocity sampling citep:king_2018_seasonal, our evolving surface elevation from citet:khan_2016_geodetic, or other previously-unpublished algorithmic or data differences, of which many possibilities exist.
+We are unable to attribute the remaining discrepancy between our discharge estimates and those by citet:enderlin_2014_improved. It is likely a combination of different seasonal velocity sampling citep:king_2018_seasonal, our evolving surface elevation from citet:khan_2016_geodetic, or other previously unpublished algorithmic or data differences, of which many possibilities exist.
 
-Our ice discharge estimates agree well with the most recently published discharge estimate (citet:king_2018_seasonal, also used by citet:bamber_2018_landice), except that our discharge is slightly less. We note that our uncertainty estimates include the citet:king_2018_seasonal estimates, but the opposite does not appear be true. The minor differences are likely due to different methods. citet:king_2018_seasonal use seasonally varying ice thicknesses, derived from seasonally varying surface elevations, and a Monte Carlo method to temporally interpolate missing velocity data to produce discharge estimates. In comparison, we use linear interpolation of both yearly surface elevation estimates and temporal data gaps. It is not clear whether linear or higher-order statistical approaches are best-suited for interpolation as annual cycles begin to shift, as is the case with Sermeq Kujalleq (Jakobshavn Isbræ) after 2015. There are benefits and deficiencies with both methods. Linear interpolation may alias large changes if there are no other observations nearby in time. Statistical models of past glacier behavior may not be appropriate when glacier behavior changes.
+Our ice discharge estimates agree well with the most recently published discharge estimate (citet:king_2018_seasonal, also used by citet:bamber_2018_landice), except that our discharge is slightly less. We note that our uncertainty estimates include the citet:king_2018_seasonal estimates, but the opposite does not appear be true. The minor differences are likely due to different methods. citet:king_2018_seasonal use seasonally varying ice thicknesses, derived from seasonally varying surface elevations, and a Monte Carlo method to temporally interpolate missing velocity data to produce discharge estimates. In comparison, we use linear interpolation of both yearly surface elevation estimates and temporal data gaps. It is not clear whether linear or higher-order statistical approaches are best suited for interpolation as annual cycles begin to shift, as is the case with Sermeq Kujalleq (Jakobshavn Isbræ) after 2015. There are benefits and deficiencies with both methods. Linear interpolation may alias large changes if there are no other observations nearby in time. Statistical models of past glacier behavior may not be appropriate when glacier behavior changes.
 
-It is unlikely that discharge estimates using gates that are only approximately flow-orthogonal and time-invariant citep:king_2018_seasonal have large errors due to this, because it is unlikely that glacier flow direction changes significantly, but our gate-orthogonal treatment may be the cause of some differences among our approach and other works. Discharge calculated using non-orthogonal methodology would overestimate true discharge.
+It is unlikely that discharge estimates using gates that are only approximately flow orthogonal and time invariant citep:king_2018_seasonal have large errors due to this, because it is unlikely that glacier flow direction changes significantly, but our gate-orthogonal treatment may be the cause of some differences among our approach and other works. Discharge calculated using nonorthogonal methodology would overestimate true discharge.
 
 * Data availability
 
@@ -608,13 +608,13 @@ This work in its entirety is available at doi:10.22008/promice/data/ice_discharg
 
 * Conclusions
 
-We have presented a novel dataset of flux gates and 1986 through 2019 glacier-scale ice discharge estimate for the Greenland ice sheet. These data are underpinned by an algorithm that both selects gates for ice flux and then computes ice discharges. 
+We have presented a novel dataset of flux gates and a 1986 through 2019 glacier-scale ice discharge estimate for the Greenland Ice Sheet. These data are underpinned by an algorithm that both selects gates for ice flux and then computes ice discharges. 
 
 Our results are similar to the most recent discharge estimate citep:king_2018_seasonal but begin in 1986 - although there are fewer samples prior to 2000. From our discharge estimate we show that over the past ~30 years, ice sheet discharge was ~440 Gt yr^{-1} prior to 2000, rose to over 500 Gt yr^{-1} from 2000 to 2005, and has held roughly steady since 2005 at near 500 Gt yr^{-1}. However, when viewed at a region or sector scale, the system appears more dynamic with spatial and temporal increases and decreases canceling each other out to produce the more stable ice sheet discharge. We note that there does not appear to be any dynamic connection among the regions, and any increase in one region that was offset by a decrease in another has likely been due to chance. If in coming years when changes occur the signals have matching signs, then ice sheet discharge would decrease or increase, rather than remain fairly steady.
 
-The application of our flux-gate algorithm shows that ice-sheet wide discharge varies by ~30 Gt yr^{-1} due only to gate position, or ~40 Gt due to gate position and cutoff velocity (Fig. [[fig:heatmap]]). This variance is approximately equal to the uncertainty associated with ice-sheet wide discharge estimates reported in many studies (e.g. citet:rignot_2008_mass,andersen_2015_basin-scale,kjeldsen_2015_spatial). We highlight a major discrepancy with the ice discharge data of citet:enderlin_2014_improved and we suspect this discharge discrepancy -- most pronounced in southeast Greenland -- is associated with the choice of digital bed elevation model, specifically a deep hole in the bed at Køge Bugt.
+The application of our flux gate algorithm shows that ice-sheet-wide discharge varies by ~30 Gt yr^{-1} due only to gate position, or ~40 Gt yr^{-1} due to gate position and cutoff velocity (Fig. [[fig:heatmap]]). This variance is approximately equal to the uncertainty associated with ice sheet wide discharge estimates reported in many studies (e.g. citet:rignot_2008_mass,andersen_2015_basin-scale,kjeldsen_2015_spatial). We highlight a major discrepancy with the ice discharge data of citet:enderlin_2014_improved and we suspect this discharge discrepancy -- most pronounced in southeast Greenland -- is associated with the choice of digital bed elevation model, specifically a deep hole in the bed at Køge Bugt.
 
-Transparency in data and methodology are critical to move beyond a focus of estimating discharge quantities, towards more operational mass loss products with realistic errors and uncertainty estimates. The convention of devoting a paragraph, or even page, to methods is insufficient given the complexity, pace, and importance of Greenland ice sheet research citep:catania_2019_future. Therefore the flux gates, discharge data, and the algorithm used to generate the gates, discharge, and all figures from this manuscript are available. We hope that the flux gates, data, and code we provide here is a step toward helping others both improve their work and discover the errors in ours.
+Transparency in data and methodology are critical to move beyond a focus of estimating discharge quantities, towards more operational mass loss products with realistic errors and uncertainty estimates. The convention of devoting a paragraph, or even page, to methods is insufficient given the complexity, pace, and importance of Greenland Ice Sheet research citep:catania_2019_future. Therefore the flux gates, discharge data, and the algorithm used to generate the gates, discharge, and all figures from this paper are available. We hope that the flux gates, data, and code we provide here is a step toward helping others both improve their work and discover the errors in ours.
 
 * Other                                                   :ignore:
 
@@ -629,9 +629,12 @@ Transparency in data and methodology are critical to move beyond a focus of esti
 
 
 #+BEGIN_acknowledgements
-Funding was provided by the Programme for Monitoring of the Greenland Ice Sheet (PROMICE). Sentinel ice
-velocity maps were produced from Copernicus Sentinel-1 image data, processed by ESA data as part of PROMICE, and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org. Parts of this work were funded by the INTAROS project under the European Union's Horizon 2020 research and innovation program under grant agreement No. 727890. We thank the reviewers for their constructive input that helped improve the paper. 
+We thank contributors and co-authors of previous versions of this paper, and the reviewers for their constructive input that helped improve the paper. Sentinel ice velocity maps were produced from Copernicus Sentinel-1 image data, processed by ESA data as part of PROMICE, and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org.
 #+END_acknowledgements
+
+#+BEGIN_financialsupport
+This research has been supported by the Programme for Monitoring of the Greenland Ice Sheet (PROMICE) and the European Union's Horizon 2020 research and innovation program (INTAROS, grant no. 727890).
+#+END_financialsupport
 
 
 * References                                              :ignore:
@@ -649,7 +652,7 @@ velocity maps were produced from Copernicus Sentinel-1 image data, processed by 
 
 #+NAME: fig:overview
 #+ATTR_LATEX: :width 0.4\textwidth :placement [!h]
-#+CAPTION: Overview showing fast-flowing ice (orange, greater than 100 m yr^{-1}) and the gates for eight major discharging glaciers (Fig. [[fig:discharge_ts_topfew]]). Gates are shown as black lines in inset images. Each inset is 30 x 30 km and all have the same color scaling, but different than the main map. Insets pair with nearest label and box. On the main map, regions from citet:mouginot_2019_glacier are designated by thicker black lines and large bold labels. Sectors (same source) are delineated with thinner gray lines, and eight major discharging glaciers are labeled with smaller font. H = Helheim Gletsjer, KB = (Køge Bugt), KG = Kangerlussuaq Gletsjer, KS = Kangilliup Sermia (Rink Isbræ), N = (Nioghalvfjerdsbræ), P = Petermann Gletsjer, SK = Sermeq Kujalleq (Jakobshavn Isbræ), and Z = Zachariae Isstrøm. Basemap terrain (gray), ocean bathymetry (blues), and ice mask (white) come from BedMachine.
+#+CAPTION: Overview showing fast-flowing ice (orange, greater than 100 m yr^{-1}) and the gates for eight major discharging glaciers (Fig. [[fig:discharge_ts_topfew]]). Gates are shown as black lines in inset images. Each inset is 30 x 30 km and they all have the same color scaling, but different than the main map. Insets pair with nearest label and box. On the main map, regions from citet:mouginot_2019_glacier are designated by thicker black lines and large bold labels. Sectors (same source) are delineated with thinner gray lines, and eight major discharging glaciers are labeled with smaller font. H = Helheim Gletsjer (Helheim Glacier), KB = Køge Bugt (Køge Bay), KG = Kangerlussuaq Gletsjer (Kangerlussuaq Glacier), KS = Kangilliup Sermia (English: Rink Glacier; Danish: Rink Isbræ), N = Nioghalvfjerdsbræ, P = Petermann Gletsjer (Petermann Glacier), SK = Sermeq Kujalleq (English: Jakobshavn Glacier; Danish: Jakobshavn Isbræ), and Z = Zachariae Isstrøm. Basemap terrain (gray), ocean bathymetry (blues), and ice mask (white) come from BedMachine.
 [[./figs/overview.png]]
 
 
@@ -718,7 +721,7 @@ plt.savefig('./figs/h_v_histogram.png', transparent=True, dpi=300, bbox_inches='
 
 #+NAME: fig:h_v_histogram
 #+ATTR_LATEX: :height 0.5\textwidth
-#+CAPTION: 2D histogram of velocity and thickness at all gate pixels. Left panel: Unadjusted (BedMachine & citet:millan_2018_vulnerability) thickness. Right panel: Adjusted (as described in the text) thickness.
+#+CAPTION: Two-dimensional histogram of velocity and thickness at all gate pixels. Left panel: Unadjusted (BedMachine & citet:millan_2018_vulnerability) thickness. Right panel: Adjusted (as described in the text) thickness.
 [[./figs/h_v_histogram.png]]
 
 
@@ -728,7 +731,7 @@ plt.savefig('./figs/h_v_histogram.png', transparent=True, dpi=300, bbox_inches='
 
 #+NAME: fig:discharge_ts
 #+ATTR_LATEX: :width \textwidth :placement [!h]
-#+CAPTION: Bottom panel: Time series of ice discharge from the Greenland ice sheet. Dots represent when observations occurred (limited to coverage > 50 %). Orange stepped line is annual average (limited to three or more observations in a year). Coverage (percentage of total discharge observed at any given time) is shown in top panel, and also by opacity of dot interior and error bars on lower panel. When coverage is < 100 %, total discharge is estimated and shown.
+#+CAPTION: Bottom panel: Time series of ice discharge from the Greenland Ice Sheet. Dots represent when observations occurred (limited to coverage > 50 %). Orange stepped line is annual average (limited to three or more observations in a year). Coverage (percentage of total discharge observed at any given time) is shown in the top panel and also by the opacity of the dots' interior and error bars on lower panel. When coverage is < 100 %, total discharge is estimated and shown.
 [[./figs/discharge_ts.png]]
 
 ** Discharge Time Series: Regions                         :ignore:
@@ -749,15 +752,15 @@ plt.savefig('./figs/h_v_histogram.png', transparent=True, dpi=300, bbox_inches='
 #+LaTeX: \appendix
 #+LaTeX: \clearpage
 
-** Errors and Uncertainties
+** Errors and uncertainties
 
 Here we describe our error and uncertainty treatments. We begin with a brief philosophical discussion of common uncertainty treatments, our general approach, and then the influence of various decisions made throughout our analysis, such as gate location and treatments of unknown thicknesses.
 
 # Throughout this work we have tried to use simple rather than complicated methods (e.g. linear interpolation rather than Monte Carlo simulations, or setting bad thickness directly to X m rather than via a convoluted self-correlation) and conservative (low) rather than aggressive (high) estimates (e.g. unknown thicknesses set to 300 \(\pm\) 300 m rather than ~400 \(\pm\) 70 m citep:enderlin_2014_improved).
 
-Traditional and mathematically valid uncertainty treatments divide errors into two classes: systematic (bias) and random. The primary distinction is that systematic errors do not decrease with more samples, and random errors decrease as the number of samples or measurements increases. The question is then which errors are systematic and which are random. A common treatment is to decide that errors within a region are systematic, and among regions are random. This approach has no physical basis - two glaciers a few 100 m apart but in different regions are assumed to have random errors, but two glaciers 1000s of km apart but within the same region are assumed to have systematic errors. It is more likely the case that all glaciers less wide than some width or more deep than some depth have systematic errors even if they are on opposite sides of the ice sheet, if ice thickness is estimated with the same method (i.e. the systematic error is likely caused by the sensor and airplane, not the location of the glacier).
+Traditional and mathematically valid uncertainty treatments divide errors into two classes: systematic (bias) and random. The primary distinction is that systematic errors do not decrease with more samples, and random errors decrease as the number of samples or measurements increases. The question is then which errors are systematic and which are random. A common treatment is to decide that errors within a region are systematic and among regions are random. This approach has no physical basis - two glaciers a few hundred meters apart but in different regions are assumed to have random errors, but two glaciers thousands of kilometers apart but within the same region are assumed to have systematic errors. It is more likely the case that all glaciers narrower than some width or deeper than some depth have systematic errors even if they are on opposite sides of the ice sheet, if ice thickness is estimated with the same method (i.e. the systematic error is likely caused by the sensor and airplane, not the location of the glacier).
 
-The decision to have \(R\) random samples (where \(R\) is the number of regions, usually ~18 based on citet:zwally_2012_sectors) is also arbitrary. Mathematical treatment of random errors means that even if the error is 50 %, 18 measurements reduces it to only 11.79 %.
+The decision to have \(R\) random samples (where \(R\) is the number of regions, usually ~18 based on citet:zwally_2012_sectors) is also arbitrary. Mathematical treatment of random errors means that, even if the error is 50 % 18 measurements reduce it to only 11.79 %.
 
 #+BEGIN_SRC jupyter-python :session err_example :results output :exports none :eval no-export
 import numpy as np
@@ -784,11 +787,11 @@ for i in [1,2,10,18,100,176,267,5829]:
 : 267 267.0 16.34013463836819 6.12
 : 5829 5829.0 76.34788798650555 1.31
 
-This reduction is unlikely to be physically meaningful. Our 173 sectors, 267 gates and 5829 pixels means that even if errors were 100 % for each, we could reduce it to 7.5, 6.1, or 1.3 % respectively. We note that the area error introduced by the common EPSG:3413 map projection is -5 % in the north and +8 % in the south. While this error is mentioned in some other works (e.g. citet:joughin_2018_greenland) it is often not explicitly mentioned.
+This reduction is unlikely to be physically meaningful. Our 173 sectors, 267 gates, and 5829 pixels means that, even if errors were 100 % for each, we could reduce it to 7.5, 6.1, or 1.3 % respectively. We note that the area error introduced by the common EPSG:3413 map projection is -5 % in the north and +8 % in the south. While this error is mentioned in some other works (e.g., citet:joughin_2018_greenland) it is often not explicitly mentioned.
 
 We do not have a solution for the issues brought up here, except to discuss them explicitly and openly so that those, and our own, error treatments are clearly presented and understood to likely contain errors themselves. 
 
-*** Invalid Thickness
+*** Invalid thickness
 
 # #+CALL: load_data()
 # src_jupyter-python[:session discharge :eval no-export]{vel.shape[0]} {{{results(=5829=)}}}
@@ -807,47 +810,31 @@ We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1
 <<adjust_thickness>>
 
 df = pd.DataFrame(index=pd.DataFrame(np.random.random(3)).describe().index.values)
-df['Good Pixels'] = vel_baseline.loc[~th['bad']].describe()
-df['Bad Pixels'] = vel_baseline.loc[th['bad']].describe()
+df['Good pixels'] = vel_baseline.loc[~th['bad']].describe()
+df['Bad pixels'] = vel_baseline.loc[th['bad']].describe()
+df.index = [_.capitalize() for _ in df.index]
+df.rename({"Min" : "Minimum", "Max" : "Maximum", "Std" : "SD"}, axis="rows", inplace=True)
 
 print("#+LATEX_ATTR: :placement [!h]")
-print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed [m yr^{-1}] except for the \"count\" row\label{tab:thick_adjust}.")
+print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the \"count\" row\label{tab:thick_adjust}.")
 df.round(0).astype(np.int)
 #+END_SRC
 
 #+RESULTS: tab:thick_adjust
 :RESULTS:
 #+LATEX_ATTR: :placement [!h]
-#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed [m yr^{-1}] except for the "count" row\label{tab:thick_adjust}.
-|       |   Good Pixels |   Bad Pixels |
-|-------+---------------+--------------|
-| count |          5205 |          624 |
-| mean  |           857 |          272 |
-| std   |          1117 |          239 |
-| min   |           100 |          100 |
-| 25%   |           236 |          130 |
-| 50%   |           506 |          181 |
-| 75%   |           995 |          291 |
-| max   |         10044 |         1505 |
+#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab:thick_adjust}.
+|         |   Good pixels |   Bad pixels |
+|---------+---------------+--------------|
+| Count   |          5205 |          624 |
+| Mean    |           857 |          272 |
+| SD      |          1117 |          239 |
+| Minimum |           100 |          100 |
+| 25%     |           236 |          130 |
+| 50%     |           506 |          181 |
+| 75%     |           995 |          291 |
+| Maximum |         10044 |         1505 |
 :END:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # NOTE: Manual cleaning performed for above table
@@ -865,11 +852,11 @@ When aggregating by gate, there are 267 gates. Of these, 179 (67 %) have no bad 
 
 We adjust these thickness using a poor fit (correlation coefficient: 0.3) of the log$_{10}$ of the ice speed to thickness where the relationship is known (thickness > 20 m). We set errors equal to one half the thickness (i.e. \(\sigma_H = \pm 0.5 \, H\)). We also test the sensitivity of this treatment to simpler treatments, and have the following five categories:
 
-+ NoAdj :: No adjustments made. Assume BedMachine thickness are all correct.
-+ NoAdj+Millan :: Same as NoAdj, but using citet:millan_2018_vulnerability bed where available.
++ NoAdj :: No adjustments made. Assume BedMachine thicknesses are all correct.
++ NoAdj+Millan :: Same as NoAdj but using citet:millan_2018_vulnerability bed where available.
 + 300 :: If a gate has some valid pixel thicknesses, set the invalid thicknesses to the minimum of the valid thicknesses. If a gate has no valid thickness, set the thickness to 300 m.
-+ 400 :: Set all thickness < 50 m to 400 m
-+ Fit :: Use the thickness v. speed relationship described above.
++ 400 :: Set all thicknesses < 50 m to 400 m
++ Fit :: Use the thickness--speed relationship described above.
 
 Table [[tab:thick_treatments]] shows the estimated baseline discharge to these four treatments:
 
@@ -963,14 +950,14 @@ Finally, Figure [[fig:gate_map]] shows the geospatial locations, concentration, 
 [[./figs/gate_map.png]]
 
 
-*** Missing Velocity
+*** Missing velocity
 \label{sec:uncertain_vel}
 
-We estimate discharge at all pixel locations for any time when there exists any velocity product. Not every velocity product provides velocity estimates at all locations, and we fill in where there are gaps by linear interpolating velocity at each pixel in time. We calculate coverage, the discharge-weighted percent of observed velocity at any given time (Figure [[fig:coverage_schematic]]), and display coverage as 1) line plots over the time series graphs, 2) opacity of the error bars and 3) opacity of the infilling of time series dots. Linear interpolation and discharge-weighted coverage is illustrated in Figure [[fig:coverage_schematic]], where pixel A has a velocity value at all three times, but pixel B has a filled gap at time \(t_3\). The concentration of valid pixels is 0.5, but the weighted concentration, or coverage, is 9/11 or ~0.82. When displaying these three discharge values, \(t_1\) and \(t_4\) would have opacity of 1 (black), and \(t_3\) would have opacity of 0.82 (dark gray).
+We estimate discharge at all pixel locations for any time when there exists any velocity product. Not every velocity product provides velocity estimates at all locations, and we fill in where there are gaps by linearly interpolating velocity at each pixel in time. We calculate coverage, the discharge-weighted percent of observed velocity at any given time (Figure [[fig:coverage_schematic]]), and display coverage as 1) line plots over the time series graphs, 2) opacity of the error bars and 3) opacity of the infilling of time series dots. Linear interpolation and discharge-weighted coverage is illustrated in Figure [[fig:coverage_schematic]], where pixel A has a velocity value at all three times, but pixel B has a filled gap at time \(t_3\). The concentration of valid pixels is 0.5, but the weighted concentration, or coverage, is 9/11 or ~0.82. When displaying these three discharge values, \(t_1\) and \(t_4\) would have opacity of 1 (black), and \(t_3\) would have opacity of 0.82 (dark gray).
 
 # Because velocity uncertainty is << thickness uncertainty (see next section) we do estimate a velocity uncertainty for our gap-filled velocities.
 
-This treatment is applied at the pixel level and then weight-averaged to the gate, sector, region, and ice sheet results.
+This treatment is applied at the pixel level and then weight averaged to the gate, sector, region, and ice sheet results.
 
 
 #+BEGIN_SRC bash :results verbatim
@@ -980,7 +967,7 @@ inkscape -z ./figs/gate_weight_schematic.svg -e ./figs/gate_weight_schematic.png
 
 #+NAME: fig:coverage_schematic
 #+ATTR_LATEX: :width 0.33\textwidth :placement [!h]
-#+CAPTION: Schematic demonstrating coverage. Velocities are filled with linear interpolation in time, and coverage is weighted by discharge. \(t\) columns represent the same two gate pixels (A & B) at three time steps, where \(t_n\) are linearly spaced, but \(t_2\) is not observed anywhere on the ice sheet and therefore not included. Numbers in boxes represents example discharge values. Gray parenthetical number is filled, not sampled, in pixel B at time t\(_3\). Weighted filling computes the coverage as 9/11 = \(0.\overline{81}\), instead of 0.5 (half of the pixels at time t\(_3\) have observations).
+#+CAPTION: Schematic demonstrating coverage. Velocities are filled with linear interpolation in time, and coverage is weighted by discharge. \(t\) columns represent the same two gate pixels (A & B) at three time steps, where \(t_n\) values are linearly spaced, but \(t_2\) is not observed anywhere on the ice sheet and therefore not included. Numbers in boxes represent example discharge values. The gray parenthetical number is filled, not sampled, in pixel B at time t\(_3\). Weighted filling computes the coverage as 9/11 = \(0.\overline{81}\), instead of 0.5 (half of the pixels at time t\(_3\) have observations).
 [[./figs/gate_weight_schematic.png]]
 
 
@@ -1000,14 +987,14 @@ Our work takes place in a projected coordinate system (EPSG 3413) and therefore 
 [[./h_v_histogram.png]]
 
 
-** Køge Bugt Bed Change between citet:bamber_2013_bed and citet:morlighem_2017_bedmachine
+** Køge Bugt bed change between citet:bamber_2013_bed and citet:morlighem_2017_bedmachine
 :PROPERTIES:
 :clearpage: t
 :END:
 
 #+NAME: fig:koge_bugt_bamber
 #+ATTR_LATEX: :width \textwidth :placement [!h]
-#+CAPTION: Differences between BedMachine citep:morlighem_2017_bedmachine and citet:bamber_2013_bed near Køge Bugt. Panel (a) is baseline ice speed, (b) BedMachine thickness, (c) citet:bamber_2013_bed thickness, and (d) difference computed as BedMachine - Bamber. Curved line is gate used in this work.
+#+CAPTION: Differences between BedMachine citep:morlighem_2017_bedmachine and citet:bamber_2013_bed near Køge Bugt. Panel (a) is baseline ice speed, (b) BedMachine thickness, (c) citet:bamber_2013_bed thickness, and (d) difference computed as BedMachine - Bamber. The curved line is the gate used in this work.
 [[./figs/koge_bugt.png]]
 
 
@@ -1018,7 +1005,7 @@ Our work takes place in a projected coordinate system (EPSG 3413) and therefore 
 :clearpage: t
 :END:
 
-We use ESA Sentinel-1 synthetic aperture radar (SAR) data to derive ice velocity maps covering the Greenland Ice Sheet margin using offset tracking citep:strozzi_2002_glacier assuming surface parallel flow using the digital elevation model from the Greenland Ice Mapping Project (GIMP DEM, NSIDC 0645) by citet:howat_2014_greenland,NSIDC_0645. The operational interferometric post processing (IPP) chain citep:dall_2015_ice,kusk_2018_system, developed at the Technical University of Denmark (DTU) Space and upgraded with offset tracking for ESA’s Climate Change Initiative (CCI) Greenland project, was employed to derive the surface movement. The Sentinel-1 satellites have a repeat cycle of 12 days, and due to their constellation, each track has a twelve-day repeat cycle. We produce a Greenland wide product that spans two repeat cycles of Sentinel-1 A. The product is a mosaic of all the ice velocity maps based on 12 day pairs produced from all the tracks from Sentinel-1 A and B covering Greenland during those two cycles. The product thus has a total time span of 24 days. Twelve-day pairs are also included in each mosaic from track 90, 112 and 142 covering the ice sheet margin in the south as well as other tracks on an irregular basis in order to increase the spatial resolution. citet:rathmann_2017_highly and citet:vijay_2019_resolving have exploited the high temporal resolution of the product to investigate dynamics of glaciers. The maps are available from 2016-09-13 and onward, are updated regularly, and are available from http://promice.org.
+We use ESA Sentinel-1 synthetic aperture radar (SAR) data to derive ice velocity maps covering the Greenland Ice Sheet margin using offset tracking citep:strozzi_2002_glacier assuming surface parallel flow using the digital elevation model from the Greenland Ice Mapping Project (GIMP DEM, NSIDC 0645) by citet:howat_2014_greenland,NSIDC_0645. The operational interferometric postprocessing (IPP) chain citep:dall_2015_ice,kusk_2018_system, developed at the Technical University of Denmark (DTU) Space and upgraded with offset tracking for ESA’s Climate Change Initiative (CCI) Greenland project, was employed to derive the surface movement. The Sentinel-1 satellites have a repeat cycle of 12 days, and due to their constellation, each track has a twelve-day repeat cycle. We produce a Greenland-wide product that spans two repeat cycles of Sentinel-1A. The product is a mosaic of all the ice velocity maps based on 12 day pairs produced from all the tracks from Sentinel-1A and 1B covering Greenland during those two cycles. The product thus has a total time span of 24 days. Twelve-day pairs are also included in each mosaic from track 90, 112 and 142 covering the ice sheet margin in the south as well as other tracks on an irregular basis in order to increase the spatial resolution. citet:rathmann_2017_highly and citet:vijay_2019_resolving have exploited the high temporal resolution of the product to investigate dynamics of glaciers. The maps are available from 2016-09-13 and onward, are updated regularly, and are available from http://promice.org.
 
 
 ** Software
@@ -8286,7 +8273,7 @@ This document probably uses code - python, octave, and/or R. Below I provide the
 #+END_SRC
 
 #+RESULTS:
-: Org mode version 9.3.6 (9.3.6-71-g7684b5-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20200518/)
+: Org mode version 9.3.6 (9.3.6-75-gb614ed-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20200525/)
 
 *** Bash
 #+BEGIN_SRC bash :results verbatim :eval no-export
