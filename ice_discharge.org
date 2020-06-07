@@ -629,7 +629,7 @@ Transparency in data and methodology are critical to move beyond a focus of esti
 
 
 #+BEGIN_acknowledgements
-We thank contributors and co-authors of previous versions of this paper, and the reviewers for their constructive input that helped improve the paper. Sentinel ice velocity maps were produced from Copernicus Sentinel-1 image data, processed by ESA data as part of PROMICE, and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org.
+We thank contributors and co-authors of previous versions of this paper, and the reviewers and editors for their constructive input that helped improve the paper. Sentinel ice velocity maps were produced from Copernicus Sentinel-1 image data, processed by ESA data as part of PROMICE, and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org.
 #+END_acknowledgements
 
 #+BEGIN_financialsupport
@@ -4895,7 +4895,7 @@ NW increase: Date
 1996-12-31     89.202549
 1997-12-31     89.838192
 1998-12-31     91.811471
-1999-12-31     89.468425
+    1999-12-31     89.468425
 2000-12-31     90.763890
 2001-12-31     90.737043
 2002-12-31     91.951441
