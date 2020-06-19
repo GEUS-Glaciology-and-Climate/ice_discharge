@@ -1,31 +1,33 @@
 
-* Greenland Ice Sheet solid ice discharge from 1986 through 2019
+* Greenland Ice Sheet solid ice discharge from 1986 through March 2020
 
-This is the source for "Greenland Ice Sheet solid ice discharge from 1986 through 2019" and previous and subsequent versions. 
-+ The original paper is located at [[http://dx.doi.org/10.5194/essd-11-769-2019][doi:10.5194/essd-11-769-2019]].
-+ The data sets are located at [[http://dx.doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
+This is the source for "Greenland Ice Sheet solid ice discharge from 1986 through March 2020" and previous and subsequent versions.
 
-GitHub [[https://github.com/mankoff/ice_discharge/issues?utf8=%E2%9C%93&q=is%3Aissue][issues]] are used to collect suggested improvements to the paper, problems that made it through review, and mention of similar papers that have been published since this was accepted.
++ The latest version (V2) of the paper is at [[https://doi.org/10.5194/essd-12-1367-2020][doi: 10.5194/essd-12-1367-2020]]
++ The original version (V1) of the paper is located at [[http://dx.doi.org/10.5194/essd-11-769-2019][doi:10.5194/essd-11-769-2019]]
 
-The [[https://github.com/mankoff/ice_discharge/tree/10.5194/essd-11-769-2019][initial commit]] is the published paper. The [[https://github.com/mankoff/ice_discharge/tree/master][master branch]] contains any updates from the initial publication. Differences between the two can be seen in this [[https://github.com/mankoff/ice_discharge/compare/10.5194/essd-11-769-2019...master][diff]].
++ The datasets are located at [[http://dx.doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
+
+The source for this work is hosted on GitHub at https://github.com/mankoff/ice_discharge. GitHub [[https://github.com/mankoff/ice_discharge/issues?utf8=%E2%9C%93&q=is%3Aissue][issues]] are used to collect suggested improvements to the paper, problems that made it through review, and mention of similar papers that have been published since this was accepted. The work may be under be under active development, including updating data (and therefore tables) within the source document.
++ This [[https://github.com/mankoff/ice_discharge/compare/10.5194/essd-12-1367-2020...master][diff]] shows changes between the latest version (V2) of the paper and the current (active) development version.
++ The source for V2 can be viewed at https://github.com/mankoff/ice_discharge/tree/10.5194/essd-12-1367-2020
++ The source for V1 can be viewed at https://github.com/mankoff/ice_discharge/tree/10.5194/essd-11-769-2019
 
 * Citation
 
 #+BEGIN_EXAMPLE
-@article{mankoff_2019_ice,
-  doi = {10.5194/essd-11-769-2019},
-  url = {https://doi.org/10.5194/essd-11-769-2019},
-  year = {2019},
-  volume = 11,
+@article{mankoff_2020_ice,
+  doi = {10.5194/essd-12-1367-2020}
+  url = {https://doi.org/10.5194/essd-12-1367-2020},
+  year = {2020},
+  volume = 12,
   issue = 2,
-  pages = {769 -- 786},
+  pages = {1367 -- 1383},
   publisher = {Copernicus {GmbH}},
-  author = {Kenneth D. Mankoff and William Colgan and Anne Solgaard and 
-            Nanna B. Karlsson and Andreas P. Ahlstrøm and Dirk van As 
-            and Jason E. Box and Shfaqat Abbas Khan and Kristian K. 
-            Kjeldsen and Jeremie Mouginot and Robert S. Fausto},
+  author = {Kenneth D. Mankoff and Anne Solgaard and William Colgan and 
+            Andreas P. Ahlstrøm and Shfaqat Abbas Khan and Robert S. Fausto},
   title = {{G}reenland {I}ce {S}heet solid ice discharge 
-           from 1986 through 2017},
+           from 1986 through March 2020},
   journal = {Earth System Science Data}
 }
 #+END_EXAMPLE
