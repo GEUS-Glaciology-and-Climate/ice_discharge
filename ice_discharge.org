@@ -794,16 +794,8 @@ We do not have a solution for the issues brought up here, except to discuss them
 
 *** Invalid thickness
 
-# #+CALL: load_data()
-# src_jupyter-python[:session discharge :eval no-export]{vel.shape[0]} {{{results(=5829=)}}}
-# src_jupyter-python[:session discharge :eval no-export]{(th['thick']>20).sum()} {{{results(=5194=)}}}
-# src_jupyter-python[:session discharge :eval no-export]{(th['thick']<=20).sum()} {{{results(=635=)}}}
-# src_jupyter-python[:session discharge ]{np.round((th['thick']<=20).sum()/(th['thick']>20).sum()*100).astype(np.int)} {{{results(=12=)}}}
-
-We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of 5829 pixels, 5194 have valid thickness, and 635 (src_calc{round((635/5194)*100)} {{{results(=12=)}}} %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
-
 #+header: :eval no-export
-#+NAME: tab:thick_adjust
+#+NAME: tab_thick_adjust
 #+BEGIN_SRC jupyter-python :display text/org :exports results :results raw drawer :session thick_adj :noweb yes :post rem_colon(data=*this*)
 
 <<load_data>>
@@ -817,14 +809,16 @@ df.index = [_.capitalize() for _ in df.index]
 df.rename({"Min" : "Minimum", "Max" : "Maximum", "Std" : "SD"}, axis="rows", inplace=True)
 
 print("#+LATEX_ATTR: :placement [!h]")
-print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the \"count\" row\label{tab:thick_adjust}.")
+print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the \"count\" row\label{tab_thick_adjust}.")
 df.round(0).astype(np.int)
 #+END_SRC
 
-#+RESULTS: tab:thick_adjust
+#+CALL: tab_thick_adjust[:session discharge :eval no-export]()
+
+#+RESULTS:
 :RESULTS:
 #+LATEX_ATTR: :placement [!h]
-#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab:thick_adjust}.
+#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab_thick_adjust}.
 |         |   Good pixels |   Bad pixels |
 |---------+---------------+--------------|
 | Count   |          5205 |          624 |
@@ -838,19 +832,19 @@ df.round(0).astype(np.int)
 :END:
 
 
+**** Set Header Args                                      :ignore:
+:PROPERTIES:
+:header-args:jupyter-python+: :eval no-export :session discharge
+:END:
 
-# NOTE: Manual cleaning performed for above table
+We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of src_jupyter-python{vel.shape[0]} {{{results(=5829=)}}} pixels, src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5205=)}}} have valid thickness, and src_jupyter-python{th['bad'].sum()} {{{results(=624=)}}} (src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(np.int)} {{{results(=11=)}}} %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
 
-# src_jupyter-python[:session thick_adj]{th['gates'].unique().size} {{{results(=267=)}}}
-# src_jupyter-python[:session thick_adj]{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=179=)}}}
-# src_jupyter-python[:session thick_adj]{(th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size} {{{results(=0.6704119850187266=)}}}
-# src_jupyter-python[:session thick_adj]{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=88=)}}}
-# src_jupyter-python[:session thick_adj]{(th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size} {{{results(=0.3295880149812734=)}}}
-# src_jupyter-python[:session thick_adj]{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=64=)}}}
-# src_jupyter-python[:session thick_adj]{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=62=)}}}
-# src_jupyter-python[:session thick_adj]{(th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size} {{{results(=0.23220973782771537=)}}}
+**** Set Header Args                                      :ignore:
+:PROPERTIES:
+:header-args:jupyter-python+: :eval no-export :session thick_adj
+:END:
 
-When aggregating by gate, there are 267 gates. Of these, 179 (67 %) have no bad pixels and 88 (33 %) have some bad pixels, 64 have > 50 % bad pixels, and 62 (23 %) are all bad pixels.
+When aggregating by gate, there are src_jupyter-python{th['gates'].unique().size} {{{results(=267=)}}} gates. Of these, src_jupyter-python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=179=)}}} (src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=67=)}}} %) have no bad pixels and src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=88=)}}} (src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=33=)}}} %) have some bad pixels, src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=64=)}}} have > 50 % bad pixels, and src_jupyter-python{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=62=)}}} (src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=23=)}}} %) are all bad pixels.
 
 We adjust these thickness using a poor fit (correlation coefficient: 0.3) of the log$_{10}$ of the ice speed to thickness where the relationship is known (thickness > 20 m). We set errors equal to one half the thickness (i.e. \(\sigma_H = \pm 0.5 \, H\)). We also test the sensitivity of this treatment to simpler treatments, and have the following five categories:
 
