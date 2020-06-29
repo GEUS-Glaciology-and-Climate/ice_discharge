@@ -130,6 +130,7 @@ After updates, re-run make, and then...
   + Executing all blocks (without =:eval no=) using =C-c C-v C-b= or (org-babel-execute-buffer)
 + Review and commit changes
 + Re-run the =workflow-update= so that exported files have the right git commit
+  + Review changes - there should be NONE
 + Push git
 + Distribute data and README.txt
 
@@ -145,12 +146,12 @@ After updates, re-run make, and then...
   (org-babel-map-src-blocks nil (if (org-babel-where-is-src-block-result) 
 				    (org-babel-insert-result "" '("replace"))))
   (save-buffer) ;; can now inspect "missing" results w/ git wdiff
-  (org-babel-tangle)
   (org-babel-execute-buffer) ;; this make take a few whiles
   (save-buffer)
+  (org-babel-tangle)
+  (org-latex-export-to-latex)
   (notifications-notify
-   :title "Review with 'git wdiff'"
-   :body "Note: :async results may not be finished"
+   :title "workflow-update done"
    :timeout 5000
    :transient t))
 #+END_SRC
@@ -171,7 +172,7 @@ A post-peer-review website is available at https://github.com/mankoff/ice_discha
 
 In this version the NSIDC 0478 ice velocity data citep:NSIDC_0478 have been updated from v2 to v2.1. These data are used for the baseline velocity and gate selection. Therefore the gate locations, number of gates, and number of gate pixels have all changed. Overall there are ~3 % fewer pixels, but only eight fewer gates, and some of the gate reduction is due to combining two gates on the same glacier that had a 1-pixel gap in the previous version. The effect of these changes is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates. Many gates remain the same pixel for pixel, but some do not meet the same inclusion criteria applied to these new baseline data, while some glaciers are included in this version that were not in the previous version. Many gates are also a few pixels narrower.
 
-The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet-wide differences between velocity products can be nontrivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=61=)}}} Sentinel 1 velocity maps from 2018 through the present (src_bash[:eval yes]{date --iso} {{{results(=2020-06-19=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
+The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet-wide differences between velocity products can be nontrivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=61=)}}} Sentinel 1 velocity maps from 2018 through the present (src_bash[:eval yes]{date --iso} {{{results(=2020-06-29=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
 
 We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate, region, or ice sheet wide) where coverage is < 50 % is discarded from the graphic (low-coverage data are still included in the downloadable data), and annual average is only computed if there are three or more samples in a year. 
 
@@ -251,9 +252,9 @@ done
 
 #+RESULTS:
 #+begin_example
-times  all:  497
+times  all:  498
 times 19XX:  108
-times 20XX:  389
+times 20XX:  390
 times 2000:  12
 times 2001:  9
 times 2002:  10
@@ -274,12 +275,12 @@ times 2016:  38
 times 2017:  81
 times 2018:  54
 times 2019:  30
-times 2020:  13
+times 2020:  14
 times 2021:  0
 times 2022:  0
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=497=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days in 2019 and 2020.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=498=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days in 2019 and 2020.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -401,7 +402,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : pixels:  5829
 : gates:  267
 : sectors:  173
-: times:  497
+: times:  498
 
 Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels making up src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv  | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates, assigned to src_bash[:eval yes]{cut -d"," -f9 tmp/dat_100_5000.csv  | tail -n +2 | sort | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
@@ -474,9 +475,9 @@ Name: 2005-01-01 00:00:00, dtype: float64
 | 2015-01-01 00:00:00 | 501.023 | 51.3678 |
 | 2016-01-01 00:00:00 | 496.7   | 50.9684 |
 | 2017-01-01 00:00:00 | 505.395 | 51.4267 |
-| 2018-01-01 00:00:00 | 498.124 | 50.7055 |
-| 2019-01-01 00:00:00 | 498.66  | 51.0551 |
-| 2020-01-01 00:00:00 | 506.189 | 52.0592 |
+| 2018-01-01 00:00:00 | 498.123 | 50.7055 |
+| 2019-01-01 00:00:00 | 498.587 | 51.0509 |
+| 2020-01-01 00:00:00 | 505.775 | 52.0816 |
 :END:
 
 Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 460 \(\pm\) 49 Gt in 1986, has a minimum of 428 \(\pm\) 44 Gt in 1996, and increases to 443 \(\pm\) 44 in 2000 and further to 500 \(\pm\) 50 Gt/yr in 2005, after which annual discharge remains approximately steady at 483 to 505 \(\pm\) ~50 Gt/yr during the 2005 through 2019 period.
@@ -504,8 +505,8 @@ print("\nSE max and last:", r['SE'].max(), '\n', r['SE'].iloc[-10:].describe())
 #+RESULTS:
 #+begin_example
 SE range:  136.76366666666667 164.1085 16.01311111111111 20.359714285714286
-SE %:  31.631849590920368
-NE,NO,NW %: 31.454893067281176
+SE %:  31.628395117762786
+NE,NO,NW %: 31.455184019482886
 
 NW increase
 : Date
@@ -529,19 +530,19 @@ NW increase
 2016-01-01    112.960036
 2017-01-01    115.462800
 2018-01-01    114.840773
-2019-01-01    109.598467
-2020-01-01    109.663308
+2019-01-01    109.599233
+2020-01-01    109.490071
 Freq: AS-JAN, Name: NW, dtype: float64
 
 SE max and last: 164.1085 
  count     10.000000
-mean     151.363737
-std        4.418037
+mean     151.291541
+std        4.261209
 min      145.708857
 25%      148.236707
-50%      150.319746
+50%      150.319507
 75%      153.157826
-max      160.706154
+max      160.071571
 Name: SE, dtype: float64
 #+end_example
 
@@ -581,8 +582,8 @@ Date
 2016-01-01    47.457857
 2017-01-01    39.541369
 2018-01-01    34.056364
-2019-01-01    36.010600
-2020-01-01    32.331538
+2019-01-01    36.010733
+2020-01-01    32.568929
 Freq: AS-JAN, Name: JAKOBSHAVN_ISBRAE, dtype: float64
 #+end_example
 
@@ -801,8 +802,8 @@ We do not have a solution for the issues brought up here, except to discuss them
 *** Invalid thickness
 
 #+header: :eval no-export
-#+NAME: tab_thick_adjust
-#+BEGIN_SRC jupyter-python :display text/org :exports results :results raw drawer :session thick_adj :noweb yes :post rem_colon(data=*this*)
+#+NAME: tab:thick_adjust
+#+BEGIN_SRC jupyter-python :display text/org :exports results :results value :session thick_adj :noweb yes
 
 <<load_data>>
 <<millan_2018>>
@@ -814,33 +815,25 @@ df['Bad pixels'] = vel_baseline.loc[th['bad']].describe()
 df.index = [_.capitalize() for _ in df.index]
 df.rename({"Min" : "Minimum", "Max" : "Maximum", "Std" : "SD"}, axis="rows", inplace=True)
 
-print("#+LATEX_ATTR: :placement [!h]")
-print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the \"count\" row\label{tab_thick_adjust}.")
+# print("#+LATEX_ATTR: :placement [!h]")
+# print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the \"count\" row\label{tab:thick_adjust}.")
 df.round(0).astype(np.int)
 #+END_SRC
 
-#+CALL: tab_thick_adjust[:session discharge :eval no-export]()
-
-#+RESULTS:
-:RESULTS:
+#+NAME: tab:thick_adjust
 #+LATEX_ATTR: :placement [!h]
-#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab_thick_adjust}.
-|         |   Good pixels |   Bad pixels |
-|---------+---------------+--------------|
-| Count   |          5205 |          624 |
-| Mean    |           857 |          272 |
-| SD      |          1117 |          239 |
-| Minimum |           100 |          100 |
-| 25%     |           236 |          130 |
-| 50%     |           506 |          181 |
-| 75%     |           995 |          291 |
-| Maximum |         10044 |         1505 |
-:END:
-
-**** Set Header Args                                      :ignore:
-:PROPERTIES:
-:header-args:jupyter-python+: :eval no-export :session thick_adj
-:END:
+#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab:thick_adjust}.
+#+RESULTS: tab:thick_adjust
+|         | Good pixels | Bad pixels |
+|---------+-------------+------------|
+| Count   |        5205 |        624 |
+| Mean    |         857 |        272 |
+| SD      |        1117 |        239 |
+| Minimum |         100 |        100 |
+| 25%     |         236 |        130 |
+| 50%     |         506 |        181 |
+| 75%     |         995 |        291 |
+| Maximum |       10044 |       1505 |
 
 # src_jupyter-python{vel.shape[0]} {{{results(=5829=)}}}
 # src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5205=)}}}
@@ -848,11 +841,6 @@ df.round(0).astype(np.int)
 # src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(np.int)} {{{results(=11=)}}}
 
 We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of 5829 pixels, 5205 have valid thickness, and 624 (11 %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
-
-**** Set Header Args                                      :ignore:
-:PROPERTIES:
-:header-args:jupyter-python+: :eval no-export :session thick_adj
-:END:
 
 # src_jupyter-python{th['gates'].unique().size} {{{results(=267=)}}}
 # src_jupyter-python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=179=)}}}
@@ -875,20 +863,9 @@ We adjust these thickness using a poor fit (correlation coefficient: 0.3) of the
 
 Table [[tab:thick_treatments]] shows the estimated baseline discharge to these four treatments:
 
-#+name: rem_colon
-#+BEGIN_SRC bash :var data="" :results drawer :eval no-export
-# echo "${data}"
-echo "${data}" | sed 's/:\ #+/#+/'
-#+END_SRC
-
-#+RESULTS: rem_colon
-:results:
-
-:end:
-
 #+header: :eval no-export
 #+NAME: tab:thick_treatments
-#+BEGIN_SRC jupyter-python :session thick_treat :exports results :results drawer :post rem_colon(data=*this*)
+#+BEGIN_SRC jupyter-python :session thick_treat :exports results :results value
 <<load_data>>
 <<millan_2018>>
 <<adjust_thickness>>
@@ -904,33 +881,23 @@ df.loc[300] = D_tmp['300'] + ' \pm ' + D_tmp['300_err']
 df.loc[400] = D_tmp['400'] + ' \pm ' + D_tmp['400_err']
 df.loc['Fit'] = D_tmp['fit'] + ' \pm ' + D_tmp['fit_err']
 df.index.name = 'Treatment'
-
-print('#+NAME: tab:thick_treatments')
-print('#+LATEX_ATTR: :placement [!h]')
-print('#+CAPTION: Effect of different thickness adjustments on baseline discharge\label{tab:thick_treatments}')
-
+# print("#+NAME: tab:thick_treatments")
+# print('#+LATEX_ATTR: :placement [!h]')
+# print('#+CAPTION: Effect of different thickness adjustments on baseline discharge\label{tab:thick_treatments}')
 df
 #+END_SRC
 
-#+RESULTS: tab:thick_treatments
-:RESULTS:
 #+NAME: tab:thick_treatments
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Effect of different thickness adjustments on baseline discharge\label{tab:thick_treatments}
-| Treatment    | Discharge (Gt)   |
-|--------------+------------------|
-| NoAdj        | 472 \pm 49       |
-| NoAdj+Millan | 481 \pm 49       |
-| 300          | 489 \pm 49       |
-| 400          | 495 \pm 52       |
-| Fit          | 493 \pm 51       |
-:END:
-
-
-
-
-
-
+#+RESULTS: tab:thick_treatments
+| Treatment    | Discharge (Gt) |
+|--------------+----------------|
+| NoAdj        | 472 \pm 49     |
+| NoAdj+Millan | 481 \pm 49     |
+| 300          | 489 \pm 49     |
+| 400          | 495 \pm 52     |
+| Fit          | 493 \pm 51     |
 
 
 Finally, Figure [[fig:gate_map]] shows the geospatial locations, concentration, and speed of gates with and without bad pixels.
@@ -1088,17 +1055,6 @@ fi
 
 set -x # print commands to STDOUT before running them
 #+END_SRC
-
-*** Git Commit
-
-#+NAME: commit-hash
-#+BEGIN_SRC emacs-lisp :exports results :tangle no :eval no-export
-(shell-command-to-string "git describe --always --dirty='*'")
-#+END_SRC
-
-#+RESULTS: commit-hash
-: da21a05*
-
 
 ** Import Data
 :PROPERTIES:
@@ -3270,9 +3226,9 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 | 2015-12-31 00:00:00 |    482.949 | 490.579 | 7.62912 |
 | 2016-12-31 00:00:00 |     478.92 | 486.282 | 7.36139 |
 | 2017-12-31 00:00:00 |    486.199 |  493.32 | 7.12079 |
-| 2018-12-31 00:00:00 |    477.119 | 484.416 | 7.29695 |
-| 2019-12-31 00:00:00 |    478.724 |  486.23 | 7.50581 |
-| 2020-12-31 00:00:00 |    485.026 | 492.899 | 7.87309 |
+| 2018-12-31 00:00:00 |    477.118 | 484.415 | 7.29695 |
+| 2019-12-31 00:00:00 |    478.666 | 486.172 | 7.50637 |
+| 2020-12-31 00:00:00 |    484.601 | 492.508 | 7.90656 |
 
 
 **** Adjust thickness w thickness v. velocity fit.
@@ -3374,9 +3330,9 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 2015-12-31  490.578571  494.046676  3.468105
 2016-12-31  486.281638  489.673075  3.391437
 2017-12-31  493.319732  496.544638  3.224906
-2018-12-31  484.415917  487.662391  3.246474
-2019-12-31  486.229754  489.639942  3.410188
-2020-12-31  492.898651  496.462147  3.563496
+2018-12-31  484.415391  487.661865  3.246474
+2019-12-31  486.172344  489.583479  3.411135
+2020-12-31  492.508044  496.094916  3.586872
 #+end_example
 
 **** Table of thickness adjustments
@@ -3812,9 +3768,25 @@ D_all_fill_weight = D_all_fill_weight.T[STARTDATE:].T
 
 **** README
 
-#+BEGIN_SRC org :tangle ./out/README.txt :mkdirp ./out
-README for "Greenland Ice Sheet solid ice discharge from 1986 through March 2020"
+#+BEGIN_SRC bash :mkdirp ./out :eval no-export
+cat << EOF > ./out/README.txt
+<<README>>
+EOF
 
+cat << EOF | cut -c2- >> ./out/README.txt 
+ * Version
+
+ This version of this README generated from git commit: $(git describe --always)
+EOF
+
+#+END_SRC
+
+#+RESULTS:
+
+#+NAME: README
+#+BEGIN_SRC org
+README for "Greenland Ice Sheet solid ice discharge from 1986 through March 2020"
+ 
 Reference paper: doi:10.5194/essd-12-1367-2020  https://doi.org/10.5194/essd-12-1367-2020
 Data Citations: doi:10.22008/promice/data/ice_discharge
 
@@ -3859,21 +3831,16 @@ This data set is made up of the following files
 |---------------------+------------------------------------------------------------------------|
 | gate_meta.csv       | Metadata for each gate                                                 |
 
-
 D and err data have units [Gt yr-1].
 Coverage is in range [0, 1]
 
-,** Gates
+,** Surface elevation change
 
-| Filename   | Description                                   |
-|------------+-----------------------------------------------|
-| gates.kml  | KML file of gate location and metadata        |
-| gates.gpkg | GeoPackage file of gate location and metadata |
+See doi:10.22008/promice/data/DTU/surface_elevation_change/v1.0.0
 
-,** Notes
+,** Code
 
-This version of this README generated from git commit: 
-<<commit-hash()>>
+See https://github.com/mankoff/ice_discharge
 
 #+END_SRC
 
@@ -4035,7 +4002,7 @@ ds.attrs["title"] = "Greenland discharge"
 ds.attrs["summary"] = "Greenland discharge"
 ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
 # ds.attrs["Conventions"] = "CF-1.8"
-ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always",  "--dirty=*"]).strip().decode('UTF-8')
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
@@ -4124,7 +4091,7 @@ ds.attrs["title"] = "Greenland discharge"
 ds.attrs["summary"] = "Greenland discharge per region"
 ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
 # ds.attrs["Conventions"] = "CF-1.8"
-ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always",  "--dirty=*"]).strip().decode('UTF-8')
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
@@ -4213,7 +4180,7 @@ ds.attrs["title"] = "Greenland discharge"
 ds.attrs["summary"] = "Greenland discharge per sector"
 ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
 # ds.attrs["Conventions"] = "CF-1.8"
-ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always",  "--dirty=*"]).strip().decode('UTF-8')
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
@@ -4310,7 +4277,7 @@ ds.attrs["title"] = "Greenland discharge"
 ds.attrs["summary"] = "Greenland discharge per gate"
 ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
 # ds.attrs["Conventions"] = "CF-1.8"
-ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always",  "--dirty=*"]).strip().decode('UTF-8')
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
@@ -4376,14 +4343,14 @@ out
 #+RESULTS:
 |                       |       D |       x |            y |
 |-----------------------+---------+---------+--------------|
-| HELHEIMGLETSCHER      | 34.4688 |  304157 | -2.57653e+06 |
-| JAKOBSHAVN_ISBRAE     | 32.2649 | -182123 |  -2.2672e+06 |
-| KANGERLUSSUAQ         | 27.5777 |  487300 | -2.28998e+06 |
-| ZACHARIAE_ISSTROM     | 15.9557 |  488407 | -1.10017e+06 |
-| KOGE_BUGT_C           | 15.4499 |  184648 | -2.72185e+06 |
-| NIOGHALVFJERDSFJORDEN |  13.431 |  439187 |  -1.0736e+06 |
-| RINK_ISBRAE           | 12.5077 | -224240 | -1.97637e+06 |
-| PETERMANN_GLETSCHER   | 11.9372 | -261888 |      -996839 |
+| HELHEIMGLETSCHER      |  33.964 |  304157 | -2.57653e+06 |
+| JAKOBSHAVN_ISBRAE     | 32.4733 | -182123 |  -2.2672e+06 |
+| KANGERLUSSUAQ         |   27.59 |  487300 | -2.28998e+06 |
+| ZACHARIAE_ISSTROM     | 15.9699 |  488407 | -1.10017e+06 |
+| KOGE_BUGT_C           | 15.4926 |  184648 | -2.72185e+06 |
+| NIOGHALVFJERDSFJORDEN | 13.4337 |  439187 |  -1.0736e+06 |
+| RINK_ISBRAE           | 12.4917 | -224240 | -1.97637e+06 |
+| PETERMANN_GLETSCHER   | 11.9438 | -261888 |      -996839 |
 
 **** Prep data
 
@@ -4790,9 +4757,9 @@ Year
 2015  501.302683  51.406852
 2016  496.969743  51.063849
 2017  504.870430  51.345733
-2018  496.209979  50.469782
-2019  498.644843  51.057553
-2020  506.155137  52.048609
+2018  496.209441  50.469749
+2019  498.585011  51.054553
+2020  505.766791  52.070506
 #+end_example
 
 
@@ -4952,7 +4919,7 @@ tbl
 2017    78 (11)     83 (9)     29 (9)     27 (7)    115 (9)   153 (12)    20 (15)
 2018    79 (11)     76 (9)     30 (9)     27 (7)    114 (9)   150 (12)    19 (15)
 2019    79 (11)     78 (9)     30 (9)     27 (8)    110 (9)   156 (12)    19 (16)
-2020    84 (11)     75 (9)     30 (9)     26 (7)    110 (9)   161 (12)    20 (15)
+2020    84 (11)     75 (9)     30 (9)     26 (7)    110 (9)   160 (12)    20 (15)
 #+end_example
 
 *** Region & Catchment Contributions
@@ -4984,8 +4951,8 @@ print(err.values)
 #+END_SRC
 
 #+RESULTS:
-: [487.28624645]
-: [49.42870413]
+: [487.30513919]
+: [49.4332431]
 
 
 
@@ -5049,9 +5016,9 @@ df
 | 2015-12-31 00:00:00 | 501.415 | 51.4288 |
 | 2016-12-31 00:00:00 | 496.991 | 51.0677 |
 | 2017-12-31 00:00:00 | 504.876 | 51.3459 |
-| 2018-12-31 00:00:00 | 496.349 | 50.4818 |
-| 2019-12-31 00:00:00 | 498.645 | 51.0576 |
-| 2020-12-31 00:00:00 | 506.155 | 52.0486 |
+| 2018-12-31 00:00:00 | 496.348 | 50.4818 |
+| 2019-12-31 00:00:00 | 498.585 | 51.0546 |
+| 2020-12-31 00:00:00 | 505.767 | 52.0705 |
 :END:
 
 
@@ -5077,8 +5044,8 @@ df
 #+begin_example
 D SE described:
  count     35.000000
-mean     148.488575
-std        7.525634
+mean     148.470291
+std        7.497029
 min      136.674352
 25%      142.895520
 50%      148.159615
@@ -5087,10 +5054,10 @@ max      164.063769
 Name: SE, dtype: float64
 
 D SE err percent: count    35.000000
-mean     11.933400
-std       0.385930
+mean     11.934493
+std       0.385348
 min      11.249069
-25%      11.712317
+25%      11.723047
 50%      11.885803
 75%      12.166437
 max      13.170453
@@ -5130,9 +5097,9 @@ Name: SE, dtype: float64
 | 2015-12-31 00:00:00 | 150.322 | 17.7005 |
 | 2016-12-31 00:00:00 | 145.14  | 17.251  |
 | 2017-12-31 00:00:00 | 152.532 | 17.7072 |
-| 2018-12-31 00:00:00 | 149.589 | 17.4308 |
-| 2019-12-31 00:00:00 | 155.627 | 18.3665 |
-| 2020-12-31 00:00:00 | 160.745 | 18.8264 |
+| 2018-12-31 00:00:00 | 149.588 | 17.4308 |
+| 2019-12-31 00:00:00 | 155.554 | 18.3615 |
+| 2020-12-31 00:00:00 | 160.179 | 18.8176 |
 :END:
 
 **** Contribution from SE relative to the total
@@ -5155,8 +5122,8 @@ print(D_SE/D_rest*100)
 #+RESULTS:
 #+begin_example
 count    35.000000
-mean     31.695871
-std       1.341079
+mean     31.693054
+std       1.341161
 min      29.203638
 25%      30.794159
 50%      31.541345
@@ -5197,9 +5164,9 @@ Date
 2015-12-31    29.979573
 2016-12-31    29.203638
 2017-12-31    30.211701
-2018-12-31    30.137826
-2019-12-31    31.210052
-2020-12-31    31.758140
+2018-12-31    30.137759
+2019-12-31    31.199078
+2020-12-31    31.670583
 Freq: A-DEC, dtype: float64
 #+end_example
 
@@ -5233,10 +5200,10 @@ print("\nNW increase:", D['NW'])
 #+begin_example
 
 NO+NE+NW: min    132.634329
-max    171.927947
+max    171.927929
 dtype: float64
 
-NO+NE+NW%: mean    31.412315
+NO+NE+NW%: mean    31.412663
 dtype: float64
 
 NW increase: Date
@@ -5273,8 +5240,8 @@ NW increase: Date
 2016-12-31    112.402131
 2017-12-31    115.429409
 2018-12-31    114.499808
-2019-12-31    109.648593
-2020-12-31    109.701089
+2019-12-31    109.649862
+2020-12-31    109.550732
 Freq: A-DEC, Name: NW, dtype: float64
 #+end_example
 
@@ -5299,11 +5266,11 @@ df
 :RESULTS:
 : Jakobshavn described:
 :  count    35.000000
-: mean     36.328716
-: std       9.408617
+: mean     36.334674
+: std       9.406034
 : min      22.670240
 : 25%      26.806800
-: 50%      35.953171
+: 50%      35.953251
 : 75%      45.088111
 : max      50.865673
 : Name: JAKOBSHAVN_ISBRAE, dtype: float64
@@ -5342,12 +5309,12 @@ df
 | 2016-12-31 00:00:00 | 48.3417 | 4.79277 |
 | 2017-12-31 00:00:00 | 39.5205 | 3.95575 |
 | 2018-12-31 00:00:00 | 33.8476 | 3.30606 |
-| 2019-12-31 00:00:00 | 35.9532 | 3.48251 |
-| 2020-12-31 00:00:00 | 32.2649 | 3.15109 |
+| 2019-12-31 00:00:00 | 35.9533 | 3.48254 |
+| 2020-12-31 00:00:00 | 32.4733 | 3.17192 |
 :END:
 
 *** Discharge Time Series - Sectors
-#+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export :async yes
+#+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
@@ -5505,7 +5472,6 @@ tbl
 #+END_SRC
 
 #+RESULTS:
-:results:
 #+begin_example
      JAKOBSHAVN_ISBRAE (%) HELHEIMGLETSCHER (%) KANGERLUSSUAQ (%) KOGE_BUGT_C (%)  \
 1986                 0 (0)               33 (6)            16 (7)          16 (5)   
@@ -5579,9 +5545,8 @@ tbl
 2017               15 (10)          13 (6)                    13 (5)                  12 (4)  
 2018               16 (10)          12 (7)                    13 (5)                  12 (4)  
 2019               16 (10)          13 (7)                    14 (5)                  12 (4)  
-2020               16 (10)          13 (7)                    13 (5)                  12 (4)  
+2020               16 (10)          12 (7)                    13 (5)                  12 (4)  
 #+end_example
-:end:
 
 :END:
 :END:
@@ -5946,7 +5911,7 @@ Compute the annual average for all GIS and some other glaciers using two methods
 
 NOTE - do this with the "rawest" velocity product prior to any interpolation.
 
-#+BEGIN_SRC jupyter-python :session avgmethod :exports both :results raw drawer :display text/org :async yes
+#+BEGIN_SRC jupyter-python :session avgmethod :exports both :results raw drawer :display text/org
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -6268,7 +6233,7 @@ Band 1 Block=7585x1 Type=Float32, ColorInterp=Gray
 ***** md5sum hashes of all data
 
 #+NAME: QC_md5sum_NSIDC_0478
-#+BEGIN_SRC bash :results table :eval no-export :async yes
+#+BEGIN_SRC bash :results table :eval no-export
 cd ${DATADIR}/MEaSUREs/NSIDC-0478.002
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
@@ -6443,7 +6408,7 @@ find . -type f | LC_ALL=C sort | parallel --keep-order "pax -w -d | md5sum"
 ***** List of times, and count of folders at that time
 
 #+NAME: QC_times_NSIDC_0646
-#+BEGIN_SRC bash :results table :eval no-export :async yes
+#+BEGIN_SRC bash :results table :eval no-export
 find ${DATADIR}/MEaSUREs/NSIDC-0646.002/ -type d | rev | cut -d"_" -f1 | rev | grep -v NSIDC | sort | uniq -c
 #+END_SRC
 
@@ -6870,7 +6835,7 @@ Band 1 Block=256x256 Type=Float32, ColorInterp=Gray
 ***** md5sum hashes of all data
 
 #+NAME: QC_md5sum_NSIDC_0731
-#+BEGIN_SRC bash :results table :eval no-export :async yes
+#+BEGIN_SRC bash :results table :eval no-export
 cd ${DATADIR}/MEaSUREs/NSIDC-0731.001
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
@@ -7047,6 +7012,7 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 ./Sentinel1_IV_maps/IV_20200424_20200518.nc
 ./Sentinel1_IV_maps/IV_20200506_20200530.nc
 ./Sentinel1_IV_maps/IV_20200518_20200611.nc
+./Sentinel1_IV_maps/IV_20200530_20200623.nc
 #+end_example
 
 ***** File Metadata
@@ -7229,7 +7195,6 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 #+END_SRC
 
 #+RESULTS: QC_md5sum_Sentinel1
-| 57b895468c2f11003a1c668523ab79a0 | ./Sentinel1_IV_maps/IV_20191120_20191214.nc |
 | e6151be67849e627925026f44e3bc714 | ./Sentinel1_IV_maps/IV_20191202_20191226.nc |
 | 12e58d2bf6c6f72fcca6a8c633f103ec | ./Sentinel1_IV_maps/IV_20191214_20200107.nc |
 | e58d39fd05f568e476becccc244b5b04 | ./Sentinel1_IV_maps/IV_20191226_20200119.nc |
@@ -7245,6 +7210,7 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 | 573da1efa71ab5d35bee0151abdffd8d | ./Sentinel1_IV_maps/IV_20200424_20200518.nc |
 | df4546c9b8d675dd6c1c68e98791b8cb | ./Sentinel1_IV_maps/IV_20200506_20200530.nc |
 | 13e87eb8832e8eab244be19ad61f0454 | ./Sentinel1_IV_maps/IV_20200518_20200611.nc |
+| 6df9ffd18c29dfe5a029eaca8f1814a1 | ./Sentinel1_IV_maps/IV_20200530_20200623.nc |
 
 ** Results
 *** GIS
@@ -7648,57 +7614,58 @@ cat ${FILE}
 | 2018-10-08 |             491.561 |
 | 2018-10-15 |             507.443 |
 | 2018-10-16 |             502.935 |
-| 2018-10-20 |             497.805 |
-| 2018-11-01 |             499.214 |
-| 2018-11-13 |             498.762 |
-| 2018-11-25 |             496.405 |
-| 2018-12-07 |             493.397 |
-| 2018-12-15 |             496.359 |
-| 2018-12-19 |             497.227 |
-| 2018-12-31 |             497.321 |
-| 2019-01-12 |             497.997 |
-| 2019-01-24 |             498.651 |
-| 2019-02-05 |             498.112 |
-| 2019-02-17 |              497.64 |
-| 2019-03-01 |             497.339 |
-| 2019-03-13 |             496.045 |
-| 2019-03-25 |             493.515 |
-| 2019-04-05 |             494.901 |
-| 2019-04-18 |              499.19 |
-| 2019-04-30 |             504.089 |
-| 2019-05-12 |             500.955 |
-| 2019-05-24 |             503.227 |
-| 2019-06-05 |             505.103 |
-| 2019-06-17 |             509.586 |
-| 2019-06-29 |             508.324 |
-| 2019-07-11 |             509.275 |
-| 2019-07-23 |             501.498 |
-| 2019-08-04 |             495.011 |
-| 2019-08-16 |             485.961 |
-| 2019-08-28 |             488.981 |
-| 2019-09-09 |             486.735 |
-| 2019-09-21 |             492.755 |
-| 2019-10-03 |              495.94 |
-| 2019-10-15 |             493.028 |
-| 2019-10-27 |             498.198 |
-| 2019-11-08 |             498.819 |
-| 2019-11-20 |             500.867 |
-| 2019-12-02 |               503.4 |
-| 2019-12-14 |             501.987 |
-| 2019-12-26 |             502.672 |
-| 2020-01-07 |             503.463 |
-| 2020-01-19 |             505.354 |
-| 2020-01-31 |             508.583 |
-| 2020-02-12 |             507.827 |
-| 2020-02-24 |             504.372 |
-| 2020-03-07 |               501.2 |
-| 2020-03-19 |             504.393 |
-| 2020-03-31 |             502.801 |
-| 2020-04-12 |              508.46 |
-| 2020-04-24 |             510.333 |
-| 2020-05-06 |             508.041 |
-| 2020-05-18 |             509.012 |
-| 2020-05-30 |             506.617 |
+| 2018-10-20 |             497.804 |
+| 2018-11-01 |             499.213 |
+| 2018-11-13 |              498.76 |
+| 2018-11-25 |             496.403 |
+| 2018-12-07 |             493.393 |
+| 2018-12-15 |             496.355 |
+| 2018-12-19 |             497.223 |
+| 2018-12-31 |             497.316 |
+| 2019-01-12 |             497.991 |
+| 2019-01-24 |             498.644 |
+| 2019-02-05 |             498.098 |
+| 2019-02-17 |             497.631 |
+| 2019-03-01 |             497.329 |
+| 2019-03-13 |             496.035 |
+| 2019-03-25 |             493.504 |
+| 2019-04-05 |             494.891 |
+| 2019-04-18 |             499.178 |
+| 2019-04-30 |             504.094 |
+| 2019-05-12 |             500.943 |
+| 2019-05-24 |             503.211 |
+| 2019-06-05 |             505.087 |
+| 2019-06-17 |             509.577 |
+| 2019-06-29 |             508.318 |
+| 2019-07-11 |             509.262 |
+| 2019-07-23 |             501.511 |
+| 2019-08-04 |             494.993 |
+| 2019-08-16 |             485.924 |
+| 2019-08-28 |             488.951 |
+| 2019-09-09 |              486.88 |
+| 2019-09-21 |             492.779 |
+| 2019-10-03 |             495.964 |
+| 2019-10-15 |              493.08 |
+| 2019-10-27 |             498.195 |
+| 2019-11-08 |             498.873 |
+| 2019-11-20 |             500.834 |
+| 2019-12-02 |             503.417 |
+| 2019-12-14 |             502.019 |
+| 2019-12-26 |             500.382 |
+| 2020-01-07 |             503.986 |
+| 2020-01-19 |             505.003 |
+| 2020-01-31 |             508.846 |
+| 2020-02-12 |             507.999 |
+| 2020-02-24 |             504.269 |
+| 2020-03-07 |             501.675 |
+| 2020-03-19 |             504.953 |
+| 2020-03-31 |             503.302 |
+| 2020-04-12 |             508.566 |
+| 2020-04-24 |              510.83 |
+| 2020-05-06 |             507.939 |
+| 2020-05-18 |             505.822 |
+| 2020-05-30 |             502.944 |
+| 2020-06-11 |             504.722 |
 
 *** Regions
 #+BEGIN_SRC bash :results table :eval no-export
@@ -8102,56 +8069,57 @@ cat ${FILE}
 | 2018-10-15 | 80.188 | 79.886 | 29.956 | 27.816 | 113.807 | 156.758 | 19.031 |
 | 2018-10-16 | 79.884 | 79.266 | 29.976 | 27.851 | 113.969 | 153.521 | 18.467 |
 | 2018-10-20 | 78.551 | 78.883 | 29.779 | 27.824 |  114.27 | 150.023 | 18.474 |
-| 2018-11-01 | 79.227 | 78.982 | 30.348 | 27.821 | 113.331 | 150.998 | 18.508 |
-| 2018-11-13 | 80.392 | 76.226 | 30.326 | 27.609 | 113.148 |  152.42 | 18.641 |
-| 2018-11-25 | 78.608 |  75.01 | 30.185 | 27.819 | 113.606 | 152.202 | 18.975 |
-| 2018-12-07 | 79.371 | 74.221 | 30.309 | 27.854 | 112.553 | 150.071 | 19.019 |
-| 2018-12-15 | 80.623 |  75.11 | 30.393 | 27.837 | 112.745 | 150.125 | 19.526 |
-| 2018-12-19 | 81.249 | 75.555 | 30.435 | 27.828 | 112.841 | 150.148 | 19.171 |
-| 2018-12-31 | 79.866 | 75.378 | 30.362 | 27.948 | 112.953 | 151.239 | 19.575 |
-| 2019-01-12 | 79.503 | 73.995 | 30.392 | 27.955 | 112.979 | 153.118 | 20.056 |
-| 2019-01-24 | 78.812 | 73.388 | 30.392 | 28.124 | 113.167 | 154.473 | 20.296 |
-| 2019-02-05 | 80.131 |  72.58 | 30.361 | 27.911 | 112.807 | 154.288 | 20.035 |
-| 2019-02-17 | 78.201 | 73.919 | 30.219 |  28.01 | 113.249 |  154.42 | 19.621 |
-| 2019-03-01 | 79.419 | 73.286 | 30.219 | 27.967 | 112.873 | 153.585 |  19.99 |
-| 2019-03-13 | 77.429 | 72.438 | 30.173 | 28.135 | 113.074 | 154.495 | 20.302 |
-| 2019-03-25 | 77.158 | 73.532 | 30.275 |  28.09 | 112.492 | 151.438 |  20.53 |
-| 2019-04-05 | 77.192 | 73.147 | 30.246 | 28.281 | 111.351 | 154.291 | 20.392 |
-| 2019-04-18 | 78.418 | 73.377 | 30.254 | 28.391 | 111.072 |  156.78 | 20.899 |
-| 2019-04-30 | 78.907 | 74.236 | 30.107 | 28.262 | 114.882 | 157.069 | 20.627 |
-| 2019-05-12 | 79.466 | 75.609 | 30.193 | 28.312 | 111.829 | 155.104 | 20.442 |
-| 2019-05-24 | 77.938 | 77.759 |   30.4 | 28.172 | 113.492 | 155.063 | 20.403 |
-| 2019-06-05 | 78.134 | 79.989 | 30.666 | 28.448 | 112.697 | 155.095 | 20.074 |
-| 2019-06-17 | 78.692 | 81.184 | 30.824 | 28.511 | 113.903 | 155.937 | 20.534 |
-| 2019-06-29 | 78.675 | 81.714 | 30.966 | 28.526 | 112.299 | 156.175 | 19.969 |
-| 2019-07-11 | 78.228 | 85.003 | 30.925 | 28.489 | 111.293 | 156.056 | 19.282 |
-| 2019-07-23 | 78.062 | 83.494 | 30.798 | 28.214 | 106.803 | 155.545 | 18.582 |
-| 2019-08-04 | 77.285 | 80.996 | 30.748 | 28.073 | 104.765 | 155.709 | 17.434 |
-| 2019-08-16 | 75.459 | 80.244 | 30.378 |  27.13 | 102.749 | 153.551 |  16.45 |
-| 2019-08-28 | 77.479 | 82.006 | 29.701 | 26.749 | 103.345 |  153.21 | 16.491 |
-| 2019-09-09 |  76.44 |  81.55 | 29.509 | 25.982 | 103.695 | 152.696 | 16.864 |
-| 2019-09-21 | 79.202 | 81.311 | 29.623 | 25.346 | 102.768 | 157.511 | 16.994 |
-| 2019-10-03 | 80.152 | 80.595 | 29.643 | 25.554 | 104.428 | 157.669 | 17.898 |
-| 2019-10-15 | 78.976 | 80.651 | 29.772 | 25.522 | 104.408 | 155.849 |  17.85 |
-| 2019-10-27 | 79.747 | 80.114 | 29.912 | 25.765 | 107.424 | 157.129 | 18.107 |
-| 2019-11-08 | 79.983 | 78.964 | 29.867 | 25.586 | 108.061 | 157.741 | 18.618 |
-| 2019-11-20 |  80.77 | 78.338 | 29.954 |  25.92 | 107.293 | 159.865 | 18.727 |
-| 2019-12-02 | 81.305 | 77.815 | 30.006 | 26.006 | 109.579 | 159.413 | 19.276 |
-| 2019-12-14 | 81.877 | 77.179 | 30.035 | 25.897 | 109.116 | 158.585 | 19.299 |
-| 2019-12-26 | 81.323 | 77.181 |  30.11 | 25.836 | 110.061 | 158.894 | 19.267 |
-| 2020-01-07 | 82.041 | 76.184 | 30.049 |  25.99 | 110.691 | 158.815 | 19.692 |
-| 2020-01-19 | 84.009 | 74.983 | 30.181 | 26.047 | 109.231 | 160.739 | 20.164 |
-| 2020-01-31 | 85.681 | 75.142 | 30.198 | 25.953 | 109.827 | 161.564 | 20.218 |
-| 2020-02-12 | 85.337 | 74.373 | 30.178 | 26.063 | 110.013 | 161.553 |  20.31 |
-| 2020-02-24 | 83.867 | 74.048 |  30.02 | 26.076 | 110.123 | 160.142 | 20.096 |
-| 2020-03-07 | 84.041 | 73.197 | 30.264 | 26.214 | 109.354 | 158.064 | 20.066 |
-| 2020-03-19 | 83.363 | 74.048 | 30.198 | 26.231 | 108.947 | 161.388 | 20.218 |
-| 2020-03-31 | 82.382 | 73.278 | 30.343 | 26.336 |  108.71 | 160.929 | 20.822 |
-| 2020-04-12 | 85.282 | 74.069 | 30.336 | 26.361 | 109.406 | 162.145 | 20.861 |
-| 2020-04-24 | 84.673 | 74.594 | 30.213 | 26.471 | 111.166 | 162.774 |  20.44 |
-| 2020-05-06 | 84.942 | 75.857 | 30.226 | 26.535 | 109.212 | 161.019 |  20.25 |
-| 2020-05-18 | 83.803 | 76.778 | 30.387 |  26.66 | 110.424 | 160.566 | 20.395 |
-| 2020-05-30 | 83.683 | 77.325 | 30.514 | 26.614 | 108.519 | 159.482 | 20.481 |
+| 2018-11-01 | 79.227 | 78.982 | 30.348 | 27.821 | 113.331 | 150.997 | 18.508 |
+| 2018-11-13 | 80.392 | 76.226 | 30.326 | 27.609 | 113.148 | 152.419 | 18.641 |
+| 2018-11-25 | 78.608 |  75.01 | 30.185 | 27.819 | 113.606 |   152.2 | 18.975 |
+| 2018-12-07 | 79.371 | 74.221 | 30.309 | 27.854 | 112.553 | 150.067 | 19.019 |
+| 2018-12-15 | 80.623 |  75.11 | 30.393 | 27.837 | 112.745 | 150.121 | 19.526 |
+| 2018-12-19 | 81.249 | 75.555 | 30.435 | 27.828 | 112.841 | 150.144 | 19.171 |
+| 2018-12-31 | 79.866 | 75.378 | 30.362 | 27.947 | 112.953 | 151.234 | 19.575 |
+| 2019-01-12 | 79.503 | 73.995 | 30.392 | 27.954 | 112.979 | 153.112 | 20.056 |
+| 2019-01-24 | 78.812 | 73.388 | 30.392 | 28.124 | 113.167 | 154.466 | 20.296 |
+| 2019-02-05 | 80.131 |  72.58 | 30.361 | 27.911 | 112.807 | 154.281 | 20.028 |
+| 2019-02-17 | 78.201 | 73.919 | 30.219 |  28.01 | 113.249 | 154.412 | 19.621 |
+| 2019-03-01 | 79.419 | 73.286 | 30.219 | 27.966 | 112.873 | 153.576 |  19.99 |
+| 2019-03-13 | 77.429 | 72.438 | 30.173 | 28.135 | 113.074 | 154.485 | 20.302 |
+| 2019-03-25 | 77.158 | 73.532 | 30.275 | 28.089 | 112.492 | 151.428 |  20.53 |
+| 2019-04-05 | 77.193 | 73.147 | 30.246 | 28.282 | 111.351 | 154.279 | 20.392 |
+| 2019-04-18 | 78.418 | 73.377 | 30.254 |  28.39 | 111.072 | 156.768 | 20.899 |
+| 2019-04-30 | 78.908 | 74.236 | 30.107 | 28.261 | 114.898 | 157.056 | 20.627 |
+| 2019-05-12 | 79.468 | 75.609 | 30.193 | 28.312 | 111.829 |  155.09 | 20.442 |
+| 2019-05-24 | 77.942 | 77.759 |   30.4 |  28.17 |  113.49 | 155.048 | 20.403 |
+| 2019-06-05 | 78.138 | 79.989 | 30.666 | 28.447 | 112.692 |  155.08 | 20.074 |
+| 2019-06-17 | 78.697 | 81.184 | 30.824 |  28.51 | 113.901 | 155.926 | 20.534 |
+| 2019-06-29 | 78.681 | 81.714 | 30.966 | 28.527 | 112.304 | 156.158 | 19.969 |
+| 2019-07-11 | 78.235 | 85.003 | 30.925 | 28.486 | 111.286 | 156.038 | 19.289 |
+| 2019-07-23 |  78.07 | 83.494 | 30.798 | 28.216 | 106.811 | 155.526 | 18.595 |
+| 2019-08-04 | 77.286 | 80.996 | 30.748 | 28.072 | 104.768 |  155.69 | 17.434 |
+| 2019-08-16 | 75.465 | 80.234 | 30.376 | 27.129 | 102.736 |  153.53 | 16.453 |
+| 2019-08-28 | 77.481 | 82.006 | 29.698 | 26.747 | 103.327 | 153.195 | 16.497 |
+| 2019-09-09 | 76.441 |  81.55 | 29.507 | 25.981 |  103.69 | 152.845 | 16.866 |
+| 2019-09-21 | 79.203 | 81.315 | 29.623 |  25.35 | 102.775 | 157.519 | 16.995 |
+| 2019-10-03 | 80.153 | 80.597 | 29.643 | 25.553 | 104.437 | 157.684 | 17.898 |
+| 2019-10-15 | 78.961 | 80.655 | 29.772 | 25.521 | 104.469 |  155.85 | 17.853 |
+| 2019-10-27 | 79.747 | 80.122 | 29.912 | 25.764 |  107.43 | 157.114 | 18.107 |
+| 2019-11-08 | 79.983 | 78.975 | 29.872 | 25.585 | 108.056 | 157.785 | 18.616 |
+| 2019-11-20 |  80.77 | 78.338 | 29.954 | 25.919 | 107.297 | 159.829 | 18.727 |
+| 2019-12-02 | 81.302 | 77.822 | 30.006 | 26.006 | 109.562 | 159.441 | 19.279 |
+| 2019-12-14 | 81.911 | 77.185 | 30.035 | 25.897 | 109.111 | 158.578 | 19.303 |
+| 2019-12-26 | 81.574 | 77.181 |  30.11 | 25.837 | 110.044 | 156.358 | 19.278 |
+| 2020-01-07 | 82.391 | 76.169 | 30.049 | 25.984 | 110.817 | 158.884 | 19.692 |
+| 2020-01-19 | 84.015 | 74.374 | 30.174 | 26.053 | 109.218 | 161.004 | 20.164 |
+| 2020-01-31 | 85.765 | 75.131 |   30.2 | 25.953 | 109.821 | 161.757 | 20.218 |
+| 2020-02-12 | 85.333 | 74.372 | 30.185 | 26.063 |  109.97 | 161.767 |  20.31 |
+| 2020-02-24 | 83.836 | 74.063 | 30.021 | 26.069 | 110.104 | 160.081 | 20.096 |
+| 2020-03-07 | 84.065 | 73.162 | 30.273 |  26.21 | 109.438 | 158.462 | 20.066 |
+| 2020-03-19 | 83.469 | 74.006 | 30.198 | 26.236 |  109.02 | 161.806 | 20.218 |
+| 2020-03-31 | 82.686 | 73.274 | 30.343 | 26.342 | 108.837 | 160.985 | 20.834 |
+| 2020-04-12 | 85.268 | 74.066 | 30.335 | 26.366 | 109.535 | 162.109 | 20.888 |
+| 2020-04-24 | 84.676 | 74.591 | 30.201 |  26.48 | 111.186 | 163.246 | 20.451 |
+| 2020-05-06 | 84.926 | 75.868 |  30.22 | 26.555 | 109.132 | 161.189 | 20.049 |
+| 2020-05-18 | 83.809 | 76.789 | 30.392 | 26.691 | 110.052 | 157.733 | 20.356 |
+| 2020-05-30 | 83.581 | 77.692 | 30.486 | 26.666 | 108.164 | 156.013 | 20.342 |
+| 2020-06-11 | 84.956 | 78.662 | 30.551 |  26.82 | 107.567 | 155.966 |   20.2 |
 
 *** Some arbitrary glaciers
 #+BEGIN_SRC bash :results table :eval no-export
@@ -8601,27 +8569,28 @@ cut -d, -f$(echo $COLS|tr ' ' ',') ${FILE}
 | 2019-08-28 |           36.243 |            41.679 |           8.745 |            15.366 |
 | 2019-09-09 |           36.074 |            41.308 |           8.629 |            15.211 |
 | 2019-09-21 |           36.387 |            41.081 |           8.523 |            15.344 |
-| 2019-10-03 |           36.527 |            39.911 |           8.499 |            15.335 |
+| 2019-10-03 |           36.527 |            39.915 |           8.499 |            15.335 |
 | 2019-10-15 |           36.843 |            39.512 |           8.651 |            15.502 |
 | 2019-10-27 |           35.991 |            38.828 |           8.688 |            15.608 |
 | 2019-11-08 |           35.419 |            37.479 |           8.768 |            15.626 |
 | 2019-11-20 |           35.201 |             36.74 |            8.76 |            15.645 |
 | 2019-12-02 |           34.378 |            36.035 |           8.954 |            15.769 |
 | 2019-12-14 |           33.921 |            34.847 |            9.09 |            15.762 |
-| 2019-12-26 |           33.755 |            34.446 |           9.191 |            15.785 |
-| 2020-01-07 |           34.539 |            33.381 |           9.139 |            15.802 |
-| 2020-01-19 |           35.381 |            32.455 |           9.398 |            15.858 |
+| 2019-12-26 |           31.234 |            34.446 |           9.191 |            15.785 |
+| 2020-01-07 |           34.539 |            33.366 |           9.139 |            15.802 |
+| 2020-01-19 |           35.381 |            31.865 |           9.398 |            15.853 |
 | 2020-01-31 |            35.75 |            32.437 |           9.396 |            15.897 |
-| 2020-02-12 |           35.557 |            31.672 |           9.628 |            15.888 |
-| 2020-02-24 |            34.63 |            31.502 |           9.657 |            15.814 |
-| 2020-03-07 |           34.079 |            30.882 |           9.566 |            15.959 |
-| 2020-03-19 |           34.591 |            31.631 |            9.66 |            15.896 |
-| 2020-03-31 |            34.08 |            30.952 |           9.534 |            16.023 |
-| 2020-04-12 |           34.245 |            31.652 |           9.534 |            16.052 |
-| 2020-04-24 |            34.41 |            32.065 |           9.527 |            16.019 |
-| 2020-05-06 |           33.554 |            33.134 |           9.421 |            16.039 |
-| 2020-05-18 |           33.461 |            33.951 |           9.458 |            16.126 |
-| 2020-05-30 |           33.473 |            34.596 |           9.581 |            16.149 |
+| 2020-02-12 |           35.972 |            31.672 |           9.627 |            15.888 |
+| 2020-02-24 |           34.838 |            31.502 |           9.658 |            15.814 |
+| 2020-03-07 |           34.079 |            30.872 |           9.566 |            15.959 |
+| 2020-03-19 |           34.933 |            31.621 |            9.66 |            15.896 |
+| 2020-03-31 |            34.08 |            30.938 |           9.534 |            16.023 |
+| 2020-04-12 |           34.245 |             31.65 |           9.534 |            16.052 |
+| 2020-04-24 |            34.41 |            32.069 |           9.527 |            16.015 |
+| 2020-05-06 |           33.554 |            33.146 |           9.421 |            16.039 |
+| 2020-05-18 |           31.019 |            33.967 |           9.456 |            16.124 |
+| 2020-05-30 |             31.0 |            35.042 |           9.584 |             16.14 |
+| 2020-06-11 |           30.623 |            35.818 |           9.615 |            16.184 |
 
 
 * Meta                                                  :noexport:
@@ -8642,7 +8611,7 @@ This document probably uses code - python, octave, and/or R. Below I provide the
 #+END_SRC
 
 #+RESULTS:
-: Org mode version 9.3.7 (9.3.7-4-gba6ca7-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20200615/)
+: Org mode version 9.3.7 (9.3.7-8-g3ed035-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20200629/)
 
 *** Bash
 #+BEGIN_SRC bash :results verbatim :eval no-export
