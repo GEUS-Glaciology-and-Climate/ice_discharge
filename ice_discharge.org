@@ -124,9 +124,14 @@ To recreate this work
 + Tangle the embedded code blocks with =C-c C-v C-t= or (org-babel-tangle).
 + Execute =make= to run the contents of the [[#sec:makefile][Makefile]].
 
-After updates, re-run make, and also recreate RESULTS blocks with:
-+ Cleaning all result blocks with =C-u C-c C-v k= or (org-babel-remove-result-one-or-many), then
-+ Executing all blocks (without =:eval no=) using =C-c C-v C-b= or (org-babel-execute-buffer)
+After updates, re-run make, and then...
++ Run the =workflow-update= block below
+  + Cleaning all result blocks with =C-u C-c C-v k= or (org-babel-remove-result-one-or-many), then
+  + Executing all blocks (without =:eval no=) using =C-c C-v C-b= or (org-babel-execute-buffer)
++ Review and commit changes
++ Re-run the =workflow-update= so that exported files have the right git commit
++ Push git
++ Distribute data and README.txt
 
 # WARNING: infinite recursion if not ":eval no"
 #+header: :eval no
@@ -140,6 +145,7 @@ After updates, re-run make, and also recreate RESULTS blocks with:
   (org-babel-map-src-blocks nil (if (org-babel-where-is-src-block-result) 
 				    (org-babel-insert-result "" '("replace"))))
   (save-buffer) ;; can now inspect "missing" results w/ git wdiff
+  (org-babel-tangle)
   (org-babel-execute-buffer) ;; this make take a few whiles
   (save-buffer)
   (notifications-notify
@@ -831,20 +837,33 @@ df.round(0).astype(np.int)
 | Maximum |         10044 |         1505 |
 :END:
 
-
 **** Set Header Args                                      :ignore:
 :PROPERTIES:
-:header-args:jupyter-python+: :eval no-export :session discharge
+:header-args:jupyter-python+: :eval no-export :session thick_adj
 :END:
 
-We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of src_jupyter-python{vel.shape[0]} {{{results(=5829=)}}} pixels, src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5205=)}}} have valid thickness, and src_jupyter-python{th['bad'].sum()} {{{results(=624=)}}} (src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(np.int)} {{{results(=11=)}}} %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
+# src_jupyter-python{vel.shape[0]} {{{results(=5829=)}}}
+# src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5205=)}}}
+# src_jupyter-python{th['bad'].sum()} {{{results(=624=)}}}
+# src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(np.int)} {{{results(=11=)}}}
+
+We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of 5829 pixels, 5205 have valid thickness, and 624 (11 %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
 
 **** Set Header Args                                      :ignore:
 :PROPERTIES:
 :header-args:jupyter-python+: :eval no-export :session thick_adj
 :END:
 
-When aggregating by gate, there are src_jupyter-python{th['gates'].unique().size} {{{results(=267=)}}} gates. Of these, src_jupyter-python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=179=)}}} (src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=67=)}}} %) have no bad pixels and src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=88=)}}} (src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=33=)}}} %) have some bad pixels, src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=64=)}}} have > 50 % bad pixels, and src_jupyter-python{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=62=)}}} (src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=23=)}}} %) are all bad pixels.
+# src_jupyter-python{th['gates'].unique().size} {{{results(=267=)}}}
+# src_jupyter-python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=179=)}}}
+# src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=67=)}}}
+# src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=88=)}}}
+# src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=33=)}}}
+# src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=64=)}}}
+# src_jupyter-python{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=62=)}}}
+# src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=23=)}}}
+
+When aggregating by gate, there are 267 gates. Of these, 179 (67 %) have no bad pixels and 88 (33 %) have some bad pixels, 64 have > 50 % bad pixels, and 62 (23 %) are all bad pixels.
 
 We adjust these thickness using a poor fit (correlation coefficient: 0.3) of the log$_{10}$ of the ice speed to thickness where the relationship is known (thickness > 20 m). We set errors equal to one half the thickness (i.e. \(\sigma_H = \pm 0.5 \, H\)). We also test the sensitivity of this treatment to simpler treatments, and have the following five categories:
 
@@ -906,31 +925,6 @@ df
 | 400          | 495 \pm 52       |
 | Fit          | 493 \pm 51       |
 :END:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1094,6 +1088,17 @@ fi
 
 set -x # print commands to STDOUT before running them
 #+END_SRC
+
+*** Git Commit
+
+#+NAME: commit-hash
+#+BEGIN_SRC emacs-lisp :exports results :tangle no :eval no-export
+(shell-command-to-string "git describe --always --dirty='*'")
+#+END_SRC
+
+#+RESULTS: commit-hash
+: da21a05*
+
 
 ** Import Data
 :PROPERTIES:
@@ -3808,10 +3813,10 @@ D_all_fill_weight = D_all_fill_weight.T[STARTDATE:].T
 **** README
 
 #+BEGIN_SRC org :tangle ./out/README.txt :mkdirp ./out
-README for "Greenland Ice Sheet solid ice discharge from 1986 through 2019"
+README for "Greenland Ice Sheet solid ice discharge from 1986 through March 2020"
 
-Original Paper: doi:10.5194/essd-11-769-2019
-Original Data Citations: doi:10.22008/promice/data/ice_discharge
+Reference paper: doi:10.5194/essd-12-1367-2020  https://doi.org/10.5194/essd-12-1367-2020
+Data Citations: doi:10.22008/promice/data/ice_discharge
 
 Source: https://github.com/mankoff/ice_discharge
 
@@ -3865,13 +3870,11 @@ Coverage is in range [0, 1]
 | gates.kml  | KML file of gate location and metadata        |
 | gates.gpkg | GeoPackage file of gate location and metadata |
 
-,** Surface Elevation Change
+,** Notes
 
-The "surface_elevation_change" file set contains the surface elevation change data used in this work (DOI 10.22008/promice/data/DTU/surface_elevation_change/v1.0.0)
+This version of this README generated from git commit: 
+<<commit-hash()>>
 
-,** Code
-
-The "code" file set (DOI 10.22008/promice/data/ice_discharge/code/v0.0.1) contains the digital workbook that produced the data, the ESSD document text and figures, this README, and everything else associated with this work.
 #+END_SRC
 
 **** Gates
@@ -4032,7 +4035,7 @@ ds.attrs["title"] = "Greenland discharge"
 ds.attrs["summary"] = "Greenland discharge"
 ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
 # ds.attrs["Conventions"] = "CF-1.8"
-ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always",  "--dirty=*"]).strip().decode('UTF-8')
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
@@ -4121,7 +4124,7 @@ ds.attrs["title"] = "Greenland discharge"
 ds.attrs["summary"] = "Greenland discharge per region"
 ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
 # ds.attrs["Conventions"] = "CF-1.8"
-ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always",  "--dirty=*"]).strip().decode('UTF-8')
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
@@ -4210,7 +4213,7 @@ ds.attrs["title"] = "Greenland discharge"
 ds.attrs["summary"] = "Greenland discharge per sector"
 ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
 # ds.attrs["Conventions"] = "CF-1.8"
-ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always",  "--dirty=*"]).strip().decode('UTF-8')
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
@@ -4307,7 +4310,7 @@ ds.attrs["title"] = "Greenland discharge"
 ds.attrs["summary"] = "Greenland discharge per gate"
 ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
 # ds.attrs["Conventions"] = "CF-1.8"
-ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always",  "--dirty=*"]).strip().decode('UTF-8')
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
@@ -8653,6 +8656,30 @@ bash --version
 : 
 : This is free software; you are free to change and redistribute it.
 : There is NO WARRANTY, to the extent permitted by law.
+
+*** GRASS
+#+BEGIN_SRC bash :results output :eval no-export
+grass --version 2>&1
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+GRASS GIS 7.8.3
+
+Geographic Resources Analysis Support System (GRASS) is Copyright,
+1999-2020 by the GRASS Development Team, and licensed under terms of the
+GNU General Public License (GPL) version >=2.
+ 
+This GRASS GIS 7.8.3 release is coordinated and produced by
+the GRASS Development Team with contributions from all over the world.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+#+end_example
+
 
 *** Python
 #+BEGIN_SRC bash :cmdline -i :results verbatim :exports both :eval no-export
