@@ -3855,9 +3855,9 @@ D_gatesT.index.name = "Date"
 D_gates_errT.index.name = "Date"
 D_gates_fill_weightT.index.name = "Date"
 
-D_gatesT.to_csv('./out/gate_D.csv', float_format='%.3f')
-D_gates_errT.to_csv('./out/gate_err.csv', float_format='%.3f')
-D_gates_fill_weightT.to_csv('./out/gate_coverage.csv', float_format='%.3f')
+D_gatesT.to_csv('./out/gate_D.csv.zip', float_format='%.3f', compression='zip')
+D_gates_errT.to_csv('./out/gate_err.csv.zip', float_format='%.3f', compression='zip')
+D_gates_fill_weightT.to_csv('./out/gate_coverage.csv.zip', float_format='%.3f', compression='zip')
 #+END_SRC
 
 **** Sectors
@@ -3877,9 +3877,9 @@ D_sectors_errT.index.name = "Date"
 D_sectors_fill_weightT.index.name = "Date"
 
 # meta_sector.to_csv('./out/sector_meta.csv')
-D_sectorsT.to_csv('./out/sector_D.csv', float_format='%.3f')
-D_sectors_errT.to_csv('./out/sector_err.csv', float_format='%.3f')
-D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv', float_format='%.3f')
+D_sectorsT.to_csv('./out/sector_D.csv.zip', float_format='%.3f', compression='zip')
+D_sectors_errT.to_csv('./out/sector_err.csv.zip', float_format='%.3f', compression='zip')
+D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv.zip', float_format='%.3f', compression='zip')
 
 # meta_sector.head(10)
 #+END_SRC
@@ -3897,9 +3897,9 @@ D_regions_errT.index.name = "Date"
 D_regions_fill_weightT.index.name = "Date"
 
 # meta_region.to_csv('./out/region_meta.csv')
-D_regionsT.to_csv('./out/region_D.csv', float_format='%.3f')
-D_regions_errT.to_csv('./out/region_err.csv', float_format='%.3f')
-D_regions_fill_weightT.to_csv('./out/region_coverage.csv', float_format='%.3f')
+D_regionsT.to_csv('./out/region_D.csv.zip', float_format='%.3f', compression='zip')
+D_regions_errT.to_csv('./out/region_err.csv.zip', float_format='%.3f', compression='zip')
+D_regions_fill_weightT.to_csv('./out/region_coverage.csv.zip', float_format='%.3f', compression='zip')
 
 # meta_region.head(10)
 #+END_SRC
@@ -3911,9 +3911,9 @@ D_all.index.name = "Date"
 D_all_err.index.name = "Date"
 D_all_fill_weight.index.name = "Date"
 
-D_all.to_csv('./out/GIS_D.csv', float_format='%.3f', header=["Discharge [Gt yr-1]"])
-D_all_err.to_csv('./out/GIS_err.csv', float_format='%.3f', header=["Discharge Error [Gt yr-1]"])
-D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.3f', header=["Coverage [unit]"])
+D_all.to_csv('./out/GIS_D.csv.zip', float_format='%.3f', header=["Discharge [Gt yr-1]"], compression='zip')
+D_all_err.to_csv('./out/GIS_err.csv.zip', float_format='%.3f', header=["Discharge Error [Gt yr-1]"], compression='zip')
+D_all_fill_weight.to_csv('./out/GIS_coverage.csv.zip', float_format='%.3f', header=["Coverage [unit]"], compression='zip')
 #+END_SRC
 
 **** Gates
@@ -3921,6 +3921,7 @@ D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.3f', header=[
 g.mapset gates_100_5000
 
 v.out.ogr input=gates_final output=./out/gates.kml format=KML --o
+(cd out; zip gates.kmz gates.kml; rm gates.kml)
 v.out.ogr input=gates_final output=./out/gates.gpkg format=GPKG --o
 #+END_SRC
 
@@ -3961,12 +3962,11 @@ import datetime
 
 *** GIS
 #+BEGIN_SRC jupyter-python
-
 csvfile = 'GIS'
 
-df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv.zip', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv.zip', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv.zip', index_col=0, parse_dates=True)
 
 # ds = df_D.to_xarray()
 
@@ -3979,19 +3979,19 @@ ds["time"].attrs["standard_name"] = "time"
 ds["time"].attrs["axis"] = "T"
 ds["time"].attrs["cf_role"] = "timeseries_id"
 
-ds["discharge"] = ("time", df_D['Discharge [Gt yr-1]'])
+ds["discharge"] = ("time", df_D['Discharge [Gt yr-1]'].astype(np.float32))
 ds["discharge"].attrs["long_name"] = "Discharge"
 ds["discharge"].attrs["standard_name"] = "land_ice_volume_flow_rate_due_to_calving_and_ice_front_melting"
 ds["discharge"].attrs["units"] = "km3 yr-1"
 ds["discharge"].attrs["coordinates"] = "time"
 
-ds["err"] = ("time", df_err['Discharge Error [Gt yr-1]'])
+ds["err"] = ("time", df_err['Discharge Error [Gt yr-1]'].astype(np.float32))
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
 ds["err"].attrs["units"] = "km3 yr-1"
 ds["err"].attrs["coordinates"] = "time"
 
-ds["coverage"] = ("time", df_coverage['Coverage [unit]'])
+ds["coverage"] = ("time", df_coverage['Coverage [unit]'].astype(np.float32))
 ds["coverage"].attrs["long_name"] = "Coverage"
 ds["coverage"].attrs["standard_name"] = "Coverage"
 # ds["coverage"].attrs["units"] = "-"
@@ -4017,7 +4017,12 @@ ds.attrs["institution"] = "GEUS"
 ds.attrs["references"] = "10.22008/promice/ice_discharge"
 ds.attrs["product_version"] = 2.0
 
-ds.to_netcdf('./out/GIS.nc', mode='w')
+# NOTE: Compression here does not save space
+# comp = dict(zlib=True, complevel=5)
+# encoding = {var: comp for var in ds.data_vars} # all
+# encoding = {var: comp for var in ['time','coverage']} # some
+
+ds.to_netcdf('./out/GIS.nc', mode='w')#, encoding=encoding)
 #+END_SRC
 
 #+RESULTS:
@@ -4027,9 +4032,9 @@ ds.to_netcdf('./out/GIS.nc', mode='w')
 
 csvfile = 'region'
 
-df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv.zip', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv.zip', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv.zip', index_col=0, parse_dates=True)
 
 ds = xr.Dataset()
 
@@ -4045,19 +4050,19 @@ ds["region"].attrs["long_name"] = "Region"
 ds["region"].attrs["standard_name"] = "N/A"
 ds["region"].attrs["comment"] = "Regions from Mouginot (2019)"
 
-ds["discharge"] = (("region", "time"), df_D.T.values)
+ds["discharge"] = (("region", "time"), df_D.T.values.astype(np.float32))
 ds["discharge"].attrs["long_name"] = "Discharge"
 ds["discharge"].attrs["standard_name"] = "land_ice_volume_flow_rate_due_to_calving_and_ice_front_melting"
 ds["discharge"].attrs["units"] = "km3 yr-1"
 ds["discharge"].attrs["coordinates"] = "time region"
 
-ds["err"] = (("region", "time"), df_err.T.values)
+ds["err"] = (("region", "time"), df_err.T.values.astype(np.float32))
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
 ds["err"].attrs["units"] = "km3 yr-1"
 ds["err"].attrs["coordinates"] = "time region"
 
-ds["coverage"] = (("region", "time"), df_coverage.T.values)
+ds["coverage"] = (("region", "time"), df_coverage.T.values.astype(np.float32))
 ds["coverage"].attrs["long_name"] = "Coverage"
 ds["coverage"].attrs["standard_name"] = "Coverage"
 # ds["coverage"].attrs["units"] = "-"
@@ -4106,7 +4111,10 @@ ds.attrs["institution"] = "GEUS"
 ds.attrs["references"] = "10.22008/promice/ice_discharge"
 ds.attrs["product_version"] = 2.0
 
-ds.to_netcdf('./out/region.nc', mode='w')
+comp = dict(zlib=True, complevel=9)
+encoding = {var: comp for var in ds.data_vars} # all
+
+ds.to_netcdf('./out/region.nc', mode='w', encoding=encoding)
 #+END_SRC
 
 #+RESULTS:
@@ -4116,9 +4124,9 @@ ds.to_netcdf('./out/region.nc', mode='w')
 
 csvfile = 'sector'
 
-df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv.zip', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv.zip', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv.zip', index_col=0, parse_dates=True)
 
 ds = xr.Dataset()
 
@@ -4134,19 +4142,19 @@ ds["sector"].attrs["long_name"] = "Sector"
 ds["sector"].attrs["standard_name"] = "N/A"
 ds["sector"].attrs["comment"] = "Sectors from Mouginot (2019)"
 
-ds["discharge"] = (("sector", "time"), df_D.T.values)
+ds["discharge"] = (("sector", "time"), df_D.T.values.astype(np.float32))
 ds["discharge"].attrs["long_name"] = "Discharge"
 ds["discharge"].attrs["standard_name"] = "land_ice_volume_flow_rate_due_to_calving_and_ice_front_melting"
 ds["discharge"].attrs["units"] = "km3 yr-1"
 ds["discharge"].attrs["coordinates"] = "time sector"
 
-ds["err"] = (("sector", "time"), df_err.T.values)
+ds["err"] = (("sector", "time"), df_err.T.values.astype(np.float32))
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
 ds["err"].attrs["units"] = "km3 yr-1"
 ds["err"].attrs["coordinates"] = "time sector"
 
-ds["coverage"] = (("sector", "time"), df_coverage.T.values)
+ds["coverage"] = (("sector", "time"), df_coverage.T.values.astype(np.float32))
 ds["coverage"].attrs["long_name"] = "Coverage"
 ds["coverage"].attrs["standard_name"] = "Coverage"
 # ds["coverage"].attrs["units"] = "-"
@@ -4195,7 +4203,10 @@ ds.attrs["institution"] = "GEUS"
 ds.attrs["references"] = "10.22008/promice/ice_discharge"
 ds.attrs["product_version"] = 2.0
 
-ds.to_netcdf('./out/sector.nc', mode='w')
+comp = dict(zlib=True, complevel=9)
+encoding = {var: comp for var in ds.data_vars} # all
+
+ds.to_netcdf('./out/sector.nc', mode='w', encoding=encoding)
 #+END_SRC
 
 #+RESULTS:
@@ -4214,53 +4225,52 @@ meta = pd.read_csv("./out/gate_meta.csv")
 
 ds = xr.Dataset()
 
-ds["time"] = (("time"), df_D.index)
+ds["time"] = (("time"), df_D.index.astype(np.int32))
 ds["time"].attrs["cf_role"] = "timeseries_id"
 ds["time"].attrs["standard_name"] = "time"
 # ds["time"].attrs["units"] = "day of year"
 # ds["time"].attrs["calendar"] = "julian"
 ds["time"].attrs["axis"] = "T"
 
-ds["gate"] = (("gate"), df_D.columns)
-ds["gate"] = (("gate"), df_D.columns)
+ds["gate"] = (("gate"), df_D.columns.astype(np.int32))
 ds["gate"].attrs["long_name"] = "Gate"
 ds["gate"].attrs["standard_name"] = "N/A"
 
-ds["discharge"] = (("gate", "time"), df_D.T.values)
+ds["discharge"] = (("gate", "time"), df_D.T.values.astype(np.float32))
 ds["discharge"].attrs["long_name"] = "Discharge"
 ds["discharge"].attrs["standard_name"] = "land_ice_volume_flow_rate_due_to_calving_and_ice_front_melting"
 ds["discharge"].attrs["units"] = "km3 yr-1"
 ds["discharge"].attrs["coordinates"] = "time gate"
 
-ds["err"] = (("gate", "time"), df_err.T.values)
+ds["err"] = (("gate", "time"), df_err.T.values.astype(np.float32))
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
 ds["err"].attrs["units"] = "km3 yr-1"
 ds["err"].attrs["coordinates"] = "time gate"
 
-ds["coverage"] = (("gate", "time"), df_coverage.T.values)
+ds["coverage"] = (("gate", "time"), df_coverage.T.values.astype(np.float32))
 ds["coverage"].attrs["long_name"] = "Coverage"
 ds["coverage"].attrs["standard_name"] = "Coverage"
 # ds["coverage"].attrs["units"] = "-"
 ds["coverage"].attrs["coordinates"] = "time gate"
 
-ds["mean_x"] = (("gate"), meta.mean_x)
+ds["mean_x"] = (("gate"), meta.mean_x.astype(np.int32))
 ds["mean_x"].attrs["long_name"] = "Mean x coordinate of gate in EPSG:3413"
 ds["mean_x"].attrs["standard_name"] = "Mean x"
 
-ds["mean_y"] = (("gate"), meta.mean_y)
+ds["mean_y"] = (("gate"), meta.mean_y.astype(np.int32))
 ds["mean_y"].attrs["long_name"] = "Mean y coordinate of gate in EPSG:3413"
 ds["mean_y"].attrs["standard_name"] = "Mean y"
 
-ds["mean_lon"] = (("gate"), meta.lon)
+ds["mean_lon"] = (("gate"), meta.lon.astype(np.float32))
 ds["mean_lon"].attrs["long_name"] = "Mean lon coordinate of gate"
 ds["mean_lon"].attrs["standard_name"] = "Longitude"
 
-ds["mean_lat"] = (("gate"), meta.lat)
+ds["mean_lat"] = (("gate"), meta.lat.astype(np.float32))
 ds["mean_lat"].attrs["long_name"] = "Mean lat coordinate of gate"
 ds["mean_lat"].attrs["standard_name"] = "Latitude"
 
-ds["sector"] = (("gate"), meta.sector)
+ds["sector"] = (("gate"), meta.sector.astype(np.int32))
 ds["sector"].attrs["long_name"] = "Sector containing gate"
 
 ds["region"] = (("gate"), meta.region)
@@ -4292,7 +4302,10 @@ ds.attrs["institution"] = "GEUS"
 ds.attrs["references"] = "10.22008/promice/ice_discharge"
 ds.attrs["product_version"] = 2.0
 
-ds.to_netcdf('./out/gate.nc', mode='w')
+comp = dict(zlib=True, complevel=9)
+encoding = {var: comp for var in ds.data_vars} # all
+
+ds.to_netcdf('./out/gate.nc', mode='w', encoding=encoding)
 #+END_SRC
 
 #+RESULTS:
