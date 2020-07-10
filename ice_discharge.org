@@ -8609,14 +8609,20 @@ cut -d, -f$(echo $COLS|tr ' ' ',') ${FILE}
 * Meta                                                  :noexport:
 
 This document probably uses code - python, octave, and/or R. Below I provide the version of the software(s) used to create this document in order to support the goal of reproduciblity. 
-*** Emacs
-#+BEGIN_SRC elisp :exports both :eval no-export
-(emacs-version)
+
+*** Os installed
+#+BEGIN_SRC bash :results table
+for tool in gdal-bin sed netcdf-bin proj-bin nco bash grass; do dpkg -l | grep "ii  ${tool} " | cut -c5-90; done| sort
 #+END_SRC
 
 #+RESULTS:
-: GNU Emacs 26.3 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.24.13)
-:  of 2019-12-24
+| bash       | 5.0-6ubuntu1       |
+| gdal-bin   | 3.0.4+dfsg-1build3 |
+| grass      | 7.8.3-1~focal1     |
+| nco        | 4.9.1-1build2      |
+| netcdf-bin | 1:4.7.3-1          |
+| proj-bin   | 6.3.1-1            |
+| sed        | 4.7-1              |
 
 *** Org Mode
 #+BEGIN_SRC elisp :exports both :eval no-export
@@ -8625,43 +8631,6 @@ This document probably uses code - python, octave, and/or R. Below I provide the
 
 #+RESULTS:
 : Org mode version 9.3.7 (9.3.7-8-g3ed035-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20200629/)
-
-*** Bash
-#+BEGIN_SRC bash :results verbatim :eval no-export
-bash --version
-#+END_SRC
-
-#+RESULTS:
-: GNU bash, version 5.0.16(1)-release (x86_64-pc-linux-gnu)
-: Copyright (C) 2019 Free Software Foundation, Inc.
-: License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-: 
-: This is free software; you are free to change and redistribute it.
-: There is NO WARRANTY, to the extent permitted by law.
-
-*** GRASS
-#+BEGIN_SRC bash :results output :eval no-export
-grass --version 2>&1
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-GRASS GIS 7.8.3
-
-Geographic Resources Analysis Support System (GRASS) is Copyright,
-1999-2020 by the GRASS Development Team, and licensed under terms of the
-GNU General Public License (GPL) version >=2.
- 
-This GRASS GIS 7.8.3 release is coordinated and produced by
-the GRASS Development Team with contributions from all over the world.
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-
-#+end_example
-
 
 *** Python
 #+BEGIN_SRC bash :cmdline -i :results verbatim :exports both :eval no-export
@@ -8813,27 +8782,6 @@ dependencies:
     - pyqtwebengine==5.12.1
 prefix: /home/kdm/local/miniconda3/envs/ice_discharge
 
-#+end_example
-
-*** LaTeX
-#+BEGIN_SRC bash :cmdline "-i" :results verbatim :exports both :eval no-export
-pdflatex --version
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-pdfTeX 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian)
-kpathsea version 6.3.1
-Copyright 2019 Han The Thanh (pdfTeX) et al.
-There is NO warranty.  Redistribution of this software is
-covered by the terms of both the pdfTeX copyright and
-the Lesser GNU General Public License.
-For more information about these matters, see the file
-named COPYING and the pdfTeX source.
-Primary author of pdfTeX: Han The Thanh (pdfTeX) et al.
-Compiled with libpng 1.6.37; using libpng 1.6.37
-Compiled with zlib 1.2.11; using zlib 1.2.11
-Compiled with xpdf version 4.01
 #+end_example
 
 * LaTeX Setup                                           :noexport:
