@@ -1054,6 +1054,13 @@ if [ -z ${DATADIR+x} ]; then
 fi
 
 set -x # print commands to STDOUT before running them
+
+trap ctrl_c INT
+function ctrl_c() {
+  MSG_WARN "Caught CTRL-C"
+  MSG_WARN "Killing process"
+  kill -term $$ # send this program a terminate signal
+}
 #+END_SRC
 
 ** Import Data
