@@ -12478,7 +12478,7 @@ Individual glacier results change by up to 1 %.
 
 In order for the Babel code blocks to print Org tables (and not HTML tables), the following code needs to be placed into =~/.ipython/profile_default/startup/50-middle.py=:
 
-#+BEGIN_SRC python :tangle ~/.ipython/profile_default/startup/50-middle.py
+#+BEGIN_SRC python :tangle ~/.ipython/profile_default/startup/50-middle.py :mkdirp ~/.ipython/profile_default/startup
 ## this make emacs-jupyter only show Org (not HTML) as results
 # https://github.com/gregsexton/ob-ipython
 try:
@@ -12506,7 +12506,7 @@ This is the part of my Emacs initialization file that configures Org mode for pr
 
 + Note that the current version of =emacs-jupyter= requires a recent Emacs build with "module" support.
 
-#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el
+#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp ~/.emacs.d
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
@@ -12531,9 +12531,8 @@ This is the part of my Emacs initialization file that configures Org mode for pr
 (setq exec-path (split-string (getenv "PATH") ":"))
 
 (use-package org
-  :ensure org-plus-contrib)
+  :ensure org-plus-contrib
 
-(use-package org
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -12542,27 +12541,19 @@ This is the part of my Emacs initialization file that configures Org mode for pr
      (calc . t)
      (python . t)
      (jupyter . t)
-     )))
+     ))
 
-(use-package org
-  :config
   (setq org-confirm-babel-evaluate nil) ;; don't ask to eval code
   (setq org-src-fontify-natively t)
   (setq org-export-use-babel t)
-  )
 
-(use-package org
-  :config
   ;; allow comment region in the code edit buffer (according to language)
   (defun my-org-comment-dwim (&optional arg)
     (interactive "P")
     (or (org-babel-do-key-sequence-in-edit-buffer (kbd "M-;"))
 	(comment-dwim arg)))
-  
-  ;; make `C-c C-v C-x M-;' more convenient
   (define-key org-mode-map
-    (kbd "M-;") 'my-org-comment-dwim)
-  )
+    (kbd "M-;") 'my-org-comment-dwim))
 
 (use-package jupyter
   :after org
