@@ -25,7 +25,7 @@ Install OS-provided tools
 + Emacs27 is needed with module support if you are going to run =emacs-jupyter= within emacs.
 
 #+BEGIN_SRC bash
-sudo apt install git grass parallel emacs netcdf-bin
+sudo apt install git grass parallel emacs netcdf-bin zip
 #+END_SRC
 
 Install Python environment - I use Conda Miniconda
