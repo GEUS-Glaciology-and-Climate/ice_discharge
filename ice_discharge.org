@@ -1224,7 +1224,6 @@ db.select table=sectors | head
 v.db.addcolumn map=sectors columns="region_name varchar(100)"
 db.execute sql="UPDATE sectors SET region_name=SUBREGION1 || \"___\" || NAME"
 
-v.db.addcolumn map=sectors columns="area DOUBLE PRECISION"
 v.to.db map=sectors option=area columns=area units=meters
 
 mkdir -p ./tmp/
@@ -1858,7 +1857,7 @@ v.what.rast map=gates_final raster=gates_gateID column=gate type=centroid
 **** Mean x,y
 #+BEGIN_SRC bash :results verbatim
 # v.db.addcolumn map=gates_final columns="x DOUBLE PRECSION, y DOUBLE PRECISION, mean_x INT, mean_y INT, area INT"
-v.db.addcolumn map=gates_final columns="mean_x INT, mean_y INT, area INT"
+v.db.addcolumn map=gates_final columns="mean_x INT, mean_y INT"
 v.to.db map=gates_final option=coor columns=x,y units=meters
 v.to.db map=gates_final option=area columns=area units=meters
 
