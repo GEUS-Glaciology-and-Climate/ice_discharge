@@ -1467,10 +1467,10 @@ for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif"); do
 
   T0=$(dirname ${VX} | rev | cut -d"/" -f1 | rev|cut -d"_" -f4)
   T1=$(dirname ${VX} | rev | cut -d"/" -f1 | rev|cut -d"_" -f5)
-  SEC0=$(date --date="${T0}" +"%s")
-  SEC1=$(date --date="${T1}" +"%s")
+  SEC0=$(date --utc --date="${T0}" +"%s")
+  SEC1=$(date --utc --date="${T1}" +"%s")
   MID=$(echo "(${SEC0}+${SEC1})/2"|bc)
-  DATE=$(date --date="@${MID}" +"%Y_%m_%d")
+  DATE=$(date --utc --date="@${MID}" +"%Y_%m_%d")
 
   # echo $DATE
   parallel --verbose --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
@@ -1502,7 +1502,7 @@ find ${ROOT} -name "*.nc"
 FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG
 for FILE in $(find ${ROOT} -name "*.nc"); do
   T=$(ncdump -v time $FILE | tail -n2 | tr -dc '[0-9]')
-  DATE=$(date --date="1990-01-01 +${T} days" --iso-8601)
+  DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)
   DATE_STR=$(echo ${DATE} | sed s/-/_/g)
   echo $DATE
 
@@ -8616,21 +8616,23 @@ cut -d, -f$(echo $COLS|tr ' ' ',') ${FILE}
 
 * Meta                                                  :noexport:
 
-This document probably uses code - python, octave, and/or R. Below I provide the version of the software(s) used to create this document in order to support the goal of reproduciblity. 
+This document probably uses code - python, octave, and/or R. Below I provide the version of the software(s) used to create this document in order to support the goal of reproducibility. 
 
 *** Os installed
 #+BEGIN_SRC bash :results table
-for tool in gdal-bin sed netcdf-bin proj-bin nco bash grass; do dpkg -l | grep "ii  ${tool} " | cut -c5-90; done| sort
+for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass pax; do dpkg -l | grep "ii  ${tool} " | cut -c5-90; done| sort
 #+END_SRC
 
 #+RESULTS:
-| bash       | 5.0-6ubuntu1       |
+| bash       |       5.0-6ubuntu1 |
 | gdal-bin   | 3.0.4+dfsg-1build3 |
-| grass      | 7.8.3-1~focal1     |
-| nco        | 4.9.1-1build2      |
-| netcdf-bin | 1:4.7.3-1          |
-| proj-bin   | 6.3.1-1            |
-| sed        | 4.7-1              |
+| grass      |     7.8.3-1~focal1 |
+| nco        |      4.9.1-1build2 |
+| netcdf-bin |          1:4.7.3-1 |
+| parallel   |       20161222-1.1 |
+| pax        |       1:20190825-1 |
+| proj-bin   |            6.3.1-1 |
+| sed        |              4.7-1 |
 
 *** Org Mode
 #+BEGIN_SRC elisp :exports both :eval no-export
