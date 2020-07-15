@@ -172,7 +172,7 @@ A post-peer-review website is available at https://github.com/mankoff/ice_discha
 
 In this version the NSIDC 0478 ice velocity data citep:NSIDC_0478 have been updated from v2 to v2.1. These data are used for the baseline velocity and gate selection. Therefore the gate locations, number of gates, and number of gate pixels have all changed. Overall there are ~3 % fewer pixels, but only eight fewer gates, and some of the gate reduction is due to combining two gates on the same glacier that had a 1-pixel gap in the previous version. The effect of these changes is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates. Many gates remain the same pixel for pixel, but some do not meet the same inclusion criteria applied to these new baseline data, while some glaciers are included in this version that were not in the previous version. Many gates are also a few pixels narrower.
 
-The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet-wide differences between velocity products can be nontrivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=61=)}}} Sentinel 1 velocity maps from 2018 through the present (src_bash[:eval yes]{date --iso} {{{results(=2020-06-29=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
+The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet-wide differences between velocity products can be nontrivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=61=)}}} Sentinel 1 velocity maps from 2018 through the present (src_bash[:eval yes]{date --iso} {{{results(=2020-07-15=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
 
 We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate, region, or ice sheet wide) where coverage is < 50 % is discarded from the graphic (low-coverage data are still included in the downloadable data), and annual average is only computed if there are three or more samples in a year. 
 
@@ -420,10 +420,10 @@ The average unadjusted thickness gates is 401 m with a standard deviation of 258
 #+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
-t = pd.read_csv('./out/GIS_D.csv', index_col=0, parse_dates=True)\
+t = pd.read_csv('./out/GIS_D.csv.zip', index_col=0, parse_dates=True)\
       .resample('AS')\
       .mean()
-t_err = pd.read_csv('./out/GIS_err.csv', index_col=0, parse_dates=True)\
+t_err = pd.read_csv('./out/GIS_err.csv.zip', index_col=0, parse_dates=True)\
           .resample('AS')\
           .mean()
 t = t.merge(t_err, left_index=True, right_index=True)\
@@ -485,10 +485,10 @@ Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge 
 #+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
-r = pd.read_csv('./out/region_D.csv', index_col=0, parse_dates=True)\
+r = pd.read_csv('./out/region_D.csv.zip', index_col=0, parse_dates=True)\
       .resample('AS')\
       .mean()
-r_err = pd.read_csv('./out/region_err.csv', index_col=0, parse_dates=True)\
+r_err = pd.read_csv('./out/region_err.csv.zip', index_col=0, parse_dates=True)\
           .resample('AS')\
           .mean()
 # t = t.merge(t_err, left_index=True, right_index=True)\
@@ -555,10 +555,10 @@ At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are
 #+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
-s = pd.read_csv('./out/sector_D.csv', index_col=0, parse_dates=True)\
+s = pd.read_csv('./out/sector_D.csv.zip', index_col=0, parse_dates=True)\
       .resample('AS')\
       .mean()
-s_err = pd.read_csv('./out/sector_err.csv', index_col=0, parse_dates=True)\
+s_err = pd.read_csv('./out/sector_err.csv.zip', index_col=0, parse_dates=True)\
           .resample('AS')\
           .mean()
 
@@ -4349,7 +4349,7 @@ top_few = df.iloc[-1].sort_values(ascending=False).head(8)
 # names["RINK_ISBRAE"] = 'Kangilliup Sermia (Rink Isbræ)',
 # names["NIOGHALVFJERDSFJORDEN"] = "(Nioghalvfjerdsfjorden)"
 
-meta = pd.read_csv("./out/gate_meta.csv.zip.zip")
+meta = pd.read_csv("./out/gate_meta.csv.zip")
 
 out = pd.DataFrame(index=top_few.index, columns=["D","x","y"])
 for name in out.index:
@@ -5973,8 +5973,8 @@ ann
 
 ** Køge Bugt Y2K
 #+BEGIN_SRC jupyter-python :session kb_y2k :exports both :results raw drawer :display text/org
-D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/sector_err.csv", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/sector_D.csv.zip", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/sector_err.csv.zip", index_col=0, parse_dates=True)
 
 S = "KOGE_BUGT_C"
 D = D[S].resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
@@ -7236,8 +7236,8 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 ** Results
 *** GIS
 #+BEGIN_SRC bash :results table :eval no-export
-FILE=./out/GIS_D.csv
-cat ${FILE}
+FILE=./out/GIS_D.csv.zip
+zcat ${FILE}
 #+END_SRC
 
 #+RESULTS:
@@ -7690,8 +7690,8 @@ cat ${FILE}
 
 *** Regions
 #+BEGIN_SRC bash :results table :eval no-export
-FILE=./out/region_D.csv
-cat ${FILE}
+FILE=./out/region_D.csv.zip
+zcat ${FILE}
 #+END_SRC
 
 #+RESULTS:
@@ -8144,7 +8144,7 @@ cat ${FILE}
 
 *** Some arbitrary glaciers
 #+BEGIN_SRC bash :results table :eval no-export
-FILE=./out/sector_D.csv
+FILE=./out/sector_D.csv.zip
 
 # GLLIST='Date|ACADEMY|SERMEQ_KUJ|BOWDOIN|BUGT|HELH|STORE|KANGER|ZACH|RINK|NIOGHALV|PETERMANN'
 GLLIST='Date|JAKOBSH|HELH|STORE|ZACH' # |RINK'
@@ -8155,14 +8155,14 @@ GLLIST='Date|JAKOBSH|HELH|STORE|ZACH' # |RINK'
 #   | grep -E ${GLLIST}
 
 COLS=$(\
-head -n1 ${FILE} \
+head -n1 <(zcat ${FILE}) \
   | tr ',' '\n' \
   | cat -n \
   | grep -E ${GLLIST} \
   | cut -d$'\t' -f1 
 )
 
-cut -d, -f$(echo $COLS|tr ' ' ',') ${FILE}
+cut -d, -f$(echo $COLS|tr ' ' ',') <(zcat ${FILE})
 #+END_SRC
 
 #+RESULTS:
@@ -8619,7 +8619,7 @@ cut -d, -f$(echo $COLS|tr ' ' ',') ${FILE}
 This document probably uses code - python, octave, and/or R. Below I provide the version of the software(s) used to create this document in order to support the goal of reproducibility. 
 
 *** Os installed
-#+BEGIN_SRC bash :results table
+#+BEGIN_SRC bash :results table :eval no-export :exports results
 for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass pax; do dpkg -l | grep "ii  ${tool} " | cut -c5-90; done| sort
 #+END_SRC
 
@@ -8640,7 +8640,7 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass pax; do dpk
 #+END_SRC
 
 #+RESULTS:
-: Org mode version 9.3.7 (9.3.7-8-g3ed035-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20200629/)
+: Org mode version 9.3.7 (9.3.7-13-ge62ca4-elpaplus @ /home/kdm/.emacs.d/elpa/org-plus-contrib-20200713/)
 
 *** Python
 #+BEGIN_SRC bash :cmdline -i :results verbatim :exports both :eval no-export
