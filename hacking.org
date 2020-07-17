@@ -4,7 +4,7 @@
 
 + WARNING :: This file is intended for a clean development machine. Tangling this file may overwrite existing files, for example =~/.emacs.d/init.el=. Be careful if evaluating code or calling emacs functions on/in this file.
 + NOTE :: The main development environment is Kubuntu 20.04. When the code was re-run on Ubuntu 20.04 the =md5sum= hash of the output files matched. When the code was re-run on Ubuntu 18.04, the results were different (GIS-wide discharge values were different by ~0.1 %).
-+ NOTE :: zip files contain metadata such as the file timestamp and =md5sum= hashes may not agree. The =md5sum= hash of the contents of zip files can be calculated with =zcat file.zip|md5sum=.
++ NOTE :: zip files contain metadata such as the file timestamp and =md5sum= hashes may not agree. The =md5sum= hash of the contents of zip files can be calculated with =zcat file.zip|md5sum=, or the contents compared with =sdiff <(zcat a.csv.zip) <(zcat b.csv.zip)| less=.
 
 * Development Environment
 ** Install (K)Ubuntu 20.04 VM

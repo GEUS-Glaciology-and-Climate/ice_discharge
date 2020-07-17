@@ -1317,7 +1317,7 @@ MSG_OK "  200 m..."
 r.mask -r
 ROOT=${DATADIR}/MEaSUREs/NSIDC-0478.002/
 VX=$(find ${ROOT} -name "*mosaic200_*vx*.tif" | head -n1) # DEBUG
-for VX in $(find ${ROOT} -name "*mosaic200_*vx*.tif"); do
+for VX in $(find ${ROOT} -name "*mosaic200_*vx*.tif" | LC_ALL=C sort); do
   VY=${VX/vx/vy}
   EX=${VX/vx/ex}
   EY=${EX/ex/ey}
@@ -1331,7 +1331,7 @@ g.region raster=VX_${DATE} -pa
 
 MSG_OK "  500 m..."
 VX=$(find ${ROOT} -name "*mosaic500_*vx*.tif" | head -n1) # DEBUG
-for VX in $(find ${ROOT} -name "*mosaic500_*vx*.tif"); do
+for VX in $(find ${ROOT} -name "*mosaic500_*vx*.tif" | LC_ALL=C sort); do
   VY=${VX/vx/vy}
   EX=${VX/vx/ex}
   EY=${EX/ex/ey}
@@ -1411,10 +1411,10 @@ mkdir -p ${VRTROOT}
 for year in $(seq 1985 2018); do
   for month in $(seq -w 1 12); do
     if [[ ! -f ${VRTROOT}/${year}_${month}_vx.vrt ]]; then # VRT file does not exist?
-      LIST=$(find ${ROOT} -name "*${year}-${month}_vx_*.tif")
+      LIST=$(find ${ROOT} -name "*${year}-${month}_vx_*.tif" | LC_ALL=C sort)
       if [[ ! -z ${LIST} ]]; then
         MSG_OK "Building VRTs for ${year} ${month}"
-        parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_*.tif"\) ::: vx vy ex ey
+        parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${year}_${month}_{}.vrt $\(find ${ROOT} -name "*${year}-${month}_{}_*.tif" \| LC_ALL=C sort\) ::: vx vy ex ey
       fi
     fi
   done
@@ -1429,7 +1429,7 @@ g.mapset -c MEaSUREs.0646
 r.mask -r
 ROOT=./tmp/NSIDC-0646.002.vrt/
 VX=$(find ${ROOT} -name "*vx*.vrt" | head -n1) # debug
-for VX in $(find ${ROOT} -name "*vx*.vrt"); do
+for VX in $(find ${ROOT} -name "*vx*.vrt" | LC_ALL=C sort); do
     VY=${VX/vx/vy}
     EX=${VX/vx/ex}
     EY=${EX/ex/ey}
@@ -1455,7 +1455,7 @@ g.mapset -c MEaSUREs.0731
 r.mask -r
 ROOT=${DATADIR}/MEaSUREs/NSIDC-0731.001/
 VX=$(find ${ROOT} -name "*mosaic_*vx*.tif" | head -n1) # DEBUG
-for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif"); do
+for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
   VY=${VX/vx/vy}
   EX=${VX/vx/ex}
   EY=${EX/ex/ey}
@@ -1495,7 +1495,7 @@ find ${ROOT} -name "*.nc"
 # FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing
 
 FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG
-for FILE in $(find ${ROOT} -name "*.nc"); do
+for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do
   T=$(ncdump -v time $FILE | tail -n2 | tr -dc '[0-9]')
   DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)
   DATE_STR=$(echo ${DATE} | sed s/-/_/g)
@@ -1524,7 +1524,7 @@ g.mapset -c Mouginot_pre2000
 
 ROOT=${DATADIR}/Mouginot_2018/D1GW91
 find ${ROOT} -name "*.nc"
-FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG
+FILE=$(find ${ROOT} -name "*.nc" | head -n1 | LC_ALL=C sort) # DEBUG
 for FILE in $(find ${ROOT} -name "*.nc"); do
   YYYYMMDD=$(echo ${FILE} | cut -d"_" -f4)
   YEAR=$(echo ${YYYYMMDD} | cut -d"-" -f1)
@@ -4009,7 +4009,7 @@ ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe"
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
-ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
+# ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
 ds.attrs["creator_name"] = "Ken Mankoff"
 ds.attrs["creator_email"] = "kdm@geus.dk"
 ds.attrs["creator_url"] = "http://kenmankoff.com"
@@ -4103,7 +4103,7 @@ ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe"
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
-ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
+# ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
 ds.attrs["creator_name"] = "Ken Mankoff"
 ds.attrs["creator_email"] = "kdm@geus.dk"
 ds.attrs["creator_url"] = "http://kenmankoff.com"
@@ -4195,7 +4195,7 @@ ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe"
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
-ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
+# ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
 ds.attrs["creator_name"] = "Ken Mankoff"
 ds.attrs["creator_email"] = "kdm@geus.dk"
 ds.attrs["creator_url"] = "http://kenmankoff.com"
@@ -4294,7 +4294,7 @@ ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe"
 # ds.attrs["comment"] = "TODO"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
-ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
+# ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
 ds.attrs["creator_name"] = "Ken Mankoff"
 ds.attrs["creator_email"] = "kdm@geus.dk"
 ds.attrs["creator_url"] = "http://kenmankoff.com"
@@ -6425,7 +6425,7 @@ find . -type f | LC_ALL=C sort | parallel --keep-order "md5sum {}"
 
 #+NAME: QC_times_NSIDC_0646
 #+BEGIN_SRC bash :results table :eval no-export
-find ${DATADIR}/MEaSUREs/NSIDC-0646.002/ -type d | rev | cut -d"_" -f1 | rev | grep -v NSIDC | sort | uniq -c
+find ${DATADIR}/MEaSUREs/NSIDC-0646.002/ -type d | rev | cut -d"_" -f1 | rev | grep -v NSIDC | LC_ALL=C sort | uniq -c
 #+END_SRC
 
 #+RESULTS: QC_times_NSIDC_0646
