@@ -117,12 +117,7 @@ This document is an Emacs Org Mode plain-text file with code and text embedded. 
 ** Workflow
 
 To recreate this work
-
-+ check that you have the necessary software dependencies installed. See section: [[*Code][Code]].
-+ Download and set up the necessary data files used throughout the [[*Input data][Input data]] section.
-+ Open this file in Emacs Org Mode.
-+ Tangle the embedded code blocks with =C-c C-v C-t= or (org-babel-tangle).
-+ Execute =make= to run the contents of the [[#sec:makefile][Makefile]].
++ See the hacking.org file
 
 After updates, re-run make, and then...
 + Run the =workflow-update= block below
@@ -6258,7 +6253,7 @@ Band 1 Block=7585x1 Type=Float32, ColorInterp=Gray
 cd ${DATADIR}/MEaSUREs/NSIDC-0478.002
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
-find . -type f | LC_ALL=C sort | parallel --keep-order "pax -w -d | md5sum"
+find . -type f | LC_ALL=C sort | parallel --keep-order "md5sum {}"
 #+END_SRC
 
 #+RESULTS: QC_md5sum_NSIDC_0478
@@ -6860,7 +6855,7 @@ Band 1 Block=256x256 Type=Float32, ColorInterp=Gray
 cd ${DATADIR}/MEaSUREs/NSIDC-0731.001
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
-find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-order "pax -w -d | md5sum"
+find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-order "md5sum {}"
 #+END_SRC
 
 #+RESULTS: QC_md5sum_NSIDC_0731
@@ -7212,7 +7207,7 @@ variables:
 cd ${DATADIR}/Sentinel1
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
-find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order "pax -w -d | md5sum"
+find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order "md5sum {}"
 #+END_SRC
 
 #+RESULTS: QC_md5sum_Sentinel1
@@ -8620,17 +8615,16 @@ This document probably uses code - python, octave, and/or R. Below I provide the
 
 *** Os installed
 #+BEGIN_SRC bash :results table :eval no-export :exports results
-for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass pax; do dpkg -l | grep "ii  ${tool} " | cut -c5-90; done| sort
+for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass; do dpkg -l | grep "ii  ${tool} " | sed 's/\ \ */\ /g' | cut -d" " -f2,3; done| sort
 #+END_SRC
 
 #+RESULTS:
-| bash       |       5.0-6ubuntu1 |
+| bash       |     5.0-6ubuntu1.1 |
 | gdal-bin   | 3.0.4+dfsg-1build3 |
 | grass      |     7.8.3-1~focal1 |
 | nco        |      4.9.1-1build2 |
 | netcdf-bin |          1:4.7.3-1 |
 | parallel   |       20161222-1.1 |
-| pax        |       1:20190825-1 |
 | proj-bin   |            6.3.1-1 |
 | sed        |              4.7-1 |
 
