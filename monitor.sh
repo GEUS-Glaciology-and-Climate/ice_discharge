@@ -8,8 +8,10 @@
 # This code block is the top level pseudo-code description of the monitoring and update workflow. It is the only code block that is tangled out to the =monitor.sh= file. However, prior to tangling the =noweb= (<<>>) code blocks are expanded using the code blocks below.
 
 
-# [[file:~/projects/ice_discharge/monitor.org::*Algorithm][Algorithm:2]]
+# [[file:monitor.org::*Algorithm][Algorithm:2]]
 Sentinel1_IV_DATA_DIR=${DATADIR}/Sentinel1/Sentinel1_IV_maps
+
+set -x
 
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
@@ -32,11 +34,6 @@ if [ $? -ne 0 ]; then # difference.
     wget -np --continue ${URL}/${file}.nc -O ${Sentinel1_IV_DATA_DIR}/${file}.nc
   done
   make
-  
-  D=$(date --iso)
-  TARGET=~/Dropbox/shared/RSF/${D}
-  mkdir ${TARGET}
-  cp ice_discharge.zip ./figs/discharge_ts*.png ${TARGET}
 else 
   MSG_OK "Local velocities match remote."
   MSG_OK "No action taken"

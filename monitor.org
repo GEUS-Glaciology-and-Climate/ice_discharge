@@ -113,16 +113,13 @@ done
 #+NAME: update_ice_discharge
 #+BEGIN_SRC sh :results verbatim
 make
-
-D=$(date --iso)
-TARGET=~/Dropbox/shared/RSF/${D}
-mkdir ${TARGET}
-cp ice_discharge.zip ./figs/discharge_ts*.png ${TARGET}
 #+END_SRC
 #+RESULTS:
 
 #+NAME: setup
 #+BEGIN_SRC sh :results verbatim
+
+set -x
 
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
