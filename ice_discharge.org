@@ -52,7 +52,7 @@ We present a 1986 through March 2020 estimate of Greenland Ice Sheet ice dischar
 - [[#about-this-document][About This Document]]
   - [[#workflow][Workflow]]
 - [[#summary][Summary]]
-- [[#whats-new-in-this-version][What's new in this version]]
+- [[#new-in-this-version][New in this version]]
 - [[#introduction][Introduction]]
 - [[#input-data][Input data]]
 - [[#methods][Methods]]
@@ -126,8 +126,9 @@ After updates, re-run make, and then...
 + Review and commit changes
 + Re-run the =workflow-update= so that exported files have the right git commit
   + Review changes - there should be NONE
-+ Push git
-+ Distribute data and README.txt
++ Push updates
+  + =git push=
+  + Upload data to dataverse
 
 # WARNING: infinite recursion if not ":eval no"
 #+header: :eval no
@@ -159,21 +160,21 @@ After updates, re-run make, and then...
 
 We have produced an open and reproducible estimate of Greenland ice sheet solid ice discharge from 1986 through 2019. Our results show three modes at the total ice-sheet scale: Steady discharge from 1986 through 2000, increasing discharge from 2000 through 2005, steady discharge from 2005 through 2019. The behavior of individual sectors and glaciers is more complicated. This work was done to provide a 100% reproducible estimate to help constrain mass balance and sea level rise estimates. 
 
-* What's new in this version
+* New in this version
 
-The data have been updated repeatedly between the first version of this paper citep:mankoff_2019_ice and this version. The data will continue to be updated (currently every 12 days), although reference papers will only come out when major changes occur in the processing algorithms or input data. Therefore users are encouraged to regularly check for data updates at doi:10.22008/promice/data/ice_discharge when using the data.
+The data have been updated approximately every 12 days since the last version of the paper citep:mankoff_2020_solid was released. Every change is versioned with unique DOIs and posted on the new GEUS data portal at http://dataverse01.geus.dk/ or doi:10.22008/promice/data/ice_discharge. The git commit for this version of the paper is \input{|"git describe --always --dirty='*'"}.
 
-A post-peer-review website is available at https://github.com/mankoff/ice_discharge where we document changes to the paper and use the GitHub Issues feature to collect suggested improvements to the paper, document those improvements as they are implemented, document problems that made it through review, and mention similar papers that have been published since this was accepted. The git commit for this version of the paper is \input{|"git describe --always --dirty='*'"}.
+# In this version the NSIDC 0478 ice velocity data citep:NSIDC_0478 have been updated from v2 to v2.1. These data are used for the baseline velocity and gate selection. Therefore the gate locations, number of gates, and number of gate pixels have all changed. Overall there are ~3 % fewer pixels, but only eight fewer gates, and some of the gate reduction is due to combining two gates on the same glacier that had a 1-pixel gap in the previous version. The effect of these changes is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates. Many gates remain the same pixel for pixel, but some do not meet the same inclusion criteria applied to these new baseline data, while some glaciers are included in this version that were not in the previous version. Many gates are also a few pixels narrower.
 
-In this version the NSIDC 0478 ice velocity data citep:NSIDC_0478 have been updated from v2 to v2.1. These data are used for the baseline velocity and gate selection. Therefore the gate locations, number of gates, and number of gate pixels have all changed. Overall there are ~3 % fewer pixels, but only eight fewer gates, and some of the gate reduction is due to combining two gates on the same glacier that had a 1-pixel gap in the previous version. The effect of these changes is < 2.5 % of the estimated discharge. In this version there are now src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5829=)}}} pixels and src_bash[:eval yes]{cut -d"," -f8 tmp/dat_100_5000.csv | tail -n +2 | sort | uniq | wc -l} {{{results(=267=)}}} gates. Many gates remain the same pixel for pixel, but some do not meet the same inclusion criteria applied to these new baseline data, while some glaciers are included in this version that were not in the previous version. Many gates are also a few pixels narrower.
+The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v3 with no significant changes. The early portion of the record has 1 less velocity map per month and ~1 Gt (~0.2 %) less discharge per year.
 
-The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v2.1. This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet-wide differences between velocity products can be nontrivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=61=)}}} Sentinel 1 velocity maps from 2018 through the present (src_bash[:eval yes]{date --iso} {{{results(=2020-09-21=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
+# This update increases coverage and discharge in the 1980s by ~25 to 40 Gt yr^{-1} (~6 to 10 %) due to higher velocity estimates than the previous product that covered that time period with annual averages citep:mouginot_2018_1972to1990,mouginot_2018_1991to2000. This change highlights that ice-sheet-wide differences between velocity products can be nontrivial (c.f. citet:millan_2019_mapping). The time series has also been extended through both the updated NSIDC 0646 data and src_bash[:eval yes]{ls ${DATADIR}/Sentinel1/Sentinel1_IV_maps|grep -E "IV_201[8|9]"|wc -l} {{{results(=61=)}}} Sentinel 1 velocity maps from 2018 through the present (src_bash[:eval yes]{date --iso} {{{results(=2020-09-21=)}}}). We have also added src_bash[:eval yes]{ls ${DATADIR}/MEaSUREs/NSIDC-0731.001/|grep greenland_vel_mosaic|wc -l} {{{results(=48=)}}} additional MEaSUREs (citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland; hereafter NSIDC 0731) monthly average velocity maps from 2014-12-01 through 2018-11-30.
 
-We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate, region, or ice sheet wide) where coverage is < 50 % is discarded from the graphic (low-coverage data are still included in the downloadable data), and annual average is only computed if there are three or more samples in a year. 
+# We have updated the time series graphics (Figures [[fig:discharge_ts]], [[fig:discharge_ts_regions]], and [[fig:discharge_ts_topfew]]) in the following manner: Any observation (gate, region, or ice sheet wide) where coverage is < 50 % is discarded from the graphic (low-coverage data are still included in the downloadable data), and annual average is only computed if there are three or more samples in a year. 
 
-Finally, the Supplemental includes significantly more meta-data about the input data used in this work to aid in both reproducibility by third parties, and in tracking the impact of additional and updated input data on future versions of this work.
+# Finally, the Supplemental includes significantly more meta-data about the input data used in this work to aid in both reproducibility by third parties, and in tracking the impact of additional and updated input data on future versions of this work.
 
-Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and CE and CW are now approximately tied for the third-largest discharging region. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (English: Jakobshavn Glacier; Danish: Jakobshavn Isbræ) continued its rapid discharge decline in 2017 and 2018, returning to approximately its discharge from year 2000, but increased discharge slightly in 2019. For some time in 2018 and all data points so far in 2020 (i.e., though March) Helheim was the top Greenlandic glacier contributing to sea-level rise, although not with statistical significance (error bars still overlap).
+# Results show a continued steady total discharge. The contributions from the central west (CW) region continue to decrease, while the central east (CE) region continues to increase, and CE and CW are now approximately tied for the third-largest discharging region. The top three individual contributing glaciers remain dynamic - Sermeq Kujalleq (English: Jakobshavn Glacier; Danish: Jakobshavn Isbræ) continued its rapid discharge decline in 2017 and 2018, returning to approximately its discharge from year 2000, but increased discharge slightly in 2019. For some time in 2018 and all data points so far in 2020 (i.e., though March) Helheim was the top Greenlandic glacier contributing to sea-level rise, although not with statistical significance (error bars still overlap).
 
 * Introduction
 
@@ -437,41 +438,41 @@ t[t.index.year > 2005]
 :RESULTS:
 #+begin_example
 Initial:
- D      460.205571
-err     49.341571
+ D      458.948286
+err     48.726571
 Name: 1986-01-01 00:00:00, dtype: float64
 
 Minimum
- D      428.267375
-err     43.863625
-Name: 1996-01-01 00:00:00, dtype: float64
+ D      427.6235
+err     44.0825
+Name: 1991-01-01 00:00:00, dtype: float64
 
 Y2K
- D      443.308417
-err     44.230167
+ D      441.123000
+err     43.967833
 Name: 2000-01-01 00:00:00, dtype: float64
 
 2005
- D      499.782111
-err     49.793111
+ D      499.932333
+err     49.766556
 Name: 2005-01-01 00:00:00, dtype: float64
 #+end_example
 | Date                |       D |     err |
 |---------------------+---------+---------|
-| 2006-01-01 00:00:00 | 490.324 | 49.0896 |
-| 2007-01-01 00:00:00 | 482.695 | 48.664  |
-| 2008-01-01 00:00:00 | 487.03  | 49.6216 |
-| 2009-01-01 00:00:00 | 490.516 | 49.9101 |
-| 2010-01-01 00:00:00 | 495.184 | 50.615  |
-| 2011-01-01 00:00:00 | 498.304 | 51.1131 |
-| 2012-01-01 00:00:00 | 493.514 | 51.244  |
-| 2013-01-01 00:00:00 | 496.614 | 51.2222 |
-| 2014-01-01 00:00:00 | 498.389 | 51.2816 |
-| 2015-01-01 00:00:00 | 501.014 | 51.3677 |
-| 2016-01-01 00:00:00 | 496.701 | 50.9686 |
-| 2017-01-01 00:00:00 | 505.394 | 51.4267 |
-| 2018-01-01 00:00:00 | 498.128 | 50.7058 |
-| 2019-01-01 00:00:00 | 498.831 | 51.0639 |
+| 2006-01-01 00:00:00 | 489.906 | 49.0121 |
+| 2007-01-01 00:00:00 | 482.521 | 48.6182 |
+| 2008-01-01 00:00:00 | 486.137 | 49.539  |
+| 2009-01-01 00:00:00 | 490.601 | 49.9453 |
+| 2010-01-01 00:00:00 | 494     | 50.5601 |
+| 2011-01-01 00:00:00 | 497.048 | 51.0121 |
+| 2012-01-01 00:00:00 | 492.406 | 51.1666 |
+| 2013-01-01 00:00:00 | 496.224 | 51.1679 |
+| 2014-01-01 00:00:00 | 498.335 | 51.255  |
+| 2015-01-01 00:00:00 | 501.078 | 51.3587 |
+| 2016-01-01 00:00:00 | 496.684 | 50.9664 |
+| 2017-01-01 00:00:00 | 505.402 | 51.4265 |
+| 2018-01-01 00:00:00 | 498.077 | 50.6963 |
+| 2019-01-01 00:00:00 | 498.832 | 51.0646 |
 | 2020-01-01 00:00:00 | 506.59  | 52.0321 |
 :END:
 
@@ -499,9 +500,9 @@ print("\nSE max and last:", r['SE'].max(), '\n', r['SE'].iloc[-10:].describe())
 
 #+RESULTS:
 #+begin_example
-SE range:  136.76366666666667 164.1085 16.01311111111111 20.359714285714286
-SE %:  31.60597886149735
-NE,NO,NW %: 31.456712974376334
+SE range:  136.52783333333335 164.19012499999997 16.054222222222222 20.335999999999995
+SE %:  31.610792955708433
+NE,NO,NW %: 31.410802726129294
 
 NW increase
 : Date
@@ -524,19 +525,19 @@ NW increase
 2015-01-01    109.459471
 2016-01-01    112.961643
 2017-01-01    115.462923
-2018-01-01    114.840682
-2019-01-01    109.603600
+2018-01-01    114.843659
+2019-01-01    109.604333
 2020-01-01    109.229048
 Freq: AS-JAN, Name: NW, dtype: float64
 
-SE max and last: 164.1085 
+SE max and last: 164.19012499999997 
  count     10.000000
-mean     150.956670
-std        3.563413
-min      145.708857
-25%      148.236707
-50%      150.322837
-75%      153.157826
+mean     150.933424
+std        3.565483
+min      145.662821
+25%      148.240100
+50%      150.285873
+75%      153.067581
 max      156.529238
 Name: SE, dtype: float64
 #+end_example
@@ -1396,7 +1397,7 @@ d.rast vel
 d.rast vel_filled
 #+END_SRC
 
-***** 0646.002
+***** 0646.003
 + MEaSUREs Greenland Ice Velocity: Selected Glacier Site Velocity Maps from Optical Images, Version 2
 + Monthly velocity maps
 ****** Generate VRTs
@@ -1405,8 +1406,8 @@ d.rast vel_filled
 #+BEGIN_SRC bash :results verbatim
 g.mapset -c MEaSUREs.0646
 
-ROOT=${DATADIR}/MEaSUREs/NSIDC-0646.002/
-VRTROOT=./tmp/NSIDC-0646.002.vrt/
+ROOT=${DATADIR}/MEaSUREs/NSIDC-0646.003/
+VRTROOT=./tmp/NSIDC-0646.003.vrt/
 mkdir -p ${VRTROOT}
 for year in $(seq 1985 2018); do
   for month in $(seq -w 1 12); do
@@ -1427,7 +1428,7 @@ MSG_OK "MEaSURES.0646"
 g.mapset -c MEaSUREs.0646
 
 r.mask -r
-ROOT=./tmp/NSIDC-0646.002.vrt/
+ROOT=./tmp/NSIDC-0646.003.vrt/
 VX=$(find ${ROOT} -name "*vx*.vrt" | head -n1) # debug
 for VX in $(find ${ROOT} -name "*vx*.vrt" | LC_ALL=C sort); do
     VY=${VX/vx/vy}
@@ -3196,41 +3197,41 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 #+RESULTS:
 |                     | BedMachine |     300 |    diff |
 |---------------------+------------+---------+---------|
-| 1985-12-31 00:00:00 |    388.036 | 400.105 | 12.0692 |
-| 1986-12-31 00:00:00 |    399.856 | 411.622 | 11.7664 |
-| 1987-12-31 00:00:00 |    400.764 |  411.03 | 10.2664 |
-| 1988-12-31 00:00:00 |     390.43 | 399.355 | 8.92465 |
-| 1989-12-31 00:00:00 |    391.229 | 400.318 | 9.08872 |
-| 1990-12-31 00:00:00 |    389.914 |   400.3 | 10.3864 |
-| 1991-12-31 00:00:00 |    379.003 | 388.239 | 9.23613 |
-| 1992-12-31 00:00:00 |    384.182 |  393.39 | 9.20808 |
-| 1993-12-31 00:00:00 |    388.579 |  397.54 | 8.96119 |
-| 1994-12-31 00:00:00 |    399.705 | 409.249 | 9.54389 |
-| 1995-12-31 00:00:00 |    382.407 | 392.067 | 9.66025 |
-| 1996-12-31 00:00:00 |    381.442 | 390.611 |  9.1686 |
-| 1997-12-31 00:00:00 |    388.098 |  396.62 |  8.5215 |
-| 1998-12-31 00:00:00 |    394.824 | 402.655 | 7.83138 |
-| 1999-12-31 00:00:00 |    395.822 | 403.564 | 7.74194 |
-| 2000-12-31 00:00:00 |     399.21 | 406.457 | 7.24693 |
-| 2001-12-31 00:00:00 |    401.839 | 409.095 | 7.25625 |
-| 2002-12-31 00:00:00 |    418.866 | 426.253 |  7.3863 |
-| 2003-12-31 00:00:00 |    434.674 | 442.339 | 7.66542 |
-| 2004-12-31 00:00:00 |    446.963 | 454.808 | 7.84453 |
-| 2005-12-31 00:00:00 |    458.337 | 466.166 | 7.82961 |
-| 2006-12-31 00:00:00 |     453.11 | 460.852 | 7.74218 |
-| 2007-12-31 00:00:00 |    445.967 | 453.696 | 7.72955 |
-| 2008-12-31 00:00:00 |    451.126 | 459.111 | 7.98566 |
-| 2009-12-31 00:00:00 |    458.622 | 466.683 | 8.06089 |
-| 2010-12-31 00:00:00 |     463.72 | 471.821 | 8.10096 |
-| 2011-12-31 00:00:00 |    468.798 | 476.777 | 7.97887 |
-| 2012-12-31 00:00:00 |    468.665 |  476.59 | 7.92545 |
-| 2013-12-31 00:00:00 |    473.493 | 481.316 | 7.82331 |
-| 2014-12-31 00:00:00 |    479.078 | 486.753 | 7.67567 |
-| 2015-12-31 00:00:00 |    482.944 | 490.573 | 7.62912 |
-| 2016-12-31 00:00:00 |    478.924 | 486.285 | 7.36139 |
-| 2017-12-31 00:00:00 |    486.199 |  493.32 | 7.12079 |
-| 2018-12-31 00:00:00 |    477.125 | 484.422 | 7.29695 |
-| 2019-12-31 00:00:00 |    478.903 | 486.409 | 7.50596 |
+| 1985-12-31 00:00:00 |    386.954 | 399.031 | 12.0771 |
+| 1986-12-31 00:00:00 |     398.67 | 410.438 | 11.7685 |
+| 1987-12-31 00:00:00 |    399.729 | 409.989 | 10.2599 |
+| 1988-12-31 00:00:00 |    389.776 | 398.686 | 8.91048 |
+| 1989-12-31 00:00:00 |    390.452 | 399.543 |  9.0913 |
+| 1990-12-31 00:00:00 |    389.166 | 399.553 | 10.3863 |
+| 1991-12-31 00:00:00 |    378.089 |  387.33 | 9.24096 |
+| 1992-12-31 00:00:00 |    383.836 |  393.05 | 9.21352 |
+| 1993-12-31 00:00:00 |    388.328 | 397.293 | 8.96515 |
+| 1994-12-31 00:00:00 |     397.71 | 407.257 | 9.54711 |
+| 1995-12-31 00:00:00 |    380.816 | 390.477 | 9.66136 |
+| 1996-12-31 00:00:00 |    381.668 | 390.836 | 9.16837 |
+| 1997-12-31 00:00:00 |    388.841 | 397.362 |   8.521 |
+| 1998-12-31 00:00:00 |    393.985 | 401.815 |  7.8297 |
+| 1999-12-31 00:00:00 |    394.704 | 402.444 | 7.74052 |
+| 2000-12-31 00:00:00 |    397.448 | 404.696 |  7.2478 |
+| 2001-12-31 00:00:00 |    402.279 | 409.534 |  7.2542 |
+| 2002-12-31 00:00:00 |    419.328 | 426.712 | 7.38389 |
+| 2003-12-31 00:00:00 |      433.5 | 441.149 | 7.64892 |
+| 2004-12-31 00:00:00 |    446.764 | 454.607 | 7.84295 |
+| 2005-12-31 00:00:00 |     458.48 | 466.319 | 7.83887 |
+| 2006-12-31 00:00:00 |    452.752 | 460.494 | 7.74172 |
+| 2007-12-31 00:00:00 |    445.822 | 453.544 | 7.72238 |
+| 2008-12-31 00:00:00 |    450.372 | 458.357 | 7.98452 |
+| 2009-12-31 00:00:00 |    458.691 |  466.75 | 8.05813 |
+| 2010-12-31 00:00:00 |    462.608 | 470.711 | 8.10229 |
+| 2011-12-31 00:00:00 |    467.551 | 475.526 |  7.9752 |
+| 2012-12-31 00:00:00 |    467.766 | 475.682 | 7.91611 |
+| 2013-12-31 00:00:00 |    473.138 | 480.956 | 7.81788 |
+| 2014-12-31 00:00:00 |     479.03 | 486.703 | 7.67315 |
+| 2015-12-31 00:00:00 |    483.012 | 490.638 | 7.62585 |
+| 2016-12-31 00:00:00 |    478.882 | 486.243 | 7.36085 |
+| 2017-12-31 00:00:00 |    486.201 | 493.321 | 7.12098 |
+| 2018-12-31 00:00:00 |    477.085 | 484.375 | 7.28981 |
+| 2019-12-31 00:00:00 |    478.903 |  486.41 | 7.50684 |
 | 2020-12-31 00:00:00 |    486.321 | 494.108 |  7.7867 |
 
 
@@ -3300,41 +3301,41 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 #+RESULTS: adjust_thickness_fit
 #+begin_example
                    300         fit      diff
-1985-12-31  400.105319  404.202414  4.097095
-1986-12-31  411.622420  415.662301  4.039881
-1987-12-31  411.030044  414.660647  3.630604
-1988-12-31  399.354678  402.515612  3.160934
-1989-12-31  400.317896  403.485571  3.167675
-1990-12-31  400.300325  403.949763  3.649439
-1991-12-31  388.239125  391.409004  3.169879
-1992-12-31  393.389866  396.498551  3.108685
-1993-12-31  397.540099  400.559415  3.019316
-1994-12-31  409.248588  412.349642  3.101055
-1995-12-31  392.067426  395.430134  3.362708
-1996-12-31  390.610726  394.059871  3.449145
-1997-12-31  396.619952  399.854124  3.234172
-1998-12-31  402.655257  406.003282  3.348025
-1999-12-31  403.563617  407.078309  3.514692
-2000-12-31  406.456594  409.853875  3.397281
-2001-12-31  409.095201  412.430822  3.335621
-2002-12-31  426.252676  429.599353  3.346677
-2003-12-31  442.339274  445.767248  3.427974
-2004-12-31  454.807679  458.329937  3.522258
-2005-12-31  466.166282  469.667577  3.501295
-2006-12-31  460.852185  464.373098  3.520912
-2007-12-31  453.696448  457.244636  3.548189
-2008-12-31  459.111441  462.791642  3.680201
-2009-12-31  466.683256  470.383971  3.700715
-2010-12-31  471.821296  475.511720  3.690424
-2011-12-31  476.776761  480.538106  3.761345
-2012-12-31  476.590432  480.369967  3.779535
-2013-12-31  481.315862  485.043638  3.727776
-2014-12-31  486.753243  490.355359  3.602116
-2015-12-31  490.573383  494.041488  3.468105
-2016-12-31  486.284979  489.676415  3.391437
-2017-12-31  493.319684  496.544590  3.224906
-2018-12-31  484.421831  487.668234  3.246403
-2019-12-31  486.409002  489.815918  3.406916
+1985-12-31  399.031420  403.121067  4.089646
+1986-12-31  410.438102  414.469430  4.031329
+1987-12-31  409.988512  413.608803  3.620292
+1988-12-31  398.686155  401.837577  3.151422
+1989-12-31  399.542975  402.712811  3.169836
+1990-12-31  399.552651  403.207026  3.654375
+1991-12-31  387.329646  390.507844  3.178198
+1992-12-31  393.049579  396.162632  3.113053
+1993-12-31  397.293011  400.314087  3.021076
+1994-12-31  407.257194  410.358419  3.101226
+1995-12-31  390.476922  393.838937  3.362015
+1996-12-31  390.835898  394.279859  3.443961
+1997-12-31  397.361775  400.582674  3.220899
+1998-12-31  401.814872  405.132359  3.317487
+1999-12-31  402.444449  405.929645  3.485196
+2000-12-31  404.696171  408.087146  3.390975
+2001-12-31  409.533536  412.860311  3.326775
+2002-12-31  426.712068  430.043968  3.331900
+2003-12-31  441.148668  444.566065  3.417397
+2004-12-31  454.607372  458.120626  3.513254
+2005-12-31  466.319195  469.819737  3.500543
+2006-12-31  460.493926  464.003819  3.509893
+2007-12-31  453.544097  457.081317  3.537220
+2008-12-31  458.356556  462.025354  3.668797
+2009-12-31  466.749541  470.453459  3.703919
+2010-12-31  470.710783  474.407107  3.696325
+2011-12-31  475.526385  479.278522  3.752137
+2012-12-31  475.682132  479.459931  3.777799
+2013-12-31  480.956113  484.685712  3.729599
+2014-12-31  486.702790  490.302451  3.599661
+2015-12-31  490.637524  494.100384  3.462860
+2016-12-31  486.243258  489.633019  3.389762
+2017-12-31  493.321487  496.546776  3.225289
+2018-12-31  484.374633  487.620463  3.245830
+2019-12-31  486.409770  489.817446  3.407676
 2020-12-31  494.108077  497.678018  3.569941
 #+end_example
 
@@ -4742,10 +4743,10 @@ disp
                D        err
 Year                       
 1986         NaN        NaN
-1987  454.943235  46.829545
-1988  443.567258  45.318031
+1987  451.164297  46.446428
+1988  443.219029  45.239233
 1989         NaN        NaN
-1990  446.643491  46.796828
+1990         NaN        NaN
 1991         NaN        NaN
 1992         NaN        NaN
 1993         NaN        NaN
@@ -4753,28 +4754,28 @@ Year
 1995         NaN        NaN
 1996         NaN        NaN
 1997         NaN        NaN
-1998  438.070689  44.617930
+1998         NaN        NaN
 1999         NaN        NaN
-2000  443.441238  44.189384
-2001  445.693866  44.245330
-2002  463.213347  46.026021
-2003  476.125821  47.198290
-2004  487.460519  48.680195
-2005  498.162711  49.624639
-2006  490.019264  49.041769
-2007  481.151859  48.491110
-2008  484.751385  49.376899
-2009  489.948925  49.931460
-2010  495.203176  50.669375
-2011  497.703771  51.050237
-2012  493.181335  51.124082
-2013  496.187264  51.143864
-2014  498.429851  51.243226
-2015  501.296845  51.406865
-2016  496.973499  51.064350
-2017  504.870339  51.345743
-2018  496.216274  50.470191
-2019  498.827580  51.067471
+2000  441.526774  43.963446
+2001  446.174762  44.229103
+2002  463.633305  45.887799
+2003  474.837355  47.056122
+2004  487.215455  48.619623
+2005  498.297984  49.601245
+2006  489.633611  48.971416
+2007  480.982937  48.443685
+2008  483.915329  49.300849
+2009  490.040056  49.970107
+2010  493.989798  50.597119
+2011  496.318168  50.946029
+2012  492.069664  51.058259
+2013  495.813092  51.092726
+2014  498.359667  51.217713
+2015  501.348847  51.393434
+2016  496.924815  51.056236
+2017  504.872364  51.345507
+2018  496.173151  50.461346
+2019  498.829243  51.068192
 2020  506.822716  52.066494
 #+end_example
 
@@ -4902,34 +4903,34 @@ tbl
 #+begin_example
      CE (Err %) CW (Err %) NE (Err %) NO (Err %) NW (Err %) SE (Err %) SW (Err %)
 1986    69 (11)    0 (NaN)     23 (8)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
-1987    67 (11)     71 (8)     23 (8)     24 (8)     95 (8)    0 (NaN)    0 (NaN)
-1988    67 (11)     69 (8)     22 (8)     23 (8)    0 (NaN)    0 (NaN)    0 (NaN)
-1989    68 (11)     69 (8)     22 (8)     23 (8)    0 (NaN)    0 (NaN)    0 (NaN)
-1990    70 (12)     68 (8)     22 (8)     22 (8)    0 (NaN)    0 (NaN)    0 (NaN)
+1987    67 (11)     71 (8)     22 (8)    0 (NaN)     95 (8)    0 (NaN)    0 (NaN)
+1988    67 (11)     69 (8)     22 (8)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
+1989    68 (11)     69 (8)     22 (8)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
+1990    70 (12)     68 (8)     22 (8)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
 1991    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
 1992    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
 1993    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    22 (14)
-1994    69 (12)     70 (8)     23 (8)     24 (9)     95 (8)    0 (NaN)    0 (NaN)
+1994    69 (12)     70 (8)     23 (8)    0 (NaN)     95 (8)    0 (NaN)    0 (NaN)
 1995    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
 1996    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
 1997    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
-1998    71 (11)     74 (8)     22 (8)     22 (8)     92 (8)   138 (12)    0 (NaN)
+1998    71 (11)     74 (8)     22 (8)    0 (NaN)     92 (8)   138 (12)    0 (NaN)
 1999    69 (11)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)
-2000    68 (11)     80 (8)     23 (8)    0 (NaN)     91 (8)   139 (12)    21 (14)
+2000    68 (11)     80 (8)     23 (8)    0 (NaN)     91 (8)   137 (12)    21 (14)
 2001    69 (11)     81 (8)    0 (NaN)    0 (NaN)     92 (8)   137 (12)    20 (14)
 2002    69 (11)     82 (8)    0 (NaN)    0 (NaN)     92 (8)   148 (11)    20 (14)
-2003    71 (11)     85 (8)    0 (NaN)    0 (NaN)     94 (9)   157 (11)    0 (NaN)
+2003    71 (11)     85 (8)    0 (NaN)    0 (NaN)     94 (9)    0 (NaN)    0 (NaN)
 2004    74 (11)     85 (8)    0 (NaN)    0 (NaN)     97 (9)   164 (11)    0 (NaN)
 2005    84 (10)     84 (8)    0 (NaN)    0 (NaN)     97 (9)   164 (11)    0 (NaN)
 2006    84 (10)     86 (8)     25 (8)    0 (NaN)     97 (9)   153 (12)    22 (15)
-2007    80 (11)     87 (8)    0 (NaN)     24 (8)     96 (9)   147 (12)    21 (15)
+2007    80 (11)     87 (8)    0 (NaN)    0 (NaN)     96 (9)   147 (12)    21 (15)
 2008    79 (11)     89 (8)    0 (NaN)    0 (NaN)     98 (9)   149 (12)    20 (15)
 2009    78 (11)     90 (9)     25 (8)    0 (NaN)    100 (9)   155 (12)    20 (15)
 2010    77 (11)     89 (9)    0 (NaN)    0 (NaN)    103 (9)   155 (12)    19 (16)
 2011    79 (11)     88 (9)    0 (NaN)    0 (NaN)    105 (9)   153 (12)    21 (15)
-2012    77 (11)     91 (9)     26 (8)     25 (7)    105 (9)   149 (12)    21 (16)
-2013    78 (11)     94 (9)     26 (8)     24 (7)    106 (9)   148 (12)    21 (15)
-2014    76 (11)     93 (9)     27 (9)     25 (7)    110 (9)   148 (12)    20 (15)
+2012    77 (11)     91 (9)    0 (NaN)    0 (NaN)    105 (9)   149 (12)    21 (16)
+2013    78 (11)     94 (9)     26 (8)    0 (NaN)    106 (9)   148 (12)    21 (15)
+2014    76 (11)     93 (9)     27 (9)    0 (NaN)    110 (9)   148 (12)    20 (15)
 2015    76 (11)     93 (9)     28 (9)     25 (7)    110 (9)   150 (12)    20 (15)
 2016    74 (11)     92 (9)     28 (9)     25 (7)    112 (9)   145 (12)    19 (15)
 2017    78 (11)     83 (9)     29 (9)     27 (7)    115 (9)   153 (12)    20 (15)
@@ -4967,8 +4968,8 @@ print(err.values)
 #+END_SRC
 
 #+RESULTS:
-: [487.55399179]
-: [49.46315685]
+: [487.19194293]
+: [49.41060964]
 
 
 
@@ -4992,48 +4993,48 @@ df
 
 #+RESULTS:
 :RESULTS:
-: Min:  D      428.539384
-: err     43.900582
-: Name: 1996-12-31 00:00:00, dtype: float64
-: Max:  D      428.539384
-: err     43.900582
-: Name: 1996-12-31 00:00:00, dtype: float64
+: Min:  D      427.827952
+: err     43.942927
+: Name: 1991-12-31 00:00:00, dtype: float64
+: Max:  D      427.827952
+: err     43.942927
+: Name: 1991-12-31 00:00:00, dtype: float64
 | Date                |       D |     err |
 |---------------------+---------+---------|
-| 1986-12-31 00:00:00 | 461.985 | 49.3726 |
-| 1987-12-31 00:00:00 | 455.821 | 47.4203 |
-| 1988-12-31 00:00:00 | 441.795 | 45.2627 |
-| 1989-12-31 00:00:00 | 442.166 | 45.5213 |
-| 1990-12-31 00:00:00 | 442.832 | 46.4519 |
-| 1991-12-31 00:00:00 | 428.77  | 44.0657 |
-| 1992-12-31 00:00:00 | 434.296 | 44.3169 |
-| 1993-12-31 00:00:00 | 438.132 | 44.374  |
-| 1994-12-31 00:00:00 | 451.541 | 45.9845 |
-| 1995-12-31 00:00:00 | 432.235 | 44.0024 |
-| 1996-12-31 00:00:00 | 428.539 | 43.9006 |
-| 1997-12-31 00:00:00 | 434.161 | 44.3164 |
-| 1998-12-31 00:00:00 | 440.817 | 44.7863 |
-| 1999-12-31 00:00:00 | 441.201 | 44.5995 |
-| 2000-12-31 00:00:00 | 443.326 | 44.243  |
-| 2001-12-31 00:00:00 | 445.124 | 44.2439 |
-| 2002-12-31 00:00:00 | 461.72  | 45.8672 |
-| 2003-12-31 00:00:00 | 476.891 | 47.2683 |
-| 2004-12-31 00:00:00 | 488.219 | 48.756  |
-| 2005-12-31 00:00:00 | 498.25  | 49.6608 |
-| 2006-12-31 00:00:00 | 490.507 | 49.092  |
-| 2007-12-31 00:00:00 | 481.344 | 48.5518 |
-| 2008-12-31 00:00:00 | 485.194 | 49.3997 |
-| 2009-12-31 00:00:00 | 490.751 | 49.9427 |
-| 2010-12-31 00:00:00 | 493.668 | 50.4296 |
-| 2011-12-31 00:00:00 | 496.139 | 50.9212 |
-| 2012-12-31 00:00:00 | 493.258 | 51.2043 |
-| 2013-12-31 00:00:00 | 496.293 | 51.2013 |
-| 2014-12-31 00:00:00 | 498.978 | 51.3344 |
-| 2015-12-31 00:00:00 | 501.409 | 51.4288 |
-| 2016-12-31 00:00:00 | 496.995 | 51.0682 |
-| 2017-12-31 00:00:00 | 504.876 | 51.3459 |
-| 2018-12-31 00:00:00 | 496.355 | 50.4822 |
-| 2019-12-31 00:00:00 | 498.828 | 51.0675 |
+| 1986-12-31 00:00:00 | 460.657 | 48.8118 |
+| 1987-12-31 00:00:00 | 454.746 | 47.241  |
+| 1988-12-31 00:00:00 | 441.12  | 45.1609 |
+| 1989-12-31 00:00:00 | 441.391 | 45.371  |
+| 1990-12-31 00:00:00 | 442.079 | 46.2904 |
+| 1991-12-31 00:00:00 | 427.828 | 43.9429 |
+| 1992-12-31 00:00:00 | 433.964 | 44.2778 |
+| 1993-12-31 00:00:00 | 437.895 | 44.3714 |
+| 1994-12-31 00:00:00 | 449.451 | 45.4712 |
+| 1995-12-31 00:00:00 | 430.565 | 43.6006 |
+| 1996-12-31 00:00:00 | 428.762 | 43.882  |
+| 1997-12-31 00:00:00 | 434.898 | 44.2766 |
+| 1998-12-31 00:00:00 | 439.858 | 44.6603 |
+| 1999-12-31 00:00:00 | 440.027 | 44.473  |
+| 2000-12-31 00:00:00 | 441.409 | 44.0145 |
+| 2001-12-31 00:00:00 | 445.557 | 44.233  |
+| 2002-12-31 00:00:00 | 462.181 | 45.7331 |
+| 2003-12-31 00:00:00 | 475.607 | 47.1169 |
+| 2004-12-31 00:00:00 | 487.994 | 48.697  |
+| 2005-12-31 00:00:00 | 498.405 | 49.635  |
+| 2006-12-31 00:00:00 | 490.129 | 49.0221 |
+| 2007-12-31 00:00:00 | 481.175 | 48.5049 |
+| 2008-12-31 00:00:00 | 484.41  | 49.3283 |
+| 2009-12-31 00:00:00 | 490.827 | 49.9816 |
+| 2010-12-31 00:00:00 | 492.548 | 50.3766 |
+| 2011-12-31 00:00:00 | 494.851 | 50.82   |
+| 2012-12-31 00:00:00 | 492.288 | 51.1389 |
+| 2013-12-31 00:00:00 | 495.925 | 51.1525 |
+| 2014-12-31 00:00:00 | 498.919 | 51.3055 |
+| 2015-12-31 00:00:00 | 501.462 | 51.4154 |
+| 2016-12-31 00:00:00 | 496.946 | 51.0601 |
+| 2017-12-31 00:00:00 | 504.878 | 51.3457 |
+| 2018-12-31 00:00:00 | 496.305 | 50.4733 |
+| 2019-12-31 00:00:00 | 498.829 | 51.0682 |
 | 2020-12-31 00:00:00 | 506.823 | 52.0665 |
 :END:
 
@@ -5060,61 +5061,61 @@ df
 #+begin_example
 D SE described:
  count     35.000000
-mean     148.377957
-std        7.366270
-min      136.674352
-25%      142.895520
-50%      148.159615
-75%      153.886820
-max      164.063769
+mean     148.228804
+std        7.532550
+min      136.531765
+25%      142.593549
+50%      148.150348
+75%      153.733441
+max      164.116536
 Name: SE, dtype: float64
 
 D SE err percent: count    35.000000
-mean     11.935772
-std       0.384784
-min      11.249069
-25%      11.723047
-50%      11.885803
-75%      12.166437
-max      13.170453
+mean     11.940065
+std       0.388587
+min      11.250882
+25%      11.729914
+50%      11.887551
+75%      12.181052
+max      13.187159
 Name: SE, dtype: float64
 #+end_example
 | Date                |      SE |   SEerr |
 |---------------------+---------+---------|
-| 1986-12-31 00:00:00 | 154.867 | 20.3967 |
-| 1987-12-31 00:00:00 | 155.467 | 19.4612 |
-| 1988-12-31 00:00:00 | 144.233 | 17.531  |
-| 1989-12-31 00:00:00 | 136.959 | 16.9471 |
-| 1990-12-31 00:00:00 | 137.016 | 17.0803 |
-| 1991-12-31 00:00:00 | 138.653 | 16.9424 |
-| 1992-12-31 00:00:00 | 143.943 | 17.4003 |
-| 1993-12-31 00:00:00 | 145.466 | 17.4219 |
-| 1994-12-31 00:00:00 | 152.783 | 17.895  |
-| 1995-12-31 00:00:00 | 145.018 | 17.1192 |
-| 1996-12-31 00:00:00 | 140.966 | 17.2443 |
-| 1997-12-31 00:00:00 | 141.848 | 17.3713 |
-| 1998-12-31 00:00:00 | 139.769 | 17.0213 |
-| 1999-12-31 00:00:00 | 140.606 | 17.0054 |
-| 2000-12-31 00:00:00 | 138.195 | 16.3815 |
-| 2001-12-31 00:00:00 | 136.674 | 15.9679 |
-| 2002-12-31 00:00:00 | 147.417 | 16.8632 |
-| 2003-12-31 00:00:00 | 157.067 | 17.7312 |
-| 2004-12-31 00:00:00 | 164.064 | 18.4556 |
-| 2005-12-31 00:00:00 | 163.563 | 18.4836 |
-| 2006-12-31 00:00:00 | 153.027 | 17.7384 |
-| 2007-12-31 00:00:00 | 148.16  | 17.3842 |
-| 2008-12-31 00:00:00 | 149.499 | 17.8095 |
-| 2009-12-31 00:00:00 | 154.746 | 18.1917 |
-| 2010-12-31 00:00:00 | 155.696 | 18.3875 |
-| 2011-12-31 00:00:00 | 153.003 | 18.4141 |
-| 2012-12-31 00:00:00 | 148.819 | 18.1947 |
-| 2013-12-31 00:00:00 | 147.843 | 17.9454 |
-| 2014-12-31 00:00:00 | 147.777 | 17.7023 |
-| 2015-12-31 00:00:00 | 150.322 | 17.7005 |
-| 2016-12-31 00:00:00 | 145.14  | 17.251  |
-| 2017-12-31 00:00:00 | 152.532 | 17.7072 |
-| 2018-12-31 00:00:00 | 149.595 | 17.4312 |
-| 2019-12-31 00:00:00 | 155.738 | 18.3708 |
+| 1986-12-31 00:00:00 | 154.51  | 20.3755 |
+| 1987-12-31 00:00:00 | 155.589 | 19.4583 |
+| 1988-12-31 00:00:00 | 143.789 | 17.5009 |
+| 1989-12-31 00:00:00 | 136.532 | 16.9245 |
+| 1990-12-31 00:00:00 | 136.677 | 17.0721 |
+| 1991-12-31 00:00:00 | 138.163 | 16.9269 |
+| 1992-12-31 00:00:00 | 143.461 | 17.375  |
+| 1993-12-31 00:00:00 | 145.099 | 17.4024 |
+| 1994-12-31 00:00:00 | 152.55  | 17.8827 |
+| 1995-12-31 00:00:00 | 144.904 | 17.1129 |
+| 1996-12-31 00:00:00 | 140.925 | 17.2418 |
+| 1997-12-31 00:00:00 | 141.726 | 17.3649 |
+| 1998-12-31 00:00:00 | 139.523 | 17.0091 |
+| 1999-12-31 00:00:00 | 140.59  | 17.0134 |
+| 2000-12-31 00:00:00 | 136.541 | 16.182  |
+| 2001-12-31 00:00:00 | 136.56  | 15.9836 |
+| 2002-12-31 00:00:00 | 147.5   | 16.8723 |
+| 2003-12-31 00:00:00 | 157.014 | 17.7174 |
+| 2004-12-31 00:00:00 | 164.117 | 18.4646 |
+| 2005-12-31 00:00:00 | 163.722 | 18.4991 |
+| 2006-12-31 00:00:00 | 152.905 | 17.7299 |
+| 2007-12-31 00:00:00 | 148.15  | 17.3889 |
+| 2008-12-31 00:00:00 | 149.647 | 17.8218 |
+| 2009-12-31 00:00:00 | 154.769 | 18.1922 |
+| 2010-12-31 00:00:00 | 155.697 | 18.3898 |
+| 2011-12-31 00:00:00 | 152.957 | 18.4033 |
+| 2012-12-31 00:00:00 | 148.889 | 18.1826 |
+| 2013-12-31 00:00:00 | 147.836 | 17.9259 |
+| 2014-12-31 00:00:00 | 147.752 | 17.6807 |
+| 2015-12-31 00:00:00 | 150.237 | 17.6784 |
+| 2016-12-31 00:00:00 | 145.052 | 17.2432 |
+| 2017-12-31 00:00:00 | 152.533 | 17.7075 |
+| 2018-12-31 00:00:00 | 149.597 | 17.4287 |
+| 2019-12-31 00:00:00 | 155.738 | 18.3709 |
 | 2020-12-31 00:00:00 | 156.757 | 18.4985 |
 :END:
 
@@ -5138,50 +5139,50 @@ print(D_SE/D_rest*100)
 #+RESULTS:
 #+begin_example
 count    35.000000
-mean     31.672459
-std       1.346550
-min      29.203426
-25%      30.796278
-50%      31.532559
-75%      32.860973
-max      34.107028
+mean     31.675825
+std       1.358690
+min      29.188697
+25%      30.841011
+50%      31.532302
+75%      32.858512
+max      34.214474
 dtype: float64
 
 Date
-1986-12-31    33.522154
-1987-12-31    34.107028
-1988-12-31    32.647048
-1989-12-31    30.974525
-1990-12-31    30.940914
-1991-12-31    32.337383
-1992-12-31    33.143920
-1993-12-31    33.201536
-1994-12-31    33.836003
-1995-12-31    33.550827
-1996-12-31    32.894441
-1997-12-31    32.671799
-1998-12-31    31.706713
-1999-12-31    31.869007
-2000-12-31    31.172246
-2001-12-31    30.704771
-2002-12-31    31.927783
-2003-12-31    32.935685
-2004-12-31    33.604555
-2005-12-31    32.827504
-2006-12-31    31.197763
-2007-12-31    30.780392
-2008-12-31    30.812165
-2009-12-31    31.532559
-2010-12-31    31.538526
-2011-12-31    30.838846
-2012-12-31    30.170724
-2013-12-31    29.789455
-2014-12-31    29.615910
-2015-12-31    29.979927
-2016-12-31    29.203426
-2017-12-31    30.211704
-2018-12-31    30.138747
-2019-12-31    31.220833
+1986-12-31    33.541327
+1987-12-31    34.214474
+1988-12-31    32.596328
+1989-12-31    30.932115
+1990-12-31    30.916842
+1991-12-31    32.294077
+1992-12-31    33.058273
+1993-12-31    33.135595
+1994-12-31    33.941474
+1995-12-31    33.654447
+1996-12-31    32.867846
+1997-12-31    32.588313
+1998-12-31    31.720110
+1999-12-31    31.950266
+2000-12-31    30.932915
+2001-12-31    30.649259
+2002-12-31    31.913929
+2003-12-31    33.013441
+2004-12-31    33.630838
+2005-12-31    32.849178
+2006-12-31    31.196881
+2007-12-31    30.789330
+2008-12-31    30.892693
+2009-12-31    31.532302
+2010-12-31    31.610644
+2011-12-31    30.909600
+2012-12-31    30.244193
+2013-12-31    29.810164
+2014-12-31    29.614447
+2015-12-31    29.959786
+2016-12-31    29.188697
+2017-12-31    30.211934
+2018-12-31    30.142139
+2019-12-31    31.220768
 2020-12-31    30.929258
 Freq: A-DEC, dtype: float64
 #+end_example
@@ -5215,11 +5216,11 @@ print("\nNW increase:", D['NW'])
 #+RESULTS:
 #+begin_example
 
-NO+NE+NW: min    132.634329
-max    171.928274
+NO+NE+NW: min    132.818011
+max    171.885698
 dtype: float64
 
-NO+NE+NW%: mean    31.413731
+NO+NE+NW%: mean    31.368882
 dtype: float64
 
 NW increase: Date
@@ -5255,8 +5256,8 @@ NW increase: Date
 2015-12-31    109.820132
 2016-12-31    112.405059
 2017-12-31    115.429466
-2018-12-31    114.499675
-2019-12-31    109.654095
+2018-12-31    114.504113
+2019-12-31    109.654818
 2020-12-31    109.281384
 Freq: A-DEC, Name: NW, dtype: float64
 #+end_example
@@ -5503,7 +5504,7 @@ tbl
 1996                 0 (0)                0 (0)             0 (0)           0 (0)   
 1997                 0 (0)                0 (0)             0 (0)           0 (0)   
 1998                32 (9)               23 (7)            22 (7)           0 (0)   
-1999                 0 (0)                0 (0)            20 (8)           0 (0)   
+1999                 0 (0)                0 (0)             0 (0)           0 (0)   
 2000                36 (9)               24 (7)            20 (8)          15 (5)   
 2001                37 (9)               24 (7)            21 (8)          16 (5)   
 2002                39 (9)               27 (7)            20 (8)           0 (0)   
@@ -5528,34 +5529,34 @@ tbl
 
      ZACHARIAE_ISSTROM (%) RINK_ISBRAE (%) NIOGHALVFJERDSFJORDEN (%) PETERMANN_GLETSCHER (%)  
 1986               10 (10)          13 (6)                    12 (5)                   0 (0)  
-1987                9 (10)          13 (6)                    12 (5)                  12 (4)  
-1988                9 (10)          13 (6)                    12 (5)                  11 (4)  
-1989               10 (10)          13 (6)                    11 (5)                  11 (4)  
-1990               10 (10)          13 (6)                    11 (5)                  11 (4)  
+1987                9 (10)          13 (6)                    12 (5)                   0 (0)  
+1988                9 (10)          13 (6)                    12 (5)                   0 (0)  
+1989               10 (10)          13 (6)                    11 (5)                   0 (0)  
+1990               10 (10)          13 (6)                    11 (5)                   0 (0)  
 1991                 0 (0)           0 (0)                     0 (0)                   0 (0)  
 1992                 0 (0)           0 (0)                     0 (0)                   0 (0)  
 1993                 0 (0)           0 (0)                     0 (0)                   0 (0)  
-1994               10 (10)           0 (0)                     0 (0)                  12 (4)  
+1994               10 (10)           0 (0)                     0 (0)                   0 (0)  
 1995                 0 (0)           0 (0)                     0 (0)                   0 (0)  
 1996                 0 (0)           0 (0)                     0 (0)                   0 (0)  
 1997                 0 (0)           0 (0)                     0 (0)                   0 (0)  
-1998                9 (10)           0 (0)                    12 (5)                  11 (4)  
+1998                9 (10)           0 (0)                    12 (5)                   0 (0)  
 1999                9 (10)           0 (0)                     0 (0)                   0 (0)  
-2000               10 (10)          14 (6)                    12 (5)                  11 (4)  
+2000               10 (10)          14 (6)                    12 (5)                   0 (0)  
 2001                 0 (0)          14 (7)                     0 (0)                   0 (0)  
 2002                 0 (0)          14 (7)                     0 (0)                   0 (0)  
 2003                 0 (0)           0 (0)                     0 (0)                   0 (0)  
 2004                 0 (0)          14 (7)                     0 (0)                   0 (0)  
 2005                 0 (0)          13 (7)                     0 (0)                   0 (0)  
 2006                 0 (0)          14 (7)                    12 (5)                   0 (0)  
-2007               12 (10)          13 (7)                     0 (0)                  11 (4)  
+2007               12 (10)          13 (7)                     0 (0)                   0 (0)  
 2008                 0 (0)          14 (7)                     0 (0)                   0 (0)  
 2009               12 (10)          13 (7)                     0 (0)                   0 (0)  
 2010                 0 (0)          13 (7)                     0 (0)                   0 (0)  
 2011                 0 (0)          13 (7)                     0 (0)                   0 (0)  
-2012               13 (10)          13 (7)                    12 (5)                  12 (4)  
-2013               13 (10)          13 (7)                     0 (0)                  12 (4)  
-2014               14 (10)          13 (7)                    13 (5)                  11 (4)  
+2012                 0 (0)          13 (7)                    12 (5)                   0 (0)  
+2013               13 (10)          13 (7)                     0 (0)                   0 (0)  
+2014               14 (10)          13 (7)                    13 (5)                   0 (0)  
 2015               14 (10)          13 (6)                    13 (5)                  12 (4)  
 2016               15 (10)          14 (6)                    13 (5)                  12 (4)  
 2017               15 (10)          13 (6)                    13 (5)                  12 (4)  
@@ -6425,60 +6426,60 @@ find . -type f | LC_ALL=C sort | parallel --keep-order "md5sum {}"
 
 #+NAME: QC_times_NSIDC_0646
 #+BEGIN_SRC bash :results table :eval no-export
-find ${DATADIR}/MEaSUREs/NSIDC-0646.002/ -type d | rev | cut -d"_" -f1 | rev | grep -v NSIDC | LC_ALL=C sort | uniq -c
+find ${DATADIR}/MEaSUREs/NSIDC-0646.003/ -type f -name "*vx_v03.0.tif" | rev | cut -d"_" -f3 | rev | LC_ALL=C sort | uniq -c
 #+END_SRC
 
 #+RESULTS: QC_times_NSIDC_0646
 | 28 | 1985-03 |
-| 37 | 1985-04 |
-| 42 | 1985-05 |
-| 45 | 1985-06 |
-| 46 | 1985-07 |
-| 50 | 1985-08 |
-| 46 | 1985-09 |
+| 36 | 1985-04 |
+| 41 | 1985-05 |
+| 44 | 1985-06 |
+| 45 | 1985-07 |
+| 49 | 1985-08 |
+| 45 | 1985-09 |
 | 36 | 1986-04 |
-| 40 | 1986-05 |
-| 37 | 1986-06 |
-| 39 | 1986-07 |
+| 39 | 1986-05 |
+| 35 | 1986-06 |
+| 38 | 1986-07 |
 | 44 | 1986-08 |
 | 37 | 1986-09 |
 |  9 | 1986-10 |
 |  4 | 1987-03 |
-| 44 | 1987-04 |
-| 48 | 1987-05 |
-| 45 | 1987-06 |
-| 50 | 1987-07 |
-| 47 | 1987-08 |
-| 43 | 1987-09 |
-| 21 | 1987-10 |
+| 42 | 1987-04 |
+| 47 | 1987-05 |
+| 44 | 1987-06 |
+| 49 | 1987-07 |
+| 45 | 1987-08 |
+| 42 | 1987-09 |
+| 19 | 1987-10 |
 |  7 | 1988-03 |
-| 43 | 1988-04 |
-| 48 | 1988-05 |
-| 42 | 1988-06 |
-| 43 | 1988-07 |
-| 42 | 1988-08 |
+| 41 | 1988-04 |
+| 47 | 1988-05 |
+| 41 | 1988-06 |
+| 41 | 1988-07 |
+| 41 | 1988-08 |
 | 39 | 1988-09 |
 | 16 | 1988-10 |
 | 27 | 1989-03 |
-| 49 | 1989-04 |
-| 44 | 1989-05 |
-| 43 | 1989-06 |
-| 39 | 1989-07 |
-| 42 | 1989-08 |
-| 41 | 1989-09 |
+| 48 | 1989-04 |
+| 43 | 1989-05 |
+| 42 | 1989-06 |
+| 38 | 1989-07 |
+| 40 | 1989-08 |
+| 39 | 1989-09 |
 |  6 | 1989-10 |
 | 32 | 1990-03 |
-| 50 | 1990-04 |
-| 46 | 1990-05 |
-| 45 | 1990-06 |
-| 39 | 1990-07 |
-| 39 | 1990-08 |
-| 34 | 1990-09 |
+| 49 | 1990-04 |
+| 45 | 1990-05 |
+| 43 | 1990-06 |
+| 37 | 1990-07 |
+| 38 | 1990-08 |
+| 32 | 1990-09 |
 | 21 | 1990-10 |
 |  3 | 1991-06 |
 |  2 | 1992-06 |
 | 12 | 1992-07 |
-| 11 | 1992-08 |
+| 10 | 1992-08 |
 |  5 | 1992-09 |
 |  4 | 1992-10 |
 |  2 | 1993-03 |
@@ -6488,11 +6489,11 @@ find ${DATADIR}/MEaSUREs/NSIDC-0646.002/ -type d | rev | cut -d"_" -f1 | rev | g
 |  2 | 1993-07 |
 |  6 | 1993-08 |
 |  1 | 1993-09 |
-| 42 | 1994-05 |
-| 49 | 1994-06 |
-| 43 | 1994-07 |
-| 47 | 1994-08 |
-| 42 | 1994-09 |
+| 40 | 1994-05 |
+| 48 | 1994-06 |
+| 42 | 1994-07 |
+| 46 | 1994-08 |
+| 41 | 1994-09 |
 |  3 | 1995-04 |
 |  1 | 1995-05 |
 |  1 | 1995-06 |
@@ -6513,36 +6514,36 @@ find ${DATADIR}/MEaSUREs/NSIDC-0646.002/ -type d | rev | cut -d"_" -f1 | rev | g
 |  6 | 1997-06 |
 |  2 | 1997-07 |
 | 11 | 1997-09 |
-| 23 | 1997-10 |
-| 30 | 1998-03 |
-| 55 | 1998-04 |
-| 53 | 1998-05 |
-| 45 | 1998-06 |
-| 46 | 1998-07 |
-| 52 | 1998-08 |
+| 22 | 1997-10 |
+| 29 | 1998-03 |
+| 54 | 1998-04 |
+| 52 | 1998-05 |
+| 42 | 1998-06 |
+| 45 | 1998-07 |
+| 50 | 1998-08 |
 | 48 | 1998-09 |
-| 16 | 1998-10 |
-| 42 | 1999-07 |
+| 15 | 1998-10 |
+| 41 | 1999-07 |
 | 56 | 1999-08 |
-| 57 | 1999-09 |
-| 43 | 1999-10 |
+| 56 | 1999-09 |
+| 42 | 1999-10 |
 |  8 | 1999-11 |
 |  2 | 1999-12 |
 | 22 | 2000-02 |
 | 56 | 2000-03 |
 | 55 | 2000-04 |
-| 57 | 2000-05 |
-| 72 | 2000-06 |
-| 62 | 2000-07 |
-| 66 | 2000-08 |
+| 56 | 2000-05 |
+| 71 | 2000-06 |
+| 61 | 2000-07 |
+| 65 | 2000-08 |
 | 57 | 2000-09 |
 | 28 | 2000-10 |
 |  1 | 2000-11 |
 | 49 | 2001-03 |
-| 65 | 2001-04 |
-| 61 | 2001-05 |
-| 64 | 2001-06 |
-| 65 | 2001-07 |
+| 62 | 2001-04 |
+| 59 | 2001-05 |
+| 63 | 2001-06 |
+| 64 | 2001-07 |
 | 54 | 2001-08 |
 | 51 | 2001-09 |
 | 44 | 2001-10 |
@@ -6551,131 +6552,131 @@ find ${DATADIR}/MEaSUREs/NSIDC-0646.002/ -type d | rev | cut -d"_" -f1 | rev | g
 |  5 | 2002-02 |
 | 55 | 2002-03 |
 | 63 | 2002-04 |
-| 57 | 2002-05 |
-| 67 | 2002-06 |
-| 66 | 2002-07 |
+| 56 | 2002-05 |
+| 66 | 2002-06 |
+| 65 | 2002-07 |
 | 56 | 2002-08 |
 | 34 | 2002-09 |
-| 12 | 2002-10 |
+| 11 | 2002-10 |
 |  6 | 2003-02 |
 | 35 | 2003-03 |
 | 63 | 2003-04 |
-| 63 | 2003-05 |
-| 58 | 2003-06 |
-| 48 | 2003-07 |
+| 62 | 2003-05 |
+| 56 | 2003-06 |
+| 46 | 2003-07 |
 | 53 | 2003-08 |
-| 45 | 2003-09 |
+| 44 | 2003-09 |
 |  2 | 2003-10 |
 | 27 | 2004-03 |
 | 56 | 2004-04 |
-| 60 | 2004-05 |
-| 72 | 2004-06 |
-| 72 | 2004-07 |
+| 59 | 2004-05 |
+| 70 | 2004-06 |
+| 69 | 2004-07 |
 | 67 | 2004-08 |
 | 57 | 2004-09 |
 | 10 | 2004-10 |
 | 19 | 2005-03 |
-| 60 | 2005-04 |
+| 59 | 2005-04 |
 | 55 | 2005-05 |
-| 66 | 2005-06 |
-| 63 | 2005-07 |
-| 57 | 2005-08 |
-| 57 | 2005-09 |
+| 65 | 2005-06 |
+| 61 | 2005-07 |
+| 56 | 2005-08 |
+| 55 | 2005-09 |
 | 21 | 2005-10 |
 | 40 | 2006-03 |
-| 60 | 2006-04 |
-| 57 | 2006-05 |
-| 74 | 2006-06 |
-| 74 | 2006-07 |
+| 58 | 2006-04 |
+| 56 | 2006-05 |
+| 72 | 2006-06 |
+| 72 | 2006-07 |
 | 67 | 2006-08 |
 | 56 | 2006-09 |
 | 20 | 2006-10 |
 |  2 | 2006-11 |
-| 66 | 2007-03 |
-| 69 | 2007-04 |
-| 68 | 2007-05 |
-| 73 | 2007-06 |
-| 71 | 2007-07 |
-| 67 | 2007-08 |
+| 64 | 2007-03 |
+| 68 | 2007-04 |
+| 65 | 2007-05 |
+| 72 | 2007-06 |
+| 69 | 2007-07 |
+| 66 | 2007-08 |
 | 67 | 2007-09 |
 | 19 | 2007-10 |
-| 15 | 2008-03 |
+| 14 | 2008-03 |
 | 61 | 2008-04 |
 | 57 | 2008-05 |
-| 69 | 2008-06 |
-| 73 | 2008-07 |
-| 60 | 2008-08 |
-| 51 | 2008-09 |
+| 66 | 2008-06 |
+| 72 | 2008-07 |
+| 58 | 2008-08 |
+| 49 | 2008-09 |
 | 15 | 2008-10 |
 |  1 | 2008-11 |
 |  2 | 2009-01 |
 |  1 | 2009-02 |
 | 36 | 2009-03 |
-| 52 | 2009-04 |
+| 50 | 2009-04 |
 | 60 | 2009-05 |
-| 70 | 2009-06 |
-| 73 | 2009-07 |
-| 70 | 2009-08 |
-| 58 | 2009-09 |
+| 68 | 2009-06 |
+| 72 | 2009-07 |
+| 69 | 2009-08 |
+| 57 | 2009-09 |
 | 12 | 2009-10 |
 | 26 | 2010-03 |
-| 59 | 2010-04 |
-| 63 | 2010-05 |
-| 70 | 2010-06 |
-| 73 | 2010-07 |
-| 66 | 2010-08 |
-| 52 | 2010-09 |
+| 58 | 2010-04 |
+| 62 | 2010-05 |
+| 68 | 2010-06 |
+| 71 | 2010-07 |
+| 65 | 2010-08 |
+| 51 | 2010-09 |
 | 15 | 2010-10 |
-| 32 | 2011-03 |
+| 31 | 2011-03 |
 | 50 | 2011-04 |
-| 59 | 2011-05 |
-| 68 | 2011-06 |
-| 71 | 2011-07 |
-| 71 | 2011-08 |
-| 56 | 2011-09 |
+| 58 | 2011-05 |
+| 66 | 2011-06 |
+| 70 | 2011-07 |
+| 70 | 2011-08 |
+| 55 | 2011-09 |
 | 19 | 2011-10 |
 |  2 | 2012-01 |
-| 19 | 2012-03 |
+| 18 | 2012-03 |
 | 54 | 2012-04 |
 | 65 | 2012-05 |
-| 74 | 2012-06 |
-| 74 | 2012-07 |
-| 74 | 2012-08 |
-| 59 | 2012-09 |
-| 20 | 2012-10 |
+| 73 | 2012-06 |
+| 72 | 2012-07 |
+| 73 | 2012-08 |
+| 58 | 2012-09 |
+| 19 | 2012-10 |
 |  4 | 2013-02 |
-| 63 | 2013-03 |
-| 73 | 2013-04 |
-| 73 | 2013-05 |
-| 74 | 2013-06 |
-| 72 | 2013-07 |
-| 72 | 2013-08 |
-| 73 | 2013-09 |
+| 62 | 2013-03 |
+| 72 | 2013-04 |
+| 72 | 2013-05 |
+| 73 | 2013-06 |
+| 69 | 2013-07 |
+| 70 | 2013-08 |
+| 72 | 2013-09 |
 | 48 | 2013-10 |
 | 23 | 2013-11 |
 | 11 | 2013-12 |
 | 13 | 2014-01 |
-| 43 | 2014-02 |
-| 66 | 2014-03 |
-| 68 | 2014-04 |
-| 71 | 2014-05 |
-| 74 | 2014-06 |
-| 74 | 2014-07 |
-| 74 | 2014-08 |
-| 74 | 2014-09 |
+| 42 | 2014-02 |
+| 64 | 2014-03 |
+| 67 | 2014-04 |
+| 70 | 2014-05 |
+| 72 | 2014-06 |
+| 73 | 2014-07 |
+| 73 | 2014-08 |
+| 73 | 2014-09 |
 | 49 | 2014-10 |
 | 26 | 2014-11 |
 | 14 | 2014-12 |
 | 15 | 2015-01 |
 | 51 | 2015-02 |
-| 72 | 2015-03 |
-| 71 | 2015-04 |
-| 74 | 2015-05 |
-| 74 | 2015-06 |
-| 74 | 2015-07 |
-| 74 | 2015-08 |
-| 74 | 2015-09 |
-| 70 | 2015-10 |
+| 71 | 2015-03 |
+| 70 | 2015-04 |
+| 73 | 2015-05 |
+| 72 | 2015-06 |
+| 73 | 2015-07 |
+| 72 | 2015-08 |
+| 73 | 2015-09 |
+| 68 | 2015-10 |
 | 25 | 2015-11 |
 |  9 | 2015-12 |
 |  8 | 2016-01 |
@@ -6702,18 +6703,30 @@ find ${DATADIR}/MEaSUREs/NSIDC-0646.002/ -type d | rev | cut -d"_" -f1 | rev | g
 | 64 | 2017-10 |
 | 32 | 2017-11 |
 | 11 | 2017-12 |
-| 19 | 2018-01 |
-| 47 | 2018-02 |
-| 70 | 2018-03 |
-| 69 | 2018-04 |
-| 72 | 2018-05 |
-| 70 | 2018-06 |
-| 71 | 2018-07 |
-| 70 | 2018-08 |
-| 70 | 2018-09 |
-| 64 | 2018-10 |
-| 20 | 2018-11 |
-|  5 | 2018-12 |
+| 22 | 2018-01 |
+| 55 | 2018-02 |
+| 72 | 2018-03 |
+| 72 | 2018-04 |
+| 73 | 2018-05 |
+| 72 | 2018-06 |
+| 73 | 2018-07 |
+| 73 | 2018-08 |
+| 72 | 2018-09 |
+| 68 | 2018-10 |
+| 26 | 2018-11 |
+|  7 | 2018-12 |
+| 14 | 2019-01 |
+| 59 | 2019-02 |
+| 69 | 2019-03 |
+| 66 | 2019-04 |
+| 64 | 2019-05 |
+| 69 | 2019-06 |
+| 69 | 2019-07 |
+| 69 | 2019-08 |
+| 69 | 2019-09 |
+| 65 | 2019-10 |
+| 36 | 2019-11 |
+|  4 | 2019-12 |
 
 **** 0731
 ***** File List
@@ -7244,436 +7257,436 @@ zcat ${FILE}
 
 #+RESULTS:
 |       Date | Discharge [Gt yr-1] |
-| 1986-04-15 |             445.809 |
-| 1986-05-15 |             455.117 |
-| 1986-06-15 |             461.246 |
-| 1986-07-15 |             463.178 |
-| 1986-08-15 |              462.55 |
-| 1986-09-15 |             467.503 |
-| 1986-10-15 |             466.036 |
-| 1987-03-15 |             460.289 |
-| 1987-04-15 |              461.92 |
-| 1987-05-15 |             450.936 |
-| 1987-06-15 |             458.141 |
-| 1987-07-15 |             452.954 |
-| 1987-08-15 |             451.656 |
-| 1987-09-15 |             453.871 |
-| 1987-10-15 |             454.029 |
-| 1988-03-15 |             445.596 |
-| 1988-04-15 |             445.136 |
-| 1988-05-15 |             443.382 |
-| 1988-06-15 |             451.358 |
-| 1988-07-15 |             444.833 |
-| 1988-08-15 |             443.451 |
-| 1988-09-15 |             435.051 |
-| 1988-10-15 |             431.794 |
-| 1989-03-15 |             434.249 |
-| 1989-04-15 |             429.512 |
-| 1989-05-15 |             445.428 |
-| 1989-06-15 |              452.48 |
-| 1989-07-15 |             449.008 |
-| 1989-08-15 |             444.185 |
-| 1989-09-15 |             447.744 |
-| 1989-10-15 |             444.527 |
-| 1990-03-15 |             447.575 |
-| 1990-04-15 |             439.709 |
-| 1990-05-15 |             446.289 |
-| 1990-06-15 |             451.598 |
-| 1990-07-15 |             449.656 |
-| 1990-08-15 |             442.004 |
-| 1990-09-15 |             436.383 |
-| 1990-10-15 |             440.903 |
-| 1991-01-01 |             429.153 |
-| 1991-06-15 |             428.558 |
-| 1992-01-01 |             428.839 |
-| 1992-06-15 |             438.901 |
-| 1992-07-15 |             440.751 |
-| 1992-08-15 |             435.041 |
-| 1992-09-15 |             434.346 |
-| 1992-10-15 |             433.213 |
-| 1993-01-01 |             430.175 |
-| 1993-03-15 |             436.457 |
-| 1993-04-15 |             438.645 |
-| 1993-05-15 |             438.959 |
-| 1993-06-15 |              438.24 |
-| 1993-07-15 |             439.259 |
-| 1993-08-15 |             439.439 |
-| 1993-09-15 |             439.604 |
-| 1994-01-01 |             441.124 |
-| 1994-05-15 |             452.508 |
-| 1994-06-15 |             461.234 |
-| 1994-07-15 |              476.48 |
-| 1994-08-15 |             466.611 |
-| 1994-09-15 |              446.67 |
-| 1995-01-01 |             441.044 |
-| 1995-04-15 |             437.713 |
-| 1995-05-15 |             436.349 |
-| 1995-06-15 |             434.899 |
-| 1995-07-15 |             432.938 |
-| 1995-08-15 |             430.252 |
-| 1995-09-15 |             427.799 |
-| 1995-10-15 |             425.422 |
-| 1996-01-01 |             419.427 |
-| 1996-04-15 |             426.681 |
-| 1996-05-15 |             428.071 |
-| 1996-06-15 |             429.318 |
-| 1996-07-15 |             429.005 |
-| 1996-08-15 |             429.928 |
-| 1996-09-15 |             431.389 |
-| 1996-10-15 |              432.32 |
-| 1997-01-01 |             435.049 |
-| 1997-03-15 |             435.234 |
-| 1997-04-15 |             435.293 |
-| 1997-05-15 |              435.25 |
-| 1997-06-15 |              435.45 |
-| 1997-07-15 |             434.935 |
-| 1997-09-15 |             434.022 |
-| 1997-10-15 |             433.327 |
-| 1998-01-01 |             429.489 |
-| 1998-03-15 |             435.865 |
-| 1998-04-15 |             438.307 |
-| 1998-05-15 |             446.059 |
-| 1998-06-15 |             458.511 |
-| 1998-07-15 |             454.851 |
-| 1998-08-15 |             444.069 |
-| 1998-09-15 |             430.928 |
-| 1998-10-15 |             440.202 |
-| 1999-01-01 |             437.175 |
-| 1999-07-15 |             443.468 |
-| 1999-08-15 |              438.62 |
-| 1999-09-15 |             442.004 |
-| 1999-10-15 |             441.648 |
-| 1999-11-15 |             443.241 |
-| 1999-12-15 |             444.724 |
-| 2000-01-01 |             445.616 |
-| 2000-02-15 |             444.617 |
-| 2000-03-15 |             440.902 |
-| 2000-04-15 |              444.84 |
-| 2000-05-15 |             443.921 |
-| 2000-06-15 |             454.265 |
-| 2000-07-15 |             454.217 |
-| 2000-08-15 |             454.403 |
-| 2000-09-03 |               431.8 |
-| 2000-09-15 |             434.816 |
-| 2000-10-15 |             434.371 |
-| 2000-11-15 |             435.933 |
-| 2001-03-15 |             441.922 |
-| 2001-04-15 |             442.926 |
-| 2001-05-15 |             438.338 |
-| 2001-06-15 |             458.049 |
-| 2001-07-15 |              454.86 |
-| 2001-08-15 |             444.161 |
-| 2001-09-15 |             446.309 |
-| 2001-10-15 |             442.545 |
-| 2001-11-15 |             445.622 |
-| 2002-01-15 |             448.114 |
-| 2002-02-15 |             449.934 |
-| 2002-03-15 |             451.757 |
-| 2002-04-15 |             453.782 |
-| 2002-05-15 |             461.499 |
-| 2002-06-15 |             473.852 |
-| 2002-07-15 |             471.696 |
-| 2002-08-15 |             465.877 |
-| 2002-09-15 |             461.326 |
-| 2002-10-15 |             465.575 |
-| 2003-02-15 |             471.935 |
-| 2003-03-15 |             473.435 |
-| 2003-04-15 |             477.606 |
-| 2003-05-15 |             473.463 |
-| 2003-06-15 |             483.006 |
-| 2003-07-15 |             478.954 |
-| 2003-08-15 |             475.577 |
-| 2003-09-15 |             477.189 |
-| 2003-10-15 |             478.769 |
-| 2004-03-15 |             485.933 |
-| 2004-04-15 |             482.795 |
-| 2004-05-15 |             485.668 |
-| 2004-06-15 |             502.599 |
-| 2004-07-15 |             493.965 |
-| 2004-08-15 |             483.223 |
-| 2004-09-15 |             486.229 |
-| 2004-10-15 |             487.651 |
-| 2005-03-15 |             499.422 |
-| 2005-04-15 |             500.394 |
-| 2005-05-15 |             503.945 |
-| 2005-06-15 |             517.147 |
-| 2005-07-15 |             511.867 |
-| 2005-08-15 |             497.753 |
-| 2005-09-15 |             489.229 |
-| 2005-10-15 |             488.583 |
-| 2005-12-13 |             489.699 |
-| 2006-03-15 |             493.332 |
-| 2006-04-15 |             493.341 |
-| 2006-05-15 |             496.238 |
-| 2006-06-15 |             499.494 |
-| 2006-07-15 |             508.376 |
-| 2006-08-15 |             496.911 |
-| 2006-09-15 |             477.826 |
-| 2006-10-15 |             481.833 |
-| 2006-11-15 |             478.836 |
-| 2006-12-18 |             477.053 |
-| 2007-03-15 |             481.715 |
-| 2007-04-15 |             478.437 |
-| 2007-05-15 |             483.176 |
-| 2007-06-15 |             508.863 |
-| 2007-07-15 |             498.863 |
-| 2007-08-15 |              475.18 |
-| 2007-09-07 |             476.106 |
-| 2007-09-15 |             470.081 |
-| 2007-10-15 |             471.837 |
-| 2008-03-15 |             477.501 |
-| 2008-04-15 |             477.607 |
-| 2008-05-15 |             483.543 |
-| 2008-06-15 |             502.308 |
-| 2008-07-15 |             494.704 |
-| 2008-08-15 |             486.928 |
-| 2008-10-15 |              486.71 |
-| 2008-11-15 |             486.938 |
-| 2009-01-15 |             487.373 |
-| 2009-02-15 |             487.571 |
-| 2009-03-15 |              487.75 |
-| 2009-04-15 |             484.905 |
-| 2009-05-15 |             490.499 |
-| 2009-06-15 |             508.583 |
-| 2009-07-15 |             517.701 |
-| 2009-08-15 |             484.172 |
-| 2009-09-02 |             480.955 |
-| 2009-09-15 |               482.0 |
-| 2009-10-15 |             484.164 |
-| 2010-03-15 |             494.978 |
-| 2010-04-15 |             493.479 |
-| 2010-05-15 |             489.554 |
-| 2010-06-15 |             511.928 |
-| 2010-07-15 |             499.937 |
-| 2010-08-15 |             494.422 |
-| 2010-09-15 |             488.528 |
-| 2010-10-15 |             488.645 |
-| 2011-03-15 |             491.552 |
-| 2011-04-15 |             496.656 |
-| 2011-05-15 |             498.401 |
-| 2011-06-15 |             508.065 |
-| 2011-07-15 |             508.518 |
-| 2011-08-15 |             496.182 |
-| 2011-09-15 |             493.584 |
-| 2011-10-15 |             493.473 |
-| 2012-01-15 |             492.166 |
-| 2012-03-15 |             491.554 |
-| 2012-04-15 |             491.199 |
-| 2012-05-15 |             494.117 |
-| 2012-06-15 |             513.598 |
-| 2012-07-15 |              502.18 |
-| 2012-08-15 |             485.787 |
-| 2012-09-15 |             484.065 |
-| 2012-10-15 |             489.047 |
-| 2012-11-10 |             491.424 |
-| 2013-02-15 |              492.65 |
-| 2013-03-15 |             492.965 |
-| 2013-04-15 |             487.368 |
-| 2013-05-15 |             486.972 |
-| 2013-06-15 |             501.934 |
-| 2013-07-15 |             501.621 |
-| 2013-08-15 |             501.182 |
-| 2013-09-15 |             499.246 |
-| 2013-10-15 |              499.41 |
-| 2013-11-15 |             500.062 |
-| 2013-12-15 |             499.339 |
-| 2014-01-15 |              499.91 |
-| 2014-02-15 |              498.02 |
-| 2014-03-15 |              498.55 |
-| 2014-04-15 |             494.813 |
-| 2014-05-15 |             496.474 |
-| 2014-06-15 |             516.552 |
-| 2014-07-15 |             514.977 |
-| 2014-08-15 |             492.718 |
-| 2014-09-01 |              494.92 |
-| 2014-09-15 |             478.407 |
-| 2014-10-15 |             493.881 |
-| 2014-11-15 |             498.944 |
-| 2014-12-15 |              499.37 |
-| 2014-12-16 |             499.906 |
-| 2015-01-15 |             498.827 |
-| 2015-01-16 |             498.193 |
-| 2015-02-14 |             499.529 |
-| 2015-02-15 |             497.189 |
-| 2015-03-15 |             499.633 |
-| 2015-03-16 |             501.916 |
-| 2015-05-15 |             496.165 |
-| 2015-05-16 |             501.399 |
-| 2015-07-15 |             519.073 |
-| 2015-07-16 |             512.942 |
-| 2015-08-15 |             498.892 |
-| 2015-08-16 |              497.15 |
-| 2015-09-01 |             500.496 |
-| 2015-10-15 |             500.456 |
-| 2015-10-16 |             497.301 |
-| 2015-12-15 |             499.351 |
-| 2015-12-16 |             498.729 |
-| 2016-01-15 |             493.918 |
-| 2016-01-16 |             493.096 |
-| 2016-03-15 |             491.948 |
-| 2016-03-16 |             493.971 |
-| 2016-05-15 |             496.159 |
-| 2016-05-16 |             500.954 |
-| 2016-07-15 |             507.015 |
-| 2016-07-16 |             501.003 |
-| 2016-08-15 |             496.175 |
-| 2016-08-16 |             491.076 |
-| 2016-09-01 |             500.787 |
-| 2016-09-25 |             489.747 |
-| 2016-10-06 |              496.96 |
+| 1986-04-15 |             445.385 |
+| 1986-05-15 |             455.132 |
+| 1986-06-15 |             459.675 |
+| 1986-07-15 |             461.184 |
+| 1986-08-15 |             460.905 |
+| 1986-09-15 |             465.856 |
+| 1986-10-15 |             464.501 |
+| 1987-03-15 |              459.33 |
+| 1987-04-15 |              459.02 |
+| 1987-05-15 |             449.515 |
+| 1987-06-15 |             457.927 |
+| 1987-07-15 |             451.998 |
+| 1987-08-15 |             450.152 |
+| 1987-09-15 |             454.896 |
+| 1987-10-15 |              452.58 |
+| 1988-03-15 |             445.169 |
+| 1988-04-15 |             444.917 |
+| 1988-05-15 |             443.818 |
+| 1988-06-15 |             449.015 |
+| 1988-07-15 |             445.029 |
+| 1988-08-15 |             442.533 |
+| 1988-09-15 |             434.187 |
+| 1988-10-15 |             430.954 |
+| 1989-03-15 |             433.481 |
+| 1989-04-15 |             428.759 |
+| 1989-05-15 |             444.866 |
+| 1989-06-15 |             451.494 |
+| 1989-07-15 |             446.966 |
+| 1989-08-15 |             444.385 |
+| 1989-09-15 |             446.886 |
+| 1989-10-15 |             443.794 |
+| 1990-03-15 |             447.193 |
+| 1990-04-15 |             439.601 |
+| 1990-05-15 |              446.92 |
+| 1990-06-15 |             450.772 |
+| 1990-07-15 |             449.419 |
+| 1990-08-15 |             441.274 |
+| 1990-09-15 |             434.693 |
+| 1990-10-15 |             439.289 |
+| 1991-01-01 |              427.68 |
+| 1991-06-15 |             427.567 |
+| 1992-01-01 |              428.43 |
+| 1992-06-15 |             438.554 |
+| 1992-07-15 |             440.417 |
+| 1992-08-15 |             434.718 |
+| 1992-09-15 |             434.044 |
+| 1992-10-15 |             432.932 |
+| 1993-01-01 |             429.946 |
+| 1993-03-15 |             436.225 |
+| 1993-04-15 |             438.411 |
+| 1993-05-15 |             438.725 |
+| 1993-06-15 |             438.004 |
+| 1993-07-15 |             439.022 |
+| 1993-08-15 |               439.2 |
+| 1993-09-15 |             439.364 |
+| 1994-01-01 |              440.88 |
+| 1994-05-15 |             451.936 |
+| 1994-06-15 |             459.948 |
+| 1994-07-15 |             475.165 |
+| 1994-08-15 |             461.788 |
+| 1994-09-15 |             442.429 |
+| 1995-01-01 |             437.762 |
+| 1995-04-15 |             435.351 |
+| 1995-05-15 |             434.253 |
+| 1995-06-15 |             433.078 |
+| 1995-07-15 |             431.383 |
+| 1995-08-15 |             428.971 |
+| 1995-09-15 |             426.793 |
+| 1995-10-15 |             424.683 |
+| 1996-01-01 |              419.38 |
+| 1996-04-15 |             426.789 |
+| 1996-05-15 |             428.223 |
+| 1996-06-15 |             429.516 |
+| 1996-07-15 |             429.247 |
+| 1996-08-15 |             430.216 |
+| 1996-09-15 |             431.723 |
+| 1996-10-15 |             432.699 |
+| 1997-01-01 |             435.543 |
+| 1997-03-15 |             435.832 |
+| 1997-04-15 |             435.935 |
+| 1997-05-15 |             435.934 |
+| 1997-06-15 |             436.178 |
+| 1997-07-15 |             435.705 |
+| 1997-09-15 |              434.88 |
+| 1997-10-15 |             434.219 |
+| 1998-01-01 |             430.373 |
+| 1998-03-15 |             436.642 |
+| 1998-04-15 |             439.129 |
+| 1998-05-15 |             445.174 |
+| 1998-06-15 |             452.872 |
+| 1998-07-15 |              454.43 |
+| 1998-08-15 |             442.206 |
+| 1998-09-15 |             429.649 |
+| 1998-10-15 |             438.522 |
+| 1999-01-01 |             435.898 |
+| 1999-07-15 |             441.637 |
+| 1999-08-15 |             437.052 |
+| 1999-09-15 |             441.834 |
+| 1999-10-15 |             441.201 |
+| 1999-11-15 |             442.781 |
+| 1999-12-15 |              444.25 |
+| 2000-01-01 |             445.135 |
+| 2000-02-15 |             444.443 |
+| 2000-03-15 |             440.927 |
+| 2000-04-15 |             444.973 |
+| 2000-05-15 |              444.02 |
+| 2000-06-15 |             454.298 |
+| 2000-07-15 |             451.254 |
+| 2000-08-15 |             442.337 |
+| 2000-09-03 |             428.464 |
+| 2000-09-15 |             431.847 |
+| 2000-10-15 |             431.883 |
+| 2000-11-15 |             433.895 |
+| 2001-03-15 |              441.62 |
+| 2001-04-15 |              443.21 |
+| 2001-05-15 |             438.789 |
+| 2001-06-15 |             458.521 |
+| 2001-07-15 |              455.71 |
+| 2001-08-15 |              445.07 |
+| 2001-09-15 |             447.239 |
+| 2001-10-15 |             443.487 |
+| 2001-11-15 |             446.784 |
+| 2002-01-15 |               449.5 |
+| 2002-02-15 |             451.433 |
+| 2002-03-15 |             453.358 |
+| 2002-04-15 |             455.231 |
+| 2002-05-15 |             463.027 |
+| 2002-06-15 |              475.45 |
+| 2002-07-15 |             471.261 |
+| 2002-08-15 |             465.422 |
+| 2002-09-15 |             460.758 |
+| 2002-10-15 |             465.058 |
+| 2003-02-15 |             470.949 |
+| 2003-03-15 |             472.343 |
+| 2003-04-15 |             476.224 |
+| 2003-05-15 |             472.135 |
+| 2003-06-15 |             481.388 |
+| 2003-07-15 |             477.329 |
+| 2003-08-15 |             474.176 |
+| 2003-09-15 |             475.744 |
+| 2003-10-15 |             477.433 |
+| 2004-03-15 |             485.147 |
+| 2004-04-15 |             482.048 |
+| 2004-05-15 |             485.129 |
+| 2004-06-15 |             502.912 |
+| 2004-07-15 |             494.312 |
+| 2004-08-15 |              483.23 |
+| 2004-09-15 |             486.267 |
+| 2004-10-15 |             487.774 |
+| 2005-03-15 |             499.778 |
+| 2005-04-15 |             500.798 |
+| 2005-05-15 |             504.567 |
+| 2005-06-15 |             517.911 |
+| 2005-07-15 |             511.956 |
+| 2005-08-15 |             497.126 |
+| 2005-09-15 |             489.008 |
+| 2005-10-15 |             488.566 |
+| 2005-12-13 |             489.681 |
+| 2006-03-15 |             492.973 |
+| 2006-04-15 |             493.278 |
+| 2006-05-15 |             495.444 |
+| 2006-06-15 |             498.456 |
+| 2006-07-15 |             508.086 |
+| 2006-08-15 |             496.423 |
+| 2006-09-15 |             477.547 |
+| 2006-10-15 |             481.593 |
+| 2006-11-15 |             478.546 |
+| 2006-12-18 |              476.71 |
+| 2007-03-15 |             482.458 |
+| 2007-04-15 |             478.765 |
+| 2007-05-15 |             482.861 |
+| 2007-06-15 |             508.137 |
+| 2007-07-15 |             497.772 |
+| 2007-08-15 |             474.746 |
+| 2007-09-07 |             476.249 |
+| 2007-09-15 |             470.089 |
+| 2007-10-15 |             471.614 |
+| 2008-03-15 |             476.807 |
+| 2008-04-15 |             476.493 |
+| 2008-05-15 |              482.47 |
+| 2008-06-15 |             501.485 |
+| 2008-07-15 |             493.493 |
+| 2008-08-15 |             485.803 |
+| 2008-10-15 |              486.07 |
+| 2008-11-15 |             486.471 |
+| 2009-01-15 |             487.245 |
+| 2009-02-15 |             487.617 |
+| 2009-03-15 |             487.951 |
+| 2009-04-15 |             485.476 |
+| 2009-05-15 |             491.298 |
+| 2009-06-15 |             509.405 |
+| 2009-07-15 |             516.592 |
+| 2009-08-15 |             483.972 |
+| 2009-09-02 |             480.952 |
+| 2009-09-15 |             481.954 |
+| 2009-10-15 |             484.154 |
+| 2010-03-15 |             494.894 |
+| 2010-04-15 |             493.349 |
+| 2010-05-15 |             489.316 |
+| 2010-06-15 |             511.755 |
+| 2010-07-15 |              498.44 |
+| 2010-08-15 |             491.579 |
+| 2010-09-15 |             486.183 |
+| 2010-10-15 |             486.488 |
+| 2011-03-15 |             490.339 |
+| 2011-04-15 |             495.451 |
+| 2011-05-15 |             497.451 |
+| 2011-06-15 |              506.99 |
+| 2011-07-15 |             508.968 |
+| 2011-08-15 |             493.765 |
+| 2011-09-15 |             491.621 |
+| 2011-10-15 |             491.799 |
+| 2012-01-15 |             491.387 |
+| 2012-03-15 |             491.359 |
+| 2012-04-15 |             490.523 |
+| 2012-05-15 |              493.75 |
+| 2012-06-15 |             513.424 |
+| 2012-07-15 |             498.844 |
+| 2012-08-15 |             483.075 |
+| 2012-09-15 |             482.078 |
+| 2012-10-15 |             488.201 |
+| 2012-11-10 |             491.418 |
+| 2013-02-15 |             492.458 |
+| 2013-03-15 |             492.718 |
+| 2013-04-15 |             487.314 |
+| 2013-05-15 |             485.353 |
+| 2013-06-15 |             501.546 |
+| 2013-07-15 |             501.092 |
+| 2013-08-15 |             499.014 |
+| 2013-09-15 |             499.301 |
+| 2013-10-15 |             499.621 |
+| 2013-11-15 |             500.344 |
+| 2013-12-15 |             499.704 |
+| 2014-01-15 |              500.33 |
+| 2014-02-15 |             498.514 |
+| 2014-03-15 |             499.023 |
+| 2014-04-15 |             495.271 |
+| 2014-05-15 |             496.162 |
+| 2014-06-15 |             516.014 |
+| 2014-07-15 |             513.664 |
+| 2014-08-15 |             491.931 |
+| 2014-09-01 |             494.872 |
+| 2014-09-15 |             478.697 |
+| 2014-10-15 |             493.933 |
+| 2014-11-15 |             498.964 |
+| 2014-12-15 |             499.387 |
+| 2014-12-16 |             499.931 |
+| 2015-01-15 |               498.8 |
+| 2015-01-16 |             498.165 |
+| 2015-02-14 |              499.54 |
+| 2015-02-15 |             497.172 |
+| 2015-03-15 |             499.741 |
+| 2015-03-16 |             502.027 |
+| 2015-05-15 |             496.312 |
+| 2015-05-16 |             501.431 |
+| 2015-07-15 |             519.655 |
+| 2015-07-16 |             513.475 |
+| 2015-08-15 |             499.748 |
+| 2015-08-16 |             497.163 |
+| 2015-09-01 |             500.482 |
+| 2015-10-15 |             499.919 |
+| 2015-10-16 |             497.102 |
+| 2015-12-15 |             499.105 |
+| 2015-12-16 |             498.483 |
+| 2016-01-15 |             493.668 |
+| 2016-01-16 |             492.846 |
+| 2016-03-15 |             491.502 |
+| 2016-03-16 |             493.627 |
+| 2016-05-15 |             496.323 |
+| 2016-05-16 |             500.948 |
+| 2016-07-15 |             507.204 |
+| 2016-07-16 |             501.092 |
+| 2016-08-15 |               496.4 |
+| 2016-08-16 |             491.229 |
+| 2016-09-01 |             500.789 |
+| 2016-09-25 |             489.765 |
+| 2016-10-06 |              496.93 |
 | 2016-10-15 |             499.159 |
-| 2016-10-16 |             488.963 |
-| 2016-10-18 |             499.428 |
-| 2016-10-25 |             496.769 |
-| 2016-10-30 |              493.85 |
-| 2016-11-11 |             497.264 |
-| 2016-11-16 |             497.595 |
-| 2016-11-30 |             498.094 |
-| 2016-12-05 |             498.273 |
-| 2016-12-12 |             498.523 |
-| 2016-12-15 |             495.745 |
-| 2016-12-16 |             494.474 |
-| 2016-12-17 |             497.143 |
-| 2016-12-24 |             499.073 |
-| 2016-12-29 |             500.464 |
+| 2016-10-16 |             488.926 |
+| 2016-10-18 |             499.456 |
+| 2016-10-25 |             496.794 |
+| 2016-10-30 |             493.906 |
+| 2016-11-11 |             497.271 |
+| 2016-11-16 |             497.596 |
+| 2016-11-30 |              498.09 |
+| 2016-12-05 |             498.266 |
+| 2016-12-12 |             498.513 |
+| 2016-12-15 |              495.74 |
+| 2016-12-16 |             494.479 |
+| 2016-12-17 |             497.129 |
+| 2016-12-24 |             499.072 |
+| 2016-12-29 |             500.444 |
 | 2017-01-04 |             501.599 |
 | 2017-01-10 |             501.304 |
-| 2017-01-15 |             500.776 |
-| 2017-01-22 |             499.196 |
-| 2017-01-29 |             499.535 |
-| 2017-02-03 |             500.586 |
+| 2017-01-15 |             500.769 |
+| 2017-01-22 |             499.197 |
+| 2017-01-29 |              499.54 |
+| 2017-02-03 |             500.582 |
 | 2017-02-09 |             502.344 |
-| 2017-02-14 |             499.625 |
-| 2017-02-22 |              500.84 |
-| 2017-02-27 |             500.019 |
-| 2017-03-06 |             499.613 |
-| 2017-03-11 |              500.41 |
-| 2017-03-15 |             501.935 |
-| 2017-03-16 |             498.231 |
-| 2017-03-18 |             500.528 |
-| 2017-03-23 |             502.549 |
-| 2017-03-30 |              503.36 |
-| 2017-04-04 |              502.75 |
-| 2017-04-11 |             502.293 |
-| 2017-04-16 |             505.995 |
-| 2017-04-23 |              510.33 |
-| 2017-04-28 |             517.612 |
-| 2017-05-05 |              518.51 |
-| 2017-05-10 |             515.645 |
-| 2017-05-15 |             504.904 |
-| 2017-05-16 |             506.373 |
-| 2017-05-17 |             504.977 |
-| 2017-05-22 |             504.296 |
-| 2017-05-28 |             502.378 |
-| 2017-06-03 |             502.817 |
-| 2017-06-09 |              503.81 |
-| 2017-06-16 |             507.535 |
-| 2017-06-21 |             510.781 |
-| 2017-06-28 |              513.05 |
-| 2017-07-03 |             513.571 |
-| 2017-07-09 |             516.555 |
-| 2017-07-16 |             519.916 |
-| 2017-07-21 |             518.162 |
-| 2017-07-27 |             516.081 |
-| 2017-08-02 |             511.973 |
-| 2017-08-08 |              505.97 |
-| 2017-08-12 |             505.569 |
-| 2017-08-15 |             513.494 |
-| 2017-08-16 |             511.967 |
-| 2017-08-20 |             501.642 |
-| 2017-08-26 |             502.861 |
-| 2017-09-13 |             499.873 |
-| 2017-09-19 |             504.738 |
-| 2017-09-24 |             505.572 |
-| 2017-10-01 |             503.607 |
-| 2017-10-07 |             502.327 |
-| 2017-10-13 |             506.512 |
-| 2017-10-15 |             508.437 |
-| 2017-10-16 |             503.369 |
-| 2017-10-19 |             507.096 |
-| 2017-10-25 |             510.129 |
-| 2017-10-31 |             508.002 |
-| 2017-11-06 |             505.329 |
-| 2017-11-12 |             500.665 |
-| 2017-11-18 |             496.052 |
-| 2017-11-30 |             500.169 |
-| 2017-12-12 |             499.664 |
-| 2017-12-15 |             504.331 |
-| 2017-12-16 |             505.932 |
-| 2017-12-24 |              494.57 |
-| 2018-01-05 |             498.301 |
-| 2018-01-15 |             505.952 |
-| 2018-01-16 |             505.358 |
-| 2018-01-17 |             499.482 |
-| 2018-01-29 |             496.615 |
-| 2018-02-10 |             495.029 |
-| 2018-02-14 |             504.052 |
-| 2018-02-15 |             506.573 |
-| 2018-02-22 |              493.44 |
-| 2018-03-06 |             494.816 |
-| 2018-03-15 |             507.314 |
-| 2018-03-16 |             502.016 |
-| 2018-03-18 |             492.816 |
-| 2018-03-30 |             491.487 |
-| 2018-04-11 |             493.105 |
-| 2018-04-23 |             496.924 |
-| 2018-05-05 |             496.416 |
-| 2018-05-15 |             505.506 |
-| 2018-05-16 |             507.234 |
-| 2018-05-17 |              501.45 |
-| 2018-05-29 |              494.67 |
-| 2018-06-10 |             496.466 |
-| 2018-06-22 |             497.179 |
-| 2018-07-04 |             498.229 |
-| 2018-07-15 |             512.204 |
-| 2018-07-28 |             492.257 |
-| 2018-08-09 |             490.998 |
-| 2018-08-15 |              508.39 |
-| 2018-08-16 |              505.89 |
-| 2018-08-21 |             484.923 |
-| 2018-09-02 |             484.334 |
-| 2018-09-14 |             490.138 |
-| 2018-09-26 |              489.35 |
-| 2018-10-08 |             491.561 |
-| 2018-10-15 |             507.452 |
-| 2018-10-16 |             502.935 |
-| 2018-10-20 |             497.808 |
-| 2018-11-01 |             499.227 |
-| 2018-11-13 |             498.784 |
-| 2018-11-25 |             496.442 |
-| 2018-12-07 |             493.447 |
-| 2018-12-15 |              496.41 |
-| 2018-12-19 |             497.279 |
-| 2018-12-31 |             497.373 |
-| 2019-01-12 |             498.068 |
-| 2019-01-24 |             498.731 |
-| 2019-02-05 |               498.2 |
-| 2019-02-17 |              497.74 |
-| 2019-03-01 |             497.448 |
-| 2019-03-13 |             496.157 |
-| 2019-03-25 |             493.641 |
-| 2019-04-05 |              495.03 |
-| 2019-04-18 |             499.354 |
-| 2019-04-30 |              504.24 |
-| 2019-05-12 |             501.082 |
-| 2019-05-24 |             503.384 |
-| 2019-06-05 |             505.287 |
-| 2019-06-17 |             509.765 |
-| 2019-06-29 |             508.557 |
-| 2019-07-11 |             509.493 |
-| 2019-07-23 |             501.632 |
-| 2019-08-04 |             495.249 |
-| 2019-08-16 |               486.3 |
+| 2017-02-14 |             499.628 |
+| 2017-02-22 |             500.842 |
+| 2017-02-27 |             500.021 |
+| 2017-03-06 |               499.6 |
+| 2017-03-11 |             500.406 |
+| 2017-03-15 |             502.032 |
+| 2017-03-16 |             498.265 |
+| 2017-03-18 |             500.543 |
+| 2017-03-23 |             502.553 |
+| 2017-03-30 |             503.354 |
+| 2017-04-04 |             502.743 |
+| 2017-04-11 |             502.289 |
+| 2017-04-16 |              505.99 |
+| 2017-04-23 |             510.324 |
+| 2017-04-28 |               517.6 |
+| 2017-05-05 |             518.503 |
+| 2017-05-10 |             515.637 |
+| 2017-05-15 |             504.803 |
+| 2017-05-16 |             506.368 |
+| 2017-05-17 |             504.967 |
+| 2017-05-22 |             504.305 |
+| 2017-05-28 |             502.375 |
+| 2017-06-03 |             502.802 |
+| 2017-06-09 |             503.802 |
+| 2017-06-16 |              507.54 |
+| 2017-06-21 |             510.797 |
+| 2017-06-28 |             513.063 |
+| 2017-07-03 |             513.573 |
+| 2017-07-09 |             516.542 |
+| 2017-07-16 |             519.914 |
+| 2017-07-21 |             518.194 |
+| 2017-07-27 |             516.095 |
+| 2017-08-02 |             511.969 |
+| 2017-08-08 |             505.939 |
+| 2017-08-12 |             505.533 |
+| 2017-08-15 |             513.557 |
+| 2017-08-16 |             511.961 |
+| 2017-08-20 |             501.632 |
+| 2017-08-26 |              502.86 |
+| 2017-09-13 |             499.867 |
+| 2017-09-19 |             504.725 |
+| 2017-09-24 |             505.548 |
+| 2017-10-01 |             503.599 |
+| 2017-10-07 |             502.319 |
+| 2017-10-13 |             506.511 |
+| 2017-10-15 |             508.655 |
+| 2017-10-16 |             503.455 |
+| 2017-10-19 |             507.129 |
+| 2017-10-25 |             510.145 |
+| 2017-10-31 |             508.001 |
+| 2017-11-06 |             505.332 |
+| 2017-11-12 |             500.654 |
+| 2017-11-18 |             496.071 |
+| 2017-11-30 |             500.185 |
+| 2017-12-12 |             499.592 |
+| 2017-12-15 |             504.431 |
+| 2017-12-16 |             506.047 |
+| 2017-12-24 |             494.598 |
+| 2018-01-05 |             498.318 |
+| 2018-01-15 |             505.761 |
+| 2018-01-16 |               505.3 |
+| 2018-01-17 |             499.497 |
+| 2018-01-29 |             496.625 |
+| 2018-02-10 |             495.032 |
+| 2018-02-14 |             504.076 |
+| 2018-02-15 |             506.169 |
+| 2018-02-22 |              493.41 |
+| 2018-03-06 |              494.76 |
+| 2018-03-15 |             507.149 |
+| 2018-03-16 |             502.066 |
+| 2018-03-18 |             492.851 |
+| 2018-03-30 |             491.521 |
+| 2018-04-11 |             493.217 |
+| 2018-04-23 |             496.969 |
+| 2018-05-05 |             496.421 |
+| 2018-05-15 |             505.542 |
+| 2018-05-16 |             507.245 |
+| 2018-05-17 |              501.48 |
+| 2018-05-29 |             494.683 |
+| 2018-06-10 |             496.469 |
+| 2018-06-22 |             497.084 |
+| 2018-07-04 |             498.009 |
+| 2018-07-15 |             511.817 |
+| 2018-07-28 |             491.938 |
+| 2018-08-09 |             490.735 |
+| 2018-08-15 |             508.263 |
+| 2018-08-16 |             505.835 |
+| 2018-08-21 |             484.886 |
+| 2018-09-02 |             484.295 |
+| 2018-09-14 |             490.135 |
+| 2018-09-26 |             489.284 |
+| 2018-10-08 |             491.453 |
+| 2018-10-15 |             507.265 |
+| 2018-10-16 |             502.933 |
+| 2018-10-20 |             497.802 |
+| 2018-11-01 |             499.237 |
+| 2018-11-13 |             498.806 |
+| 2018-11-25 |             496.466 |
+| 2018-12-07 |             493.459 |
+| 2018-12-15 |             496.445 |
+| 2018-12-19 |             497.295 |
+| 2018-12-31 |             497.379 |
+| 2019-01-12 |             498.077 |
+| 2019-01-24 |             498.737 |
+| 2019-02-05 |             498.205 |
+| 2019-02-17 |              497.73 |
+| 2019-03-01 |             497.451 |
+| 2019-03-13 |             496.161 |
+| 2019-03-25 |             493.651 |
+| 2019-04-05 |             495.039 |
+| 2019-04-18 |              499.36 |
+| 2019-04-30 |             504.239 |
+| 2019-05-12 |             501.086 |
+| 2019-05-24 |             503.394 |
+| 2019-06-05 |             505.294 |
+| 2019-06-17 |             509.761 |
+| 2019-06-29 |             508.554 |
+| 2019-07-11 |             509.485 |
+| 2019-07-23 |             501.628 |
+| 2019-08-04 |             495.248 |
+| 2019-08-16 |             486.299 |
 | 2019-08-28 |             489.271 |
-| 2019-09-09 |             488.234 |
-| 2019-09-21 |             493.075 |
-| 2019-10-03 |             496.141 |
-| 2019-10-15 |             493.379 |
+| 2019-09-09 |             488.235 |
+| 2019-09-21 |             493.077 |
+| 2019-10-03 |             496.142 |
+| 2019-10-15 |              493.38 |
 | 2019-10-27 |             498.586 |
-| 2019-11-08 |             499.075 |
+| 2019-11-08 |             499.076 |
 | 2019-11-20 |             501.182 |
 | 2019-12-02 |             503.585 |
-| 2019-12-14 |              501.89 |
+| 2019-12-14 |             501.891 |
 | 2019-12-26 |             501.147 |
 | 2020-01-07 |             505.272 |
 | 2020-01-19 |             503.769 |
@@ -7705,435 +7718,435 @@ zcat ${FILE}
 
 #+RESULTS:
 |       Date |     CE |     CW |     NE |     NO |      NW |      SE |     SW |
-| 1986-04-15 | 65.518 | 68.237 | 22.496 |  21.15 |  93.327 | 152.894 | 22.186 |
-| 1986-05-15 | 65.893 | 75.349 | 22.625 | 20.454 |  94.291 | 154.321 | 22.185 |
-| 1986-06-15 | 69.241 | 75.334 | 22.829 | 23.717 |  96.326 | 151.613 | 22.185 |
-| 1986-07-15 | 68.873 | 75.399 | 20.979 | 24.723 |  98.461 | 152.558 | 22.185 |
-| 1986-08-15 | 67.918 |  73.93 | 22.754 | 23.663 |  98.135 | 153.965 | 22.184 |
-| 1986-09-15 | 70.118 | 73.529 | 23.832 | 23.861 |  98.777 | 155.203 | 22.184 |
-| 1986-10-15 | 69.499 | 73.141 |  23.23 | 24.052 |  97.561 | 156.369 | 22.184 |
-| 1987-03-15 | 69.099 | 71.173 | 20.199 | 25.014 |  91.439 | 161.182 | 22.182 |
-| 1987-04-15 | 69.017 | 70.766 | 22.394 | 25.211 |  90.182 | 162.169 | 22.182 |
-| 1987-05-15 | 67.417 | 67.825 | 23.272 | 21.541 |  90.603 | 158.097 | 22.182 |
-| 1987-06-15 | 69.284 | 70.307 | 21.888 | 23.672 |  96.643 | 154.165 | 22.181 |
-| 1987-07-15 | 67.593 | 74.882 | 22.782 | 21.953 |   96.49 | 147.074 | 22.181 |
-| 1987-08-15 | 64.047 |  73.21 | 23.476 | 24.637 |  92.556 | 152.058 | 21.672 |
-| 1987-09-15 | 67.639 | 72.703 | 23.841 | 23.098 |  92.615 | 152.142 | 21.833 |
-| 1987-10-15 | 66.471 | 71.678 | 23.995 | 22.973 |  92.689 | 154.379 | 21.844 |
-| 1988-03-15 | 68.401 |  66.46 | 24.306 | 22.343 |  93.064 | 149.125 | 21.897 |
-| 1988-04-15 | 68.794 | 66.153 | 24.369 | 22.215 |  93.644 | 148.052 | 21.908 |
-| 1988-05-15 | 70.081 | 70.772 | 23.223 | 20.999 |   91.46 | 144.928 | 21.918 |
-| 1988-06-15 | 69.711 | 70.361 | 22.706 | 24.881 |  96.156 | 145.614 | 21.929 |
-| 1988-07-15 | 68.662 | 70.013 | 21.297 | 23.681 |  98.186 | 141.056 |  21.94 |
-| 1988-08-15 | 65.843 | 69.006 | 19.399 | 23.376 |  95.625 | 148.252 |  21.95 |
-| 1988-09-15 | 65.078 | 68.096 | 19.461 | 23.322 |  95.263 |  141.87 | 21.961 |
-| 1988-10-15 | 64.945 | 67.893 | 19.888 | 23.269 |  96.072 | 137.755 | 21.971 |
-| 1989-03-15 |  66.06 | 66.864 |  22.04 | 23.004 | 100.143 | 134.115 | 22.024 |
-| 1989-04-15 | 65.605 | 65.032 | 20.629 |  22.95 |  99.896 | 133.365 | 22.034 |
-| 1989-05-15 | 64.879 | 66.178 | 22.416 | 22.107 | 102.033 | 145.771 | 22.045 |
-| 1989-06-15 | 69.974 | 69.034 | 22.264 | 24.027 | 102.376 | 142.749 | 22.055 |
-| 1989-07-15 | 70.404 | 68.502 | 22.177 | 25.038 | 104.027 | 136.795 | 22.065 |
-| 1989-08-15 | 69.685 | 72.074 | 22.122 | 22.949 |  99.417 | 135.862 | 22.076 |
-| 1989-09-15 | 70.709 | 72.427 | 22.702 | 23.099 | 101.316 | 135.404 | 22.087 |
-| 1989-10-15 | 67.463 | 72.066 | 22.523 | 22.976 | 101.568 | 135.835 | 22.097 |
-| 1990-03-15 | 70.413 | 70.231 | 21.619 | 22.358 | 102.828 | 137.979 | 22.148 |
-| 1990-04-15 | 67.022 | 68.032 | 20.358 | 22.232 |  102.71 | 137.196 | 22.159 |
-| 1990-05-15 | 70.195 | 64.029 | 23.503 | 21.043 | 103.275 | 142.075 | 22.169 |
-| 1990-06-15 | 74.026 | 70.957 | 22.428 | 23.506 | 103.954 | 134.548 | 22.179 |
-| 1990-07-15 |  74.74 | 70.392 | 22.623 | 24.044 | 101.745 | 133.922 | 22.189 |
-| 1990-08-15 | 72.303 | 67.028 |  22.06 | 21.703 | 101.152 | 135.558 |   22.2 |
-| 1990-09-15 | 66.987 | 65.608 | 21.982 | 22.628 | 100.943 | 136.025 |  22.21 |
-| 1990-10-15 | 71.707 |   65.4 |  21.98 | 22.549 |  99.167 |  137.88 |  22.22 |
-| 1991-01-01 | 66.444 | 64.854 | 21.917 | 22.344 |  94.554 | 136.793 | 22.247 |
-| 1991-06-15 | 69.118 | 63.689 | 21.785 | 21.913 |  91.262 |  138.49 | 22.302 |
-| 1992-01-01 | 72.358 | 62.253 | 21.626 | 21.391 |  88.339 | 140.504 | 22.368 |
-| 1992-06-15 | 71.919 | 62.916 | 21.739 | 22.026 |  88.755 | 147.167 | 24.379 |
-| 1992-07-15 |  71.84 | 63.037 | 21.759 |  22.14 |   88.83 | 148.367 | 24.779 |
-| 1992-08-15 | 71.757 | 63.162 |  21.78 | 22.259 |  88.907 | 145.706 | 21.469 |
-| 1992-09-15 | 71.674 | 63.288 | 21.802 | 22.377 |  88.984 | 144.439 | 21.782 |
-| 1992-10-15 | 71.594 | 63.409 | 21.822 | 22.492 |  89.059 | 142.988 |  21.85 |
-| 1993-01-01 | 71.384 | 63.727 | 21.875 | 22.789 |  89.253 | 139.215 | 21.932 |
-| 1993-03-15 | 71.134 | 64.126 | 21.996 | 22.708 |  89.932 | 143.597 | 22.963 |
-| 1993-04-15 | 71.028 | 64.296 | 22.048 | 22.674 |   90.22 | 145.455 | 22.924 |
-| 1993-05-15 | 70.926 | 64.461 | 22.098 | 22.641 |  90.499 | 145.751 | 22.585 |
-| 1993-06-15 |  70.82 | 64.631 | 22.149 | 22.606 |  90.788 | 146.056 |  21.19 |
-| 1993-07-15 | 70.718 | 64.796 | 22.199 | 22.573 |  91.067 | 146.349 | 21.556 |
-| 1993-08-15 | 70.612 | 64.967 | 22.251 | 22.539 |  91.356 | 146.652 | 21.062 |
-| 1993-09-15 | 70.507 | 65.138 | 22.302 | 22.504 |  91.645 | 146.953 | 20.555 |
-| 1994-01-01 | 70.141 | 65.736 | 22.482 | 22.384 |  92.651 | 147.994 | 19.736 |
-| 1994-05-15 | 69.376 | 69.562 | 23.866 |   22.7 |  96.882 | 150.228 | 19.893 |
-| 1994-06-15 | 71.179 | 71.154 | 24.641 | 24.163 |  98.553 | 151.616 |  19.93 |
-| 1994-07-15 |  70.32 | 83.794 | 23.697 | 24.781 |  99.607 |  154.42 | 19.862 |
-| 1994-08-15 |  66.64 | 76.917 | 23.191 | 26.687 |   96.07 | 157.314 | 19.792 |
-| 1994-09-15 | 64.472 | 60.528 | 22.949 | 26.286 |  94.927 | 158.503 | 19.004 |
-| 1995-01-01 | 67.611 | 61.372 | 22.309 | 25.877 |  91.891 | 152.443 |  19.54 |
-| 1995-04-15 | 67.446 | 62.392 |  22.13 | 24.705 |  91.113 | 148.895 | 21.031 |
-| 1995-05-15 | 67.399 | 62.688 | 22.078 | 24.367 |  90.889 | 147.879 | 21.048 |
-| 1995-06-15 | 67.351 | 62.994 | 22.025 | 24.018 |  90.658 | 146.833 | 21.021 |
-| 1995-07-15 | 67.304 | 63.291 | 21.973 | 23.679 |  90.434 | 145.825 | 20.432 |
-| 1995-08-15 | 67.257 | 63.599 | 21.919 | 23.329 |  90.202 | 143.788 | 20.157 |
-| 1995-09-15 | 67.209 | 63.907 | 21.866 | 22.979 |  89.971 | 141.756 |  20.11 |
-| 1995-10-15 | 67.164 | 64.206 | 21.814 | 22.641 |  89.747 | 139.793 | 20.058 |
-| 1996-01-01 | 67.046 | 64.987 | 21.679 |  21.76 |  89.165 | 134.707 | 20.082 |
-| 1996-04-15 | 68.107 | 64.815 | 21.843 | 21.644 |  89.187 | 138.762 | 22.322 |
-| 1996-05-15 | 68.411 | 64.767 |  21.89 | 21.611 |  89.193 |  139.92 |  22.28 |
-| 1996-06-15 | 68.724 | 64.717 | 21.938 | 21.577 |  89.199 | 141.116 | 22.047 |
-| 1996-07-15 | 69.028 | 64.669 | 21.984 | 21.544 |  89.205 | 141.789 | 20.785 |
-| 1996-08-15 | 69.341 | 64.619 | 22.033 |  21.51 |  89.212 | 142.557 | 20.657 |
-| 1996-09-15 | 69.655 |  64.57 | 22.081 | 21.476 |  89.218 | 143.325 | 21.065 |
-| 1996-10-15 | 69.959 | 64.523 | 22.127 | 21.443 |  89.224 | 144.068 | 20.977 |
-| 1997-01-01 | 70.749 | 64.401 | 22.248 | 21.357 |   89.24 |   146.0 | 21.054 |
-| 1997-03-15 | 71.047 | 65.229 | 22.237 | 21.305 |   89.48 | 144.457 | 21.479 |
-| 1997-04-15 | 71.175 |  65.58 | 22.233 | 21.283 |  89.582 | 143.802 | 21.639 |
-| 1997-05-15 | 71.298 | 65.921 | 22.228 | 21.262 |   89.68 | 143.168 | 21.693 |
-| 1997-06-15 | 71.427 | 66.273 | 22.223 |  21.24 |  89.782 | 142.513 | 21.992 |
-| 1997-07-15 | 71.552 | 66.613 | 22.219 | 21.219 |  89.881 | 141.879 | 21.572 |
-| 1997-09-15 | 71.811 | 67.317 |  22.21 | 21.175 |  90.085 | 140.568 | 20.857 |
-| 1997-10-15 | 71.683 | 67.658 | 22.205 | 21.154 |  90.183 | 139.934 |  20.51 |
-| 1998-01-01 | 71.357 | 68.545 | 22.193 | 21.099 |   90.44 | 135.393 | 20.462 |
-| 1998-03-15 | 71.918 | 72.543 | 19.881 | 20.464 |  92.099 | 137.487 | 21.474 |
-| 1998-04-15 | 71.473 | 74.304 |  18.88 | 20.195 |  93.217 | 138.305 | 21.935 |
-| 1998-05-15 | 74.059 |  72.88 | 21.353 | 21.513 |  92.887 | 140.721 | 22.647 |
-| 1998-06-15 | 74.383 | 75.269 | 23.569 | 27.494 |  96.527 | 140.261 | 21.008 |
-| 1998-07-15 | 72.779 | 76.345 | 23.526 | 23.681 |  97.128 |  141.62 | 19.773 |
-| 1998-08-15 | 70.707 | 76.681 | 23.465 | 20.188 |  91.569 | 143.329 | 18.131 |
-| 1998-09-15 | 68.299 | 76.729 | 21.457 | 20.708 |  89.816 | 135.657 | 18.261 |
-| 1998-10-15 | 70.057 | 76.162 | 21.698 | 21.212 |  89.336 |  143.35 | 18.387 |
-| 1999-01-01 | 69.867 | 74.686 | 22.324 | 22.522 |  88.089 | 140.973 | 18.713 |
-| 1999-07-15 | 69.738 | 76.745 | 22.412 | 25.817 |   89.26 | 139.156 |  20.34 |
-| 1999-08-15 | 67.341 | 76.262 | 21.694 | 25.525 |  89.029 | 138.886 | 19.882 |
-| 1999-09-15 | 66.373 | 76.407 | 21.037 | 25.234 |  89.565 | 144.164 | 19.224 |
-| 1999-10-15 | 67.793 | 75.378 |  21.36 | 24.951 |  90.704 | 141.748 | 19.713 |
-| 1999-11-15 | 68.155 | 76.251 | 21.578 |  24.66 |  91.279 | 141.473 | 19.845 |
-| 1999-12-15 | 68.505 | 77.097 | 21.789 | 24.377 |  91.834 | 141.023 | 20.099 |
-| 2000-01-01 | 68.703 | 77.576 | 21.909 | 24.217 |  92.148 | 140.821 | 20.242 |
-| 2000-02-15 | 69.061 | 77.417 | 22.411 | 23.789 |  91.801 | 139.141 | 20.997 |
-| 2000-03-15 | 67.877 | 75.716 | 22.734 | 23.514 |  91.577 | 138.071 | 21.413 |
-| 2000-04-15 | 68.985 | 77.542 | 23.178 | 23.219 |  88.318 | 141.723 | 21.876 |
-| 2000-05-15 | 68.992 | 79.387 | 23.515 | 22.934 |  89.646 | 136.976 | 22.471 |
-| 2000-06-15 | 68.727 |  81.08 | 24.035 | 22.976 |  92.998 | 142.466 | 21.982 |
-| 2000-07-15 |  69.23 | 83.645 | 21.075 | 25.499 |  97.044 | 135.693 |  22.03 |
-| 2000-08-15 | 69.454 | 82.507 | 22.702 | 22.987 |  91.957 | 144.942 | 19.854 |
-| 2000-09-03 | 66.443 | 80.046 | 22.604 | 21.448 |  88.378 | 133.315 | 19.566 |
-| 2000-09-15 | 65.483 | 80.662 | 22.581 | 21.452 |  87.951 | 137.185 | 19.501 |
-| 2000-10-15 | 65.855 | 80.728 | 22.762 | 21.462 |  88.225 | 135.415 | 19.924 |
-| 2000-11-15 | 66.642 | 80.968 | 22.955 | 21.473 |  88.799 | 135.101 | 19.995 |
-| 2001-03-15 | 69.671 | 81.873 | 23.703 |  21.51 |  91.061 | 133.831 | 20.273 |
-| 2001-04-15 | 69.605 | 80.299 |  23.85 | 21.519 |  92.264 | 135.015 | 20.374 |
-| 2001-05-15 | 68.886 | 77.653 | 24.022 | 21.528 |  89.902 | 135.526 | 20.821 |
-| 2001-06-15 | 71.438 | 83.998 | 24.409 | 22.649 |  92.182 | 142.544 | 20.829 |
-| 2001-07-15 | 71.358 | 83.912 | 24.788 | 23.796 |  95.816 | 134.721 | 20.469 |
-| 2001-08-15 | 66.674 | 81.333 | 25.157 | 23.602 |  92.135 | 134.984 | 20.277 |
-| 2001-09-15 | 68.507 | 82.984 | 25.458 | 23.407 |  88.619 | 137.294 |  20.04 |
-| 2001-10-15 | 67.509 | 80.557 | 25.865 | 23.219 |  88.482 | 137.295 | 19.617 |
-| 2001-11-15 |  68.16 | 79.999 | 26.309 | 23.025 |  88.817 | 139.663 | 19.649 |
-| 2002-01-15 | 69.421 | 78.888 | 27.182 | 22.643 |  89.478 | 140.788 | 19.715 |
-| 2002-02-15 | 70.029 | 78.296 | 27.624 |  22.45 |  89.816 | 141.864 | 19.855 |
-| 2002-03-15 | 70.576 | 77.763 | 28.023 | 22.276 |  90.121 | 142.836 | 20.162 |
-| 2002-04-15 | 69.166 | 81.985 | 28.498 | 22.083 |  89.629 | 142.111 | 20.309 |
-| 2002-05-15 | 69.262 | 84.297 |   28.9 | 21.897 |  91.844 | 144.519 | 20.781 |
-| 2002-06-15 | 71.021 | 86.634 | 29.436 | 21.704 |  97.267 | 146.679 |  21.11 |
-| 2002-07-15 | 67.794 | 84.198 | 29.236 |  24.91 |  96.549 | 148.866 | 20.144 |
-| 2002-08-15 | 67.834 | 80.554 | 28.803 |   24.7 |  91.197 | 153.111 | 19.676 |
-| 2002-09-15 | 66.321 | 81.502 | 28.564 | 24.491 |   91.56 |  149.14 | 19.748 |
-| 2002-10-15 |  67.28 | 81.869 | 28.256 | 24.288 |  91.748 | 152.351 | 19.783 |
-| 2003-02-15 | 71.197 | 83.372 | 26.991 | 23.458 |   92.52 | 154.106 | 20.292 |
-| 2003-03-15 | 72.088 | 83.714 | 26.702 | 23.269 |  92.696 | 154.384 | 20.584 |
-| 2003-04-15 | 74.202 | 84.741 | 26.382 |  23.06 |  93.588 | 155.033 |   20.6 |
-| 2003-05-15 | 69.573 | 85.891 | 26.181 | 22.858 |  92.197 | 155.946 | 20.817 |
-| 2003-06-15 | 71.364 |  86.62 | 25.862 | 23.419 |  96.807 | 158.118 | 20.817 |
-| 2003-07-15 | 69.098 | 86.383 | 25.568 | 23.905 |  95.454 | 157.463 | 21.083 |
-| 2003-08-15 | 70.838 | 86.193 | 25.509 | 23.978 |  93.427 | 155.196 | 20.435 |
-| 2003-09-15 | 69.252 | 86.228 | 25.444 | 24.052 |  92.678 | 159.021 | 20.514 |
-| 2003-10-15 | 70.071 | 85.978 | 25.396 | 24.122 |  92.783 | 159.836 | 20.581 |
-| 2004-03-15 |  74.26 | 84.688 | 25.153 | 24.478 |  93.317 | 163.103 | 20.934 |
-| 2004-04-15 | 74.992 | 81.696 | 25.103 |  24.55 |  93.492 | 162.515 | 20.447 |
-| 2004-05-15 | 73.069 | 85.345 | 25.037 |  24.62 |   95.35 | 161.308 | 20.938 |
-| 2004-06-15 | 75.305 | 86.875 | 25.194 | 23.816 | 101.465 | 169.053 | 20.891 |
-| 2004-07-15 | 75.237 | 85.795 | 22.683 | 24.578 | 102.801 | 162.573 | 20.298 |
-| 2004-08-15 | 72.497 | 84.702 | 22.892 | 24.408 |  97.897 | 161.076 | 19.751 |
-| 2004-09-15 | 69.339 | 84.862 | 23.101 | 24.238 |   96.89 | 167.167 | 20.631 |
-| 2004-10-15 | 71.675 | 84.764 | 23.343 | 24.074 |  96.945 | 166.073 | 20.777 |
-| 2005-03-15 | 83.387 |  84.31 |  24.56 | 23.248 |  97.199 | 165.209 | 21.508 |
-| 2005-04-15 | 85.785 | 84.226 | 24.748 | 23.078 |  95.265 | 165.039 | 22.253 |
-| 2005-05-15 | 87.353 | 83.432 | 25.023 | 22.914 |  93.927 | 169.129 | 22.167 |
-| 2005-06-15 | 88.039 | 86.986 | 25.306 | 22.744 | 100.116 | 172.203 | 21.754 |
-| 2005-07-15 | 87.322 | 87.301 |  25.69 | 23.283 | 101.366 | 165.343 | 21.562 |
-| 2005-08-15 |  83.01 | 85.105 | 25.315 | 22.942 |  96.019 | 163.704 | 21.659 |
-| 2005-09-15 | 82.769 | 83.157 |  24.79 | 22.753 |  94.566 | 159.301 | 21.894 |
-| 2005-10-15 | 84.151 | 83.024 | 24.306 |  22.57 |  95.064 | 158.039 |  21.43 |
-| 2005-12-13 | 86.866 | 82.767 | 23.356 |  22.21 |  96.043 | 156.822 | 21.635 |
-| 2006-03-15 | 87.432 | 82.406 | 24.352 | 23.564 |  96.248 |  157.11 | 22.221 |
-| 2006-04-15 |  85.01 | 84.658 | 24.635 |  24.02 |   94.75 | 157.709 | 22.559 |
-| 2006-05-15 | 86.399 | 83.627 | 25.011 |  24.46 |  95.328 | 158.616 | 22.796 |
-| 2006-06-15 |  83.64 | 87.207 | 25.241 | 24.915 | 101.152 | 153.618 | 23.721 |
-| 2006-07-15 | 86.396 |  92.07 | 24.907 | 24.563 | 103.843 | 154.262 | 22.336 |
-| 2006-08-15 | 87.365 |  90.39 | 25.113 | 24.255 |  97.112 | 152.627 |  20.05 |
-| 2006-09-15 | 77.683 | 88.534 | 24.726 | 23.947 |  95.546 | 148.922 | 18.466 |
-| 2006-10-15 | 82.244 | 87.726 | 24.449 |  23.65 |  95.466 | 148.097 | 20.203 |
-| 2006-11-15 | 82.481 | 86.893 | 24.162 | 23.342 |  95.382 | 146.667 | 19.909 |
-| 2006-12-18 | 82.733 | 86.012 | 23.856 | 23.015 |  95.292 | 145.146 | 20.999 |
-| 2007-03-15 | 82.502 | 84.142 | 24.112 | 24.721 |  95.584 | 149.123 | 21.531 |
-| 2007-04-15 | 82.144 | 82.767 |  24.47 | 25.277 |  94.954 | 146.565 |  22.26 |
-| 2007-05-15 | 82.035 | 85.152 | 24.954 | 25.987 |  95.509 | 147.484 | 22.055 |
-| 2007-06-15 | 84.201 | 90.481 | 25.615 | 26.573 | 104.293 | 155.203 | 22.497 |
-| 2007-07-15 | 81.226 | 88.974 | 25.123 | 25.488 | 105.377 | 151.426 | 21.249 |
-| 2007-08-15 |  76.82 | 88.098 | 23.201 |  23.76 |  96.125 |  147.65 | 19.525 |
-| 2007-09-07 | 80.734 | 84.832 | 24.361 | 23.323 |  95.419 | 147.905 | 19.531 |
-| 2007-09-15 | 77.586 | 89.084 | 24.474 | 23.447 |  91.345 | 145.082 | 19.063 |
-| 2007-10-15 | 77.664 | 88.244 | 24.571 |  23.91 |  92.062 | 146.407 |  18.98 |
-| 2008-03-15 | 77.617 | 84.037 | 25.055 | 26.251 |  95.684 | 147.967 | 20.889 |
-| 2008-04-15 | 77.203 | 83.187 |  25.08 | 26.727 |   96.42 | 148.673 | 20.315 |
-| 2008-05-15 | 78.152 |  83.98 | 25.242 | 27.188 |  94.916 | 153.459 | 20.605 |
-| 2008-06-15 | 79.222 | 89.562 | 25.473 | 27.663 | 106.083 | 153.729 | 20.575 |
-| 2008-07-15 | 79.958 | 91.625 | 26.247 |  26.21 | 103.423 | 148.464 | 18.777 |
-| 2008-08-15 | 78.525 | 93.734 | 26.152 | 25.949 |  97.423 | 146.654 | 18.491 |
-| 2008-10-15 | 78.505 | 91.189 | 25.948 | 25.404 |  97.666 | 149.232 | 18.767 |
-| 2008-11-15 | 78.494 | 89.898 | 25.845 | 25.127 |  97.789 | 150.606 | 19.179 |
-| 2009-01-15 | 78.478 | 87.358 | 25.642 | 24.583 |  98.031 | 153.296 | 19.985 |
-| 2009-02-15 | 78.476 | 86.065 | 25.541 | 24.307 |  98.153 | 154.645 | 20.385 |
-| 2009-03-15 | 78.475 | 84.899 | 25.449 | 24.057 |  98.263 | 155.861 | 20.746 |
-| 2009-04-15 | 77.723 | 84.406 | 25.467 | 23.781 |  98.384 |  154.47 | 20.673 |
-| 2009-05-15 | 78.133 | 85.588 | 25.309 | 23.513 |  97.947 | 158.814 | 21.194 |
-| 2009-06-15 | 80.235 | 93.377 | 25.293 | 23.237 | 104.151 | 161.029 | 21.261 |
-| 2009-07-15 | 79.398 | 97.539 | 25.962 |  24.44 | 108.817 | 160.663 | 20.882 |
-| 2009-08-15 | 75.376 | 91.306 | 23.131 | 23.185 |   98.55 | 153.073 | 19.552 |
-| 2009-09-02 | 77.484 | 87.849 |  24.69 | 22.456 | 100.034 | 149.451 | 18.989 |
-| 2009-09-15 | 75.918 | 92.003 | 24.824 | 22.593 |  98.397 | 150.031 | 18.234 |
-| 2009-10-15 | 76.174 | 91.844 | 24.803 | 22.908 |    98.8 | 151.015 | 18.619 |
-| 2010-03-15 | 77.448 | 91.046 |   24.7 | 24.492 | 100.828 | 156.049 | 20.415 |
-| 2010-04-15 | 77.598 | 90.883 | 24.739 | 24.817 | 101.411 | 153.782 | 20.249 |
-| 2010-05-15 | 77.381 | 93.509 | 24.599 |  25.13 |  97.134 | 151.354 | 20.447 |
-| 2010-06-15 |  79.43 | 96.202 | 24.665 | 25.454 | 108.343 | 158.054 | 19.781 |
-| 2010-07-15 | 78.473 |  91.51 |  25.32 | 25.468 | 104.956 | 155.565 | 18.645 |
-| 2010-08-15 | 75.957 | 87.122 | 25.057 | 26.782 | 103.813 | 157.569 | 18.121 |
-| 2010-09-15 |  75.88 | 84.789 | 25.124 | 26.348 | 102.025 | 157.359 | 17.003 |
-| 2010-10-15 | 76.039 | 84.355 | 25.235 | 26.239 | 102.544 | 156.785 | 17.449 |
-| 2011-03-15 | 76.858 | 82.128 | 25.796 | 25.687 | 105.074 | 155.368 | 20.641 |
-| 2011-04-15 | 79.404 | 83.809 | 25.944 | 25.574 | 105.589 | 155.219 | 21.117 |
-| 2011-05-15 | 81.674 | 84.669 | 26.111 | 25.464 |  105.07 | 154.256 | 21.158 |
-| 2011-06-15 | 80.878 | 87.613 | 26.221 |  25.35 | 108.608 |  158.45 | 20.944 |
-| 2011-07-15 |  82.77 |  88.31 | 26.231 | 24.406 | 111.451 | 154.577 | 20.773 |
-| 2011-08-15 | 78.879 | 89.511 | 25.422 | 27.132 | 103.116 | 150.994 | 21.128 |
-| 2011-09-15 |  76.57 | 93.429 | 25.441 |  26.84 | 102.932 | 148.382 | 19.989 |
-| 2011-10-15 | 76.894 | 92.021 | 25.565 | 26.557 | 103.075 | 148.895 | 20.466 |
-| 2012-01-15 | 77.892 | 87.739 | 25.946 |  25.69 | 103.515 | 149.741 | 21.643 |
-| 2012-03-15 | 78.566 |  85.02 | 26.194 | 25.127 | 103.849 | 150.365 | 22.433 |
-| 2012-04-15 |  77.03 | 83.618 | 26.208 | 24.836 | 104.021 | 153.225 | 22.261 |
-| 2012-05-15 | 78.302 |  89.06 | 26.294 | 24.555 | 102.945 | 149.728 | 23.234 |
-| 2012-06-15 | 80.403 | 99.751 | 26.457 | 24.264 | 110.207 | 149.218 | 23.298 |
-| 2012-07-15 | 79.197 | 93.883 | 26.563 | 27.012 | 110.451 | 144.289 | 20.784 |
-| 2012-08-15 | 73.859 | 92.591 | 24.244 | 26.431 | 102.037 | 148.832 | 17.794 |
-| 2012-09-15 | 73.411 | 92.697 | 24.679 | 25.195 | 100.057 | 149.869 | 18.158 |
-| 2012-10-15 | 75.568 | 93.904 |  25.19 | 23.998 | 102.396 | 149.291 | 18.699 |
-| 2012-11-10 | 77.437 |  94.95 | 25.616 | 22.962 | 104.422 | 145.693 | 20.344 |
-| 2013-02-15 | 78.676 | 94.728 | 25.582 |  22.82 | 103.627 | 146.396 | 20.821 |
-| 2013-03-15 | 79.034 | 94.655 |  25.57 | 22.778 | 103.389 | 146.596 | 20.943 |
-| 2013-04-15 | 77.174 | 91.713 | 25.552 | 22.732 |  103.57 | 145.938 | 20.689 |
-| 2013-05-15 | 76.314 | 88.275 | 25.606 | 24.723 | 103.391 | 147.402 |  21.26 |
-| 2013-06-15 | 77.506 | 91.854 | 26.154 | 24.655 | 108.436 | 150.749 |  22.58 |
-| 2013-07-15 | 77.214 | 90.067 | 26.146 | 25.213 | 113.278 | 148.076 | 21.627 |
-| 2013-08-15 | 77.726 | 95.611 |  24.99 | 25.588 | 107.394 | 150.162 |  19.71 |
-| 2013-09-15 | 75.296 | 98.248 | 25.468 | 23.428 | 106.025 | 151.387 | 19.394 |
-| 2013-10-15 | 78.674 |  98.37 | 25.698 | 23.397 | 107.127 | 146.693 |  19.45 |
-| 2013-11-15 | 78.546 | 96.743 | 25.935 | 23.364 | 108.028 | 146.903 | 20.542 |
-| 2013-12-15 | 78.134 | 95.173 | 26.164 | 23.333 | 108.898 | 147.411 | 20.225 |
-| 2014-01-15 | 77.707 | 93.548 |   26.4 |   23.3 | 109.787 | 148.222 | 20.946 |
-| 2014-02-15 |  77.28 | 91.919 | 26.633 | 23.267 | 110.662 | 147.729 | 20.531 |
-| 2014-03-15 | 76.092 | 91.421 | 26.844 | 23.236 | 111.369 | 148.193 | 21.395 |
-| 2014-04-15 | 76.262 | 86.652 | 27.181 | 23.961 | 111.824 | 147.269 | 21.665 |
-| 2014-05-15 | 75.049 | 91.128 | 26.695 | 25.393 | 111.113 | 144.767 | 22.329 |
-| 2014-06-15 | 79.074 | 98.159 | 27.643 | 25.846 | 115.617 | 147.401 | 22.812 |
-| 2014-07-15 | 77.042 | 97.381 | 27.935 | 26.885 | 116.565 | 149.031 | 20.138 |
-| 2014-08-15 | 74.588 | 93.866 | 27.266 | 26.049 | 104.953 | 147.204 | 18.791 |
-| 2014-09-01 | 76.159 | 90.192 | 27.757 | 24.975 | 109.248 | 147.155 | 19.434 |
-| 2014-09-15 | 73.437 | 85.374 | 26.779 | 24.232 | 103.153 | 146.888 | 18.542 |
-| 2014-10-15 | 74.608 | 96.665 | 26.937 | 24.398 |  104.56 | 147.917 | 18.797 |
-| 2014-11-15 | 75.871 | 96.032 | 27.099 | 24.568 | 106.009 | 150.281 | 19.084 |
-| 2014-12-15 | 76.888 | 95.419 | 27.255 | 24.733 | 107.408 | 148.442 | 19.223 |
-| 2014-12-16 | 76.922 | 95.399 | 27.261 | 24.739 | 107.455 | 148.645 | 19.486 |
-| 2015-01-15 | 76.866 |  93.84 | 27.464 | 24.684 | 108.418 | 147.936 | 19.618 |
-| 2015-01-16 | 76.864 | 93.789 | 27.471 | 24.682 | 108.451 |  147.49 | 19.444 |
-| 2015-02-14 | 76.432 | 92.189 | 27.671 | 24.899 | 110.088 | 148.691 | 19.558 |
-| 2015-02-15 | 76.138 | 90.414 | 27.711 | 24.905 |  109.33 | 148.791 |   19.9 |
-| 2015-03-15 | 76.374 | 88.982 |  27.45 | 25.068 | 110.342 | 150.243 | 21.172 |
-| 2015-03-16 | 76.591 | 90.193 | 27.352 | 25.098 | 111.972 | 150.499 | 20.209 |
-| 2015-05-15 | 75.123 | 85.968 | 27.894 | 25.321 |  109.18 | 151.729 | 20.951 |
-| 2015-05-16 | 76.599 | 86.254 | 28.556 | 25.532 | 112.428 | 151.487 | 20.544 |
-| 2015-07-15 | 76.944 | 96.052 | 28.851 | 25.943 |  114.17 |  155.84 | 21.272 |
-| 2015-07-16 | 76.902 | 96.609 | 29.013 | 26.015 | 112.074 | 151.349 | 20.978 |
-| 2015-08-15 | 74.513 | 91.573 | 27.774 | 25.483 | 105.946 | 153.257 | 20.346 |
-| 2015-08-16 | 74.409 | 92.664 | 28.489 | 25.655 | 105.382 | 150.522 | 20.028 |
-| 2015-09-01 | 74.766 | 95.012 | 28.005 | 24.741 | 110.786 | 146.619 | 20.566 |
-| 2015-10-15 | 74.722 | 93.595 | 27.498 |  24.03 | 107.781 | 153.198 | 19.632 |
-| 2015-10-16 | 74.885 | 96.576 | 27.486 | 24.013 | 106.751 |  148.94 | 18.651 |
-| 2015-12-15 | 74.242 | 96.036 | 27.998 | 24.452 | 108.839 | 148.313 | 19.472 |
-| 2015-12-16 | 74.231 | 96.027 | 28.006 | 24.459 | 108.873 | 148.067 | 19.065 |
-| 2016-01-15 | 74.193 |  91.52 | 28.057 | 24.591 | 109.016 | 146.631 |  19.91 |
-| 2016-01-16 | 74.192 |  91.37 | 28.059 | 24.595 | 109.021 | 146.368 | 19.491 |
-| 2016-03-15 | 73.268 | 87.426 | 27.971 | 24.853 | 112.015 | 145.921 | 20.494 |
-| 2016-03-16 | 73.816 | 92.289 | 28.486 | 24.838 | 109.804 | 144.469 | 20.268 |
-| 2016-05-15 | 73.713 | 91.336 | 29.071 | 24.934 | 111.569 | 144.179 | 21.357 |
-| 2016-05-16 | 74.575 | 95.661 | 28.847 | 25.472 | 112.275 |  143.24 | 20.884 |
-| 2016-07-15 |  75.36 | 94.671 | 29.298 | 26.774 | 115.975 |  145.71 | 19.226 |
-| 2016-07-16 |  75.82 | 93.363 | 29.361 | 26.904 |  115.55 | 141.726 | 18.279 |
-| 2016-08-15 | 73.049 | 93.391 | 28.578 | 26.409 | 111.295 | 145.456 | 17.997 |
-| 2016-08-16 | 73.808 | 92.263 |  29.05 | 26.503 | 110.737 |  141.26 | 17.455 |
-| 2016-09-01 | 75.096 | 92.788 | 28.355 | 25.634 |  112.37 | 147.201 | 19.344 |
-| 2016-09-25 | 72.369 | 94.705 | 27.956 | 25.642 | 111.087 | 140.414 | 17.575 |
-| 2016-10-06 | 72.154 | 94.564 | 27.722 |  25.52 | 113.972 |  144.85 | 18.178 |
-| 2016-10-15 |   73.8 | 91.768 | 28.012 | 25.216 | 111.745 | 149.924 | 18.694 |
-| 2016-10-16 | 74.202 | 91.401 | 28.039 | 25.183 | 109.712 | 142.356 |  18.07 |
-| 2016-10-18 | 73.067 | 94.478 | 27.922 | 25.388 | 115.289 | 145.056 | 18.227 |
-| 2016-10-25 | 72.834 | 94.261 |  28.12 | 25.436 | 113.867 | 144.008 | 18.243 |
-| 2016-10-30 | 72.036 | 93.101 | 27.957 | 25.299 | 114.274 | 142.869 | 18.313 |
-| 2016-11-11 | 73.154 | 91.191 | 28.034 | 25.279 | 114.613 | 146.126 | 18.867 |
-| 2016-11-16 | 73.634 | 91.219 | 28.082 |  25.33 | 114.529 | 145.658 | 19.143 |
-| 2016-11-30 | 74.238 | 88.928 | 28.233 | 25.359 | 114.785 | 147.256 | 19.295 |
-| 2016-12-05 | 74.454 |  88.11 | 28.287 | 25.369 | 114.877 | 147.827 | 19.349 |
-| 2016-12-12 | 74.756 | 86.965 | 28.363 | 25.384 | 115.005 | 148.626 | 19.425 |
-| 2016-12-15 | 76.104 | 85.305 | 28.296 | 25.393 | 112.967 | 148.136 | 19.545 |
-| 2016-12-16 |  76.52 | 84.752 | 28.274 | 25.396 | 112.287 | 147.807 | 19.438 |
-| 2016-12-17 |  75.31 | 85.818 | 28.285 | 25.285 | 115.211 | 147.714 | 19.521 |
-| 2016-12-24 | 75.698 | 86.247 | 28.343 | 25.478 | 114.416 | 149.275 | 19.615 |
-| 2016-12-29 |  76.17 | 86.182 | 28.615 | 25.382 | 114.663 | 149.785 | 19.666 |
+| 1986-04-15 | 65.397 | 68.237 | 22.513 | 21.303 |  93.327 | 152.421 | 22.186 |
+| 1986-05-15 | 65.774 | 75.349 | 22.632 | 21.042 |  94.291 | 153.859 | 22.185 |
+| 1986-06-15 | 69.241 | 75.334 |  22.91 | 22.516 |  96.326 | 151.163 | 22.185 |
+| 1986-07-15 | 68.873 | 75.399 | 20.633 | 23.515 |  98.461 | 152.119 | 22.185 |
+| 1986-08-15 | 67.918 |  73.93 | 22.754 | 22.447 |  98.135 | 153.537 | 22.184 |
+| 1986-09-15 | 70.161 | 73.529 | 23.813 | 22.637 |  98.777 | 154.756 | 22.184 |
+| 1986-10-15 | 69.534 | 73.141 | 23.217 |  22.82 |  97.561 | 156.044 | 22.184 |
+| 1987-03-15 | 69.095 | 71.173 | 20.216 | 23.745 |  91.439 |  161.48 | 22.182 |
+| 1987-04-15 | 69.004 | 70.766 | 20.356 | 23.935 |  90.182 | 162.594 | 22.182 |
+| 1987-05-15 | 67.396 | 67.825 |  22.02 | 20.845 |  90.603 | 158.644 | 22.182 |
+| 1987-06-15 | 69.274 | 70.307 | 21.879 | 23.427 |  96.643 | 154.216 | 22.181 |
+| 1987-07-15 | 67.575 | 74.882 | 22.782 | 21.444 |   96.49 | 146.646 | 22.181 |
+| 1987-08-15 | 64.039 |  73.21 |  23.53 | 23.515 |  92.556 |  151.63 | 21.672 |
+| 1987-09-15 | 67.637 | 72.703 |  23.68 |  22.15 |  92.615 | 154.277 | 21.833 |
+| 1987-10-15 |  66.45 | 71.678 |  23.78 | 22.193 |  92.689 | 153.946 | 21.844 |
+| 1988-03-15 | 68.395 |  66.46 |  24.29 | 22.411 |  93.064 | 148.652 | 21.897 |
+| 1988-04-15 | 68.791 | 66.153 | 24.394 | 22.456 |  93.644 |  147.57 | 21.908 |
+| 1988-05-15 |  70.05 | 70.772 | 23.067 |  22.05 |   91.46 | 144.499 | 21.918 |
+| 1988-06-15 | 69.711 | 70.361 | 22.681 |  23.02 |  96.156 | 145.156 | 21.929 |
+| 1988-07-15 | 68.957 | 70.013 | 21.288 | 24.019 |  98.186 | 140.627 |  21.94 |
+| 1988-08-15 | 65.862 | 69.006 | 19.438 | 22.827 |  95.625 | 147.823 |  21.95 |
+| 1988-09-15 | 65.078 | 68.096 | 19.549 |   22.8 |  95.263 | 141.441 | 21.961 |
+| 1988-10-15 | 64.955 | 67.893 | 19.964 | 22.773 |  96.072 | 137.326 | 21.971 |
+| 1989-03-15 | 66.065 | 66.864 | 22.053 | 22.638 | 100.143 | 133.696 | 22.024 |
+| 1989-04-15 | 65.609 | 65.032 | 20.629 |  22.61 |  99.896 | 132.949 | 22.034 |
+| 1989-05-15 | 64.867 | 66.178 |  22.42 | 21.984 | 102.033 | 145.339 | 22.045 |
+| 1989-06-15 | 69.945 | 69.034 | 22.264 | 23.488 | 102.376 | 142.332 | 22.055 |
+| 1989-07-15 |  70.48 | 68.502 | 22.164 | 23.426 | 104.027 | 136.303 | 22.065 |
+| 1989-08-15 | 69.827 | 72.074 | 22.065 | 23.361 |  99.417 | 135.564 | 22.076 |
+| 1989-09-15 | 70.803 | 72.427 | 22.715 | 22.586 | 101.316 | 134.954 | 22.087 |
+| 1989-10-15 | 67.587 | 72.066 | 22.533 |  22.56 | 101.568 | 135.383 | 22.097 |
+| 1990-03-15 | 70.415 | 70.231 | 21.619 | 22.431 | 102.828 | 137.523 | 22.148 |
+| 1990-04-15 | 67.022 | 68.032 | 20.358 | 22.404 |  102.71 | 136.915 | 22.159 |
+| 1990-05-15 | 70.265 | 64.029 | 23.503 | 22.051 | 103.275 | 141.629 | 22.169 |
+| 1990-06-15 | 73.904 | 70.957 | 22.428 | 23.273 | 103.954 | 134.077 | 22.179 |
+| 1990-07-15 |  74.74 | 70.392 | 22.595 | 23.255 | 101.745 | 134.503 | 22.189 |
+| 1990-08-15 | 72.139 | 67.028 |  22.06 | 21.591 | 101.152 | 135.105 |   22.2 |
+| 1990-09-15 | 66.717 | 65.608 | 21.973 | 21.588 | 100.943 | 135.654 |  22.21 |
+| 1990-10-15 |  71.45 |   65.4 | 21.971 | 21.585 |  99.167 | 137.496 |  22.22 |
+| 1991-01-01 | 66.221 | 64.854 |  21.91 | 21.579 |  94.554 | 136.315 | 22.247 |
+| 1991-06-15 | 68.967 | 63.689 | 21.781 | 21.565 |  91.262 | 138.001 | 22.302 |
+| 1992-01-01 | 72.294 | 62.253 | 21.626 | 21.548 |  88.339 | 140.002 | 22.368 |
+| 1992-06-15 | 71.883 | 62.916 | 21.739 | 22.207 |  88.755 | 146.676 | 24.379 |
+| 1992-07-15 | 71.808 | 63.037 | 21.759 | 22.326 |   88.83 | 147.878 | 24.779 |
+| 1992-08-15 |  71.73 | 63.162 |  21.78 | 22.449 |  88.907 |  145.22 | 21.469 |
+| 1992-09-15 | 71.652 | 63.288 | 21.802 | 22.572 |  88.984 | 143.964 | 21.782 |
+| 1992-10-15 | 71.577 | 63.409 | 21.822 | 22.691 |  89.059 | 142.524 |  21.85 |
+| 1993-01-01 |  71.38 | 63.727 | 21.875 |   23.0 |  89.253 |  138.78 | 21.932 |
+| 1993-03-15 | 71.142 | 64.126 | 21.996 | 22.876 |  89.932 |  143.19 | 22.963 |
+| 1993-04-15 | 71.041 | 64.296 | 22.048 | 22.824 |   90.22 | 145.058 | 22.924 |
+| 1993-05-15 | 70.944 | 64.461 | 22.098 | 22.773 |  90.499 | 145.366 | 22.585 |
+| 1993-06-15 | 70.843 | 64.631 | 22.149 | 22.721 |  90.788 | 145.682 |  21.19 |
+| 1993-07-15 | 70.746 | 64.796 | 22.199 |  22.67 |  91.067 | 145.987 | 21.556 |
+| 1993-08-15 | 70.645 | 64.967 | 22.251 | 22.618 |  91.356 | 146.301 | 21.062 |
+| 1993-09-15 | 70.545 | 65.138 | 22.302 | 22.566 |  91.645 | 146.614 | 20.555 |
+| 1994-01-01 | 70.196 | 65.736 | 22.482 | 22.384 |  92.651 | 147.694 | 19.736 |
+| 1994-05-15 | 69.497 | 69.562 | 23.866 | 22.257 |  96.882 | 149.978 | 19.893 |
+| 1994-06-15 | 71.183 | 71.154 | 24.641 | 23.111 |  98.553 | 151.378 |  19.93 |
+| 1994-07-15 | 70.324 | 83.794 | 23.697 | 23.689 |  99.607 | 154.192 | 19.862 |
+| 1994-08-15 | 66.643 | 76.917 | 23.191 | 22.076 |   96.07 | 157.098 | 19.792 |
+| 1994-09-15 | 64.495 | 60.528 | 22.949 | 22.227 |  94.927 | 158.299 | 19.004 |
+| 1995-01-01 | 67.623 | 61.372 | 22.309 | 22.754 |  91.891 | 152.272 |  19.54 |
+| 1995-04-15 | 67.455 | 62.392 |  22.13 | 22.474 |  91.113 | 148.756 | 21.031 |
+| 1995-05-15 | 67.407 | 62.688 | 22.078 | 22.393 |  90.889 |  147.75 | 21.048 |
+| 1995-06-15 | 67.357 | 62.994 | 22.025 | 22.309 |  90.658 | 146.714 | 21.021 |
+| 1995-07-15 |  67.31 | 63.291 | 21.973 | 22.228 |  90.434 | 145.715 | 20.432 |
+| 1995-08-15 | 67.261 | 63.599 | 21.919 | 22.145 |  90.202 | 143.688 | 20.157 |
+| 1995-09-15 | 67.212 | 63.907 | 21.866 | 22.061 |  89.971 | 141.665 |  20.11 |
+| 1995-10-15 | 67.166 | 64.206 | 21.814 |  21.98 |  89.747 | 139.712 | 20.058 |
+| 1996-01-01 | 67.046 | 64.987 | 21.679 |  21.77 |  89.165 |  134.65 | 20.082 |
+| 1996-04-15 | 68.122 | 64.815 | 21.843 | 21.785 |  89.187 | 138.714 | 22.322 |
+| 1996-05-15 | 68.429 | 64.767 |  21.89 |  21.79 |  89.193 | 139.875 |  22.28 |
+| 1996-06-15 | 68.747 | 64.717 | 21.938 | 21.794 |  89.199 | 141.074 | 22.047 |
+| 1996-07-15 | 69.055 | 64.669 | 21.984 | 21.799 |  89.205 |  141.75 | 20.785 |
+| 1996-08-15 | 69.373 | 64.619 | 22.033 | 21.803 |  89.212 |  142.52 | 20.657 |
+| 1996-09-15 | 69.691 |  64.57 | 22.081 | 21.808 |  89.218 | 143.291 | 21.065 |
+| 1996-10-15 | 69.999 | 64.523 | 22.127 | 21.812 |  89.224 | 144.036 | 20.977 |
+| 1997-01-01 |   70.8 | 64.401 | 22.248 | 21.824 |   89.24 | 145.975 | 21.054 |
+| 1997-03-15 |  71.15 | 65.229 | 22.237 | 21.863 |   89.48 | 144.394 | 21.479 |
+| 1997-04-15 |   71.3 |  65.58 | 22.233 |  21.88 |  89.582 | 143.722 | 21.639 |
+| 1997-05-15 | 71.445 | 65.921 | 22.228 | 21.896 |   89.68 | 143.072 | 21.693 |
+| 1997-06-15 | 71.595 | 66.273 | 22.223 | 21.912 |  89.782 |   142.4 | 21.992 |
+| 1997-07-15 | 71.742 | 66.613 | 22.219 | 21.928 |  89.881 |  141.75 | 21.572 |
+| 1997-09-15 | 72.045 | 67.317 |  22.21 | 21.962 |  90.085 | 140.406 | 20.857 |
+| 1997-10-15 | 71.929 | 67.658 | 22.205 | 21.978 |  90.183 | 139.755 |  20.51 |
+| 1998-01-01 | 71.542 | 68.545 | 22.193 |  22.02 |   90.44 | 135.171 | 20.462 |
+| 1998-03-15 | 71.949 | 72.543 | 19.881 | 21.476 |  92.099 |  137.22 | 21.474 |
+| 1998-04-15 |  71.53 | 74.304 |  18.88 | 21.245 |  93.217 |  138.02 | 21.935 |
+| 1998-05-15 | 73.187 |  72.88 | 21.353 | 21.804 |  92.887 | 140.417 | 22.647 |
+| 1998-06-15 | 73.244 | 75.269 | 23.569 | 23.317 |  96.527 | 139.938 | 21.008 |
+| 1998-07-15 | 72.689 | 76.345 | 23.526 | 23.691 |  97.128 | 141.278 | 19.773 |
+| 1998-08-15 | 70.043 | 76.681 | 23.465 | 19.351 |  91.569 | 142.967 | 18.131 |
+| 1998-09-15 | 68.321 | 76.729 | 21.457 | 19.788 |  89.816 | 135.276 | 18.261 |
+| 1998-10-15 |  69.45 | 76.162 | 21.698 | 20.212 |  89.336 | 143.278 | 18.387 |
+| 1999-01-01 | 69.864 | 74.686 | 22.324 | 21.312 |  88.089 | 140.908 | 18.713 |
+| 1999-07-15 | 69.687 | 76.745 | 22.412 | 24.083 |   89.26 |  139.11 |  20.34 |
+| 1999-08-15 | 67.341 | 76.262 | 21.694 |   24.0 |  89.029 | 138.843 | 19.882 |
+| 1999-09-15 | 67.348 | 76.407 | 21.037 | 23.918 |  89.565 | 144.335 | 19.224 |
+| 1999-10-15 |  68.51 | 75.378 |  21.36 | 23.838 |  90.704 | 141.698 | 19.713 |
+| 1999-11-15 | 68.585 | 76.251 | 21.578 | 23.755 |  91.279 | 141.487 | 19.845 |
+| 1999-12-15 | 68.656 | 77.097 | 21.789 | 23.675 |  91.834 |   141.1 | 20.099 |
+| 2000-01-01 | 68.697 | 77.576 | 21.909 |  23.63 |  92.148 | 140.933 | 20.242 |
+| 2000-02-15 | 69.084 | 77.417 | 22.411 | 23.506 |  91.801 | 139.227 | 20.997 |
+| 2000-03-15 | 67.922 | 75.716 | 22.734 | 23.426 |  91.577 | 138.139 | 21.413 |
+| 2000-04-15 | 68.995 | 77.542 | 23.178 | 23.341 |  88.318 | 141.724 | 21.876 |
+| 2000-05-15 | 68.992 | 79.387 | 23.515 | 23.258 |  89.646 | 136.751 | 22.471 |
+| 2000-06-15 | 68.756 |  81.08 | 24.035 | 23.173 |  92.998 | 142.273 | 21.982 |
+| 2000-07-15 | 69.228 | 83.645 | 21.075 | 22.526 |  97.044 | 135.705 |  22.03 |
+| 2000-08-15 | 69.454 | 82.507 | 22.702 | 21.857 |  91.957 | 134.006 | 19.854 |
+| 2000-09-03 | 66.421 | 80.046 | 22.604 | 21.448 |  88.378 |   130.0 | 19.566 |
+| 2000-09-15 | 65.627 | 80.662 | 22.581 | 21.478 |  87.951 | 134.047 | 19.501 |
+| 2000-10-15 | 65.974 | 80.728 | 22.762 | 21.552 |  88.225 | 132.718 | 19.924 |
+| 2000-11-15 | 66.737 | 80.968 | 22.955 | 21.629 |  88.799 | 132.811 | 19.995 |
+| 2001-03-15 | 69.671 | 81.873 | 23.703 | 21.924 |  91.061 | 133.115 | 20.273 |
+| 2001-04-15 | 69.733 | 80.299 |  23.85 | 21.999 |  92.264 | 134.691 | 20.374 |
+| 2001-05-15 | 68.895 | 77.653 | 24.022 | 22.072 |  89.902 | 135.425 | 20.821 |
+| 2001-06-15 | 71.442 | 83.998 | 24.409 | 23.102 |  92.182 | 142.559 | 20.829 |
+| 2001-07-15 | 71.354 | 83.912 | 24.788 | 24.099 |  95.816 | 135.272 | 20.469 |
+| 2001-08-15 | 66.694 | 81.333 | 25.157 | 24.023 |  92.135 | 135.451 | 20.277 |
+| 2001-09-15 | 68.515 | 82.984 | 25.458 | 23.947 |  88.619 | 137.677 |  20.04 |
+| 2001-10-15 | 67.509 | 80.557 | 25.865 | 23.873 |  88.482 | 137.584 | 19.617 |
+| 2001-11-15 | 68.221 | 79.999 | 26.309 | 23.797 |  88.817 | 139.992 | 19.649 |
+| 2002-01-15 | 69.601 | 78.888 | 27.182 | 23.647 |  89.478 |  140.99 | 19.715 |
+| 2002-02-15 | 70.269 | 78.296 | 27.624 | 23.572 |  89.816 | 142.001 | 19.855 |
+| 2002-03-15 | 70.871 | 77.763 | 28.023 | 23.505 |  90.121 | 142.914 | 20.162 |
+| 2002-04-15 | 69.173 | 81.985 | 28.498 |  23.43 |  89.629 | 142.208 | 20.309 |
+| 2002-05-15 | 69.263 | 84.297 |   28.9 | 23.357 |  91.844 | 144.586 | 20.781 |
+| 2002-06-15 | 71.005 | 86.634 | 29.436 | 23.282 |  97.267 | 146.714 |  21.11 |
+| 2002-07-15 | 67.776 | 84.198 | 29.151 | 24.577 |  96.549 | 148.866 | 20.144 |
+| 2002-08-15 | 67.834 | 80.554 |  28.63 | 24.373 |  91.197 | 153.157 | 19.676 |
+| 2002-09-15 | 66.321 | 81.502 | 28.303 | 24.169 |   91.56 | 149.155 | 19.748 |
+| 2002-10-15 | 67.281 | 81.869 |  27.91 | 23.972 |  91.748 | 152.495 | 19.783 |
+| 2003-02-15 | 71.201 | 83.372 | 26.296 | 23.164 |   92.52 | 154.105 | 20.292 |
+| 2003-03-15 | 72.093 | 83.714 | 25.928 |  22.98 |  92.696 | 154.349 | 20.584 |
+| 2003-04-15 | 74.004 | 84.741 |  25.52 | 22.777 |  93.588 | 154.994 |   20.6 |
+| 2003-05-15 | 69.544 | 85.891 | 25.234 |  22.58 |  92.197 | 155.872 | 20.817 |
+| 2003-06-15 | 71.195 |  86.62 | 24.828 |  23.07 |  96.807 | 158.052 | 20.817 |
+| 2003-07-15 | 69.037 | 86.383 | 24.448 | 23.545 |  95.454 | 157.379 | 21.083 |
+| 2003-08-15 | 70.838 | 86.193 | 24.494 | 23.599 |  93.427 | 155.189 | 20.435 |
+| 2003-09-15 | 69.251 | 86.228 | 24.533 | 23.652 |  92.678 | 158.887 | 20.514 |
+| 2003-10-15 |  70.07 | 85.978 | 24.586 | 23.704 |  92.783 | 159.729 | 20.581 |
+| 2004-03-15 | 74.258 | 84.688 | 24.854 | 23.965 |  93.317 | 163.132 | 20.934 |
+| 2004-04-15 | 74.989 | 81.696 | 24.908 | 24.017 |  93.492 | 162.499 | 20.447 |
+| 2004-05-15 | 73.066 | 85.345 | 24.943 | 24.068 |   95.35 | 161.419 | 20.938 |
+| 2004-06-15 | 75.295 | 86.875 | 25.188 | 24.121 | 101.465 | 169.078 | 20.891 |
+| 2004-07-15 | 75.241 | 85.795 | 22.675 | 24.481 | 102.801 | 163.021 | 20.298 |
+| 2004-08-15 | 72.497 | 84.702 | 22.883 | 24.393 |  97.897 | 161.107 | 19.751 |
+| 2004-09-15 | 69.339 | 84.862 | 23.073 | 24.306 |   96.89 | 167.167 | 20.631 |
+| 2004-10-15 | 71.675 | 84.764 | 23.295 | 24.221 |  96.945 | 166.098 | 20.777 |
+| 2005-03-15 |  83.39 |  84.31 | 24.411 | 23.796 |  97.199 | 165.163 | 21.508 |
+| 2005-04-15 | 85.788 | 84.226 | 24.579 | 23.709 |  95.265 | 164.978 | 22.253 |
+| 2005-05-15 | 87.353 | 83.432 | 24.839 | 23.624 |  93.927 | 169.225 | 22.167 |
+| 2005-06-15 | 88.071 | 86.986 | 25.102 | 23.537 | 100.116 | 172.346 | 21.754 |
+| 2005-07-15 | 87.316 | 87.301 |  25.69 | 22.327 | 101.366 | 166.394 | 21.562 |
+| 2005-08-15 | 82.987 | 85.105 | 25.315 | 22.299 |  96.019 | 163.744 | 21.659 |
+| 2005-09-15 | 82.758 | 83.157 |  24.79 |  22.27 |  94.566 | 159.573 | 21.894 |
+| 2005-10-15 | 84.147 | 83.024 | 24.306 | 22.243 |  95.064 | 158.352 |  21.43 |
+| 2005-12-13 | 86.876 | 82.767 | 23.356 | 22.188 |  96.043 | 156.816 | 21.635 |
+| 2006-03-15 | 87.375 | 82.406 | 24.343 | 23.226 |  96.248 | 157.155 | 22.221 |
+| 2006-04-15 |  85.42 | 84.658 | 24.622 | 23.575 |   94.75 | 157.694 | 22.559 |
+| 2006-05-15 |  86.34 | 83.627 | 24.996 | 23.912 |  95.328 | 158.445 | 22.796 |
+| 2006-06-15 | 83.638 | 87.207 | 25.222 |  24.26 | 101.152 | 153.255 | 23.721 |
+| 2006-07-15 |  86.41 |  92.07 | 24.915 | 24.261 | 103.843 | 154.252 | 22.336 |
+| 2006-08-15 | 87.322 |  90.39 | 25.176 | 24.007 |  97.112 | 152.366 |  20.05 |
+| 2006-09-15 | 77.658 | 88.534 |  24.76 | 23.753 |  95.546 | 148.828 | 18.466 |
+| 2006-10-15 | 82.228 | 87.726 | 24.472 | 23.508 |  95.466 | 147.992 | 20.203 |
+| 2006-11-15 | 82.474 | 86.893 | 24.174 | 23.254 |  95.382 |  146.46 | 19.909 |
+| 2006-12-18 | 82.737 | 86.012 | 23.856 | 22.985 |  95.292 | 144.829 | 20.999 |
+| 2007-03-15 | 82.463 | 84.142 |  24.38 | 25.357 |  95.584 | 149.001 | 21.531 |
+| 2007-04-15 | 82.144 | 82.767 | 24.649 | 25.479 |  94.954 | 146.512 |  22.26 |
+| 2007-05-15 | 82.031 | 85.152 | 25.048 | 25.597 |  95.509 | 147.469 | 22.055 |
+| 2007-06-15 |  84.04 | 90.481 | 25.631 | 25.719 | 104.293 | 155.477 | 22.497 |
+| 2007-07-15 | 80.375 | 88.974 |  25.14 | 25.246 | 105.377 | 151.409 | 21.249 |
+| 2007-08-15 | 76.684 | 88.098 |  23.11 | 23.611 |  96.125 | 147.591 | 19.525 |
+| 2007-09-07 | 80.804 | 84.832 | 24.361 | 23.297 |  95.419 | 148.005 | 19.531 |
+| 2007-09-15 | 77.573 | 89.084 | 24.476 | 23.373 |  91.345 | 145.175 | 19.063 |
+| 2007-10-15 | 77.653 | 88.244 | 24.602 | 23.659 |  92.062 | 146.414 |  18.98 |
+| 2008-03-15 | 77.617 | 84.037 | 25.231 | 25.102 |  95.684 | 148.247 | 20.889 |
+| 2008-04-15 |  77.21 | 83.187 | 25.286 | 25.395 |   96.42 | 148.679 | 20.315 |
+| 2008-05-15 | 78.115 |  83.98 | 25.475 | 25.679 |  94.916 |   153.7 | 20.605 |
+| 2008-06-15 | 79.223 | 89.562 | 25.732 | 25.971 | 106.083 |  154.34 | 20.575 |
+| 2008-07-15 | 80.001 | 91.625 | 26.179 | 24.975 | 103.423 | 148.514 | 18.777 |
+| 2008-08-15 | 78.536 | 93.734 | 26.084 | 24.894 |  97.423 | 146.641 | 18.491 |
+| 2008-10-15 | 78.496 | 91.189 | 25.897 | 24.737 |  97.666 | 149.319 | 18.767 |
+| 2008-11-15 | 78.476 | 89.898 | 25.802 | 24.657 |  97.789 |  150.67 | 19.179 |
+| 2009-01-15 |  78.44 | 87.358 | 25.616 |   24.5 |  98.031 | 153.315 | 19.985 |
+| 2009-02-15 | 78.429 | 86.065 | 25.523 | 24.421 |  98.153 |  154.64 | 20.385 |
+| 2009-03-15 | 78.419 | 84.899 |  25.44 | 24.349 |  98.263 | 155.836 | 20.746 |
+| 2009-04-15 | 77.677 | 84.406 | 25.455 | 24.269 |  98.384 | 154.611 | 20.673 |
+| 2009-05-15 | 78.158 | 85.588 | 25.299 | 24.192 |  97.947 | 158.918 | 21.194 |
+| 2009-06-15 | 80.212 | 93.377 | 25.293 | 24.113 | 104.151 | 160.998 | 21.261 |
+| 2009-07-15 | 79.411 | 97.539 | 26.031 | 23.286 | 108.817 | 160.626 | 20.882 |
+| 2009-08-15 | 75.515 | 91.306 | 23.191 | 22.761 |   98.55 | 153.097 | 19.552 |
+| 2009-09-02 | 77.474 | 87.849 |  24.69 | 22.456 | 100.034 | 149.459 | 18.989 |
+| 2009-09-15 | 75.916 | 92.003 | 24.824 | 22.583 |  98.397 | 149.997 | 18.234 |
+| 2009-10-15 | 76.171 | 91.844 | 24.803 | 22.876 |    98.8 |  151.04 | 18.619 |
+| 2010-03-15 | 77.443 | 91.046 |   24.7 |  24.35 | 100.828 | 156.112 | 20.415 |
+| 2010-04-15 | 77.617 | 90.883 | 24.739 | 24.651 | 101.411 | 153.797 | 20.249 |
+| 2010-05-15 | 77.355 | 93.509 | 24.599 | 24.943 |  97.134 |  151.33 | 20.447 |
+| 2010-06-15 | 79.452 | 96.202 | 24.665 | 25.244 | 108.343 | 158.068 | 19.781 |
+| 2010-07-15 | 78.538 |  91.51 |  25.32 | 23.904 | 104.956 | 155.567 | 18.645 |
+| 2010-08-15 | 75.957 | 87.122 | 25.061 | 23.935 | 103.813 | 157.569 | 18.121 |
+| 2010-09-15 | 75.877 | 84.789 | 25.131 | 24.014 | 102.025 | 157.344 | 17.003 |
+| 2010-10-15 | 76.047 | 84.355 | 25.246 | 24.091 | 102.544 | 156.756 | 17.449 |
+| 2011-03-15 | 76.925 | 82.128 | 25.823 | 24.474 | 105.074 | 155.274 | 20.641 |
+| 2011-04-15 | 79.403 | 83.809 | 25.975 | 24.552 | 105.589 | 155.006 | 21.117 |
+| 2011-05-15 | 81.668 | 84.669 | 26.146 | 24.628 |  105.07 | 154.113 | 21.158 |
+| 2011-06-15 | 80.895 | 87.613 | 26.259 | 24.706 | 108.608 | 157.965 | 20.944 |
+| 2011-07-15 | 82.773 |  88.31 | 26.237 | 24.913 | 111.451 |  154.51 | 20.773 |
+| 2011-08-15 | 78.876 | 89.511 | 25.422 | 24.837 | 103.116 | 150.874 | 21.128 |
+| 2011-09-15 | 76.661 | 93.429 | 25.441 | 24.762 | 102.932 | 148.407 | 19.989 |
+| 2011-10-15 | 76.969 | 92.021 | 25.565 |  24.69 | 103.075 | 149.014 | 20.466 |
+| 2012-01-15 |  77.92 | 87.739 | 25.946 | 24.467 | 103.515 | 150.157 | 21.643 |
+| 2012-03-15 | 78.563 |  85.02 | 26.194 | 24.324 | 103.849 | 150.975 | 22.433 |
+| 2012-04-15 |   77.0 | 83.618 | 26.208 | 24.251 | 104.021 | 153.165 | 22.261 |
+| 2012-05-15 | 78.313 |  89.06 | 26.294 | 24.179 | 102.945 | 149.725 | 23.234 |
+| 2012-06-15 | 80.403 | 99.751 | 26.457 | 24.106 | 110.207 | 149.202 | 23.298 |
+| 2012-07-15 | 79.246 | 93.883 | 25.971 | 24.162 | 110.451 | 144.346 | 20.784 |
+| 2012-08-15 | 73.854 | 92.591 | 24.283 | 23.896 | 102.037 | 148.621 | 17.794 |
+| 2012-09-15 | 73.408 | 92.697 | 24.701 | 23.554 | 100.057 | 149.502 | 18.158 |
+| 2012-10-15 | 75.579 | 93.904 | 25.197 | 23.223 | 102.396 | 149.203 | 18.699 |
+| 2012-11-10 |  77.46 |  94.95 | 25.608 | 22.937 | 104.422 | 145.698 | 20.344 |
+| 2013-02-15 | 78.542 | 94.728 | 25.579 | 22.762 | 103.627 | 146.398 | 20.821 |
+| 2013-03-15 | 78.853 | 94.655 | 25.569 | 22.711 | 103.389 | 146.597 | 20.943 |
+| 2013-04-15 | 77.174 | 91.713 | 25.552 | 22.655 |  103.57 | 145.961 | 20.689 |
+| 2013-05-15 | 76.314 | 88.275 | 25.606 | 23.116 | 103.391 |  147.39 |  21.26 |
+| 2013-06-15 | 77.558 | 91.854 | 26.154 | 24.171 | 108.436 | 150.791 |  22.58 |
+| 2013-07-15 | 77.417 | 90.067 | 26.086 | 24.463 | 113.278 | 148.154 | 21.627 |
+| 2013-08-15 | 77.711 | 95.611 | 24.961 | 23.694 | 107.394 | 149.933 |  19.71 |
+| 2013-09-15 |  75.31 | 98.248 | 25.468 | 23.476 | 106.025 | 151.379 | 19.394 |
+| 2013-10-15 | 78.669 |  98.37 | 25.698 | 23.573 | 107.127 | 146.733 |  19.45 |
+| 2013-11-15 | 78.516 | 96.743 | 25.935 | 23.673 | 108.028 | 146.907 | 20.542 |
+| 2013-12-15 |  78.08 | 95.173 | 26.164 |  23.77 | 108.898 | 147.394 | 20.225 |
+| 2014-01-15 | 77.629 | 93.548 |   26.4 | 23.869 | 109.787 | 148.152 | 20.946 |
+| 2014-02-15 | 77.176 | 91.919 | 26.633 | 23.968 | 110.662 | 147.625 | 20.531 |
+| 2014-03-15 | 75.959 | 91.421 | 26.844 | 24.057 | 111.369 | 147.978 | 21.395 |
+| 2014-04-15 | 76.117 | 86.652 | 27.181 | 24.446 | 111.824 | 147.385 | 21.665 |
+| 2014-05-15 | 74.963 | 91.128 | 26.695 | 25.167 | 111.113 | 144.767 | 22.329 |
+| 2014-06-15 | 78.758 | 98.159 | 27.643 | 25.621 | 115.617 | 147.405 | 22.812 |
+| 2014-07-15 | 76.985 | 97.381 | 27.935 |  25.65 | 116.565 | 149.011 | 20.138 |
+| 2014-08-15 | 74.588 | 93.866 | 27.266 |  25.27 | 104.953 | 147.195 | 18.791 |
+| 2014-09-01 | 76.159 | 90.192 |  27.75 | 24.978 | 109.248 | 147.111 | 19.434 |
+| 2014-09-15 | 73.551 | 85.374 | 26.767 | 24.418 | 103.153 | 146.891 | 18.542 |
+| 2014-10-15 | 74.539 | 96.665 | 26.921 | 24.534 |  104.56 | 147.917 | 18.797 |
+| 2014-11-15 | 75.834 | 96.032 |  27.08 | 24.653 | 106.009 | 150.272 | 19.084 |
+| 2014-12-15 | 76.887 | 95.419 | 27.234 | 24.769 | 107.408 | 148.447 | 19.223 |
+| 2014-12-16 | 76.922 | 95.399 | 27.239 | 24.773 | 107.455 | 148.658 | 19.486 |
+| 2015-01-15 | 76.856 |  93.84 |  27.44 | 24.674 | 108.418 | 147.955 | 19.618 |
+| 2015-01-16 | 76.854 | 93.789 | 27.447 | 24.671 | 108.451 | 147.509 | 19.444 |
+| 2015-02-14 | 76.384 | 92.189 | 27.644 | 24.901 | 110.088 | 148.776 | 19.558 |
+| 2015-02-15 | 76.098 | 90.414 | 27.684 | 24.911 |  109.33 | 148.835 |   19.9 |
+| 2015-03-15 | 76.374 | 88.982 |  27.45 | 25.195 | 110.342 | 150.226 | 21.172 |
+| 2015-03-16 | 76.591 | 90.193 | 27.352 | 25.226 | 111.972 | 150.483 | 20.209 |
+| 2015-05-15 | 75.128 | 85.968 | 27.894 | 25.439 |  109.18 | 151.752 | 20.951 |
+| 2015-05-16 | 76.604 | 86.254 | 28.556 | 25.525 | 112.428 |  151.52 | 20.544 |
+| 2015-07-15 |  76.92 | 96.052 | 29.158 | 26.321 |  114.17 | 155.761 | 21.272 |
+| 2015-07-16 | 76.878 | 96.609 | 29.309 | 26.332 | 112.074 | 151.295 | 20.978 |
+| 2015-08-15 |  74.51 | 91.573 | 28.328 | 25.776 | 105.946 | 153.268 | 20.346 |
+| 2015-08-16 | 74.425 | 92.664 | 28.484 | 25.687 | 105.382 | 150.493 | 20.028 |
+| 2015-09-01 | 74.777 | 95.012 | 28.005 | 24.741 | 110.786 | 146.593 | 20.566 |
+| 2015-10-15 | 74.723 | 93.595 | 27.508 | 24.018 | 107.781 | 152.661 | 19.632 |
+| 2015-10-16 | 74.916 | 96.576 | 27.496 | 24.002 | 106.751 | 148.711 | 18.651 |
+| 2015-12-15 | 74.239 | 96.036 | 27.998 | 24.452 | 108.839 |  148.07 | 19.472 |
+| 2015-12-16 | 74.228 | 96.027 | 28.006 | 24.459 | 108.873 | 147.824 | 19.065 |
+| 2016-01-15 | 74.197 |  91.52 | 28.057 | 24.607 | 109.016 | 146.361 |  19.91 |
+| 2016-01-16 | 74.195 |  91.37 | 28.059 | 24.612 | 109.021 | 146.098 | 19.491 |
+| 2016-03-15 | 73.132 | 87.426 | 27.966 | 24.876 | 112.015 | 145.594 | 20.494 |
+| 2016-03-16 | 73.832 | 92.289 | 28.486 | 24.832 | 109.804 | 144.116 | 20.268 |
+| 2016-05-15 |   73.7 | 91.336 | 29.061 | 25.067 | 111.569 | 144.233 | 21.357 |
+| 2016-05-16 | 74.575 | 95.661 | 28.847 | 25.472 | 112.275 | 143.234 | 20.884 |
+| 2016-07-15 | 75.346 | 94.671 | 29.304 | 26.976 | 115.975 | 145.706 | 19.226 |
+| 2016-07-16 | 75.822 | 93.363 | 29.367 | 27.016 |  115.55 | 141.695 | 18.279 |
+| 2016-08-15 |  73.06 | 93.391 | 28.634 | 26.556 | 111.295 | 145.466 | 17.997 |
+| 2016-08-16 | 73.807 | 92.263 | 29.095 | 26.622 | 110.737 |  141.25 | 17.455 |
+| 2016-09-01 | 75.096 | 92.788 | 28.355 | 25.634 |  112.37 | 147.203 | 19.344 |
+| 2016-09-25 |  72.38 | 94.705 | 27.956 | 25.642 | 111.087 |  140.42 | 17.575 |
+| 2016-10-06 | 72.159 | 94.564 | 27.734 | 25.526 | 113.972 | 144.797 | 18.178 |
+| 2016-10-15 | 73.809 | 91.768 | 28.013 | 25.217 | 111.745 | 149.913 | 18.694 |
+| 2016-10-16 | 74.187 | 91.401 | 28.039 | 25.183 | 109.712 | 142.334 |  18.07 |
+| 2016-10-18 | 73.072 | 94.478 | 27.922 | 25.388 | 115.289 | 145.079 | 18.227 |
+| 2016-10-25 | 72.839 | 94.261 |  28.12 | 25.436 | 113.867 | 144.029 | 18.243 |
+| 2016-10-30 | 72.041 | 93.101 | 27.957 | 25.325 | 114.274 | 142.895 | 18.313 |
+| 2016-11-11 |  73.14 | 91.191 | 28.034 | 25.279 | 114.613 | 146.148 | 18.867 |
+| 2016-11-16 | 73.637 | 91.219 | 28.086 |  25.33 | 114.529 | 145.653 | 19.143 |
+| 2016-11-30 | 74.239 | 88.928 | 28.235 |  25.36 | 114.785 | 147.247 | 19.295 |
+| 2016-12-05 | 74.455 |  88.11 | 28.288 |  25.37 | 114.877 | 147.817 | 19.349 |
+| 2016-12-12 | 74.756 | 86.965 | 28.363 | 25.385 | 115.005 | 148.614 | 19.425 |
+| 2016-12-15 | 76.104 | 85.305 | 28.296 | 25.406 | 112.967 | 148.118 | 19.545 |
+| 2016-12-16 |  76.52 | 84.752 | 28.274 | 25.412 | 112.287 | 147.796 | 19.438 |
+| 2016-12-17 |  75.31 | 85.818 | 28.285 | 25.284 | 115.211 | 147.701 | 19.521 |
+| 2016-12-24 | 75.698 | 86.247 | 28.343 | 25.479 | 114.416 | 149.273 | 19.615 |
+| 2016-12-29 |  76.17 | 86.182 | 28.615 | 25.379 | 114.663 | 149.769 | 19.666 |
 | 2017-01-04 |  76.25 |  85.76 | 28.638 | 25.479 | 114.553 | 151.144 | 19.775 |
 | 2017-01-10 | 76.338 | 85.071 | 28.485 | 25.555 | 114.632 | 151.119 | 20.105 |
-| 2017-01-15 |  75.98 | 84.865 | 28.444 | 25.572 | 113.972 | 151.704 | 20.239 |
-| 2017-01-22 | 75.561 | 84.576 | 28.387 | 25.594 | 113.048 | 151.859 | 20.171 |
-| 2017-01-29 | 76.479 | 83.505 | 28.578 |   25.8 | 113.161 |  151.92 | 20.092 |
-| 2017-02-03 | 76.993 | 83.253 |  28.54 | 25.816 | 114.154 | 151.777 | 20.052 |
+| 2017-01-15 |  75.98 | 84.865 | 28.444 | 25.572 | 113.972 | 151.697 | 20.239 |
+| 2017-01-22 | 75.561 | 84.576 | 28.387 | 25.595 | 113.048 | 151.859 | 20.171 |
+| 2017-01-29 | 76.479 | 83.505 | 28.578 | 25.805 | 113.161 |  151.92 | 20.092 |
+| 2017-02-03 | 76.993 | 83.253 |  28.54 | 25.816 | 114.154 | 151.773 | 20.052 |
 | 2017-02-09 | 77.494 | 82.916 | 28.566 | 25.854 | 114.256 | 153.141 | 20.118 |
-| 2017-02-14 | 77.968 | 82.156 |  28.56 | 25.734 | 113.373 | 151.802 | 20.031 |
-| 2017-02-22 | 78.074 | 83.198 | 28.542 | 26.044 | 113.017 | 151.693 | 20.272 |
-| 2017-02-27 | 77.953 | 82.727 | 28.486 | 25.969 | 114.001 | 150.569 | 20.314 |
-| 2017-03-06 | 78.785 | 82.039 | 28.767 | 25.864 | 113.691 | 150.294 | 20.173 |
-| 2017-03-11 | 78.808 | 81.871 | 28.762 | 25.838 | 113.946 | 150.998 | 20.187 |
-| 2017-03-15 | 78.782 | 81.715 |  28.58 | 25.803 |   114.3 | 152.089 | 20.666 |
-| 2017-03-16 | 78.797 | 81.118 |  28.71 | 25.837 | 113.778 |  149.55 | 20.442 |
-| 2017-03-18 | 78.586 | 81.679 | 28.989 |  25.92 | 113.925 | 151.156 | 20.274 |
-| 2017-03-23 | 78.179 | 82.125 | 28.806 | 25.969 | 115.395 | 151.438 | 20.637 |
-| 2017-03-30 | 78.549 | 82.174 | 28.926 | 26.096 | 115.314 | 151.613 | 20.688 |
-| 2017-04-04 | 78.108 | 82.068 |  28.82 | 25.927 |  115.76 | 151.407 | 20.661 |
-| 2017-04-11 | 78.177 | 80.698 | 28.938 | 26.008 | 114.358 |  153.41 | 20.703 |
-| 2017-04-16 | 78.414 | 81.149 | 28.818 | 25.951 | 115.612 |  155.17 |  20.88 |
-| 2017-04-23 | 79.699 | 82.326 | 28.984 | 26.299 | 115.763 | 156.264 | 20.994 |
-| 2017-04-28 | 80.267 | 83.633 | 29.094 | 26.294 | 117.903 | 159.198 | 21.225 |
-| 2017-05-05 |  80.37 | 81.855 |  29.13 | 26.487 |  117.03 | 162.299 | 21.339 |
-| 2017-05-10 |  79.35 |  80.39 | 29.057 | 26.439 | 116.807 | 162.388 | 21.214 |
-| 2017-05-15 | 79.932 |   80.2 | 28.943 | 26.262 | 114.485 | 153.675 | 21.408 |
-| 2017-05-16 | 79.991 | 79.949 | 29.213 | 26.406 | 115.696 | 154.112 | 21.006 |
-| 2017-05-17 | 78.619 | 80.219 | 29.141 | 26.681 | 115.614 | 153.869 | 20.835 |
-| 2017-05-22 | 78.693 | 80.247 | 29.101 | 26.739 | 114.818 |  154.11 | 20.587 |
-| 2017-05-28 | 78.635 | 79.387 | 29.418 | 26.841 | 114.264 |  153.27 | 20.564 |
-| 2017-06-03 | 78.935 | 79.981 | 29.686 | 26.733 | 114.024 | 152.836 | 20.622 |
-| 2017-06-09 | 78.763 | 80.718 | 29.941 | 27.039 |  113.65 | 153.295 | 20.403 |
-| 2017-06-16 | 79.298 | 81.484 | 29.983 | 27.628 | 114.792 | 153.911 | 20.439 |
-| 2017-06-21 | 80.822 | 81.137 | 30.374 | 28.057 | 115.713 | 154.421 | 20.258 |
-| 2017-06-28 | 81.297 | 81.119 | 30.853 | 28.489 | 117.656 | 153.665 | 19.973 |
-| 2017-07-03 | 80.775 |  81.88 | 31.241 | 29.185 | 117.772 | 152.838 |  19.88 |
-| 2017-07-09 | 80.331 | 84.334 |  31.14 | 29.585 | 119.222 | 152.072 | 19.872 |
-| 2017-07-16 | 80.344 | 84.863 | 30.892 | 29.417 | 119.967 | 153.864 | 20.569 |
-| 2017-07-21 |  80.55 | 85.029 | 31.223 | 29.712 | 119.796 | 151.744 | 20.108 |
-| 2017-07-27 | 80.444 | 83.836 | 31.271 | 29.653 | 118.784 | 152.537 | 19.556 |
-| 2017-08-02 | 79.555 | 83.905 |  31.15 | 29.459 | 117.682 | 151.469 | 18.753 |
-| 2017-08-08 | 78.208 | 83.954 |  30.77 |  28.96 | 114.988 | 151.025 | 18.064 |
-| 2017-08-12 | 77.601 | 84.225 | 30.192 | 28.622 | 115.179 | 151.804 | 17.948 |
-| 2017-08-15 | 79.425 | 85.875 | 29.885 | 27.714 | 116.481 | 155.577 | 18.537 |
-| 2017-08-16 |  78.64 | 86.815 |  30.43 | 27.667 | 115.907 | 154.203 | 18.305 |
-| 2017-08-20 | 77.339 | 84.865 | 29.687 | 27.151 |  113.77 | 151.177 | 17.653 |
+| 2017-02-14 | 77.968 | 82.156 |  28.56 | 25.738 | 113.373 | 151.802 | 20.031 |
+| 2017-02-22 | 78.074 | 83.198 | 28.542 | 26.046 | 113.017 | 151.693 | 20.272 |
+| 2017-02-27 |  77.96 | 82.727 | 28.486 | 25.963 | 114.001 | 150.569 | 20.314 |
+| 2017-03-06 | 78.785 | 82.039 | 28.767 | 25.852 | 113.691 | 150.294 | 20.173 |
+| 2017-03-11 | 78.808 | 81.871 | 28.762 | 25.834 | 113.946 | 150.998 | 20.187 |
+| 2017-03-15 | 78.782 | 81.715 |  28.58 |   25.9 |   114.3 | 152.089 | 20.666 |
+| 2017-03-16 | 78.797 | 81.118 |  28.71 |  25.87 | 113.778 |  149.55 | 20.442 |
+| 2017-03-18 | 78.586 | 81.679 | 28.989 | 25.935 | 113.925 | 151.156 | 20.274 |
+| 2017-03-23 | 78.179 | 82.125 | 28.806 | 25.974 | 115.395 | 151.438 | 20.637 |
+| 2017-03-30 | 78.549 | 82.174 | 28.926 |  26.09 | 115.314 | 151.613 | 20.688 |
+| 2017-04-04 | 78.108 | 82.068 |  28.82 |  25.92 |  115.76 | 151.407 | 20.661 |
+| 2017-04-11 | 78.177 | 80.698 | 28.938 | 26.004 | 114.358 |  153.41 | 20.703 |
+| 2017-04-16 | 78.414 | 81.149 | 28.818 | 25.947 | 115.612 |  155.17 |  20.88 |
+| 2017-04-23 | 79.699 | 82.326 | 28.984 | 26.294 | 115.763 | 156.264 | 20.994 |
+| 2017-04-28 | 80.267 | 83.633 | 29.094 | 26.281 | 117.903 | 159.198 | 21.225 |
+| 2017-05-05 |  80.37 | 81.855 |  29.13 |  26.48 |  117.03 | 162.299 | 21.339 |
+| 2017-05-10 |  79.35 |  80.39 | 29.057 | 26.431 | 116.807 | 162.388 | 21.214 |
+| 2017-05-15 | 79.932 |   80.2 | 28.943 | 26.162 | 114.485 | 153.675 | 21.408 |
+| 2017-05-16 | 79.991 | 79.949 | 29.213 | 26.402 | 115.696 | 154.112 | 21.006 |
+| 2017-05-17 | 78.619 | 80.219 | 29.141 | 26.671 | 115.614 | 153.869 | 20.835 |
+| 2017-05-22 | 78.693 | 80.247 | 29.101 | 26.748 | 114.818 |  154.11 | 20.587 |
+| 2017-05-28 | 78.635 | 79.387 | 29.418 | 26.839 | 114.264 |  153.27 | 20.564 |
+| 2017-06-03 | 78.935 | 79.981 | 29.686 | 26.718 | 114.024 | 152.836 | 20.622 |
+| 2017-06-09 | 78.763 | 80.718 | 29.941 | 27.032 |  113.65 | 153.295 | 20.403 |
+| 2017-06-16 | 79.298 | 81.484 | 29.983 | 27.633 | 114.792 | 153.911 | 20.439 |
+| 2017-06-21 | 80.822 | 81.137 | 30.374 | 28.073 | 115.713 | 154.421 | 20.258 |
+| 2017-06-28 | 81.297 | 81.119 | 30.853 | 28.502 | 117.656 | 153.665 | 19.973 |
+| 2017-07-03 | 80.775 |  81.88 | 31.241 | 29.187 | 117.772 | 152.838 |  19.88 |
+| 2017-07-09 | 80.331 | 84.334 |  31.14 | 29.572 | 119.222 | 152.072 | 19.872 |
+| 2017-07-16 | 80.344 | 84.863 | 30.892 | 29.415 | 119.967 | 153.864 | 20.569 |
+| 2017-07-21 |  80.55 | 85.029 | 31.223 | 29.743 | 119.796 | 151.744 | 20.108 |
+| 2017-07-27 | 80.444 | 83.836 | 31.271 | 29.667 | 118.784 | 152.537 | 19.556 |
+| 2017-08-02 | 79.555 | 83.905 |  31.15 | 29.456 | 117.682 | 151.469 | 18.753 |
+| 2017-08-08 | 78.208 | 83.954 |  30.77 | 28.955 | 114.988 | 150.999 | 18.064 |
+| 2017-08-12 | 77.601 | 84.225 | 30.192 | 28.612 | 115.179 | 151.778 | 17.948 |
+| 2017-08-15 | 79.425 | 85.875 | 29.885 | 27.771 | 116.481 | 155.582 | 18.537 |
+| 2017-08-16 |  78.64 | 86.815 |  30.43 | 27.661 | 115.907 | 154.203 | 18.305 |
+| 2017-08-20 | 77.339 | 84.865 | 29.687 | 27.142 |  113.77 | 151.177 | 17.653 |
 | 2017-08-26 | 77.476 | 86.576 |  29.44 | 26.395 | 113.533 | 151.785 | 17.655 |
-| 2017-09-13 | 77.029 | 85.146 | 29.403 | 26.162 | 112.617 | 151.643 | 17.875 |
-| 2017-09-19 | 77.762 |  85.54 | 29.316 | 26.239 | 114.686 | 153.413 | 17.781 |
-| 2017-09-24 | 77.701 | 86.759 | 29.456 | 26.323 |  114.56 | 153.137 | 17.635 |
-| 2017-10-01 | 77.359 | 86.461 | 29.376 | 26.392 | 115.807 | 150.464 | 17.748 |
-| 2017-10-07 | 76.526 | 85.704 | 29.376 | 26.416 | 115.455 | 150.827 | 18.023 |
-| 2017-10-13 | 76.749 | 85.093 | 29.422 | 26.339 | 117.426 | 153.341 | 18.142 |
-| 2017-10-15 | 78.119 | 84.555 | 29.438 | 26.304 | 114.788 | 156.618 | 18.615 |
-| 2017-10-16 | 77.776 | 84.553 | 29.427 | 26.286 | 113.806 | 153.414 | 18.106 |
-| 2017-10-19 | 76.813 | 85.097 | 29.667 | 26.578 | 116.678 | 154.073 |  18.19 |
-| 2017-10-25 | 76.874 | 85.235 | 29.768 | 26.541 | 117.764 |  155.25 | 18.697 |
-| 2017-10-31 | 76.986 | 85.059 | 29.751 | 26.353 | 116.858 | 153.995 | 18.999 |
-| 2017-11-06 | 77.429 | 84.195 | 29.764 | 26.299 | 117.144 | 151.695 | 18.803 |
-| 2017-11-12 | 77.322 | 82.506 | 29.824 | 26.124 | 115.163 | 151.162 | 18.564 |
-| 2017-11-18 | 77.491 | 80.946 | 29.736 | 26.139 |  114.63 |  148.77 |  18.34 |
-| 2017-11-30 | 77.312 | 81.714 | 29.583 | 26.166 | 116.842 | 149.524 | 19.028 |
-| 2017-12-12 |  77.34 | 81.235 | 29.412 | 26.493 | 116.763 | 149.488 | 18.933 |
-| 2017-12-15 | 78.658 | 81.112 | 29.413 | 26.489 | 116.636 | 153.105 | 18.917 |
-| 2017-12-16 | 79.098 | 81.071 | 29.414 | 26.488 | 116.594 | 154.269 | 18.998 |
-| 2017-12-24 |  77.75 |  78.18 | 29.502 |  26.34 | 115.331 | 148.399 | 19.067 |
-| 2018-01-05 | 77.944 | 79.237 | 29.412 | 26.374 | 116.077 | 150.061 | 19.196 |
-| 2018-01-15 | 80.272 |  79.24 | 29.438 |  26.64 | 116.798 | 154.318 | 19.247 |
-| 2018-01-16 | 80.531 |  79.24 |  29.44 | 26.667 |  116.87 | 153.228 | 19.382 |
-| 2018-01-17 | 78.052 | 79.102 |   29.6 | 26.492 | 117.282 | 149.546 | 19.408 |
-| 2018-01-29 | 77.394 | 77.197 |  29.45 |  26.66 | 116.531 |  150.12 | 19.263 |
-| 2018-02-10 | 77.234 | 77.106 | 29.623 | 26.463 | 115.534 | 149.433 | 19.635 |
-| 2018-02-14 | 81.183 |  77.25 | 29.483 | 26.678 | 115.941 | 153.909 | 19.608 |
-| 2018-02-15 | 80.142 | 76.648 | 29.504 | 26.677 | 116.323 | 157.088 |  20.19 |
-| 2018-02-22 | 79.155 |  74.49 | 29.652 | 26.674 | 115.369 | 148.694 | 19.407 |
-| 2018-03-06 | 79.006 | 75.118 | 29.482 | 26.484 | 115.836 | 149.392 | 19.498 |
-| 2018-03-15 | 80.434 | 76.639 | 29.764 | 26.702 | 117.668 | 155.536 | 20.571 |
-| 2018-03-16 | 81.448 | 76.308 |  29.63 | 26.737 | 116.562 | 151.546 | 19.785 |
-| 2018-03-18 | 78.629 | 74.164 | 29.391 | 26.594 | 115.886 | 148.353 | 19.798 |
-| 2018-03-30 | 79.054 | 74.385 | 29.437 | 26.476 | 115.791 | 146.824 | 19.521 |
-| 2018-04-11 |  79.86 | 74.047 | 29.665 |  26.75 | 115.226 | 147.857 | 19.699 |
-| 2018-04-23 | 80.098 | 75.952 | 29.456 | 26.866 | 115.345 | 149.191 | 20.015 |
-| 2018-05-05 | 80.706 | 74.383 |  29.43 | 26.816 | 114.537 | 150.754 |  19.79 |
-| 2018-05-15 |  81.76 | 75.023 | 29.586 | 27.167 | 115.568 | 155.409 | 20.992 |
-| 2018-05-16 | 82.898 | 75.695 | 29.854 |  27.27 | 118.323 | 153.075 | 20.119 |
-| 2018-05-17 | 82.199 | 75.097 | 29.612 |  26.75 | 117.285 | 150.858 | 19.649 |
-| 2018-05-29 | 79.489 | 73.933 | 29.881 | 27.057 | 114.797 | 149.515 | 19.999 |
-| 2018-06-10 | 79.902 | 74.714 | 30.028 | 27.119 | 114.296 | 150.215 | 20.192 |
-| 2018-06-22 |  80.22 | 76.543 | 30.081 | 28.191 | 115.608 | 146.639 | 19.896 |
-| 2018-07-04 | 80.347 | 75.031 | 30.415 | 28.669 | 116.604 | 147.208 | 19.956 |
-| 2018-07-15 | 83.238 | 76.092 | 30.116 | 28.906 | 118.212 | 155.325 | 20.315 |
-| 2018-07-28 | 80.446 | 74.866 | 30.282 | 29.036 | 114.748 | 144.737 | 18.142 |
-| 2018-08-09 | 78.912 | 75.942 | 30.135 | 29.112 | 114.101 | 145.002 | 17.794 |
-| 2018-08-15 | 81.189 | 78.969 |  30.16 | 29.135 | 116.023 | 154.465 |  18.45 |
-| 2018-08-16 | 81.959 | 77.688 | 30.142 | 29.226 | 115.794 | 152.925 | 18.157 |
-| 2018-08-21 | 76.532 | 76.362 | 30.005 | 28.959 |  111.71 | 144.294 | 17.061 |
-| 2018-09-02 | 76.681 | 77.662 | 29.949 | 28.098 |  110.66 | 144.451 | 16.833 |
-| 2018-09-14 | 78.273 | 79.153 | 30.204 | 27.889 | 110.036 | 147.636 | 16.948 |
-| 2018-09-26 |  77.08 | 79.828 | 30.303 | 27.792 | 110.337 |  146.21 | 17.799 |
-| 2018-10-08 | 76.751 |  77.92 | 29.807 |  27.57 | 112.092 | 149.129 | 18.291 |
-| 2018-10-15 | 80.197 | 79.886 | 29.956 | 27.816 | 113.807 | 156.758 | 19.031 |
-| 2018-10-16 | 79.884 | 79.266 | 29.976 | 27.851 | 113.969 | 153.521 | 18.467 |
-| 2018-10-20 | 78.551 | 78.883 | 29.779 | 27.824 |  114.27 | 150.026 | 18.474 |
-| 2018-11-01 | 79.227 | 78.982 | 30.348 | 27.821 | 113.331 | 151.011 | 18.508 |
-| 2018-11-13 | 80.392 | 76.226 | 30.326 | 27.609 | 113.148 | 152.443 | 18.641 |
-| 2018-11-25 | 78.607 |  75.01 |  30.19 | 27.819 | 113.607 | 152.234 | 18.975 |
-| 2018-12-07 |  79.37 | 74.221 | 30.318 | 27.854 | 112.554 | 150.112 | 19.019 |
-| 2018-12-15 | 80.622 |  75.11 | 30.396 | 27.837 | 112.746 | 150.173 | 19.526 |
-| 2018-12-19 | 81.248 | 75.555 | 30.435 | 27.828 | 112.842 | 150.199 | 19.171 |
-| 2018-12-31 | 79.864 | 75.378 | 30.362 | 27.948 | 112.946 |   151.3 | 19.575 |
-| 2019-01-12 | 79.502 | 73.995 | 30.392 | 27.955 |  112.98 | 153.187 | 20.056 |
-| 2019-01-24 | 78.811 | 73.388 | 30.392 | 28.124 | 113.169 | 154.552 | 20.296 |
-| 2019-02-05 | 80.129 |  72.58 | 30.361 | 27.911 | 112.809 | 154.381 | 20.028 |
-| 2019-02-17 | 78.199 | 73.919 |  30.22 |  28.01 | 113.251 | 154.519 | 19.621 |
-| 2019-03-01 | 79.417 | 73.286 |  30.22 | 27.967 | 112.876 | 153.693 |  19.99 |
-| 2019-03-13 |  77.42 | 72.438 | 30.173 | 28.135 | 113.077 | 154.613 | 20.302 |
-| 2019-03-25 | 77.154 | 73.532 | 30.276 |  28.09 | 112.495 | 151.565 |  20.53 |
-| 2019-04-05 |  77.19 | 73.147 | 30.247 | 28.283 | 111.355 | 154.416 | 20.392 |
-| 2019-04-18 | 78.415 | 73.377 | 30.255 | 28.391 | 111.075 | 156.942 | 20.899 |
-| 2019-04-30 | 78.904 |  74.23 | 30.108 | 28.262 | 114.902 | 157.207 | 20.627 |
-| 2019-05-12 | 79.463 | 75.609 | 30.194 | 28.312 |  111.83 | 155.233 | 20.442 |
-| 2019-05-24 | 77.935 | 77.756 | 30.401 | 28.172 | 113.494 | 155.223 | 20.403 |
-| 2019-06-05 | 78.131 | 79.991 |  30.67 | 28.448 | 112.689 | 155.285 | 20.074 |
-| 2019-06-17 | 78.688 | 81.187 | 30.828 |  28.51 | 113.897 | 156.121 | 20.534 |
-| 2019-06-29 | 78.673 | 81.719 | 30.976 | 28.525 | 112.317 | 156.378 | 19.969 |
-| 2019-07-11 | 78.224 | 85.006 | 30.937 | 28.484 | 111.296 | 156.265 | 19.282 |
-| 2019-07-23 | 77.962 | 83.492 | 30.813 | 28.212 |  106.82 | 155.751 | 18.583 |
-| 2019-08-04 | 77.281 |  80.99 |  30.76 | 28.074 | 104.776 |  155.93 | 17.438 |
-| 2019-08-16 | 75.595 | 80.258 | 30.383 |  27.13 | 102.781 | 153.701 | 16.452 |
-| 2019-08-28 | 77.466 | 82.015 |  29.72 | 26.747 | 103.356 | 153.471 | 16.495 |
-| 2019-09-09 | 77.417 | 81.585 | 29.526 | 25.982 | 103.707 | 153.154 | 16.863 |
+| 2017-09-13 | 77.028 | 85.146 | 29.403 | 26.156 | 112.617 | 151.643 | 17.875 |
+| 2017-09-19 | 77.761 |  85.54 | 29.316 | 26.234 | 114.686 | 153.406 | 17.781 |
+| 2017-09-24 | 77.701 | 86.759 | 29.456 | 26.319 |  114.56 | 153.119 | 17.635 |
+| 2017-10-01 | 77.358 | 86.461 | 29.376 | 26.392 | 115.807 | 150.457 | 17.748 |
+| 2017-10-07 | 76.525 | 85.704 | 29.376 | 26.416 | 115.455 |  150.82 | 18.023 |
+| 2017-10-13 | 76.747 | 85.093 | 29.422 | 26.339 | 117.426 | 153.341 | 18.142 |
+| 2017-10-15 | 78.157 | 84.555 | 29.438 | 26.304 | 114.788 | 156.798 | 18.615 |
+| 2017-10-16 | 77.807 | 84.553 | 29.427 | 26.287 | 113.806 | 153.469 | 18.106 |
+| 2017-10-19 | 76.813 | 85.097 | 29.667 | 26.578 | 116.678 | 154.106 |  18.19 |
+| 2017-10-25 | 76.874 | 85.235 | 29.768 |  26.54 | 117.764 | 155.266 | 18.697 |
+| 2017-10-31 | 76.986 | 85.059 | 29.751 | 26.352 | 116.858 | 153.995 | 18.999 |
+| 2017-11-06 | 77.429 | 84.195 | 29.765 | 26.296 | 117.144 |   151.7 | 18.803 |
+| 2017-11-12 | 77.322 | 82.506 | 29.826 | 26.121 | 115.163 | 151.151 | 18.564 |
+| 2017-11-18 | 77.491 | 80.946 |  29.74 | 26.137 |  114.63 | 148.787 |  18.34 |
+| 2017-11-30 | 77.312 | 81.714 | 29.583 | 26.167 | 116.842 | 149.538 | 19.028 |
+| 2017-12-12 |  77.34 | 81.235 | 29.412 | 26.494 | 116.763 | 149.415 | 18.933 |
+| 2017-12-15 | 78.658 | 81.112 | 29.413 | 26.483 | 116.636 | 153.212 | 18.917 |
+| 2017-12-16 | 79.098 | 81.071 | 29.414 | 26.479 | 116.594 | 154.394 | 18.998 |
+| 2017-12-24 | 77.773 |  78.18 | 29.502 | 26.341 | 115.331 | 148.403 | 19.067 |
+| 2018-01-05 | 77.959 | 79.237 | 29.412 | 26.371 | 116.077 | 150.067 | 19.196 |
+| 2018-01-15 | 80.303 |  79.24 | 29.438 | 26.621 | 116.798 | 154.115 | 19.247 |
+| 2018-01-16 | 80.537 |  79.24 |  29.44 | 26.646 |  116.87 | 153.185 | 19.382 |
+| 2018-01-17 | 78.057 | 79.102 |   29.6 | 26.493 | 117.282 | 149.554 | 19.408 |
+| 2018-01-29 | 77.394 | 77.197 | 29.449 |  26.66 | 116.538 | 150.125 | 19.263 |
+| 2018-02-10 | 77.234 | 77.106 | 29.621 | 26.467 | 115.534 | 149.434 | 19.635 |
+| 2018-02-14 | 81.183 |  77.25 | 29.481 | 26.686 | 115.941 | 153.926 | 19.608 |
+| 2018-02-15 | 79.954 | 76.648 | 29.502 | 26.684 | 116.323 | 156.868 |  20.19 |
+| 2018-02-22 | 79.162 |  74.49 |  29.65 |  26.67 | 115.369 | 148.662 | 19.407 |
+| 2018-03-06 | 79.016 | 75.118 | 29.482 | 26.472 | 115.831 | 149.344 | 19.498 |
+| 2018-03-15 | 80.425 | 76.639 | 29.763 | 26.612 |  117.67 | 155.502 | 20.538 |
+| 2018-03-16 | 81.453 | 76.308 |  29.63 | 26.756 | 116.564 | 151.569 | 19.785 |
+| 2018-03-18 | 78.631 | 74.164 | 29.391 | 26.594 | 115.886 | 148.386 | 19.798 |
+| 2018-03-30 | 79.055 | 74.385 | 29.437 | 26.475 | 115.799 | 146.849 | 19.521 |
+| 2018-04-11 | 79.862 | 74.047 | 29.665 | 26.749 | 115.231 | 147.964 | 19.699 |
+| 2018-04-23 | 80.099 | 75.952 | 29.456 | 26.863 | 115.345 | 149.237 | 20.015 |
+| 2018-05-05 | 80.706 | 74.383 |  29.43 | 26.759 | 114.537 | 150.816 |  19.79 |
+| 2018-05-15 | 81.773 | 75.023 | 29.583 | 26.963 | 115.561 | 155.648 | 20.992 |
+| 2018-05-16 | 82.898 | 75.695 |  29.85 | 27.265 | 118.319 | 153.099 | 20.119 |
+| 2018-05-17 | 82.199 | 75.097 | 29.612 | 26.751 | 117.293 | 150.878 | 19.649 |
+| 2018-05-29 | 79.489 | 73.933 | 29.881 |  27.05 | 114.798 | 149.533 | 19.999 |
+| 2018-06-10 | 79.902 | 74.714 | 30.029 | 27.105 | 114.299 | 150.227 | 20.192 |
+| 2018-06-22 | 80.221 | 76.543 | 30.083 | 28.114 | 115.622 | 146.605 | 19.896 |
+| 2018-07-04 | 80.347 | 75.031 | 30.415 |  28.47 | 116.606 | 147.184 | 19.956 |
+| 2018-07-15 | 83.247 | 76.092 | 30.116 | 28.543 | 118.221 | 155.284 | 20.315 |
+| 2018-07-28 |  80.44 | 74.866 | 30.281 | 28.759 | 114.756 | 144.697 | 18.137 |
+| 2018-08-09 | 78.912 | 75.942 | 30.135 | 28.856 | 114.112 | 144.985 | 17.794 |
+| 2018-08-15 | 81.189 | 78.969 |  30.16 | 28.955 | 116.025 | 154.516 |  18.45 |
+| 2018-08-16 | 81.959 | 77.688 | 30.142 | 29.154 | 115.795 |  152.94 | 18.157 |
+| 2018-08-21 |  76.52 | 76.362 | 30.005 | 28.935 | 111.708 | 144.295 | 17.061 |
+| 2018-09-02 | 76.655 | 77.662 | 29.949 | 28.073 | 110.672 | 144.451 | 16.833 |
+| 2018-09-14 | 78.229 | 79.153 | 30.205 | 27.886 | 110.053 | 147.662 | 16.948 |
+| 2018-09-26 | 77.013 | 79.828 | 30.303 | 27.792 | 110.343 | 146.205 | 17.799 |
+| 2018-10-08 | 76.639 |  77.92 | 29.807 |  27.57 | 112.097 | 149.129 | 18.291 |
+| 2018-10-15 | 80.031 | 79.886 | 29.956 |  27.83 | 113.809 | 156.721 | 19.031 |
+| 2018-10-16 | 79.892 | 79.266 | 29.976 | 27.867 | 113.956 | 153.508 | 18.467 |
+| 2018-10-20 | 78.548 | 78.883 | 29.779 | 27.827 | 114.267 | 150.023 | 18.474 |
+| 2018-11-01 | 79.231 | 78.982 | 30.348 | 27.823 | 113.335 | 151.011 | 18.508 |
+| 2018-11-13 | 80.396 | 76.226 | 30.326 | 27.614 | 113.161 | 152.443 | 18.641 |
+| 2018-11-25 | 78.611 |  75.01 |  30.19 | 27.819 | 113.623 | 152.238 | 18.975 |
+| 2018-12-07 | 79.374 | 74.221 | 30.318 |  27.86 | 112.556 | 150.112 | 19.019 |
+| 2018-12-15 | 80.628 |  75.11 | 30.396 | 27.841 | 112.748 | 150.175 | 19.546 |
+| 2018-12-19 | 81.255 | 75.555 | 30.435 | 27.832 | 112.845 | 150.202 | 19.171 |
+| 2018-12-31 |  79.87 | 75.378 | 30.362 | 27.948 | 112.946 |   151.3 | 19.575 |
+| 2019-01-12 | 79.513 | 73.995 | 30.392 | 27.955 | 112.978 | 153.187 | 20.056 |
+| 2019-01-24 | 78.814 | 73.388 | 30.392 | 28.124 | 113.171 | 154.552 | 20.296 |
+| 2019-02-05 | 80.133 |  72.58 | 30.361 | 27.911 | 112.811 | 154.381 | 20.028 |
+| 2019-02-17 | 78.201 | 73.919 |  30.22 |  28.01 | 113.253 | 154.519 | 19.608 |
+| 2019-03-01 | 79.418 | 73.286 |  30.22 | 27.967 | 112.877 | 153.693 |  19.99 |
+| 2019-03-13 | 77.423 | 72.438 | 30.173 | 28.135 | 113.078 | 154.613 | 20.302 |
+| 2019-03-25 | 77.156 | 73.532 | 30.276 | 28.093 | 112.497 | 151.566 |  20.53 |
+| 2019-04-05 | 77.197 | 73.147 | 30.247 | 28.283 | 111.356 | 154.418 | 20.392 |
+| 2019-04-18 | 78.419 | 73.377 | 30.255 | 28.391 | 111.077 | 156.942 | 20.899 |
+| 2019-04-30 | 78.907 |  74.23 | 30.108 | 28.262 | 114.903 | 157.207 | 20.624 |
+| 2019-05-12 | 79.466 | 75.609 | 30.194 | 28.312 | 111.831 | 155.235 |  20.44 |
+| 2019-05-24 | 77.937 | 77.756 | 30.401 | 28.179 | 113.495 | 155.223 | 20.403 |
+| 2019-06-05 | 78.133 | 79.991 |  30.67 | 28.451 | 112.691 | 155.285 | 20.074 |
+| 2019-06-17 |  78.69 | 81.187 | 30.828 | 28.503 | 113.898 | 156.121 | 20.534 |
+| 2019-06-29 | 78.675 | 81.719 | 30.976 | 28.519 | 112.318 | 156.378 | 19.969 |
+| 2019-07-11 |  78.22 | 85.006 | 30.937 | 28.479 | 111.297 | 156.265 | 19.282 |
+| 2019-07-23 | 77.961 | 83.492 | 30.813 | 28.208 |  106.82 | 155.751 | 18.583 |
+| 2019-08-04 | 77.282 |  80.99 |  30.76 | 28.071 | 104.777 |  155.93 | 17.438 |
+| 2019-08-16 | 75.596 | 80.258 | 30.383 | 27.128 | 102.781 | 153.701 | 16.452 |
+| 2019-08-28 | 77.467 | 82.015 |  29.72 | 26.746 | 103.357 | 153.471 | 16.495 |
+| 2019-09-09 | 77.418 | 81.585 | 29.526 | 25.982 | 103.707 | 153.154 | 16.863 |
 | 2019-09-21 | 79.293 | 81.342 |  29.63 | 25.343 | 102.756 | 157.716 | 16.995 |
-| 2019-10-03 | 80.147 | 80.369 | 29.645 | 25.554 | 104.468 |  158.06 | 17.898 |
+| 2019-10-03 | 80.148 | 80.369 | 29.645 | 25.554 | 104.468 |  158.06 | 17.898 |
 | 2019-10-15 | 78.944 | 80.694 | 29.774 | 25.521 | 104.467 | 156.127 | 17.853 |
 | 2019-10-27 | 79.742 | 80.139 | 29.921 | 25.759 | 107.441 | 157.477 | 18.107 |
 | 2019-11-08 | 79.978 | 78.991 | 29.869 | 25.586 | 108.021 | 158.014 | 18.616 |
 | 2019-11-20 | 80.744 | 78.366 | 29.985 |  25.92 | 107.313 | 160.128 | 18.727 |
-| 2019-12-02 | 81.278 | 77.863 | 30.002 | 26.004 | 109.544 | 159.615 | 19.279 |
+| 2019-12-02 | 81.278 | 77.863 | 30.002 | 26.004 | 109.545 | 159.615 | 19.279 |
 | 2019-12-14 | 81.905 | 77.218 | 30.035 | 25.897 | 109.105 | 158.427 | 19.303 |
 | 2019-12-26 |  82.09 | 77.192 | 30.117 | 25.836 | 110.041 | 156.605 | 19.268 |
 | 2020-01-07 | 83.422 | 76.431 | 30.049 | 25.982 | 110.822 | 158.875 | 19.692 |
@@ -8211,38 +8224,38 @@ cut -d, -f$(echo $COLS|tr ' ' ',') <(zcat ${FILE})
 | 1989-05-15 |           29.529 |            24.105 |          10.076 |             9.984 |
 | 1989-06-15 |           28.755 |            25.817 |          10.218 |             9.509 |
 | 1989-07-15 |           27.724 |            25.975 |          10.755 |             9.913 |
-| 1989-08-15 |           27.226 |            31.457 |           10.24 |             9.823 |
-| 1989-09-15 |           26.407 |            30.892 |          10.508 |             9.804 |
-| 1989-10-15 |           26.701 |            30.131 |          10.516 |             9.785 |
+| 1989-08-15 |           27.367 |            31.457 |           10.24 |             9.823 |
+| 1989-09-15 |           26.399 |            30.892 |          10.508 |             9.804 |
+| 1989-10-15 |           26.694 |            30.131 |          10.516 |             9.785 |
 | 1990-03-15 |           28.158 |            26.282 |          10.555 |             9.691 |
-| 1990-04-15 |           28.092 |            24.431 |          10.304 |             9.064 |
+| 1990-04-15 |            28.27 |            24.431 |          10.304 |             9.064 |
 | 1990-05-15 |           26.516 |            22.394 |           9.971 |            11.212 |
-| 1990-06-15 |           27.098 |            27.925 |            10.6 |             9.732 |
-| 1990-07-15 |           26.552 |             26.83 |          10.418 |             9.422 |
-| 1990-08-15 |           26.461 |            25.645 |           10.23 |             9.755 |
-| 1990-09-15 |           25.871 |            24.811 |          10.043 |             9.725 |
+| 1990-06-15 |           27.074 |            27.925 |            10.6 |             9.732 |
+| 1990-07-15 |           26.768 |             26.83 |          10.418 |             9.422 |
+| 1990-08-15 |           26.453 |            25.645 |           10.23 |             9.755 |
+| 1990-09-15 |           25.757 |            24.811 |          10.043 |             9.725 |
 | 1990-10-15 |           26.648 |            24.624 |          10.028 |             9.697 |
-| 1991-01-01 |            25.82 |            24.134 |           9.987 |             9.622 |
-| 1991-06-15 |           27.246 |            23.086 |           9.903 |             9.463 |
-| 1992-01-01 |           28.931 |            21.792 |           9.801 |             9.271 |
-| 1992-06-15 |           30.295 |            22.589 |           9.716 |              9.37 |
-| 1992-07-15 |           30.538 |            22.733 |           9.701 |             9.388 |
-| 1992-08-15 |           30.788 |            22.883 |           9.685 |             9.406 |
-| 1992-09-15 |           31.037 |            23.034 |           9.669 |             9.425 |
-| 1992-10-15 |           31.277 |            23.179 |           9.654 |             9.443 |
-| 1993-01-01 |           31.895 |            23.559 |           9.614 |             9.489 |
-| 1993-03-15 |           32.467 |            23.835 |           9.624 |             9.533 |
-| 1993-04-15 |           32.708 |            23.953 |           9.628 |             9.551 |
-| 1993-05-15 |            32.94 |            24.067 |           9.632 |             9.569 |
-| 1993-06-15 |           33.179 |            24.186 |           9.636 |             9.588 |
-| 1993-07-15 |           33.409 |              24.3 |           9.639 |             9.605 |
-| 1993-08-15 |           33.646 |            24.419 |           9.643 |             9.624 |
-| 1993-09-15 |           33.881 |            24.538 |           9.647 |             9.642 |
-| 1994-01-01 |           34.693 |            24.955 |           9.661 |             9.707 |
-| 1994-05-15 |           35.791 |            26.078 |           9.856 |            10.267 |
-| 1994-06-15 |           36.043 |             26.34 |           9.968 |            11.449 |
-| 1994-07-15 |           36.287 |            39.357 |           8.947 |             10.78 |
-| 1994-08-15 |           36.538 |            33.582 |           8.618 |            10.203 |
+| 1991-01-01 |           25.738 |            24.134 |           9.987 |             9.622 |
+| 1991-06-15 |           27.174 |            23.086 |           9.903 |             9.463 |
+| 1992-01-01 |           28.872 |            21.792 |           9.801 |             9.271 |
+| 1992-06-15 |           30.247 |            22.589 |           9.716 |              9.37 |
+| 1992-07-15 |           30.491 |            22.733 |           9.701 |             9.388 |
+| 1992-08-15 |           30.743 |            22.883 |           9.685 |             9.406 |
+| 1992-09-15 |           30.994 |            23.034 |           9.669 |             9.425 |
+| 1992-10-15 |           31.236 |            23.179 |           9.654 |             9.443 |
+| 1993-01-01 |           31.859 |            23.559 |           9.614 |             9.489 |
+| 1993-03-15 |           32.435 |            23.835 |           9.624 |             9.533 |
+| 1993-04-15 |           32.678 |            23.953 |           9.628 |             9.551 |
+| 1993-05-15 |           32.912 |            24.067 |           9.632 |             9.569 |
+| 1993-06-15 |           33.153 |            24.186 |           9.636 |             9.588 |
+| 1993-07-15 |           33.385 |              24.3 |           9.639 |             9.605 |
+| 1993-08-15 |           33.623 |            24.419 |           9.643 |             9.624 |
+| 1993-09-15 |            33.86 |            24.538 |           9.647 |             9.642 |
+| 1994-01-01 |           34.678 |            24.955 |           9.661 |             9.707 |
+| 1994-05-15 |           35.784 |            26.078 |           9.856 |            10.267 |
+| 1994-06-15 |           36.038 |             26.34 |           9.968 |            11.449 |
+| 1994-07-15 |           36.283 |            39.357 |           8.947 |             10.78 |
+| 1994-08-15 |           36.536 |            33.582 |           8.618 |            10.203 |
 | 1994-09-15 |           36.788 |            18.082 |           8.701 |             10.05 |
 | 1995-01-01 |            31.93 |            22.587 |           8.613 |             9.518 |
 | 1995-04-15 |           29.458 |            23.334 |           8.727 |             9.368 |
@@ -8301,13 +8314,13 @@ cut -d, -f$(echo $COLS|tr ' ' ',') <(zcat ${FILE})
 | 2001-05-15 |           22.824 |            35.541 |           9.984 |            10.416 |
 | 2001-06-15 |           23.795 |            38.117 |          10.447 |            10.522 |
 | 2001-07-15 |           25.161 |             39.53 |           9.761 |            10.937 |
-| 2001-08-15 |           24.541 |            37.622 |           9.885 |            11.365 |
-| 2001-09-15 |           23.922 |            38.509 |           9.692 |            11.793 |
-| 2001-10-15 |           23.324 |            36.693 |           9.504 |            12.208 |
-| 2001-11-15 |            23.79 |            36.526 |           9.601 |            12.636 |
-| 2002-01-15 |           24.712 |            36.179 |           9.792 |            13.478 |
-| 2002-02-15 |           25.195 |            35.969 |           9.894 |            13.905 |
-| 2002-03-15 |           25.632 |             35.78 |           9.985 |             14.29 |
+| 2001-08-15 |           24.515 |            37.622 |           9.885 |            11.365 |
+| 2001-09-15 |            23.87 |            38.509 |           9.692 |            11.793 |
+| 2001-10-15 |           23.247 |            36.693 |           9.504 |            12.208 |
+| 2001-11-15 |           23.726 |            36.526 |           9.601 |            12.636 |
+| 2002-01-15 |           24.674 |            36.179 |           9.792 |            13.478 |
+| 2002-02-15 |            25.17 |            35.969 |           9.894 |            13.905 |
+| 2002-03-15 |           25.619 |             35.78 |           9.985 |             14.29 |
 | 2002-04-15 |           26.115 |             37.08 |          10.628 |            14.716 |
 | 2002-05-15 |           27.018 |            39.578 |           9.831 |            15.128 |
 | 2002-06-15 |           28.052 |            41.587 |          10.597 |            15.554 |
@@ -8334,48 +8347,48 @@ cut -d, -f$(echo $COLS|tr ' ' ',') <(zcat ${FILE})
 | 2004-10-15 |           34.316 |            43.795 |           8.888 |            11.149 |
 | 2005-03-15 |           34.027 |            42.385 |           9.921 |            11.837 |
 | 2005-04-15 |           33.985 |              42.1 |          10.133 |            11.978 |
-| 2005-05-15 |           34.588 |            41.769 |           9.453 |            12.115 |
-| 2005-06-15 |           34.589 |            43.434 |           9.936 |            12.256 |
-| 2005-07-15 |            34.61 |            46.099 |           8.839 |            12.301 |
-| 2005-08-15 |           34.406 |            44.827 |           8.416 |            11.952 |
-| 2005-09-15 |           33.897 |            44.522 |           8.466 |            11.603 |
-| 2005-10-15 |           33.122 |             43.95 |           8.591 |            11.265 |
+| 2005-05-15 |           34.638 |            41.769 |           9.453 |            12.115 |
+| 2005-06-15 |           34.632 |            43.434 |           9.936 |            12.256 |
+| 2005-07-15 |           34.646 |            46.099 |           8.839 |            12.301 |
+| 2005-08-15 |           34.435 |            44.827 |           8.416 |            11.952 |
+| 2005-09-15 |           33.919 |            44.522 |           8.466 |            11.603 |
+| 2005-10-15 |           33.136 |             43.95 |           8.591 |            11.265 |
 | 2005-12-13 |           31.596 |            42.829 |           8.836 |            10.601 |
 | 2006-03-15 |           30.298 |             41.79 |           9.245 |            11.258 |
 | 2006-04-15 |           30.365 |            43.058 |           9.512 |             11.48 |
 | 2006-05-15 |            28.34 |            42.275 |            9.47 |            11.694 |
 | 2006-06-15 |           29.018 |            45.818 |           8.841 |            11.915 |
 | 2006-07-15 |           28.674 |            47.844 |           9.772 |             12.22 |
-| 2006-08-15 |           28.172 |             48.97 |           9.198 |            12.169 |
-| 2006-09-15 |           27.251 |            47.657 |           8.681 |            11.907 |
-| 2006-10-15 |           26.936 |            46.389 |           8.944 |            11.654 |
-| 2006-11-15 |           26.611 |            45.083 |           9.216 |            11.393 |
+| 2006-08-15 |           28.172 |             48.97 |           9.198 |            12.237 |
+| 2006-09-15 |           27.277 |            47.657 |           8.681 |            11.959 |
+| 2006-10-15 |           26.954 |            46.389 |           8.944 |            11.689 |
+| 2006-11-15 |           26.621 |            45.083 |           9.216 |            11.411 |
 | 2006-12-18 |           26.266 |            43.696 |           9.505 |            11.115 |
-| 2007-03-15 |           29.272 |             42.25 |           9.851 |            11.457 |
-| 2007-04-15 |            28.58 |            40.683 |           9.741 |            11.777 |
-| 2007-05-15 |           27.911 |            43.251 |           9.602 |            12.087 |
+| 2007-03-15 |           29.272 |             42.25 |           9.851 |            11.417 |
+| 2007-04-15 |            28.58 |            40.683 |           9.741 |            11.751 |
+| 2007-05-15 |           27.911 |            43.251 |           9.602 |            12.074 |
 | 2007-06-15 |           27.219 |            46.196 |           9.124 |            12.408 |
 | 2007-07-15 |           28.921 |            48.475 |           9.156 |            11.922 |
-| 2007-08-15 |           31.488 |            47.127 |            8.71 |             10.07 |
+| 2007-08-15 |           31.488 |            47.127 |            8.71 |             9.977 |
 | 2007-09-07 |           30.782 |            43.571 |           9.428 |            11.481 |
-| 2007-09-15 |           30.537 |            47.742 |           9.037 |            11.513 |
-| 2007-10-15 |           30.719 |            46.894 |           9.108 |            11.633 |
-| 2008-03-15 |           27.374 |            42.641 |           9.469 |            12.232 |
-| 2008-04-15 |           26.888 |            41.782 |           9.543 |            12.353 |
-| 2008-05-15 |           27.386 |            40.952 |           9.614 |            12.469 |
-| 2008-06-15 |           25.536 |            45.102 |           9.501 |            12.589 |
-| 2008-07-15 |           26.297 |             49.73 |           9.633 |            13.115 |
-| 2008-08-15 |           25.535 |            50.726 |           9.556 |            13.019 |
-| 2008-10-15 |           26.715 |             48.07 |           9.652 |            12.829 |
-| 2008-11-15 |           27.314 |            46.723 |           9.701 |            12.733 |
-| 2009-01-15 |           28.493 |            44.075 |           9.796 |            12.544 |
-| 2009-02-15 |           29.093 |             42.73 |           9.844 |            12.448 |
-| 2009-03-15 |           29.634 |            41.516 |           9.887 |            12.361 |
-| 2009-04-15 |           30.234 |            41.887 |           9.889 |            12.265 |
-| 2009-05-15 |           30.813 |            42.348 |          10.239 |            12.172 |
-| 2009-06-15 |           31.412 |            48.452 |          10.164 |            12.076 |
-| 2009-07-15 |            29.44 |            52.529 |           9.987 |            12.178 |
-| 2009-08-15 |           28.294 |            49.196 |           9.481 |            10.813 |
+| 2007-09-15 |           30.537 |            47.742 |           9.037 |            11.522 |
+| 2007-10-15 |           30.719 |            46.894 |           9.108 |            11.675 |
+| 2008-03-15 |           27.536 |            42.641 |           9.469 |            12.442 |
+| 2008-04-15 |           26.888 |            41.782 |           9.543 |            12.596 |
+| 2008-05-15 |           27.386 |            40.952 |           9.614 |            12.746 |
+| 2008-06-15 |           25.536 |            45.102 |           9.501 |              12.9 |
+| 2008-07-15 |           26.297 |             49.73 |           9.633 |            13.049 |
+| 2008-08-15 |           25.535 |            50.726 |           9.556 |            12.959 |
+| 2008-10-15 |           26.741 |             48.07 |           9.652 |            12.782 |
+| 2008-11-15 |           27.354 |            46.723 |           9.701 |            12.691 |
+| 2009-01-15 |            28.56 |            44.075 |           9.796 |            12.514 |
+| 2009-02-15 |           29.173 |             42.73 |           9.844 |            12.424 |
+| 2009-03-15 |           29.726 |            41.516 |           9.887 |            12.343 |
+| 2009-04-15 |           30.339 |            41.887 |           9.889 |            12.253 |
+| 2009-05-15 |           30.932 |            42.348 |          10.239 |            12.166 |
+| 2009-06-15 |           31.544 |            48.452 |          10.164 |            12.076 |
+| 2009-07-15 |            29.44 |            52.529 |           9.987 |            12.246 |
+| 2009-08-15 |           28.294 |            49.196 |           9.481 |              10.8 |
 | 2009-09-02 |           27.851 |             44.54 |           9.687 |            11.805 |
 | 2009-09-15 |            28.57 |            49.327 |           9.603 |            11.809 |
 | 2009-10-15 |           28.426 |            49.131 |           9.683 |            11.817 |
@@ -8384,14 +8397,14 @@ cut -d, -f$(echo $COLS|tr ' ' ',') <(zcat ${FILE})
 | 2010-05-15 |           26.947 |            47.773 |          10.303 |            11.875 |
 | 2010-06-15 |           28.873 |            51.744 |           9.442 |            11.884 |
 | 2010-07-15 |           26.971 |            49.336 |           8.512 |            11.814 |
-| 2010-08-15 |           30.346 |            45.628 |           9.059 |            11.922 |
-| 2010-09-15 |           29.953 |            44.022 |           9.034 |             12.03 |
-| 2010-10-15 |           29.763 |            43.316 |           9.124 |            12.135 |
-| 2011-03-15 |           28.815 |            39.743 |           9.578 |            12.661 |
-| 2011-04-15 |           27.855 |            40.979 |            9.67 |            12.768 |
-| 2011-05-15 |           26.926 |            40.535 |           9.581 |            12.872 |
-| 2011-06-15 |           26.061 |             43.01 |           9.846 |            12.979 |
-| 2011-07-15 |           27.823 |             45.54 |           9.078 |            13.145 |
+| 2010-08-15 |           30.346 |            45.628 |           9.059 |            11.927 |
+| 2010-09-15 |           29.939 |            44.022 |           9.034 |             12.04 |
+| 2010-10-15 |           29.735 |            43.316 |           9.124 |            12.149 |
+| 2011-03-15 |           28.719 |            39.743 |           9.578 |            12.698 |
+| 2011-04-15 |           27.808 |            40.979 |            9.67 |             12.81 |
+| 2011-05-15 |           26.926 |            40.535 |           9.581 |            12.919 |
+| 2011-06-15 |           26.061 |             43.01 |           9.846 |            13.031 |
+| 2011-07-15 |           27.823 |             45.54 |           9.078 |            13.151 |
 | 2011-08-15 |           27.527 |            51.052 |           8.084 |            12.475 |
 | 2011-09-15 |           26.539 |            52.697 |           8.392 |            12.603 |
 | 2011-10-15 |           26.189 |            51.138 |           8.339 |            12.727 |
@@ -8400,18 +8413,18 @@ cut -d, -f$(echo $COLS|tr ' ' ',') <(zcat ${FILE})
 | 2012-04-15 |           26.449 |            41.784 |           8.018 |            13.483 |
 | 2012-05-15 |           27.128 |            46.475 |           9.014 |            13.607 |
 | 2012-06-15 |           27.182 |            55.254 |           9.337 |            13.736 |
-| 2012-07-15 |           26.058 |            52.149 |           8.404 |             13.38 |
-| 2012-08-15 |             26.9 |             52.95 |           8.042 |            11.771 |
-| 2012-09-15 |           26.775 |            53.512 |           8.171 |            12.094 |
-| 2012-10-15 |           26.021 |             53.12 |           8.552 |            12.407 |
-| 2012-11-10 |           25.367 |             52.78 |           8.882 |            12.677 |
-| 2013-02-15 |           26.215 |            50.542 |            9.34 |            12.629 |
-| 2013-03-15 |            26.46 |            49.887 |           9.472 |            12.614 |
+| 2012-07-15 |           26.058 |            52.149 |           8.404 |            12.789 |
+| 2012-08-15 |             26.9 |             52.95 |           8.042 |             11.81 |
+| 2012-09-15 |           26.775 |            53.512 |           8.171 |            12.117 |
+| 2012-10-15 |           26.021 |             53.12 |           8.552 |            12.413 |
+| 2012-11-10 |           25.367 |             52.78 |           8.882 |             12.67 |
+| 2013-02-15 |           26.215 |            50.542 |            9.34 |            12.627 |
+| 2013-03-15 |            26.46 |            49.887 |           9.472 |            12.613 |
 | 2013-04-15 |           25.824 |            48.245 |           9.581 |            12.598 |
 | 2013-05-15 |           25.205 |            46.647 |           8.949 |            13.271 |
 | 2013-06-15 |           27.703 |            48.493 |           9.147 |            13.557 |
-| 2013-07-15 |           27.529 |            47.691 |            8.57 |            13.494 |
-| 2013-08-15 |            28.09 |            51.887 |           9.714 |            12.338 |
+| 2013-07-15 |           27.529 |            47.691 |            8.57 |            13.434 |
+| 2013-08-15 |            28.09 |            51.887 |           9.714 |            12.309 |
 | 2013-09-15 |           27.829 |            54.853 |           9.599 |             12.76 |
 | 2013-10-15 |           27.642 |            55.475 |           9.154 |            12.897 |
 | 2013-11-15 |           27.142 |             53.64 |           9.341 |            13.038 |
@@ -8424,51 +8437,51 @@ cut -d, -f$(echo $COLS|tr ' ' ',') <(zcat ${FILE})
 | 2014-06-15 |           25.389 |            53.099 |            9.84 |            13.966 |
 | 2014-07-15 |           25.866 |            54.849 |           8.718 |            14.274 |
 | 2014-08-15 |           25.662 |            51.982 |           8.496 |            13.863 |
-| 2014-09-01 |           26.278 |            46.539 |           9.271 |            14.284 |
-| 2014-09-15 |           26.886 |            43.447 |           8.688 |            13.148 |
-| 2014-10-15 |           27.501 |            54.155 |            9.16 |            13.376 |
-| 2014-11-15 |           27.798 |             52.84 |            9.33 |            13.611 |
-| 2014-12-15 |           26.181 |            51.569 |           9.494 |            13.838 |
-| 2014-12-16 |           26.127 |            51.526 |           9.499 |            13.845 |
-| 2015-01-15 |           25.774 |            49.565 |            9.57 |            14.077 |
-| 2015-01-16 |           25.763 |              49.5 |           9.572 |            14.085 |
-| 2015-02-14 |           27.427 |            47.607 |           9.605 |            14.266 |
-| 2015-02-15 |           27.707 |             45.88 |            9.36 |            14.261 |
+| 2014-09-01 |           26.278 |            46.539 |           9.271 |            14.277 |
+| 2014-09-15 |           26.886 |            43.447 |           8.688 |            13.135 |
+| 2014-10-15 |           27.501 |            54.155 |            9.16 |             13.36 |
+| 2014-11-15 |           27.798 |             52.84 |            9.33 |            13.592 |
+| 2014-12-15 |           26.181 |            51.569 |           9.494 |            13.816 |
+| 2014-12-16 |           26.127 |            51.526 |           9.499 |            13.824 |
+| 2015-01-15 |           25.774 |            49.565 |            9.57 |            14.052 |
+| 2015-01-16 |           25.763 |              49.5 |           9.572 |             14.06 |
+| 2015-02-14 |           27.427 |            47.607 |           9.605 |            14.238 |
+| 2015-02-15 |           27.707 |             45.88 |            9.36 |            14.234 |
 | 2015-03-15 |           27.725 |            44.831 |           9.449 |            14.128 |
 | 2015-03-16 |           27.757 |            46.098 |           9.659 |            14.051 |
 | 2015-05-15 |            29.71 |            42.896 |           9.423 |            14.587 |
 | 2015-05-16 |           29.647 |            42.102 |           9.595 |            14.733 |
-| 2015-07-15 |           31.196 |            51.725 |           9.803 |            14.732 |
-| 2015-07-16 |           30.584 |            51.924 |           9.679 |            14.795 |
-| 2015-08-15 |           31.456 |            48.614 |           9.363 |            14.075 |
-| 2015-08-16 |           31.076 |            48.878 |           9.466 |            14.619 |
+| 2015-07-15 |           31.196 |            51.725 |           9.803 |            15.038 |
+| 2015-07-16 |           30.584 |            51.924 |           9.679 |            15.091 |
+| 2015-08-15 |           31.456 |            48.614 |           9.363 |             14.63 |
+| 2015-08-16 |           31.076 |            48.878 |           9.466 |            14.614 |
 | 2015-09-01 |           28.371 |            50.696 |            9.49 |            14.381 |
-| 2015-10-15 |           31.154 |            49.216 |           9.459 |            14.031 |
-| 2015-10-16 |           30.569 |            51.522 |           9.534 |            14.023 |
+| 2015-10-15 |           31.154 |            49.216 |           9.459 |            14.041 |
+| 2015-10-16 |           30.569 |            51.522 |           9.534 |            14.033 |
 | 2015-12-15 |           29.153 |            50.907 |           9.575 |            14.347 |
 | 2015-12-16 |           29.129 |            50.897 |           9.576 |            14.352 |
 | 2016-01-15 |           28.448 |            47.142 |           9.581 |            14.454 |
 | 2016-01-16 |           28.425 |            47.017 |           9.581 |            14.458 |
-| 2016-03-15 |            26.88 |            43.802 |           9.489 |            14.516 |
+| 2016-03-15 |            26.88 |            43.802 |           9.489 |             14.51 |
 | 2016-03-16 |           26.727 |             48.11 |           9.651 |            14.726 |
-| 2016-05-15 |            27.13 |            46.586 |           9.987 |            14.946 |
+| 2016-05-15 |            27.13 |            46.586 |           9.987 |            14.935 |
 | 2016-05-16 |           27.092 |            51.059 |           9.758 |            14.856 |
-| 2016-07-15 |           27.418 |             51.32 |           9.557 |            15.073 |
-| 2016-07-16 |           26.708 |            50.637 |           9.172 |            15.051 |
-| 2016-08-15 |           27.342 |            51.647 |           9.188 |            14.756 |
-| 2016-08-16 |           26.497 |            50.765 |           9.014 |            14.937 |
+| 2016-07-15 |           27.418 |             51.32 |           9.557 |            15.079 |
+| 2016-07-16 |           26.708 |            50.637 |           9.172 |            15.056 |
+| 2016-08-15 |           27.342 |            51.647 |           9.188 |            14.812 |
+| 2016-08-16 |           26.497 |            50.765 |           9.014 |            14.983 |
 | 2016-09-01 |           29.454 |             49.61 |             9.0 |            14.591 |
 | 2016-09-25 |           28.935 |             52.25 |           9.247 |            14.217 |
-| 2016-10-06 |           29.388 |             51.04 |           9.436 |            14.104 |
-| 2016-10-15 |           30.128 |            48.222 |            9.54 |            14.272 |
+| 2016-10-06 |           29.388 |             51.04 |           9.436 |            14.116 |
+| 2016-10-15 |           30.128 |            48.222 |            9.54 |            14.273 |
 | 2016-10-16 |           28.552 |            48.898 |            9.04 |             14.29 |
 | 2016-10-18 |           29.891 |            50.803 |           9.479 |            14.201 |
 | 2016-10-25 |           30.773 |             50.23 |           9.571 |            14.273 |
 | 2016-10-30 |            31.05 |            49.169 |            9.25 |            14.273 |
 | 2016-11-11 |           31.295 |            47.796 |           8.869 |            14.338 |
-| 2016-11-16 |           31.413 |            47.607 |           8.973 |            14.336 |
-| 2016-11-30 |           30.917 |            45.462 |           8.838 |             14.45 |
-| 2016-12-05 |            30.74 |            44.696 |            8.79 |             14.49 |
+| 2016-11-16 |           31.413 |            47.607 |           8.973 |             14.34 |
+| 2016-11-30 |           30.917 |            45.462 |           8.838 |            14.451 |
+| 2016-12-05 |            30.74 |            44.696 |            8.79 |            14.491 |
 | 2016-12-12 |           30.493 |            43.623 |           8.722 |            14.547 |
 | 2016-12-15 |           30.098 |            42.062 |           8.741 |             14.54 |
 | 2016-12-16 |           29.967 |            41.541 |           8.747 |            14.537 |
