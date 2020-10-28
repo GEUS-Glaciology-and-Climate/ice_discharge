@@ -416,10 +416,10 @@ The average unadjusted thickness gates is 401 m with a standard deviation of 258
 #+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
-t = pd.read_csv('./out/GIS_D.csv.zip', index_col=0, parse_dates=True)\
+t = pd.read_csv('./out/GIS_D.csv', index_col=0, parse_dates=True)\
       .resample('AS')\
       .mean()
-t_err = pd.read_csv('./out/GIS_err.csv.zip', index_col=0, parse_dates=True)\
+t_err = pd.read_csv('./out/GIS_err.csv', index_col=0, parse_dates=True)\
           .resample('AS')\
           .mean()
 t = t.merge(t_err, left_index=True, right_index=True)\
@@ -481,10 +481,10 @@ Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge 
 #+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
-r = pd.read_csv('./out/region_D.csv.zip', index_col=0, parse_dates=True)\
+r = pd.read_csv('./out/region_D.csv', index_col=0, parse_dates=True)\
       .resample('AS')\
       .mean()
-r_err = pd.read_csv('./out/region_err.csv.zip', index_col=0, parse_dates=True)\
+r_err = pd.read_csv('./out/region_err.csv', index_col=0, parse_dates=True)\
           .resample('AS')\
           .mean()
 # t = t.merge(t_err, left_index=True, right_index=True)\
@@ -551,10 +551,10 @@ At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are
 #+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
-s = pd.read_csv('./out/sector_D.csv.zip', index_col=0, parse_dates=True)\
+s = pd.read_csv('./out/sector_D.csv', index_col=0, parse_dates=True)\
       .resample('AS')\
       .mean()
-s_err = pd.read_csv('./out/sector_err.csv.zip', index_col=0, parse_dates=True)\
+s_err = pd.read_csv('./out/sector_err.csv', index_col=0, parse_dates=True)\
           .resample('AS')\
           .mean()
 
@@ -1933,8 +1933,6 @@ db.dropcolumn -f table=gates_final column=area
 #+BEGIN_SRC bash :results verbatim
 mkdir -p out
 db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019 from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
-zip ./out/gate_meta.csv.zip ./out/gate_meta.csv
-rm ./out/gate_meta.csv
 #+END_SRC
 
 *** Export Gates to KML                                            :noexport:
@@ -2642,7 +2640,7 @@ for g in gates:
 err_gate.loc['GIS'] = np.sum(err_gate, axis=0)
 err_gate.loc['GIS']['E%'] = err_gate.loc['GIS']['E']/err_gate.loc['GIS']['D']*100
 
-gate_meta = pd.read_csv("./out/gate_meta.csv.zip")
+gate_meta = pd.read_csv("./out/gate_meta.csv")
 err_gate['name'] = ''
 for g in err_gate.index.values:
     if (g == 'GIS'): continue
@@ -2970,7 +2968,7 @@ regions = {1:'NO', 2:'NE', 3:'CE', 4:'SE', 5:'SW', 6:'CW', 7:'NW'}
 meta['regions'] = meta['regions'].map(regions.get) # Convert sector numbers to meaningful names
 meta['ones'] = 1
 
-R = pd.read_csv('./out/gate_meta.csv.zip')
+R = pd.read_csv('./out/gate_meta.csv')
 meta['name'] = ''
 for g in meta['gates'].unique(): meta.loc[meta['gates'] == g, 'name'] = R[R['gate'] == g]['Mouginot_2019'].values
 
@@ -3859,9 +3857,9 @@ D_gatesT.index.name = "Date"
 D_gates_errT.index.name = "Date"
 D_gates_fill_weightT.index.name = "Date"
 
-D_gatesT.to_csv('./out/gate_D.csv.zip', float_format='%.3f', compression='zip')
-D_gates_errT.to_csv('./out/gate_err.csv.zip', float_format='%.3f', compression='zip')
-D_gates_fill_weightT.to_csv('./out/gate_coverage.csv.zip', float_format='%.3f', compression='zip')
+D_gatesT.to_csv('./out/gate_D.csv', float_format='%.3f')
+D_gates_errT.to_csv('./out/gate_err.csv', float_format='%.3f')
+D_gates_fill_weightT.to_csv('./out/gate_coverage.csv', float_format='%.3f')
 #+END_SRC
 
 **** Sectors
@@ -3881,9 +3879,9 @@ D_sectors_errT.index.name = "Date"
 D_sectors_fill_weightT.index.name = "Date"
 
 # meta_sector.to_csv('./out/sector_meta.csv')
-D_sectorsT.to_csv('./out/sector_D.csv.zip', float_format='%.3f', compression='zip')
-D_sectors_errT.to_csv('./out/sector_err.csv.zip', float_format='%.3f', compression='zip')
-D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv.zip', float_format='%.3f', compression='zip')
+D_sectorsT.to_csv('./out/sector_D.csv', float_format='%.3f')
+D_sectors_errT.to_csv('./out/sector_err.csv', float_format='%.3f')
+D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv', float_format='%.3f')
 
 # meta_sector.head(10)
 #+END_SRC
@@ -3901,9 +3899,9 @@ D_regions_errT.index.name = "Date"
 D_regions_fill_weightT.index.name = "Date"
 
 # meta_region.to_csv('./out/region_meta.csv')
-D_regionsT.to_csv('./out/region_D.csv.zip', float_format='%.3f', compression='zip')
-D_regions_errT.to_csv('./out/region_err.csv.zip', float_format='%.3f', compression='zip')
-D_regions_fill_weightT.to_csv('./out/region_coverage.csv.zip', float_format='%.3f', compression='zip')
+D_regionsT.to_csv('./out/region_D.csv', float_format='%.3f')
+D_regions_errT.to_csv('./out/region_err.csv', float_format='%.3f')
+D_regions_fill_weightT.to_csv('./out/region_coverage.csv', float_format='%.3f')
 
 # meta_region.head(10)
 #+END_SRC
@@ -3915,9 +3913,9 @@ D_all.index.name = "Date"
 D_all_err.index.name = "Date"
 D_all_fill_weight.index.name = "Date"
 
-D_all.to_csv('./out/GIS_D.csv.zip', float_format='%.3f', header=["Discharge [Gt yr-1]"], compression='zip')
-D_all_err.to_csv('./out/GIS_err.csv.zip', float_format='%.3f', header=["Discharge Error [Gt yr-1]"], compression='zip')
-D_all_fill_weight.to_csv('./out/GIS_coverage.csv.zip', float_format='%.3f', header=["Coverage [unit]"], compression='zip')
+D_all.to_csv('./out/GIS_D.csv', float_format='%.3f', header=["Discharge [Gt yr-1]"])
+D_all_err.to_csv('./out/GIS_err.csv', float_format='%.3f', header=["Discharge Error [Gt yr-1]"])
+D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.3f', header=["Coverage [unit]"])
 #+END_SRC
 
 **** Gates
@@ -3968,9 +3966,9 @@ import datetime
 #+BEGIN_SRC jupyter-python
 csvfile = 'GIS'
 
-df_D = pd.read_csv('./out/' + csvfile + '_D.csv.zip', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out/' + csvfile + '_err.csv.zip', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv.zip', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
 
 # ds = df_D.to_xarray()
 
@@ -4036,9 +4034,9 @@ ds.to_netcdf('./out/GIS.nc', mode='w')#, encoding=encoding)
 
 csvfile = 'region'
 
-df_D = pd.read_csv('./out/' + csvfile + '_D.csv.zip', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out/' + csvfile + '_err.csv.zip', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv.zip', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
 
 ds = xr.Dataset()
 
@@ -4128,9 +4126,9 @@ ds.to_netcdf('./out/region.nc', mode='w', encoding=encoding)
 
 csvfile = 'sector'
 
-df_D = pd.read_csv('./out/' + csvfile + '_D.csv.zip', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out/' + csvfile + '_err.csv.zip', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv.zip', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
 
 ds = xr.Dataset()
 
@@ -4221,11 +4219,11 @@ ds.to_netcdf('./out/sector.nc', mode='w', encoding=encoding)
 
 csvfile = 'gate'
 
-df_D = pd.read_csv('./out/' + csvfile + '_D.csv.zip', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out/' + csvfile + '_err.csv.zip', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv.zip', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
 
-meta = pd.read_csv("./out/gate_meta.csv.zip")
+meta = pd.read_csv("./out/gate_meta.csv")
 
 ds = xr.Dataset()
 
@@ -4329,7 +4327,7 @@ ds.to_netcdf('./out/gate.nc', mode='w', encoding=encoding)
 import pandas as pd
 
 # annual average
-df = pd.read_csv('./out/sector_D.csv.zip', index_col=0, parse_dates=True)\
+df = pd.read_csv('./out/sector_D.csv', index_col=0, parse_dates=True)\
        .resample('1D')\
        .mean()\
        .interpolate(method='time')\
@@ -4345,7 +4343,7 @@ top_few = df.iloc[-1].sort_values(ascending=False).head(8)
 # names["RINK_ISBRAE"] = 'Kangilliup Sermia (Rink Isbræ)',
 # names["NIOGHALVFJERDSFJORDEN"] = "(Nioghalvfjerdsfjorden)"
 
-meta = pd.read_csv("./out/gate_meta.csv.zip")
+meta = pd.read_csv("./out/gate_meta.csv")
 
 out = pd.DataFrame(index=top_few.index, columns=["D","x","y"])
 for name in out.index:
@@ -4353,7 +4351,7 @@ for name in out.index:
     out.loc[name]["x"] = meta[meta["Mouginot_2019"] == name]["mean_x"].values[0]
     out.loc[name]["y"] = meta[meta["Mouginot_2019"] == name]["mean_y"].values[0]
 
-out.to_csv('./tmp/overview_D.csv.zip')
+out.to_csv('./tmp/overview_D.csv')
 out
 #+END_SRC
 
@@ -4404,7 +4402,7 @@ g.copy vector=gates_final@gates_100_5000,gates --o
 
 
 ### get baseline discharge at each gate
-v.in.ascii input=./tmp/overview_D.csv.zip output=overview_D separator=, skip=1 x=2 y=3 --o
+v.in.ascii input=./tmp/overview_D.csv output=overview_D separator=, skip=1 x=2 y=3 --o
 
 
 ###
@@ -4661,9 +4659,9 @@ adj(ax_coverage, ['left'])
 ax_coverage.minorticks_off()
 ax_coverage.tick_params(length=0, which='both', axis='x')
 
-D = pd.read_csv("./out/GIS_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/GIS_err.csv.zip", index_col=0, parse_dates=True)
-coverage = pd.read_csv("./out/GIS_coverage.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/GIS_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/GIS_err.csv", index_col=0, parse_dates=True)
+coverage = pd.read_csv("./out/GIS_coverage.csv", index_col=0, parse_dates=True)
 
 THRESH = coverage.values.flatten() < 0.5
 D[THRESH] = np.nan
@@ -4809,9 +4807,9 @@ ax_coverage.minorticks_off()
 ax_coverage.tick_params(length=0, which='both', axis='x')
 
 
-D = pd.read_csv("./out/region_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/region_err.csv.zip", index_col=0, parse_dates=True)
-coverage = pd.read_csv("./out/region_coverage.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
+coverage = pd.read_csv("./out/region_coverage.csv", index_col=0, parse_dates=True)
 
 THRESH = coverage < 0.5
 D[THRESH] = np.nan
@@ -4948,8 +4946,8 @@ tbl
 :ID:       eca400fe-cffc-4e6b-8fc1-694945093adb
 :END:
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
-D = pd.read_csv("./out/GIS_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/GIS_err.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/GIS_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/GIS_err.csv", index_col=0, parse_dates=True)
 
 D = D[D.index.year >= 2000]\
     .resample('1D',axis='rows')\
@@ -4976,8 +4974,8 @@ print(err.values)
 
 **** Discharge time series
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
-D = pd.read_csv("./out/GIS_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/GIS_err.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/GIS_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/GIS_err.csv", index_col=0, parse_dates=True)
 
 D = D.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
 err = err.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
@@ -5041,8 +5039,8 @@ df
 
 **** Contribution from SE
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
-D = pd.read_csv("./out/region_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/region_err.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
 
 D = D.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
 err = err.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
@@ -5121,8 +5119,8 @@ Name: SE, dtype: float64
 
 **** Contribution from SE relative to the total
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
-D = pd.read_csv("./out/region_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/region_err.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
 
 D = D.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
 err = err.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
@@ -5190,8 +5188,8 @@ Freq: A-DEC, dtype: float64
 
 **** Contribution from others relative to the total
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
-D = pd.read_csv("./out/region_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/region_err.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
 
 D = D.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
 err = err.resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
@@ -5264,8 +5262,8 @@ Freq: A-DEC, Name: NW, dtype: float64
 
 **** Sermeq Kujalleq (Jakobshavn Isbræ)
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
-D = pd.read_csv("./out/sector_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/sector_err.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/sector_err.csv", index_col=0, parse_dates=True)
 
 D = D['JAKOBSHAVN_ISBRAE'].resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
 
@@ -5355,9 +5353,9 @@ ax_coverage.minorticks_off()
 ax_coverage.tick_params(length=0, which='both', axis='x')
 
 
-D = pd.read_csv("./out/sector_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/sector_err.csv.zip", index_col=0, parse_dates=True)
-coverage = pd.read_csv("./out/sector_coverage.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/sector_err.csv", index_col=0, parse_dates=True)
+coverage = pd.read_csv("./out/sector_coverage.csv", index_col=0, parse_dates=True)
 
 THRESH = coverage < 0.5
 D[THRESH] = np.nan
@@ -5969,8 +5967,8 @@ ann
 
 ** Køge Bugt Y2K
 #+BEGIN_SRC jupyter-python :session kb_y2k :exports both :results raw drawer :display text/org
-D = pd.read_csv("./out/sector_D.csv.zip", index_col=0, parse_dates=True)
-err = pd.read_csv("./out/sector_err.csv.zip", index_col=0, parse_dates=True)
+D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
+err = pd.read_csv("./out/sector_err.csv", index_col=0, parse_dates=True)
 
 S = "KOGE_BUGT_C"
 D = D[S].resample('1D',axis='rows').mean().interpolate(method='time',limit_area='inside').resample('A',axis='rows').mean()
@@ -7254,8 +7252,8 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 ** Results
 *** GIS
 #+BEGIN_SRC bash :results table :eval no-export
-FILE=./out/GIS_D.csv.zip
-zcat ${FILE}
+FILE=./out/GIS_D.csv
+cat ${FILE}
 #+END_SRC
 
 #+RESULTS:
@@ -7718,8 +7716,8 @@ zcat ${FILE}
 
 *** Regions
 #+BEGIN_SRC bash :results table :eval no-export
-FILE=./out/region_D.csv.zip
-zcat ${FILE}
+FILE=./out/region_D.csv
+cat ${FILE}
 #+END_SRC
 
 #+RESULTS:
@@ -8182,7 +8180,7 @@ zcat ${FILE}
 
 *** Some arbitrary glaciers
 #+BEGIN_SRC bash :results table :eval no-export
-FILE=./out/sector_D.csv.zip
+FILE=./out/sector_D.csv
 
 # GLLIST='Date|ACADEMY|SERMEQ_KUJ|BOWDOIN|BUGT|HELH|STORE|KANGER|ZACH|RINK|NIOGHALV|PETERMANN'
 GLLIST='Date|JAKOBSH|HELH|STORE|ZACH' # |RINK'
@@ -8193,14 +8191,14 @@ GLLIST='Date|JAKOBSH|HELH|STORE|ZACH' # |RINK'
 #   | grep -E ${GLLIST}
 
 COLS=$(\
-head -n1 <(zcat ${FILE}) \
+head -n1 <(cat ${FILE}) \
   | tr ',' '\n' \
   | cat -n \
   | grep -E ${GLLIST} \
   | cut -d$'\t' -f1 
 )
 
-cut -d, -f$(echo $COLS|tr ' ' ',') <(zcat ${FILE})
+cut -d, -f$(echo $COLS|tr ' ' ',') <(cat ${FILE})
 #+END_SRC
 
 #+RESULTS:
