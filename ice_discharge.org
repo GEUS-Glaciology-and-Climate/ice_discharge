@@ -1207,6 +1207,7 @@ r.null map=day null=0
 #+END_SRC
 
 *** Sectors
+**** Mouginot 2019
 + From citet:mouginot_2019_glacier
 ***** Import & Clean
 #+BEGIN_SRC bash :results verbatim
@@ -1254,6 +1255,15 @@ d.rast regions
 d.rast sectors
 d.vect sectors_all fill_color=none color=red
 d.vect sectors fill_color=none
+#+END_SRC
+
+**** Zwally 2012
+
+I use an "expanded boundary" version. This was created by loading the Zwally sectors into QGIS and moving the coasts outward. This is done because some gates (ice) is outside the boundaries provided by Zwally.
+
+#+BEGIN_SRC bash
+g.mapset -c Zwally_2012
+v.in.ogr input=${DATADIR}/Zwally_2012/sectors_enlarged output=Zwally_2012
 #+END_SRC
 
 *** 2D Area Error
@@ -1914,6 +1924,10 @@ v.db.addcolumn map=gates_final_pts columns="Bjork_2015 VARCHAR(99)"
 v.distance from=gates_final to=names@Bjork_2015 upload=to_attr column=Bjork_2015 to_column=name
 v.distance from=gates_final_pts to=names@Bjork_2015 upload=to_attr column=Bjork_2015 to_column=name
 
+v.db.addcolumn map=gates_final columns="Zwally_2012 INT"
+v.db.addcolumn map=gates_final_pts columns="Zwally_2012 INT"
+v.distance from=gates_final to=Zwally_2012@Zwally_2012 upload=to_attr column=Zwally_2012 to_column=cat_
+v.distance from=gates_final_pts to=Zwally_2012@Zwally_2012 upload=to_attr column=Zwally_2012 to_column=cat_
 
 v.db.addcolumn map=gates_final columns="n_pixels INT"
 v.db.addcolumn map=gates_final_pts columns="n_pixels INT"
@@ -1932,7 +1946,7 @@ db.dropcolumn -f table=gates_final column=area
 **** Export as metadata CSV
 #+BEGIN_SRC bash :results verbatim
 mkdir -p out
-db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019 from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
+db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019,Zwally_2012 from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
 #+END_SRC
 
 *** Export Gates to KML                                            :noexport:
