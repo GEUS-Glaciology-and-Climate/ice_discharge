@@ -1076,7 +1076,7 @@ function ctrl_c() {
 MSG_OK "BedMachine"
 g.mapset -c BedMachine
 
-for var in $(echo mask surface thickness bed errbed); do
+for var in mask surface thickness bed errbed; do
   echo $var
   r.external source=netCDF:${DATADIR}/Morlighem_2017/BedMachineGreenland-2017-09-20.nc:${var} output=${var}
 done
@@ -1962,8 +1962,8 @@ v.out.ogr input=gates_final output=./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER
 
 Run the gate detection algorithm at a variety of cutoff velocities and buffer distances
 #+BEGIN_SRC bash :results verbatim :tangle no
-for VELOCITY_CUTOFF in $(echo 10 20 30 40 50 60 70 80 90 100 125 150); do
-  for BUFFER_DIST in $(echo 1000 2000 3000 4000 5000 6000 7000 8000 9000); do
+for VELOCITY_CUTOFF in 10 20 30 40 50 60 70 80 90 100 125 150; do
+  for BUFFER_DIST in 1000 2000 3000 4000 5000 6000 7000 8000 9000; do
       . ./gate_IO.sh
   done
 done
