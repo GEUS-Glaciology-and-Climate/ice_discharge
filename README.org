@@ -9,6 +9,7 @@ This is the source for "Greenland Ice Sheet solid ice discharge from 1986 throug
 + The datasets are located at [[https://doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
 
 + Companion paper: "Greenland liquid water runoff from 1958 through 2019"
+  + Paper: [[https://doi.org/10.5194/essd-12-2811-2020][doi:10.5194/essd-12-2811-2020]]
   + Source: https://github.com/mankoff/freshwater/
   + Data: [[https://doi.org/10.22008/promice/freshwater][doi:10.22008/promice/freshwater]]
 
