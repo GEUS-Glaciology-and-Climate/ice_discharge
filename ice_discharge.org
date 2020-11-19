@@ -633,7 +633,7 @@ Transparency in data and methodology are critical to move beyond a focus of esti
 
 
 #+BEGIN_acknowledgements
-We thank contributors and co-authors of previous versions of this paper, and the reviewers and editors for their constructive input that helped improve the paper. Sentinel ice velocity maps were produced from Copernicus Sentinel-1 image data, processed by ESA data as part of PROMICE, and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org.
+We thank contributors and co-authors of previous versions of this paper, and the reviewers and editors for their constructive input that helped improve the paper. Andy Aschwanden helped improve metadata. Sentinel ice velocity maps were produced from Copernicus Sentinel-1 image data, processed by ESA data as part of PROMICE, and were provided by the Geological Survey of Denmark and Greenland (GEUS) at http://www.promice.org.
 #+END_acknowledgements
 
 #+BEGIN_financialsupport
@@ -3997,14 +3997,14 @@ ds["time"].attrs["cf_role"] = "timeseries_id"
 
 ds["discharge"] = ("time", df_D['Discharge [Gt yr-1]'].astype(np.float32))
 ds["discharge"].attrs["long_name"] = "Discharge"
-ds["discharge"].attrs["standard_name"] = "land_ice_volume_flow_rate_due_to_calving_and_ice_front_melting"
-ds["discharge"].attrs["units"] = "km3 yr-1"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
 ds["discharge"].attrs["coordinates"] = "time"
 
 ds["err"] = ("time", df_err['Discharge Error [Gt yr-1]'].astype(np.float32))
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
-ds["err"].attrs["units"] = "km3 yr-1"
+ds["err"].attrs["units"] = "Gt yr-1"
 ds["err"].attrs["coordinates"] = "time"
 
 ds["coverage"] = ("time", df_coverage['Coverage [unit]'].astype(np.float32))
@@ -4068,14 +4068,14 @@ ds["region"].attrs["comment"] = "Regions from Mouginot (2019)"
 
 ds["discharge"] = (("region", "time"), df_D.T.values.astype(np.float32))
 ds["discharge"].attrs["long_name"] = "Discharge"
-ds["discharge"].attrs["standard_name"] = "land_ice_volume_flow_rate_due_to_calving_and_ice_front_melting"
-ds["discharge"].attrs["units"] = "km3 yr-1"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
 ds["discharge"].attrs["coordinates"] = "time region"
 
 ds["err"] = (("region", "time"), df_err.T.values.astype(np.float32))
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
-ds["err"].attrs["units"] = "km3 yr-1"
+ds["err"].attrs["units"] = "Gt yr-1"
 ds["err"].attrs["coordinates"] = "time region"
 
 ds["coverage"] = (("region", "time"), df_coverage.T.values.astype(np.float32))
@@ -4160,14 +4160,14 @@ ds["sector"].attrs["comment"] = "Sectors from Mouginot (2019)"
 
 ds["discharge"] = (("sector", "time"), df_D.T.values.astype(np.float32))
 ds["discharge"].attrs["long_name"] = "Discharge"
-ds["discharge"].attrs["standard_name"] = "land_ice_volume_flow_rate_due_to_calving_and_ice_front_melting"
-ds["discharge"].attrs["units"] = "km3 yr-1"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
 ds["discharge"].attrs["coordinates"] = "time sector"
 
 ds["err"] = (("sector", "time"), df_err.T.values.astype(np.float32))
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
-ds["err"].attrs["units"] = "km3 yr-1"
+ds["err"].attrs["units"] = "Gt yr-1"
 ds["err"].attrs["coordinates"] = "time sector"
 
 ds["coverage"] = (("sector", "time"), df_coverage.T.values.astype(np.float32))
@@ -4254,14 +4254,14 @@ ds["gate"].attrs["standard_name"] = "N/A"
 
 ds["discharge"] = (("gate", "time"), df_D.T.values.astype(np.float32))
 ds["discharge"].attrs["long_name"] = "Discharge"
-ds["discharge"].attrs["standard_name"] = "land_ice_volume_flow_rate_due_to_calving_and_ice_front_melting"
-ds["discharge"].attrs["units"] = "km3 yr-1"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
 ds["discharge"].attrs["coordinates"] = "time gate"
 
 ds["err"] = (("gate", "time"), df_err.T.values.astype(np.float32))
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
-ds["err"].attrs["units"] = "km3 yr-1"
+ds["err"].attrs["units"] = "Gt yr-1"
 ds["err"].attrs["coordinates"] = "time gate"
 
 ds["coverage"] = (("gate", "time"), df_coverage.T.values.astype(np.float32))
