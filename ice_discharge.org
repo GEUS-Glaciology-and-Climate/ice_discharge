@@ -43,7 +43,7 @@
 
 
 #+BEGIN_abstract
-We present a 1986 through March 2020 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional handpicked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and end with near-complete spatial coverage and twelve-day updates to velocity. The 2010 through 2019 average ice discharge through the flux gates is ~487 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, and then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the northwest region through 2017, and in the southeast from 2017 through March 2020. As part of the journal's living archive option and our goal to make an operational product, all input data, code, and results from this study will be updated as needed (when new input data are available, as new features are added, or to fix bugs) and made available at doi:10.22008/promice/data/ice_discharge citep:GEUS_discharge_paper and at http://github.com/mankoff/ice_discharge.
+We present a 1986 through March 2020 estimate of Greenland Ice Sheet ice discharge. Our data include all discharging ice that flows faster than 100 m yr^{-1} and are generated through an automatic and adaptable method, as opposed to conventional handpicked gates. We position gates near the present-year termini and estimate problematic bed topography (ice thickness) values where necessary. In addition to using annual time-varying ice thickness, our time series uses velocity maps that begin with sparse spatial and temporal coverage and end with near-complete spatial coverage and twelve-day updates to velocity. The 2010 through 2019 average ice discharge through the flux gates is ~487 \(\pm\)49 Gt yr^{-1}. The 10 % uncertainty stems primarily from uncertain ice bed location (ice thickness). We attribute the ~50 Gt yr^{-1} differences among our results and previous studies to our use of updated bed topography from BedMachine v3. Discharge is approximately steady from 1986 to 2000, increases sharply from 2000 to 2005, and then is approximately steady again. However, regional and glacier variability is more pronounced, with recent decreases at most major glaciers and in all but one region offset by increases in the northwest region through 2017, and in the southeast from 2017 through March 2020. As part of the journal's living archive option and our goal to make an operational product, all input data, code, and results from this study will be updated as needed (when new input data are available, as new features are added, or to fix bugs) and made available at doi:10.22008/promice/data/ice_discharge citep:GEUS_discharge_paper and at http://github.com/GEUS-PROMICE/ice_discharge.
 #+END_abstract
 
 # For 2000 to present mean see LINK: id:eca400fe-cffc-4e6b-8fc1-694945093adb
@@ -3806,7 +3806,7 @@ README for "Greenland Ice Sheet solid ice discharge from 1986 through March 2020
 Reference paper: doi:10.5194/essd-12-1367-2020  https://doi.org/10.5194/essd-12-1367-2020
 Data Citations: doi:10.22008/promice/data/ice_discharge
 
-Source: https://github.com/mankoff/ice_discharge
+Source: https://github.com/GEUS-PROMICE/ice_discharge
 
 ,* Usage instructions:
 
@@ -3856,7 +3856,7 @@ See doi:10.22008/promice/data/DTU/surface_elevation_change/v1.0.0
 
 ,** Code
 
-See https://github.com/mankoff/ice_discharge
+See https://github.com/GEUS-PROMICE/ice_discharge
 
 #+END_SRC
 
