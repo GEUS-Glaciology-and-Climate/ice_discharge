@@ -972,7 +972,7 @@ This work was performed using only open-source software, primarily =GRASS GIS= c
 * Code                                                  :noexport:
 :PROPERTIES:
 :header-args:bash+: :comments both
-:header-args:bash+: :tangle-mode (identity #o744)
+:header-args:bash+: :tangle-mode (identity #o544)
 :header-args:bash+: :shebang #!/usr/bin/env bash
 :END:
 ** Makefile
