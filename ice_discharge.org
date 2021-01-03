@@ -94,6 +94,7 @@ We present a 1986 through March 2020 estimate of Greenland Ice Sheet ice dischar
   - [[#raw-data-to-discharge-product][Raw data to discharge product]]
   - [[#csv-to-netcdf][CSV to NetCDF]]
   - [[#figures-1][Figures]]
+  - [[#auto-update][Auto update]]
 - [[#supplementary-material][Supplementary Material]]
   - [[#errors-by-gate-sorted-by-total-d-err-err-][Errors by gate sorted by total D, err, err %]]
   - [[#annual-averages-from-observations-or-linear-interpolation][Annual averages from observations or linear interpolation]]
@@ -1490,7 +1491,9 @@ DIR=${DATADIR}/Sentinel1/Sentinel1_IV_maps
 
 ***** Import data                                                  :noexport:
 + Read in all the data
-+ Convert from [m day-1] to [m year-1]
++ Conversion from [m day-1] to [m year-1] is done in section [[id:20210102T152009.186822][Just one velocity cutoff & buffer distance]]
+
+#+NAME: sentinel1_import  
 #+BEGIN_SRC bash :results verbatim
 MSG_OK "Sentinel 1"
 g.mapset -c Sentinel1
@@ -2107,6 +2110,10 @@ done
 #+END_SRC
 
 *** Just one velocity cutoff & buffer distance 
+:PROPERTIES:
+:ID:       20210102T152009.186822
+:END:
+
 #+BEGIN_SRC bash :results verbatim
 g.mapsets -l
 
@@ -2161,6 +2168,21 @@ for VX in $(g.list type=raster pattern=VX_????_??_??); do
 done
 
 
+g.mapset Mouginot_pre2000
+g.region -d
+r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
+VX=$(g.list type=raster pattern=vx_????_??_?? | head -n1) # DEBUG
+for VX in $(g.list type=raster pattern=vx_????_??_??); do
+  VY=${VX/vx/vy}
+  DATE=$(echo $VX | cut -d"_" -f2-)
+  echo $DATE
+  r.mapcalc "vel_eff_${DATE} = (if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX}))) + if(gates_y@${MAPSET}, if(isnull(${VY}), 0, abs(${VY}))))"
+done
+
+#+END_SRC
+
+#+NAME: sentinel1_effective_velocity
+#+BEGIN_SRC bash :results verbatim
 g.mapset Sentinel1
 g.region -d
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
@@ -2174,18 +2196,9 @@ for VX in $(g.list type=raster pattern=vx_????_??_??); do
   r.mapcalc "vel_eff_${DATE} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX}))) + if(gates_y@${MAPSET}, if(isnull(${VY}), 0, abs(${VY}))))"
   r.mapcalc "err_eff_${DATE} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(${EX}), 0, abs(${EX}))) + if(gates_y@${MAPSET}, if(isnull(${EY}), 0, abs(${EY}))))"
 done
+#+END_SRC
 
-g.mapset Mouginot_pre2000
-g.region -d
-r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
-VX=$(g.list type=raster pattern=vx_????_??_?? | head -n1) # DEBUG
-for VX in $(g.list type=raster pattern=vx_????_??_??); do
-  VY=${VX/vx/vy}
-  DATE=$(echo $VX | cut -d"_" -f2-)
-  echo $DATE
-  r.mapcalc "vel_eff_${DATE} = (if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX}))) + if(gates_y@${MAPSET}, if(isnull(${VY}), 0, abs(${VY}))))"
-done
-
+#+BEGIN_SRC bash :results verbatim
 # fix return code of this script so make continues
 MSG_OK "vel_eff DONE" 
 #+END_SRC
@@ -2200,6 +2213,7 @@ MSG_OK "vel_eff DONE"
 <<GRASS_config>>
 #+END_SRC
 
+#+NAME: export
 #+BEGIN_SRC bash :results output
 MSG_OK "Exporting..."
 g.mapset PERMANENT
@@ -5740,6 +5754,107 @@ if __name__ == "__main__":
 
 #+END_SRC
 #+RESULTS:
+
+** Auto update
+
+*** Local
+#+BEGIN_SRC bash :tangle update_wrapper.sh
+<<MSGS_pretty_print>>
+
+MSG_OK "Updating Sentinel velocity files..."
+workingdir=$(pwd)
+cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps/
+URL=https://promice.org/PromiceDataPortal/api/download/92ce7cf4-59b8-4a3f-8f75-93d166f5a7ca/Greenland_IV
+wget -r -nc -np --no-host-directories --cut-dirs=5 -A nc --continue -o wget.log ${URL}/
+
+# always download index.html. Stop if only 1 file donloaded
+if grep -q "Downloaded: 1 files" wget.log; then
+  MSG_WARN "No new files..."
+  exit
+fi
+
+MSG_OK "New Sentinel velocity files found..."
+cd ${workingdir}
+
+grass ./G/PERMANENT --exec ./update_worker.sh
+cp ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last
+grass ./G/PERMANENT --exec ./export.sh
+
+if cmp -s ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last; then 
+   echo "No change"
+else
+  python ./errors.py
+  python ./raw2discharge.py
+  python ./csv2nc.py
+  python ./upload.py
+fi
+#+END_SRC
+
+#+BEGIN_SRC bash :tangle update_worker.sh
+<<MSGS_pretty_print>>
+<<GRASS_config>>
+<<sentinel1_import>>
+	
+MAPSET=gates_100_5000
+<<sentinel1_effective_velocity>>
+#+END_SRC
+*** Upload
+
+#+BEGIN_SRC jupyter-python :tangle upload.py
+from pyDataverse.api import NativeApi
+import os
+import json
+
+import subprocess
+hash = subprocess.check_output(["git", "describe", "--always"]).strip().decode('utf-8')
+hash = subprocess.check_output(["git", "describe", "--always", "--dirty='*'"]).strip().decode('utf-8')
+assert("*" not in hash)
+
+base_url = 'TODO'
+api_token = 'SECRET'
+
+api = NativeApi(base_url, api_token) # establish connection
+
+# get dataverse metadata
+identifier = 'doi:10.22008/promice/data/ice_discharge/d/v02'
+resp = api.get_dataset(identifier)
+files = resp.json()['data']['latestVersion']['files']
+for f in files:
+    persistentId = f['dataFile']['persistentId']
+    description = f['dataFile']['description']
+    filename = f['dataFile']['filename']
+    fileId = f['dataFile']['id']
+
+    assert(os.path.isfile("./out/"+filename))
+
+    description = description.split(".")[0] + ". "
+    description = description + "Git hash: " + hash
+    
+    if 'content' in locals(): del(content)
+    if filename[-3:] == ".nc": content = "application/x-netcdf"
+    if filename[-3:] == "csv": content = "text/csv"
+    if filename[-3:] == "txt": content = "text/plain"
+    json_dict={"description":description, 
+               "directoryLabel":".", 
+               "forceReplace":True, 
+               "filename":filename, 
+               "label":filename, 
+               "contentType":content}
+
+    json_str = json.dumps(json_dict)
+    d = api.replace_datafile(persistentId, "./out/"+filename, json_str)
+  
+    if d.json()["status"] == "ERROR": 
+        print(d.content)
+        print("\n")
+        continue
+
+    # need to update filenames after uploading because of DataVerse bug
+    # https://github.com/IQSS/dataverse/issues/7223
+    file_id = d.json()['data']['files'][0]['dataFile']['id']
+    d2 = api.update_datafile_metadata(file_id, json_str=json_str, is_filepid=False)
+#+END_SRC
+
 
 * Supplementary Material                                :noexport:
 :PROPERTIES:
