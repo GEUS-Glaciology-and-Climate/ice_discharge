@@ -4881,7 +4881,7 @@ for r in D.columns:
                       alpha=coverage.iloc[i][r])
 
     tx = pd.Timestamp(str(D[r].dropna().index[-1].year) + '-01-01') + dt.timedelta(days=380)
-    ty = D_day_year[r].iloc[-1]
+    ty = D_day_year[r].dropna().iloc[-1]
     # if r in ['CE', 'SW']: ty=ty-4
     # if r == 'NE': ty=ty+4
     # if r == 'NO': ty=ty-2
