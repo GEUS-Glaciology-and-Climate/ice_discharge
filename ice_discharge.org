@@ -7,8 +7,8 @@
 #+PROPERTY: header-args:org :eval no
 #+PROPERTY: header-args:PSMAP :eval no
 #+PROPERTY: header-args:elisp :eval no :tangle no
-#+PROPERTY: header-args:bash :eval no :noweb yes
-#+PROPERTY: header-args:jupyter-python :eval no :noweb yes :kernel ice_discharge
+#+PROPERTY: header-args:bash :eval no :noweb yes :tangle-mode (identity #o544)
+#+PROPERTY: header-args:jupyter-python :eval no :noweb yes :kernel ice_discharge :tangle-mode (identity #o544)
 #+PROPERTY: header-args: :session ice_discharge
 
 #+MACRO: JAKO @@latex:Sermeq Kujalleq@@
@@ -3111,6 +3111,7 @@ dhdt.rename(inplace=True, columns=mv)
 dhdt[2018] = 0
 dhdt[2019] = 0
 dhdt[2020] = 0
+dhdt[2021] = 0
 for y in np.arange(1985,1994+1): dhdt[y] = dhdt.loc[:,1995:1997].mean(axis='columns')
 dhdt.sort_index(axis='columns', inplace=True)
 
@@ -3256,9 +3257,9 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 | 2016-12-31 00:00:00 |    477.713 | 484.972 | 7.25908 |
 | 2017-12-31 00:00:00 |    485.893 | 492.988 | 7.09489 |
 | 2018-12-31 00:00:00 |    476.124 | 483.352 | 7.22783 |
-| 2019-12-31 00:00:00 |     479.01 | 486.544 | 7.53351 |
-| 2020-12-31 00:00:00 |    487.704 | 495.477 | 7.77278 |
-| 2021-12-31 00:00:00 |    498.873 | 506.704 | 7.83081 |
+| 2019-12-31 00:00:00 |     479.01 | 486.543 | 7.53351 |
+| 2020-12-31 00:00:00 |    487.558 | 495.333 | 7.77515 |
+| 2021-12-31 00:00:00 |    498.348 | 506.188 | 7.84007 |
 
 
 **** Adjust thickness w thickness v. velocity fit.
@@ -3361,9 +3362,9 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 2016-12-31  484.971899  488.320386  3.348487
 2017-12-31  492.988192  496.202874  3.214682
 2018-12-31  483.352202  486.567137  3.214935
-2019-12-31  486.543725  489.950268  3.406543
-2020-12-31  495.477243  499.036378  3.559136
-2021-12-31  506.703728  510.348741  3.645013
+2019-12-31  486.543261  489.949805  3.406543
+2020-12-31  495.333325  498.894119  3.560794
+2021-12-31  506.187573  509.820350  3.632778
 #+end_example
 
 **** Table of thickness adjustments
@@ -5814,7 +5815,8 @@ MAPSET=gates_100_5000
 #+END_SRC
 *** Upload
 
-#+BEGIN_SRC jupyter-python :tangle upload.py
+# #+header-args :tangle upload.py  # don't overwrite local copy without manual effort.
+#+BEGIN_SRC jupyter-python 
 from pyDataverse.api import NativeApi
 import os
 import json
