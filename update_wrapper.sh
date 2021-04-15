@@ -17,13 +17,13 @@ cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps/
 if [[ -e urls.txt ]]; then cp urls.txt urls.txt.last; fi
 curl https://dataverse01.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/promice/data/sentinel1icevelocity/greenlandicesheet | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
 
-
 if cmp -s urls.txt urls.txt.last; then
   MSG_WARN "No new files..."
   exit
 fi
 
-for PID in $(cat urls.txt); do
+# for PID in $(cat urls.txt); do
+for PID in $(cat urls.txt | tail -n5); do
   wget --content-disposition --continue "https://dataverse01.geus.dk/api/access/datafile/:persistentId?persistentId=${PID}"
 done
 
