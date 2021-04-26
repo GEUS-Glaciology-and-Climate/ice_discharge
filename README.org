@@ -1,24 +1,42 @@
 
+* Table of Contents                               :toc_2:noexport:
+- [[#greenland-ice-sheet-solid-ice-discharge-from-1986-through-march-2020][Greenland Ice Sheet solid ice discharge from 1986 through March 2020]]
+- [[#related-work][Related Work]]
+- [[#citation][Citation]]
+  - [[#publication][Publication]]
+  - [[#project][Project]]
+  - [[#discharge-data][Discharge data]]
+  - [[#discharge-gates][Discharge gates]]
+- [[#open-science-vs-reproducible-science][Open science vs. reproducible science]]
+
 * Greenland Ice Sheet solid ice discharge from 1986 through March 2020
 
 This is the source for "Greenland Ice Sheet solid ice discharge from 1986 through March 2020" and previous and subsequent versions.
 
-+ The latest version (V2) of the paper is at [[https://doi.org/10.5194/essd-12-1367-2020][doi: 10.5194/essd-12-1367-2020]]
-+ The original version (V1) of the paper is located at [[https://doi.org/10.5194/essd-11-769-2019][doi:10.5194/essd-11-769-2019]]
++ Paper: [[https://doi.org/10.5194/essd-12-1367-2020][doi: 10.5194/essd-12-1367-2020]]
+  + Paper V1: [[https://doi.org/10.5194/essd-11-769-2019][doi:10.5194/essd-11-769-2019]]
++ Data: [[https://doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]]
++ Code (latest): https://github.com/GEUS-PROMICE/ice_discharge
+  + Source V2: https://github.com/GEUS-PROMICE/ice_discharge/tree/10.5194/essd-12-1367-2020
+  + Source V1: https://github.com/GEUS-PROMICE/ice_discharge/tree/10.5194/essd-11-769-2019
++ Issues https://github.com/GEUS-PROMICE/ice_discharge/issues  are used to collect suggested improvements to the paper, problems that made it through review, and mention of similar papers that have been published since this was accepted. The work may be under active development, including updating data (and therefore tables) within the source document.
+  + This [[https://github.com/mankoff/ice_discharge/compare/10.5194/essd-12-1367-2020...main][diff]] shows changes between the latest version (V2) of the paper and the current (active) development version.
+  + Major changes post-publication are tagged [[https://github.com/GEUS-PROMICE/ice_discharge/issues?q=label%3Amajor_change]["major_change"]].
 
-+ The datasets are located at [[https://doi.org/10.22008/promice/data/ice_discharge][doi:10.22008/promice/data/ice_discharge]].
+* Related Work  
+
++ Companion paper: "Greenland ice sheet mass balance from 1840 through next week"
+  + Publication: [[https://doi.org/10.5194/essd-2021-131][doi:10.5194/essd-2021-131]]
+  + Source: https://github.com/GEUS-PROMICE/mass_balance/
+  + Data: https://dataverse01.geus.dk/dataverse/mass_balance
 
 + Companion paper: "Greenland liquid water runoff from 1958 through 2019"
   + Paper: [[https://doi.org/10.5194/essd-12-2811-2020][doi:10.5194/essd-12-2811-2020]]
   + Source: https://github.com/GEUS-PROMICE/freshwater/
   + Data: [[https://doi.org/10.22008/promice/freshwater][doi:10.22008/promice/freshwater]]
 
-The source for this work is hosted on GitHub at https://github.com/GEUS-PROMICE/ice_discharge. GitHub [[https://github.com/mankoff/ice_discharge/issues?utf8=%E2%9C%93&q=is%3Aissue][issues]] are used to collect suggested improvements to the paper, problems that made it through review, and mention of similar papers that have been published since this was accepted. The work may be under be under active development, including updating data (and therefore tables) within the source document.
-+ This [[https://github.com/mankoff/ice_discharge/compare/10.5194/essd-12-1367-2020...main][diff]] shows changes between the latest version (V2) of the paper and the current (active) development version.
-+ The source for V2 can be viewed at https://github.com/GEUS-PROMICE/ice_discharge/tree/10.5194/essd-12-1367-2020
-+ The source for V1 can be viewed at https://github.com/GEUS-PROMICE/ice_discharge/tree/10.5194/essd-11-769-2019
-
 * Citation
+** Publication
 
 #+BEGIN_EXAMPLE
 @article{mankoff_2020_ice,
@@ -36,3 +54,57 @@ The source for this work is hosted on GitHub at https://github.com/GEUS-PROMICE/
   journal = {Earth System Science Data}
 }
 #+END_EXAMPLE
+
+** Project
+
+#+BEGIN_EXAMPLE
+@data{mankoff_2020_data,
+    author    = {Mankoff, Ken and Solgaard, Anne},
+    publisher = {GEUS Dataverse},
+    title     = {{G}reenland {I}ce {S}heet solid ice discharge from 1986 through last month: Discharge},
+    year      = {2020},
+    doi       = {10.22008/promice/data/ice_discharge/},
+    url       = {https://doi.org/10.22008/promice/data/ice_discharge/}}
+#+END_EXAMPLE
+    
+** Discharge data
+
++ Note: The version number updates approximately every two weeks.
+
+#+BEGIN_EXAMPLE
+@data{mankoff_2020_discharge,
+    author    = {Mankoff, Ken and Solgaard, Anne},
+    publisher = {GEUS Dataverse},
+    title     = {{G}reenland {I}ce {S}heet solid ice discharge from 1986 through last month: Discharge},
+    year      = {2020},
+    version   = {VERSION NUMBER},
+    doi       = {10.22008/promice/data/ice_discharge/d/v02},
+    url       = {https://doi.org/10.22008/promice/data/ice_discharge/d/v02}}
+#+END_EXAMPLE
+    
+** Discharge gates
+
+#+BEGIN_EXAMPLE
+@data{mankoff_2020_gates,
+    author    = {Mankoff, Ken},
+    publisher = {GEUS Dataverse},
+    title     = {{G}reenland {I}ce {S}heet solid ice discharge from 1986 through last month: Gates},
+    UNF       = {UNF:6:/eJSVvL8Rp1NG997hIhUag==},
+    year      = {2020},
+    version   = {VERSION_NUMBER},
+    doi       = {10.22008/promice/data/ice_discharge/gates/v02},
+    url       = {https://doi.org/10.22008/promice/data/ice_discharge/gates/v02}}
+#+END_EXAMPLE
+    
+* Open science vs. reproducible science
+
++ This work is open - every line of code needed to recreate it is include in this git repository, although the ~100 GB of velocity inputs are not included.
++ We recognize that "open" is not necessarily "reproducible"
+
+#+BEGIN_html
+<p align="center"><img src="https://github.com/GEUS-PROMICE/mass_balance/blob/main/open_v_reproducible.png"></p>
+#+END_html
+Source: https://github.com/karthik/rstudio2019
+
+
+
