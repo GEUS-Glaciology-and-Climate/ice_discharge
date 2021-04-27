@@ -152,18 +152,18 @@ r.mask -r
 # r.univar map=gates_xy_clean2
 # Limit to Mouginot 2019 mask:1 ends here
 
-# Remove areas from manually-drawn KML mask
-# + See [[./dat/remove_manual.kml]]
+# Remove gates in areas from manually-drawn KML mask
+# + See [[./dat/remove_gates_manual.kml]]
 
-# [[file:ice_discharge.org::*Remove areas from manually-drawn KML mask][Remove areas from manually-drawn KML mask:1]]
-v.import input=./dat/remove_manual.kml output=remove_manual --o
-r.mask -i vector=remove_manual --o
+# [[file:ice_discharge.org::*Remove gates in areas from manually-drawn KML mask][Remove gates in areas from manually-drawn KML mask:1]]
+v.import input=./dat/remove_gates_manual.kml output=remove_gates_manual --o
+r.mask -i vector=remove_gates_manual --o
 r.mapcalc "gates_xy_clean3 = gates_xy_clean2" --o
 r.mask -r
 
 r.univar map=gates_xy_clean2
 r.univar map=gates_xy_clean3
-# Remove areas from manually-drawn KML mask:1 ends here
+# Remove gates in areas from manually-drawn KML mask:1 ends here
 
 # Final Gates
 

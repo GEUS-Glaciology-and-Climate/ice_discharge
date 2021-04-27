@@ -273,6 +273,11 @@ done
 
 # Baseline: Average of 2015-2017
 
+# + See [[./dat/remove_ice_manual.kml]]
+# + This is due to extensive Jakobshavn retreat between baseline and present
+# + The gates need to be >5 km from the baseline terminus
+
+
 # [[file:ice_discharge.org::*Baseline: Average of 2015-2017][Baseline: Average of 2015-2017:1]]
 MSG_OK "Baseline"
 g.mapset -c MEaSUREs.0478
@@ -283,8 +288,13 @@ r.series input=VY_2015_09_01,VY_2016_09_01,VY_2017_09_01 output=vy_baseline meth
 r.series input=EX_2015_09_01,EX_2016_09_01,EX_2017_09_01 output=ex_baseline method=average range=-1000000,1000000
 r.series input=EY_2015_09_01,EY_2016_09_01,EY_2017_09_01 output=ey_baseline method=average range=-1000000,1000000
 
+v.import input=./dat/remove_ice_manual.kml output=remove_ice_manual --o
+r.mask -i vector=remove_ice_manual --o
+
 r.mapcalc "vel_baseline = sqrt(vx_baseline^2 + vy_baseline^2)"
 r.mapcalc "vel_err_baseline = sqrt(ex_baseline^2 + ey_baseline^2)"
+
+r.mask -r
 
 parallel --verbose --bar r.null map={}_baseline setnull=0 ::: vx vy vel ex ey vel_err
 r.colors -e map=vel_baseline,vel_err_baseline color=viridis
