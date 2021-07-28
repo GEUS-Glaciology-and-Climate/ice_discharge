@@ -32,16 +32,18 @@ function ctrl_c() {
 }
 # Import Data:1 ends here
 
-# BedMachine v3
+# BedMachine v4
 # + from [[textcite:Morlighem:2017BedMachine][Morlighem /et al./ (2017)]]
 
-# [[file:ice_discharge.org::*BedMachine v3][BedMachine v3:1]]
+# [[file:ice_discharge.org::*BedMachine v4][BedMachine v4:1]]
 MSG_OK "BedMachine"
 g.mapset -c BedMachine
 
+# Now provided in EPSG:3411.
+# Reprojected to EPSG:3413 GeoTIFFs in [[file:~/data/Morlighem_2017/README.org]]
 for var in mask surface thickness bed errbed; do
   echo $var
-  r.external source=netCDF:${DATADIR}/Morlighem_2017/BedMachineGreenland-2017-09-20.nc:${var} output=${var}
+  r.external source=${DATADIR}/Morlighem_2017/BMv4_3413/${var}.tif output=${var}
 done
 
 r.colors -a map=errbed color=haxby
@@ -55,7 +57,7 @@ g.region -dp
 r.colors map=mask color=haxby
 
 r.mapcalc "mask_ice = if(mask == 2, 1, null())"
-# BedMachine v3:1 ends here
+# BedMachine v4:1 ends here
 
 # Bamber 2013
 
@@ -65,51 +67,6 @@ g.mapset -c Bamber_2013
 r.in.gdal input=${DATADIR}/Bamber_2013/IceThickness.tif output=thickness
 r.null thickness null=0
 # Bamber 2013:1 ends here
-
-# Millan 2018
-
-# [[file:ice_discharge.org::*Millan 2018][Millan 2018:1]]
-MSG_OK "Millan 2018"
-g.mapset -c Millan_2018
-
-x=2760
-y=4044
-res=150
-
-# ###
-# ### OLD
-# ###
-# FILE=Bathy_SEG_OIB_Millan_et_al_2018.nc
-# # from the netcdf metadata, but x/y are swapped:
-# n="-2616623"
-# w="-109213.637"
-# e=$(echo "$w + $x*$res" | bc -l)
-# s=$(echo "$n - $y*$res" | bc -l)
-# g.region e=$e w=$w s=$s n=$n res=$res -pl
-# r.in.gdal -o input=netCDF:${ROOT}/${FILE}:BED output=BED_OLD
-# r.region -c map=BED_OLD
-
-###
-### NEW
-###
-FILE=Bathy_SEG_OIB_Millan_et_al_2018_08082018.nc
-n="-2616698.800"  # ymax
-w="-109288.637" # xmin
-e=$(echo "$w + $x*$res" | bc -l)
-s=$(echo "$n - $y*$res" | bc -l)
-g.region e=$e w=$w s=$s n=$n res=$res -pl
-r.in.gdal -o input=netCDF:${DATADIR}/Millan_2018/${FILE}:BED output=BED_NEW
-r.region -c map=BED_NEW
-
-r.in.gdal -o input=netCDF:${DATADIR}/Millan_2018/${FILE}:THICKNESSGimp output=THICKNESS
-r.region -c map=THICKNESS
-
-g.region -d
-r.mapcalc "bed_0 = BED_NEW"
-r.null map=bed_0 null=0
-r.mapcalc "thickness_0 = THICKNESS"
-r.null map=thickness_0 null=0
-# Millan 2018:1 ends here
 
 # GIMP 0715
 

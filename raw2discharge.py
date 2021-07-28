@@ -107,12 +107,8 @@ th = pd.read_csv("./tmp/dat_100_5000.csv", usecols=["thickness@BedMachine",
                                            "surface@BedMachine",
                                            "bed@BedMachine",
                                            "errbed@BedMachine",
-                                           "bed_0@Millan_2018",
-                                           "thickness_0@Millan_2018",
                                            "gates_gateID@gates_100_5000"])
 th.rename(inplace=True, columns={'thickness@BedMachine':'thick',
-                                 'bed_0@Millan_2018':'bed@Millan_2018',
-                                 'thickness_0@Millan_2018':'thickness@Millan_2018',
                                  'errbed@BedMachine': 'err',
                                  'gates_gateID@gates_100_5000':'gates'})
 th_GIMP = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('@GIMP.0715' in c)))
@@ -138,20 +134,6 @@ dhdt.sort_index(axis='columns', inplace=True)
 # what is the unadjusted discharge using BedMachine thickness?
 D = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=0) * 917 / 1E12
 D.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_area='inside').resample('A').mean()
-
-th['thick_max'] = np.maximum(th['thick'].values, th['thickness@Millan_2018'].values)
-
-D_tmp = pd.DataFrame(index=th.index, columns=['BedMachine','Millan','Max'])
-
-D_tmp['BedMachine'] = vel_baseline.apply(lambda c: c * th['thick'].values, axis=0) * 200 * 917 / 1E12
-D_tmp['Millan'] = vel_baseline.apply(lambda c: c * th['thickness@Millan_2018'].values, axis=0) * 200 * 917 / 1E12
-D_tmp['Max'] = vel_baseline.apply(lambda c: c * th['thick_max'].values, axis=0) * 200 * 917 / 1E12
-
-D_tmp.index.name = "Discharge [Gt]"
-D_tmp[D_tmp['Millan'] != 0].sum(axis=0)
-
-# Patch in Millan (2018) where that data set has thickness > 0.
-th.loc[th['thickness@Millan_2018'] > 0, 'thick'] = th.loc[th['thickness@Millan_2018'] > 0, 'thickness@Millan_2018']
 
 th['bad'] = th['thick'] <= 20
 
