@@ -792,6 +792,9 @@ This reduction is unlikely to be physically meaningful. Our 173 sectors, 267 gat
 We do not have a solution for the issues brought up here, except to discuss them explicitly and openly so that those, and our own, error treatments are clearly presented and understood to likely contain errors themselves. 
 
 *** Invalid thickness
+:PROPERTIES:
+:header-args:jupyter-python+: :session thick_adj
+:END:
 
 #+header: :eval no-export
 #+NAME: tab:thick_adjust
@@ -826,23 +829,23 @@ df.round(0).astype(np.int)
 | 75%     |         970 |        265 |
 | Maximum |        8129 |       1505 |
 
-# src_jupyter-python{vel.shape[0]} {{{results(=5829=)}}}
-# src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5205=)}}}
-# src_jupyter-python{th['bad'].sum()} {{{results(=624=)}}}
-# src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(np.int)} {{{results(=11=)}}}
+src_jupyter-python{vel.shape[0]} {{{results(=5863=)}}}
+src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5301=)}}}
+src_jupyter-python{th['bad'].sum()} {{{results(=562=)}}}
+src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(np.int)} {{{results(=10=)}}}
 
-We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of 5829 pixels, 5205 have valid thickness, and 624 (11 %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
+We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of 5863 pixels, 5301 have valid thickness, and 562 (11 %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
 
-# src_jupyter-python{th['gates'].unique().size} {{{results(=267=)}}}
-# src_jupyter-python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=179=)}}}
-# src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=67=)}}}
-# src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=88=)}}}
-# src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=33=)}}}
-# src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=64=)}}}
-# src_jupyter-python{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=62=)}}}
-# src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=23=)}}}
+src_jupyter-python{th['gates'].unique().size} {{{results(=267=)}}}
+src_jupyter-python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=181=)}}}
+src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=68=)}}}
+src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=86=)}}}
+src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=32=)}}}
+src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=61=)}}}
+src_jupyter-python{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=57=)}}}
+src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=21=)}}}
 
-When aggregating by gate, there are 267 gates. Of these, 179 (67 %) have no bad pixels and 88 (33 %) have some bad pixels, 64 have > 50 % bad pixels, and 62 (23 %) are all bad pixels.
+When aggregating by gate, there are 267 gates. Of these, 181 (68 %) have no bad pixels and 86 (32 %) have some bad pixels, 61 have > 50 % bad pixels, and 57 (21 %) are all bad pixels.
 
 We adjust these thickness using a poor fit (correlation coefficient: 0.3) of the log$_{10}$ of the ice speed to thickness where the relationship is known (thickness > 20 m). We set errors equal to one half the thickness (i.e. \(\sigma_H = \pm 0.5 \, H\)). We also test the sensitivity of this treatment to simpler treatments, and have the following five categories:
 
@@ -8853,10 +8856,12 @@ dependencies:
   - zlib=1.2.11=h516909a_1006
   - pip:
     - chardet==3.0.4
+    - grass-session==0.5
     - idna==2.10
     - pydataverse==0.2.1
     - pyqt5-sip==4.19.18
     - pyqtwebengine==5.12.1
+    - pyshp==2.1.3
     - requests==2.24.0
     - urllib3==1.25.10
 prefix: /home/kdm/local/miniconda3/envs/ice_discharge
