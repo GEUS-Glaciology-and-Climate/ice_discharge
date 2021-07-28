@@ -713,11 +713,6 @@ plt.savefig('./figs/h_v_histogram.png', transparent=True, dpi=300, bbox_inches='
 #+END_SRC
 
 #+RESULTS:
-: <ipython-input-2-8af3dc6fead1>:225: SettingWithCopyWarning: 
-: A value is trying to be set on a copy of a slice from a DataFrame
-: 
-: See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-:   thick[thick < 1] = 1
 
 #+NAME: fig:h_v_histogram
 #+ATTR_LATEX: :height 0.5\textwidth
@@ -3473,31 +3468,6 @@ print(tmp[th['bad'] > 0]['vel'].describe())
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-Gates:  267
-Gates w/ any bad pixels:  86
-Gates w/ >50% bad pixels:  61
-Gates w/ all bad pixels:  57
-Gates w/ all bad pixels:  57
-count    5301.000000
-mean      830.547449
-std      1030.493156
-min       100.138304
-25%       234.194572
-50%       501.838924
-75%       969.981535
-max      8129.399721
-Name: vel, dtype: float64
-count     562.000000
-mean      254.939124
-std       226.060405
-min       100.097449
-25%       130.016018
-50%       177.747523
-75%       264.543936
-max      1504.852814
-Name: vel, dtype: float64
-#+end_example
 
 **** Temporal changes in thickness
 + For each pixel, make daily time series of thickness changes from citet:khan_2016_geodetic
