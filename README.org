@@ -26,13 +26,13 @@ This is the source for "Greenland Ice Sheet solid ice discharge from 1986 throug
 * Related Work  
 
 + Companion paper: "Greenland ice sheet mass balance from 1840 through next week"
-  + Publication: [[https://doi.org/10.5194/essd-2021-131][doi:10.5194/essd-2021-131]]
-  + Source: https://github.com/GEUS-PROMICE/mass_balance/
-  + Data: https://dataverse01.geus.dk/dataverse/mass_balance
+  + Publication: [[https://doi.org/10.5194/essd-13-5001-2021][doi:10.5194/essd-13-5001-2021]]
+  + Source: https://github.com/GEUS-Glaciology-and-Climate/mass_balance
+  + Data: https://doi.org/10.22008/FK2/OHI23Z
 
 + Companion paper: "Greenland liquid water runoff from 1958 through 2019"
   + Paper: [[https://doi.org/10.5194/essd-12-2811-2020][doi:10.5194/essd-12-2811-2020]]
-  + Source: https://github.com/GEUS-PROMICE/freshwater/
+  + Source: https://github.com/GEUS-PROMICE/freshwater
   + Data: [[https://doi.org/10.22008/promice/freshwater][doi:10.22008/promice/freshwater]]
 
 * Citation
