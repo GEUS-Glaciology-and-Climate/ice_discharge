@@ -384,9 +384,9 @@ D_gatesT.index.name = "Date"
 D_gates_errT.index.name = "Date"
 D_gates_fill_weightT.index.name = "Date"
 
-D_gatesT.to_csv('./out/gate_D.csv', float_format='%.3f')
-D_gates_errT.to_csv('./out/gate_err.csv', float_format='%.3f')
-D_gates_fill_weightT.to_csv('./out/gate_coverage.csv', float_format='%.3f')
+D_gatesT.to_csv('./out/gate_D.csv')
+D_gates_errT.to_csv('./out/gate_err.csv')
+D_gates_fill_weightT.to_csv('./out/gate_coverage.csv')
 
 # meta_sector = pd.DataFrame(index=meta.groupby('sectors').first().index)
 # meta_sector['mean x'] = meta.groupby('sectors').mean()['x'].round().astype(np.int)
@@ -403,9 +403,9 @@ D_sectors_errT.index.name = "Date"
 D_sectors_fill_weightT.index.name = "Date"
 
 # meta_sector.to_csv('./out/sector_meta.csv')
-D_sectorsT.to_csv('./out/sector_D.csv', float_format='%.3f')
-D_sectors_errT.to_csv('./out/sector_err.csv', float_format='%.3f')
-D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv', float_format='%.3f')
+D_sectorsT.to_csv('./out/sector_D.csv')
+D_sectors_errT.to_csv('./out/sector_err.csv')
+D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv')
 
 # meta_sector.head(10)
 
@@ -420,9 +420,9 @@ D_regions_errT.index.name = "Date"
 D_regions_fill_weightT.index.name = "Date"
 
 # meta_region.to_csv('./out/region_meta.csv')
-D_regionsT.to_csv('./out/region_D.csv', float_format='%.3f')
-D_regions_errT.to_csv('./out/region_err.csv', float_format='%.3f')
-D_regions_fill_weightT.to_csv('./out/region_coverage.csv', float_format='%.3f')
+D_regionsT.to_csv('./out/region_D.csv')
+D_regions_errT.to_csv('./out/region_err.csv')
+D_regions_fill_weightT.to_csv('./out/region_coverage.csv')
 
 # meta_region.head(10)
 

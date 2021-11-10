@@ -21,19 +21,19 @@ ds["time"].attrs["standard_name"] = "time"
 ds["time"].attrs["axis"] = "T"
 ds["time"].attrs["cf_role"] = "timeseries_id"
 
-ds["discharge"] = ("time", df_D['Discharge [Gt yr-1]'].astype(np.float32))
+ds["discharge"] = ("time", df_D['Discharge [Gt yr-1]'])
 ds["discharge"].attrs["long_name"] = "Discharge"
 ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
 ds["discharge"].attrs["units"] = "Gt yr-1"
 ds["discharge"].attrs["coordinates"] = "time"
 
-ds["err"] = ("time", df_err['Discharge Error [Gt yr-1]'].astype(np.float32))
+ds["err"] = ("time", df_err['Discharge Error [Gt yr-1]'])
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
 ds["err"].attrs["units"] = "Gt yr-1"
 ds["err"].attrs["coordinates"] = "time"
 
-ds["coverage"] = ("time", df_coverage['Coverage [unit]'].astype(np.float32))
+ds["coverage"] = ("time", df_coverage['Coverage [unit]'])
 ds["coverage"].attrs["long_name"] = "Coverage"
 ds["coverage"].attrs["standard_name"] = "Coverage"
 # ds["coverage"].attrs["units"] = "-"
@@ -86,19 +86,19 @@ ds["region"].attrs["long_name"] = "Region"
 ds["region"].attrs["standard_name"] = "N/A"
 ds["region"].attrs["comment"] = "Regions from Mouginot (2019)"
 
-ds["discharge"] = (("region", "time"), df_D.T.values.astype(np.float32))
+ds["discharge"] = (("region", "time"), df_D.T.values)
 ds["discharge"].attrs["long_name"] = "Discharge"
 ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
 ds["discharge"].attrs["units"] = "Gt yr-1"
 ds["discharge"].attrs["coordinates"] = "time region"
 
-ds["err"] = (("region", "time"), df_err.T.values.astype(np.float32))
+ds["err"] = (("region", "time"), df_err.T.values)
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
 ds["err"].attrs["units"] = "Gt yr-1"
 ds["err"].attrs["coordinates"] = "time region"
 
-ds["coverage"] = (("region", "time"), df_coverage.T.values.astype(np.float32))
+ds["coverage"] = (("region", "time"), df_coverage.T.values)
 ds["coverage"].attrs["long_name"] = "Coverage"
 ds["coverage"].attrs["standard_name"] = "Coverage"
 # ds["coverage"].attrs["units"] = "-"
@@ -172,19 +172,19 @@ ds["sector"].attrs["long_name"] = "Sector"
 ds["sector"].attrs["standard_name"] = "N/A"
 ds["sector"].attrs["comment"] = "Sectors from Mouginot (2019)"
 
-ds["discharge"] = (("sector", "time"), df_D.T.values.astype(np.float32))
+ds["discharge"] = (("sector", "time"), df_D.T.values)
 ds["discharge"].attrs["long_name"] = "Discharge"
 ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
 ds["discharge"].attrs["units"] = "Gt yr-1"
 ds["discharge"].attrs["coordinates"] = "time sector"
 
-ds["err"] = (("sector", "time"), df_err.T.values.astype(np.float32))
+ds["err"] = (("sector", "time"), df_err.T.values)
 ds["err"].attrs["long_name"] = "Error"
 ds["err"].attrs["standard_name"] = "Uncertainty"
 ds["err"].attrs["units"] = "Gt yr-1"
 ds["err"].attrs["coordinates"] = "time sector"
 
-ds["coverage"] = (("sector", "time"), df_coverage.T.values.astype(np.float32))
+ds["coverage"] = (("sector", "time"), df_coverage.T.values)
 ds["coverage"].attrs["long_name"] = "Coverage"
 ds["coverage"].attrs["standard_name"] = "Coverage"
 # ds["coverage"].attrs["units"] = "-"

@@ -38,7 +38,7 @@ function ctrl_c() {
 # :END:
 
 
-# [[id:20210102T152009.186822][Just one velocity cutoff & buffer distance:1]]
+# [[file:ice_discharge.org::*Just one velocity cutoff & buffer distance][Just one velocity cutoff & buffer distance:1]]
 g.mapsets -l
 
 r.mask -r
@@ -108,7 +108,7 @@ done
 
 # #+NAME: sentinel1_effective_velocity
 
-# [[id:20210102T152009.186822][sentinel1_effective_velocity]]
+# [[file:ice_discharge.org::sentinel1_effective_velocity][sentinel1_effective_velocity]]
 g.mapset Sentinel1
 g.region -d
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
@@ -124,7 +124,7 @@ for VX in $(g.list type=raster pattern=vx_????_??_??); do
 done
 # sentinel1_effective_velocity ends here
 
-# [[id:20210102T152009.186822][Just one velocity cutoff & buffer distance:3]]
+# [[file:ice_discharge.org::*Just one velocity cutoff & buffer distance][Just one velocity cutoff & buffer distance:3]]
 # fix return code of this script so make continues
 MSG_OK "vel_eff DONE"
 # Just one velocity cutoff & buffer distance:3 ends here
