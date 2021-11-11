@@ -2928,11 +2928,23 @@ meta.rename(inplace=True, columns={'regions@Mouginot_2019':'regions',
                                    'gates_gateID@gates_100_5000':'gates'})
 regions = {1:'NO', 2:'NE', 3:'CE', 4:'SE', 5:'SW', 6:'CW', 7:'NW'}
 meta['regions'] = meta['regions'].map(regions.get) # Convert sector numbers to meaningful names
+# UNDO with foo.replace({'NO':1,'NW':2,'NE':3,'CW':4,'CE':5,'SW':6,'SE':7}) 
 meta['ones'] = 1
 
 R = pd.read_csv('./out/gate_meta.csv')
 meta['name'] = ''
 for g in meta['gates'].unique(): meta.loc[meta['gates'] == g, 'name'] = R[R['gate'] == g]['Mouginot_2019'].values
+
+# from IPython import embed; embed()
+ 
+### https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/issues/28
+### Gates span sectors and regions. Assign to their primary sector or region
+### meta.groupby('gates').mean()['sectors'].values  
+### meta[meta['gates'] == 239].sectors
+### Don't seem to span regions (run same code but do it above before "map(regions.get)"
+for g in meta['gates'].unique():
+    meta.loc[meta['gates'] == g, 'sectors'] = meta[meta['gates'] == g]['sectors'].mode()
+    # meta.loc[meta['gates'] == g, 'regions'] = meta[meta['gates'] == g]['regions'].mode()
 
 ###
 ### Load BASELINE velocity
