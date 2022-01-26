@@ -54,15 +54,11 @@ done
 MAPSET=gates_100_5000
 g.mapset Sentinel1
 g.region -d
-r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
-VX=$(g.list type=raster pattern=vx_????_??_?? | head -n1) # DEBUG
-for VX in $(g.list type=raster pattern=vx_????_??_??); do
-  VY=${VX/vx/vy}
-  EX=${VX/vx/ex}
-  EY=${VX/vx/ey}
-  DATE=$(echo $VX | cut -d"_" -f2-)
-  echo $DATE
-  r.mapcalc "vel_eff_${DATE} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX}))) + if(gates_y@${MAPSET}, if(isnull(${VY}), 0, abs(${VY}))))"
-  r.mapcalc "err_eff_${DATE} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(${EX}), 0, abs(${EX}))) + if(gates_y@${MAPSET}, if(isnull(${EY}), 0, abs(${EY}))))"
-done
+
+dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)
+
+# TODO - add gates_y@MAPSET == 1 and then ), 0) as above
+parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1}))) + if(gates_y@${MAPSET}, if(isnull(vy_{1}), 0, abs(vy_{1}))))\"" ::: ${dates}
+
+parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1}))) + if(gates_y@${MAPSET}, if(isnull(ey_{1}), 0, abs(ey_{1}))))\"" ::: ${dates}
 # Local:2 ends here
