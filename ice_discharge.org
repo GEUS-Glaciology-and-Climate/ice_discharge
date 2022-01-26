@@ -5814,9 +5814,6 @@ FROM ubuntu:20.04
 LABEL authors="Ken Mankoff"
 LABEL maintainer="kdm@geus.dk"
 
-ARG UID=1000
-ARG GID=1000
- 
 # system environment
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -5838,8 +5835,10 @@ ENV SHELL /bin/bash
 ENV DATADIR /data
 
 # create a user
-RUN useradd -m -U user --uid=${UID}
+RUN useradd -m -U user
 
+RUN chmod a+rwx /home/user
+ENV HOME /home/user
 RUN mkdir -p /data /work
 WORKDIR /work
 
@@ -5853,7 +5852,7 @@ CMD ["/usr/bin/grass", "--version"]
 #+BEGIN_SRC bash
 # docker build -f Dockerfile_grass -t ice_discharge_grass .
 cd docker/grass
-docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t ice_discharge_grass .
+docker build -t ice_discharge_grass .
 docker run -it ice_discharge_grass # run it
 #+END_SRC
 
@@ -5870,10 +5869,6 @@ container_args ?= run -it --cpus 7 --user $(shell id -u):$(shell id -g) --mount 
 docker tag ice_discharge_grass mankoff/ice_discharge:grass
 docker push mankoff/ice_discharge:grass
 #+END_SRC
-
-
-
-
 
 
 * Supplementary Material                                :noexport:
