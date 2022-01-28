@@ -1,9 +1,0 @@
-border n
-
-raster vel3
-
-vareas gates
-  color black
-  end
-
-end

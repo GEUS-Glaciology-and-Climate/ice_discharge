@@ -1,32 +1,74 @@
 container_cmd ?= docker
 container_args ?= run -it --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/work --env PARALLEL="--delay 0.1 -j -1"
 
-all: setup G run dist
+org-babel = emacsclient --eval "(progn                  \
+        (find-file \"$(1)\")                            \
+        (org-babel-goto-named-src-block \"$(2)\")       \
+        (org-babel-execute-src-block)                   \
+        (save-buffer))"
+# Usage: $(call org-babel,<file.org>,<named_babel_block>)
 
-setup: ## Set up environment
+SHELL = bash
+.DEFAULT_GOAL := help
+.PHONY: help
+TANGLED := $(shell grep -Eo ":tangle.*" ice_discharge.org | cut -d" " -f2 | grep -Ev 'identity|no')
+
+
+all: setup tangle discharge zip ## make all (setup and discharge)
+
+help: ## This help
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+discharge: G import gates velocity export errors output figures ## Make all ice discharge
+
+update: ## Update with latest Sentinel data
+	@echo "NOT IMPLEMENTED"
+
+docker: FORCE ## Pull down Docker environment
 	docker pull mankoff/ice_discharge:grass
 	${container_cmd} ${container_args} mankoff/ice_discharge:grass
+	docker pull mankoff/ice_discharge:conda
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda bash conda export
 
-G:
+tangle: ## Tangle code from source Org file using Emacs
+	emacs -Q --batch --eval "(progn (find-file \"ice_discharge.org\") (org-babel-tangle))"
+
+G: ## Create GRASS project location
 	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass -e -c EPSG:3413 ./G
 
-run: FORCE
+import: G ## Import all data to GRASS
 	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./import.sh
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./gate_IO_runner.sh
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./vel_eff.sh
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./export.sh
-	python ./errors.py
-	python ./raw2discharge.py
-	python ./csv2nc.py
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./gate_export.sh
-	python ./figures.py
 
-dist:
+gates: import ## Find gates
+	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./gate_IO_runner.sh
+
+velocity: ## Calculate effective velocity across gates
+	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./vel_eff.sh
+
+export: ## Export from GRASS
+	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./export.sh
+	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./gate_export.sh
+
+errors: ## Calculate errors
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./errors.py
+
+output: ## Generate CSV and NetCDF outputs
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./raw2discharge.py
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./csv2nc.py
+
+figures: ## Produce figures
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./figures.py
+
+zip: ## ZIP file of outputs
 	ln -s out ice_discharge
 	zip -r ice_discharge.zip ice_discharge
 	rm ice_discharge
 
 FORCE: # dummy target
 
-clean:
-	rm -fR G tmp out ice_discharge.zip
+clean: ## Clean up
+	rm -fR G tmp out ice_discharge ice_discharge.zip
+	rm -fR docker
+	rm -fR __pycache__
+	@echo cleaning: $(TANGLED)
+	rm -fr $(TANGLED)

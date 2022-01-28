@@ -84,7 +84,6 @@ We present a 1986 through last-month estimate of Greenland Ice Sheet ice dischar
   - [[#sentinel-1-ice-velocity-maps][Sentinel-1 ice velocity maps]]
   - [[#software][Software]]
 - [[#code][Code]]
-  - [[#makefile][Makefile]]
   - [[#misc-helper][Misc Helper]]
   - [[#import-data][Import Data]]
   - [[#find-gates][Find Gates]]
@@ -807,7 +806,7 @@ df.rename({"Min" : "Minimum", "Max" : "Maximum", "Std" : "SD"}, axis="rows", inp
 
 # print("#+LATEX_ATTR: :placement [!h]")
 # print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the \"count\" row\label{tab:thick_adjust}.")
-df.round(0).astype(np.int)
+df.round(0).astype(int)
 #+END_SRC
 
 #+NAME: tab:thick_adjust
@@ -828,18 +827,18 @@ df.round(0).astype(np.int)
 src_jupyter-python{vel.shape[0]} {{{results(=5863=)}}}
 src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5301=)}}}
 src_jupyter-python{th['bad'].sum()} {{{results(=562=)}}}
-src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(np.int)} {{{results(=10=)}}}
+src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(int)} {{{results(=10=)}}}
 
 We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of 5863 pixels, 5301 have valid thickness, and 562 (11 %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
 
 src_jupyter-python{th['gates'].unique().size} {{{results(=267=)}}}
 src_jupyter-python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=181=)}}}
-src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=68=)}}}
+src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=68=)}}}
 src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=86=)}}}
-src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=32=)}}}
+src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=32=)}}}
 src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=61=)}}}
 src_jupyter-python{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=57=)}}}
-src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(np.int)} {{{results(=21=)}}}
+src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=21=)}}}
 
 When aggregating by gate, there are 267 gates. Of these, 181 (68 %) have no bad pixels and 86 (32 %) have some bad pixels, 61 have > 50 % bad pixels, and 57 (21 %) are all bad pixels.
 
@@ -860,7 +859,7 @@ Table [[tab:thick_treatments]] shows the estimated baseline discharge to these f
 <<adjust_thickness_fit>>
 <<discharge_th>>
 
-D_tmp = D_th.sum(axis=0).astype(np.int).astype(np.str)
+D_tmp = D_th.sum(axis=0).astype(int).astype(str)
 
 df = pd.DataFrame(columns=['Discharge (Gt)'], index=['NoAdj',300,400,'Fit'])
 df.loc['NoAdj'] = D_tmp['NoMillan'] + ' \pm ' + D_tmp['NoAdj_err']
@@ -965,48 +964,6 @@ This work was performed using only open-source software, primarily =GRASS GIS= c
 :header-args:bash+: :tangle-mode (identity #o544)
 :header-args:bash+: :shebang #!/usr/bin/env bash
 :END:
-** Makefile
-:PROPERTIES:
-:CUSTOM_ID: sec:makefile
-:END:
-
-This code, and all code files in this project, are derived products tangled from the ice_discharge.org source file.
-
-#+BEGIN_SRC makefile :tangle Makefile :eval no
-container_cmd ?= docker
-container_args ?= run -it --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/work --env PARALLEL="--delay 0.1 -j -1"
-
-all: setup G run dist
-
-setup: ## Set up environment
-	docker pull mankoff/ice_discharge:grass
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass
-
-G:
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass -e -c EPSG:3413 ./G
-
-run: FORCE
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./import.sh
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./gate_IO_runner.sh
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./vel_eff.sh
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./export.sh
-	python ./errors.py
-	python ./raw2discharge.py
-	python ./csv2nc.py
-	${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./gate_export.sh
-	python ./figures.py
-
-dist:
-	ln -s out ice_discharge
-	zip -r ice_discharge.zip ice_discharge
-	rm ice_discharge
-
-FORCE: # dummy target
-
-clean:
-	rm -fR G tmp out ice_discharge.zip
-#+END_SRC
-
 ** Misc Helper
 *** Support pretty messages
 #+NAME: MSGS_pretty_print
@@ -1962,8 +1919,8 @@ rc('font', size=12)
 rc('text', usetex=False)
 
 df0 = pd.read_csv('./tmp/gate_test.dat', sep=" ", names=['param','D'], usecols=((0,2)), index_col=0)
-vel = np.sort(np.unique([_.split('_')[1] for _ in df0.index.values.astype(str)]).astype(np.int))
-buf = np.unique([_.split('_')[2] for _ in df0.index.values.astype(str)]).astype(np.int)
+vel = np.sort(np.unique([_.split('_')[1] for _ in df0.index.values.astype(str)]).astype(int))
+buf = np.unique([_.split('_')[2] for _ in df0.index.values.astype(str)]).astype(int)
 df = pd.DataFrame(columns=vel, index=buf)
 for v in vel:
     for b in buf:
@@ -1971,7 +1928,7 @@ for v in vel:
         df.loc[b,v] = np.float(df0.loc[idx].values[0])
 
 df = df.apply(pd.to_numeric)
-df_int = df.apply(pd.to_numeric).round().astype(np.int)
+df_int = df.apply(pd.to_numeric).round().astype(int)
 
 fig = plt.figure(1, figsize=(8,6)) # w,h
 fig.clf()
@@ -2916,7 +2873,7 @@ meta['ones'] = 1
 
 R = pd.read_csv('./out/gate_meta.csv')
 meta['name'] = ''
-for g in meta['gates'].unique(): meta.loc[meta['gates'] == g, 'name'] = R[R['gate'] == g]['Mouginot_2019'].values
+for g in meta['gates'].unique(): meta.loc[meta['gates'] == g, 'name'] = R[R['gate'] == g]['Mouginot_2019'].values[0]
 
 # from IPython import embed; embed()
  
@@ -3018,7 +2975,7 @@ th.rename(inplace=True, columns={'thickness@BedMachine':'thick',
                                  'errbed@BedMachine': 'err',
                                  'gates_gateID@gates_100_5000':'gates'})
 th_GIMP = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('@GIMP.0715' in c)))
-th_GIMP['day'] = [dt.datetime(2000,1,1) + dt.timedelta(days=np.int(_)) for _ in th_GIMP['day@GIMP.0715']]
+th_GIMP['day'] = [dt.datetime(2000,1,1) + dt.timedelta(days=int(_)) for _ in th_GIMP['day@GIMP.0715']]
 for _ in th_GIMP.columns: th[_] = th_GIMP[_]
 del(th_GIMP)
 
@@ -3028,7 +2985,7 @@ del(th_GIMP)
 ###
 dhdt = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('dh' in c)))
 mv = {}
-for c in dhdt.columns: mv[c] = np.int(c.split('@')[0].split('_')[1])
+for c in dhdt.columns: mv[c] = int(c.split('@')[0].split('_')[1])
 dhdt.rename(inplace=True, columns=mv)
 
 # assume trend continues from last measured value
@@ -3482,7 +3439,7 @@ dhdt_ts = dhdt.copy(deep=True)
 dhdt_ts[dhdt.columns.max()+1] = 0
 dhdt_ts = dhdt_ts.reindex(sorted(dhdt_ts.columns), axis='columns')
 dhdt_ts = dhdt_ts.cumsum(axis='columns')
-dhdt_ts.columns = dhdt_ts.columns.astype(np.str).astype('datetime64[ns]')
+dhdt_ts.columns = dhdt_ts.columns.astype(str).astype('datetime64[ns]')
 dhdt_ts = dhdt_ts.T.resample('1D').interpolate().T
 # from above: daily accumulated change at each discharge pixel for SEC time series
 
@@ -3567,9 +3524,9 @@ for g in D_gates.index:
     g_idx = (DD['gates'] == g)
     D_gates_fill_weight.loc[g] = ((D[g_idx]*fill[g_idx])/D[g_idx].sum()).sum()
 
-D_gates.columns = D_gates.columns.astype(np.str).astype('datetime64[ns]')
-D_gates_err.columns = D_gates_err.columns.astype(np.str).astype('datetime64[ns]')
-D_gates_fill_weight.columns = D_gates_fill_weight.columns.astype(np.str).astype('datetime64[ns]')
+D_gates.columns = D_gates.columns.astype(str).astype('datetime64[ns]')
+D_gates_err.columns = D_gates_err.columns.astype(str).astype('datetime64[ns]')
+D_gates_fill_weight.columns = D_gates_fill_weight.columns.astype(str).astype('datetime64[ns]')
 D_gates_fill_weight.clip(lower=0, upper=1, inplace=True)
 
 
@@ -3584,9 +3541,9 @@ for s in D_sectors.index:
     s_idx = (DD['name'] == s)
     D_sectors_fill_weight.loc[s] = ((D[s_idx]*fill[s_idx])/D[s_idx].sum()).sum()
 
-D_sectors.columns = D_sectors.columns.astype(np.str).astype('datetime64[ns]')
-D_sectors_err.columns = D_sectors_err.columns.astype(np.str).astype('datetime64[ns]')
-D_sectors_fill_weight.columns = D_sectors_fill_weight.columns.astype(np.str).astype('datetime64[ns]')
+D_sectors.columns = D_sectors.columns.astype(str).astype('datetime64[ns]')
+D_sectors_err.columns = D_sectors_err.columns.astype(str).astype('datetime64[ns]')
+D_sectors_fill_weight.columns = D_sectors_fill_weight.columns.astype(str).astype('datetime64[ns]')
 D_sectors_fill_weight.clip(lower=0, upper=1, inplace=True)
 
 
@@ -3609,9 +3566,9 @@ for r in D_regions.index:
     # r_fill_weight = ((r_filled_D*r_fill)/r_filled_D.sum()).sum()
     # D_regions_fill_weight.loc[r] = r_fill_weight
     
-D_regions.columns = D_regions.columns.astype(np.str).astype('datetime64[ns]')
-D_regions_err.columns = D_regions_err.columns.astype(np.str).astype('datetime64[ns]')
-D_regions_fill_weight.columns = D_regions_fill_weight.columns.astype(np.str).astype('datetime64[ns]')
+D_regions.columns = D_regions.columns.astype(str).astype('datetime64[ns]')
+D_regions_err.columns = D_regions_err.columns.astype(str).astype('datetime64[ns]')
+D_regions_fill_weight.columns = D_regions_fill_weight.columns.astype(str).astype('datetime64[ns]')
 D_regions_fill_weight.clip(lower=0, upper=1, inplace=True)
 
 
@@ -3787,9 +3744,9 @@ D_gates_fill_weightT.to_csv('./out/gate_coverage.csv')
 **** Sectors
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
 # meta_sector = pd.DataFrame(index=meta.groupby('sectors').first().index)
-# meta_sector['mean x'] = meta.groupby('sectors').mean()['x'].round().astype(np.int)
-# meta_sector['mean y'] = meta.groupby('sectors').mean()['y'].round().astype(np.int)
-# meta_sector['n gates'] = meta.groupby('sectors').count()['gates'].round().astype(np.int)
+# meta_sector['mean x'] = meta.groupby('sectors').mean()['x'].round().astype(int)
+# meta_sector['mean y'] = meta.groupby('sectors').mean()['y'].round().astype(int)
+# meta_sector['n gates'] = meta.groupby('sectors').count()['gates'].round().astype(int)
 # meta_sector['region'] = meta.groupby('sectors').first()['regions']
 
 D_sectorsT = D_sectors.T
@@ -3811,7 +3768,7 @@ D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv')
 **** Regions
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
 # meta_region = pd.DataFrame(index=meta.groupby('regions').first().index)
-# meta_region['n gates'] = meta.groupby('regions').count()['gates'].round().astype(np.int)
+# meta_region['n gates'] = meta.groupby('regions').count()['gates'].round().astype(int)
 
 D_regionsT = D_regions.T
 D_regions_errT = D_regions_err.T
@@ -4816,10 +4773,10 @@ for tick in ax_D.xaxis.get_majorticklabels():
 plt.savefig('./figs/discharge_ts_regions.png', transparent=False, bbox_inches='tight', dpi=300)
 # plt.savefig('./figs/discharge_ts_regions.pdf', transparent=True, bbox_inches='tight', dpi=300)
 
-Err_pct = (err_day_year.values/D_day_year.values*100).round().astype(np.int).astype(np.str)
+Err_pct = (err_day_year.values/D_day_year.values*100).round().astype(int).astype(str)
 Err_pct[Err_pct.astype(np.float)<0] = 'NaN'
-tbl = (D_day_year.round().fillna(value=0).astype(np.int).astype(np.str) + ' ('+Err_pct+')')
-tbl.index = tbl.index.year.astype(np.str)
+tbl = (D_day_year.round().fillna(value=0).astype(int).astype(str) + ' ('+Err_pct+')')
+tbl.index = tbl.index.year.astype(str)
 tbl.columns = [_ + ' (Err %)' for _ in tbl.columns]
 tbl
 #+END_SRC
@@ -5411,10 +5368,10 @@ ax_coverage.spines['left'].set_bounds(ax_coverage.get_ylim()[0],100)
 
 plt.savefig('./figs/discharge_ts_topfew.png', transparent=False, bbox_inches='tight', dpi=300)
 
-Err_pct = (err_day_year / D_day_year*100).round().fillna(value=0).astype(np.int).astype(np.str)
+Err_pct = (err_day_year / D_day_year*100).round().fillna(value=0).astype(int).astype(str)
 Err_pct = Err_pct[list(LABELS.keys())]
-tbl = D_day_year[list(LABELS.keys())].round().fillna(value=0).astype(np.int).astype(np.str) + ' (' + Err_pct+')'
-tbl.index = tbl.index.year.fillna(value=0).astype(np.str)
+tbl = D_day_year[list(LABELS.keys())].round().fillna(value=0).astype(int).astype(str) + ' (' + Err_pct+')'
+tbl.index = tbl.index.year.fillna(value=0).astype(str)
 tbl.columns = [_ + ' (%)' for _ in tbl.columns]
 tbl
 #+END_SRC
@@ -5774,16 +5731,13 @@ for f in files:
 
 
 ** Docker
+*** GRASS
 :PROPERTIES:
-:header-args:docker: :tangle no :eval no
+:header-args:docker: :eval no
 :END:
-*** Dockerfile: GRASS
+**** Dockerfile
 
-#+BEGIN_SRC docker :tangle docker/grass/.dockerignore :mkdirp docker/grass
-,*
-#+END_SRC
-
-#+BEGIN_SRC docker :tangle docker/grass/Dockerfile
+#+BEGIN_SRC docker :tangle docker/grass/Dockerfile :mkdirp docker/grass
 FROM ubuntu:20.04
 
 LABEL authors="Ken Mankoff"
@@ -5823,7 +5777,7 @@ USER user
 CMD ["/usr/bin/grass", "--version"]
 #+END_SRC
 
-*** Build
+**** Build
 #+BEGIN_SRC bash
 # docker build -f Dockerfile_grass -t ice_discharge_grass .
 cd docker/grass
@@ -5831,18 +5785,81 @@ docker build -t ice_discharge_grass .
 docker run -it ice_discharge_grass # run it
 #+END_SRC
 
-*** Test
+**** Test
 
 #+BEGIN_SRC bash
 container_args ?= run -it --cpus 7 --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/work --env PARALLEL="--delay 0.1" ice_discharge_grass
 #+END_SRC
 
-*** Deploy
+**** Deploy
 
 #+BEGIN_SRC bash
 # docker tag local-image:tagname new-repo:tagname
 docker tag ice_discharge_grass mankoff/ice_discharge:grass
 docker push mankoff/ice_discharge:grass
+#+END_SRC
+
+
+*** Python
+:PROPERTIES:
+:header-args:docker: :eval no
+:END:
+
+**** Dockerfile and supporting files
+
+#+BEGIN_SRC docker :tangle docker/conda/Dockerfile :mkdirp docker/conda
+FROM continuumio/miniconda3
+
+# COPY environment.yml .
+
+# RUN conda create -n ice_discharge python=3.8
+# RUN conda env create -f environment.yml
+
+# Make RUN commands use the new environment:
+# SHELL ["conda", "run", "-n", "ice_discharge", "/bin/bash", "-c"]
+
+# RUN conda clean && pip cache purge
+
+RUN conda install curl ipython jupyter matplotlib numpy pandas pip scipy statsmodels tabulate statsmodels xarray && \
+conda clean -a && \
+pip install --no-cache-dir grass-session pyshp semver cfchecker cfunits nc-time-axis uncertainties
+
+# create a user
+# RUN useradd -m -U user
+
+# RUN chmod a+rwx /home/user
+# ENV HOME /home/user
+# RUN mkdir -p /data /work
+# WORKDIR /work
+
+# switch the user
+# USER user
+
+RUN mkdir -p /data /work
+WORKDIR /work
+
+# The code to run when container is started:
+# ENTRYPOINT ["conda", "run", "-n", "ice_discharge", "python3"]
+
+# For interactive shell
+# RUN conda init bash
+# RUN echo "conda activate ice_discharge" >> /root/.bashrc
+#+END_SRC
+
+**** Build
+#+BEGIN_SRC bash
+cd docker/conda
+docker build -t ice_discharge_conda .
+docker tag ice_discharge_conda:latest mankoff/ice_discharge:conda
+docker run -it --mount type=bind,src=$(pwd),dst=/work mankoff/ice_discharge:conda python -c 'import pandas as pd; print(pd)'
+#+END_SRC
+
+**** Deploy
+
+#+BEGIN_SRC bash
+# docker tag local-image:tagname new-repo:tagname
+docker tag ice_discharge_conda mankoff/ice_discharge:conda
+docker push mankoff/ice_discharge:conda
 #+END_SRC
 
 
@@ -8777,9 +8794,10 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass-core; do dp
 : Org mode version 9.5 (release_9.5 @ /home/kdm/local/src/org-mode/lisp/)
 
 *** Python
+
 #+BEGIN_SRC bash :cmdline -i :results verbatim :exports both :eval no-export
 . /home/kdm/local/miniconda3/etc/profile.d/conda.sh
-conda env export --name ice_discharge | tee environment.yml
+conda env export --no-builds --name ice_discharge | tee environment.yml
 #+END_SRC
 
 #+RESULTS:
@@ -8789,139 +8807,138 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - _libgcc_mutex=0.1=conda_forge
-  - _openmp_mutex=4.5=1_llvm
-  - attrs=19.3.0=py_0
-  - backcall=0.1.0=py_0
-  - bleach=3.1.4=pyh9f0ad1d_0
-  - bzip2=1.0.8=h516909a_2
-  - ca-certificates=2021.10.8=ha878542_0
-  - certifi=2021.10.8=py38h578d9bd_1
-  - cfchecker=4.0.0=py_0
-  - cftime=1.5.1.1=py38hce1f21e_0
-  - cfunits=3.2.7=pyh9f0ad1d_0
-  - curl=7.69.1=h33f0ec9_0
-  - cycler=0.10.0=py_2
-  - dbus=1.13.6=he372182_0
-  - decorator=4.4.2=py_0
-  - defusedxml=0.6.0=py_0
-  - entrypoints=0.3=py38h32f6830_1001
-  - expat=2.2.9=he1b5a44_2
-  - fontconfig=2.13.1=h86ecdb6_1001
-  - freetype=2.10.1=he06d7ca_0
-  - future=0.18.2=py38h32f6830_1
-  - gettext=0.19.8.1=hc5be6a0_1002
-  - glib=2.64.2=h6f030ca_0
-  - gst-plugins-base=1.14.5=h0935bb2_2
-  - gstreamer=1.14.5=h36ae1b5_2
-  - hdf4=4.2.13=hf30be14_1003
-  - hdf5=1.10.6=nompi_h3c11f04_100
-  - icu=64.2=he1b5a44_1
-  - importlib-metadata=1.6.0=py38h32f6830_0
-  - importlib_metadata=1.6.0=0
-  - ipykernel=5.2.1=py38h23f93f0_0
-  - ipython=7.13.0=py38h32f6830_2
-  - ipython_genutils=0.2.0=py_1
-  - ipywidgets=7.5.1=py_0
-  - jedi=0.17.0=py38h32f6830_0
-  - jinja2=2.11.2=pyh9f0ad1d_0
-  - jpeg=9c=h14c3975_1001
-  - jsonschema=3.2.0=py38h32f6830_1
-  - jupyter=1.0.0=py_2
-  - jupyter_client=6.1.3=py_0
-  - jupyter_console=6.1.0=py_1
-  - jupyter_core=4.6.3=py38h32f6830_1
-  - kiwisolver=1.2.0=py38hbf85e49_0
-  - krb5=1.17.1=h2fd8d38_0
-  - ld_impl_linux-64=2.34=h53a641e_0
-  - libblas=3.8.0=16_openblas
-  - libcblas=3.8.0=16_openblas
-  - libclang=9.0.1=default_hde54327_0
-  - libcurl=7.69.1=hf7181ac_0
-  - libedit=3.1.20191231=h46ee950_0
-  - libffi=3.2.1=he1b5a44_1007
-  - libgcc-ng=9.2.0=h24d8f2e_2
-  - libgfortran-ng=7.3.0=hdf63c60_5
-  - libiconv=1.15=h516909a_1006
-  - liblapack=3.8.0=16_openblas
-  - libllvm9=9.0.1=he513fc3_1
-  - libnetcdf=4.7.4=nompi_h84807e1_104
-  - libopenblas=0.3.9=h5ec1e0e_0
-  - libpng=1.6.37=hed695b0_1
-  - libsodium=1.0.17=h516909a_0
-  - libssh2=1.9.0=hab1572f_2
-  - libstdcxx-ng=9.2.0=hdf63c60_2
-  - libuuid=2.32.1=h14c3975_1000
-  - libxcb=1.13=h14c3975_1002
-  - libxkbcommon=0.10.0=he1b5a44_0
-  - libxml2=2.9.10=hee79883_0
-  - llvm-openmp=10.0.0=hc9558a2_0
-  - markupsafe=1.1.1=py38h1e0a361_1
-  - matplotlib=3.2.1=0
-  - matplotlib-base=3.2.1=py38h2af1d28_0
-  - mistune=0.8.4=py38h1e0a361_1001
-  - nbconvert=5.6.1=py38h32f6830_1
-  - nbformat=5.0.6=py_0
-  - nc-time-axis=1.4.0=pyhd8ed1ab_0
-  - ncurses=6.1=hf484d3e_1002
-  - netcdf4=1.5.3=nompi_py38hfd55d45_105
-  - notebook=6.0.3=py38_0
-  - nspr=4.25=he1b5a44_0
-  - nss=3.47=he751ad9_0
-  - numpy=1.18.1=py38h8854b6b_1
-  - openssl=1.1.1g=h516909a_0
-  - pandas=1.0.3=py38hcb8c335_1
-  - pandoc=2.9.2.1=0
-  - pandocfilters=1.4.2=py_1
-  - parso=0.7.0=pyh9f0ad1d_0
-  - patsy=0.5.1=py_0
-  - pcre=8.44=he1b5a44_0
-  - pexpect=4.8.0=py38h32f6830_1
-  - pickleshare=0.7.5=py38h32f6830_1001
-  - pip=20.1=pyh9f0ad1d_0
-  - prometheus_client=0.7.1=py_0
-  - prompt-toolkit=3.0.5=py_0
-  - prompt_toolkit=3.0.5=0
-  - pthread-stubs=0.4=h14c3975_1001
-  - ptyprocess=0.6.0=py_1001
-  - pygments=2.6.1=py_0
-  - pyparsing=2.4.7=pyh9f0ad1d_0
-  - pyqt=5.12.3=py38hcca6a23_1
-  - pyrsistent=0.16.0=py38h1e0a361_0
-  - python=3.8.2=he5300dc_7_cpython
-  - python-dateutil=2.8.1=py_0
-  - python_abi=3.8=1_cp38
-  - pytz=2020.1=pyh9f0ad1d_0
-  - pyzmq=19.0.0=py38ha71036d_1
-  - qt=5.12.5=hd8c4c69_1
-  - qtconsole=4.7.3=pyh9f0ad1d_0
-  - qtpy=1.9.0=py_0
-  - readline=8.0=hf8c457e_0
-  - scipy=1.4.1=py38h18bccfc_3
-  - send2trash=1.5.0=py_0
-  - setuptools=46.1.3=py38h32f6830_0
-  - six=1.14.0=py_1
-  - sqlite=3.30.1=hcee41ef_0
-  - statsmodels=0.11.1=py38h1e0a361_1
-  - tabulate=0.8.7=pyh9f0ad1d_0
-  - terminado=0.8.3=py38h32f6830_1
-  - testpath=0.4.4=py_0
-  - tk=8.6.10=hed695b0_0
-  - tornado=6.0.4=py38h1e0a361_1
-  - traitlets=4.3.3=py38h32f6830_1
-  - udunits2=2.2.27.6=h4e0c4b3_1001
-  - uncertainties=3.1.2=py38_0
-  - wcwidth=0.1.9=pyh9f0ad1d_0
-  - webencodings=0.5.1=py_1
-  - wheel=0.34.2=py_1
-  - widgetsnbextension=3.5.1=py38_0
-  - xarray=0.15.1=py_0
-  - xorg-libxau=1.0.9=h14c3975_0
-  - xorg-libxdmcp=1.1.3=h516909a_0
-  - xz=5.2.5=h516909a_0
-  - zeromq=4.3.2=he1b5a44_2
-  - zipp=3.1.0=py_0
-  - zlib=1.2.11=h516909a_1006
+  - _libgcc_mutex=0.1
+  - _openmp_mutex=4.5
+  - attrs=19.3.0
+  - backcall=0.1.0
+  - bleach=3.1.4
+  - bzip2=1.0.8
+  - ca-certificates=2021.10.8
+  - certifi=2021.10.8
+  - cfchecker=4.0.0
+  - cftime=1.5.1.1
+  - cfunits=3.2.7
+  - curl=7.69.1
+  - cycler=0.10.0
+  - dbus=1.13.6
+  - decorator=4.4.2
+  - defusedxml=0.6.0
+  - entrypoints=0.3
+  - expat=2.2.9
+  - fontconfig=2.13.1
+  - freetype=2.10.1
+  - future=0.18.2
+  - gettext=0.19.8.1
+  - glib=2.64.2
+  - gst-plugins-base=1.14.5
+  - gstreamer=1.14.5
+  - hdf4=4.2.13
+  - hdf5=1.10.6
+  - icu=64.2
+  - importlib-metadata=1.6.0
+  - importlib_metadata=1.6.0
+  - ipykernel=5.2.1
+  - ipython=7.13.0
+  - ipython_genutils=0.2.0
+  - ipywidgets=7.5.1
+  - jedi=0.17.0
+  - jinja2=2.11.2
+  - jpeg=9c
+  - jsonschema=3.2.0
+  - jupyter=1.0.0
+  - jupyter_client=6.1.3
+  - jupyter_console=6.1.0
+  - jupyter_core=4.6.3
+  - kiwisolver=1.2.0
+  - krb5=1.17.1
+  - libblas=3.8.0
+  - libcblas=3.8.0
+  - libclang=9.0.1
+  - libcurl=7.69.1
+  - libedit=3.1.20191231
+  - libffi=3.2.1
+  - libgcc-ng=9.2.0
+  - libgfortran-ng=7.3.0
+  - libiconv=1.15
+  - liblapack=3.8.0
+  - libllvm9=9.0.1
+  - libnetcdf=4.7.4
+  - libopenblas=0.3.9
+  - libpng=1.6.37
+  - libsodium=1.0.17
+  - libssh2=1.9.0
+  - libstdcxx-ng=9.2.0
+  - libuuid=2.32.1
+  - libxcb=1.13
+  - libxkbcommon=0.10.0
+  - libxml2=2.9.10
+  - llvm-openmp=10.0.0
+  - markupsafe=1.1.1
+  - matplotlib=3.2.1
+  - matplotlib-base=3.2.1
+  - mistune=0.8.4
+  - nbconvert=5.6.1
+  - nbformat=5.0.6
+  - nc-time-axis=1.4.0
+  - ncurses=6.1
+  - netcdf4=1.5.3
+  - notebook=6.0.3
+  - nspr=4.25
+  - nss=3.47
+  - numpy=1.18.1
+  - openssl=1.1.1g
+  - pandas=1.0.3
+  - pandoc=2.9.2.1
+  - pandocfilters=1.4.2
+  - parso=0.7.0
+  - patsy=0.5.1
+  - pcre=8.44
+  - pexpect=4.8.0
+  - pickleshare=0.7.5
+  - pip=20.1
+  - prometheus_client=0.7.1
+  - prompt-toolkit=3.0.5
+  - prompt_toolkit=3.0.5
+  - pthread-stubs=0.4
+  - ptyprocess=0.6.0
+  - pygments=2.6.1
+  - pyparsing=2.4.7
+  - pyqt=5.12.3
+  - pyrsistent=0.16.0
+  - python=3.8.2
+  - python-dateutil=2.8.1
+  - python_abi=3.8
+  - pytz=2020.1
+  - pyzmq=19.0.0
+  - qt=5.12.5
+  - qtconsole=4.7.3
+  - qtpy=1.9.0
+  - readline=8.0
+  - scipy=1.4.1
+  - send2trash=1.5.0
+  - setuptools=46.1.3
+  - six=1.14.0
+  - sqlite=3.30.1
+  - statsmodels=0.11.1
+  - tabulate=0.8.7
+  - terminado=0.8.3
+  - testpath=0.4.4
+  - tk=8.6.10
+  - tornado=6.0.4
+  - traitlets=4.3.3
+  - udunits2=2.2.27.6
+  - uncertainties=3.1.2
+  - wcwidth=0.1.9
+  - webencodings=0.5.1
+  - wheel=0.34.2
+  - widgetsnbextension=3.5.1
+  - xarray=0.15.1
+  - xorg-libxau=1.0.9
+  - xorg-libxdmcp=1.1.3
+  - xz=5.2.5
+  - zeromq=4.3.2
+  - zipp=3.1.0
+  - zlib=1.2.11
   - pip:
     - chardet==3.0.4
     - grass-session==0.5
