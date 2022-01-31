@@ -1,5 +1,5 @@
 container_cmd ?= docker
-container_args ?= run -it --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/work --env PARALLEL="--delay 0.1 -j -1"
+container_args ?= run -it --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1"
 
 org-babel = emacsclient --eval "(progn                  \
         (find-file \"$(1)\")                            \
@@ -14,7 +14,7 @@ SHELL = bash
 TANGLED := $(shell grep -Eo ":tangle.*" ice_discharge.org | cut -d" " -f2 | grep -Ev 'identity|no')
 
 
-all: setup tangle discharge zip ## make all (setup and discharge)
+all: docker tangle discharge zip ## make all (setup and discharge)
 
 help: ## This help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -22,13 +22,22 @@ help: ## This help
 discharge: G import gates velocity export errors output figures ## Make all ice discharge
 
 update: ## Update with latest Sentinel data
-	@echo "NOT IMPLEMENTED"
+	./update_wrapper.sh
+
+update_org_doc: ## Update the Org document
+	# use emacsclient --eval to run in existing Emacs.
+	# If running new emacs, don't use -Q because I need my ~/.emacs.d/init.el loaded
+	emacs --batch -l emacs.el --eval "(progn \
+	(find-file \"ice_discharge.org\") \
+	(org-babel-map-src-blocks nil (if (org-babel-where-is-src-block-result)  \
+					(org-babel-insert-result \"\" '(\"replace\")))) \
+	(save-buffer) (org-babel-execute-buffer) (save-buffer) (kill-emacs))"
 
 docker: FORCE ## Pull down Docker environment
 	docker pull mankoff/ice_discharge:grass
 	${container_cmd} ${container_args} mankoff/ice_discharge:grass
 	docker pull mankoff/ice_discharge:conda
-	${container_cmd} ${container_args} mankoff/ice_discharge:conda bash conda export
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda conda env export -n base
 
 tangle: ## Tangle code from source Org file using Emacs
 	emacs -Q --batch --eval "(progn (find-file \"ice_discharge.org\") (org-babel-tangle))"
@@ -66,8 +75,10 @@ zip: ## ZIP file of outputs
 
 FORCE: # dummy target
 
-clean: ## Clean up
+clean_grass: ## Clean grass
 	rm -fR G tmp out ice_discharge ice_discharge.zip
+
+clean: clean_grass ## Clean everything
 	rm -fR docker
 	rm -fR __pycache__
 	@echo cleaning: $(TANGLED)
