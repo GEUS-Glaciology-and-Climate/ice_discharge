@@ -14,7 +14,7 @@ SHELL = bash
 TANGLED := $(shell grep -Eo ":tangle.*" ice_discharge.org | cut -d" " -f2 | grep -Ev 'identity|no')
 
 
-all: docker tangle discharge zip ## make all (setup and discharge)
+all: docker tangle discharge zip org ## make all (setup and discharge)
 
 help: ## This help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -24,7 +24,7 @@ discharge: G import gates velocity export errors output figures ## Make all ice 
 update: ## Update with latest Sentinel data
 	./update_wrapper.sh
 
-update_org_doc: ## Update the Org document
+org: ## Update the Org document
 	# use emacsclient --eval to run in existing Emacs.
 	# If running new emacs, don't use -Q because I need my ~/.emacs.d/init.el loaded
 	emacs --batch -l emacs.el --eval "(progn \
