@@ -81,5 +81,5 @@ clean_grass: ## Clean grass
 clean: clean_grass ## Clean everything
 	rm -fR docker
 	rm -fR __pycache__
-	@echo cleaning: $(TANGLED)
-	rm -fr $(TANGLED)
+	@echo cleaning: $(TANGLED) environment.yml
+	rm -fr $(TANGLED) environment.yml
