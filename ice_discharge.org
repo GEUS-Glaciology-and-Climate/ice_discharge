@@ -1996,8 +1996,8 @@ for mapset in $(g.mapset -l | tr ' ' '\n' | grep -E gates_??_????); do
     EY=${VX/VX/EY}
     DATE=$(echo $VX | cut -d"_" -f2- | cut -d@ -f1)
     echo $DATE
-    r.mapcalc "vel_eff_${DATE} = if(gates_x == 1, if(${VX} == -2*10^9, 0, abs(${VX})), 0) + if(gates_y, if(${VY} == -2*10^9, 0, abs(${VY})), 0)"
-    r.mapcalc "err_eff_${DATE} = if(gates_x@gates_50_2500 == 1, if(${EX} == -2*10^9, 0, abs(${EX})), 0) + if(gates_y@gates_50_2500, if(${EY} == -2*10^9, 0, abs(${EY})), 0)"
+    r.mapcalc "vel_eff_${DATE} = if(gates_x == 1, if(${VX} == -2*10^9, 0, abs(${VX})), 0) + if(gates_y == 1, if(${VY} == -2*10^9, 0, abs(${VY})), 0)"
+    r.mapcalc "err_eff_${DATE} = if(gates_x == 1, if(${EX} == -2*10^9, 0, abs(${EX})), 0) + if(gates_y == 1, if(${EY} == -2*10^9, 0, abs(${EY})), 0)"
   done
 
   VX=$(g.list -m type=raster pattern=vx_????_??_?? mapset=Sentinel1 | head -n1) # DEBUG
@@ -2007,8 +2007,8 @@ for mapset in $(g.mapset -l | tr ' ' '\n' | grep -E gates_??_????); do
     EY=${VX/vx/ey}
     DATE=$(echo $VX | cut -d"_" -f2- | cut -d@ -f1)
     echo $DATE
-    r.mapcalc "vel_eff_${DATE} = 365 * (if(gates_x@gates_50_2500 == 1, if(isnull(${VX}), 0, abs(${VX}))) + if(gates_y@gates_50_2500, if(isnull(${VY}), 0, abs(${VY}))))"
-    r.mapcalc "err_eff_${DATE} = 365 * (if(gates_x@gates_50_2500 == 1, if(isnull(${EX}), 0, abs(${EX}))) + if(gates_y@gates_50_2500, if(isnull(${EY}), 0, abs(${EY}))))"
+    r.mapcalc "vel_eff_${DATE} = 365 * (if(gates_x@gates_50_2500 == 1, if(isnull(${VX}), 0, abs(${VX}))) + if(gates_y == 1, if(isnull(${VY}), 0, abs(${VY}))))"
+    r.mapcalc "err_eff_${DATE} = 365 * (if(gates_x@gates_50_2500 == 1, if(isnull(${EX}), 0, abs(${EX}))) + if(gates_y == 1, if(isnull(${EY}), 0, abs(${EY}))))"
   done
 done
 
@@ -2031,26 +2031,24 @@ g.mapset MEaSUREs.0478
 g.region -d
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
-parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(VX_{1} == -2*10^9, 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET}, if(VY_{1} == -2*10^9, 0, abs(VY_{1})), 0)\"" ::: ${dates}
-parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(EX_{1} == -2*10^9, 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET}, if(EY_{1} == -2*10^9, 0, abs(EY_{1})), 0)\"" ::: ${dates}
+parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(VX_{1} == -2*10^9, 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(VY_{1} == -2*10^9, 0, abs(VY_{1})), 0)\"" ::: ${dates}
+parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(EX_{1} == -2*10^9, 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(EY_{1} == -2*10^9, 0, abs(EY_{1})), 0)\"" ::: ${dates}
 
 
 g.mapset MEaSUREs.0646
 g.region -d
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
-# TODO - add gates_y@MAPSET == 1 and then ), 0) as above
-parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1}))) + if(gates_y@${MAPSET}, if(isnull(VY_{1}), 0, abs(VY_{1})))\"" ::: ${dates}
-parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1}))) + if(gates_y@${MAPSET}, if(isnull(EY_{1}), 0, abs(EY_{1})))\"" ::: ${dates}
+parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
+parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
 
 
 g.mapset MEaSUREs.0731
 g.region -d
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
-# TODO - add gates_y@MAPSET == 1 and then ), 0) as above
-parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1}))) + if(gates_y@${MAPSET}, if(isnull(VY_{1}), 0, abs(VY_{1})))\"" ::: ${dates}
-parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1}))) + if(gates_y@${MAPSET}, if(isnull(EY_{1}), 0, abs(EY_{1})))\"" ::: ${dates}
+parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
+parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
 
 
 g.mapset Mouginot_pre2000
@@ -2061,7 +2059,7 @@ for VX in $(g.list type=raster pattern=vx_????_??_??); do
   VY=${VX/vx/vy}
   DATE=$(echo $VX | cut -d"_" -f2-)
   echo $DATE
-  r.mapcalc "vel_eff_${DATE} = (if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX}))) + if(gates_y@${MAPSET}, if(isnull(${VY}), 0, abs(${VY}))))"
+  r.mapcalc "vel_eff_${DATE} = if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(${VY}), 0, abs(${VY})), 0)"
 done
 
 #+END_SRC
@@ -2073,10 +2071,9 @@ g.region -d
 
 dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)
 
-# TODO - add gates_y@MAPSET == 1 and then ), 0) as above
-parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1}))) + if(gates_y@${MAPSET}, if(isnull(vy_{1}), 0, abs(vy_{1}))))\"" ::: ${dates}
+parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}
 
-parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1}))) + if(gates_y@${MAPSET}, if(isnull(ey_{1}), 0, abs(ey_{1}))))\"" ::: ${dates}
+parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}
 #+END_SRC
 
 #+BEGIN_SRC bash :results verbatim
