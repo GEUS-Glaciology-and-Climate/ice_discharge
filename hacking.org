@@ -2,93 +2,16 @@
 
 #+PROPERTY: header-args:bash :exports both :results verbatim :tangle no
 
-+ WARNING :: This file is intended for a clean development machine. Tangling this file may overwrite existing files, for example =~/.emacs.d/init.el=. Be careful if evaluating code or calling emacs functions on/in this file.
-+ NOTE :: The main development environment is Kubuntu 20.04. When the code was re-run on Ubuntu 20.04 the =md5sum= hash of the output files matched. When the code was re-run on Ubuntu 18.04, the results were different (GIS-wide discharge values were different by ~0.1 %).
-+ NOTE :: zip files contain metadata such as the file timestamp and =md5sum= hashes may not agree. The =md5sum= hash of the contents of zip files can be calculated with =zcat file.zip|md5sum=, or the contents compared with =sdiff <(zcat a.csv.zip) <(zcat b.csv.zip)| less=.
+* Notes
+
++ The main development environment is Kubuntu 21.10.
++ The main production environment is Kubuntu 20.04
++ Work occurs in Docker, but even so is not [[https://stackoverflow.com/questions/70906750/reproducible-issues-with-python-statsmodel-and-docker][bit-reproducible]].
+  + https://hub.docker.com/r/mankoff/ice_discharge/tags
+
 
 * Development Environment
-** Install (K)Ubuntu 20.04 VM
-
-+ Results are identical between Kubuntu 20.04 and Ubuntu 20.04.
-+ Results are similar but not identical between Kubuntu 20.04 and Ubuntu 18.04.
-+ Its OK to use the "minimal" install option
-
-*** Set up Shared Folders
-
-This is optional. All data can be inside the VM. However, if data is outside the VM, shared folders may be needed to access it.
-
-+ Install Virtual Box Guest Additions, and possibly any software needed to complete that installation (e.g. ~gcc~?)
-+ reboot
-+ ~sudo usermod -AG vboxsf username~ (only needed 1x)
-+ ~sudo mount -t vboxsf -o uid=1000,gid=1000 DISCHARGE /home/ice/DISCHARGE~ (after each reboot)
-
-** Install software
-
-Install OS-provided tools
-
-+ Emacs27 is needed with module support if you are going to run =emacs-jupyter= within emacs.
-
-#+BEGIN_SRC bash
-sudo apt install git grass parallel emacs netcdf-bin zip pax
-#+END_SRC
-
-Install Python environment - I use Conda Miniconda
-
-#+BEGIN_SRC bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh
-# select Y when asked if base environment should be activated
-#+END_SRC
-
-
-** Fetch project code
-
-#+BEGIN_SRC bash
-git clone https://github.com/mankoff/ice_discharge
-#+END_SRC
-
-** Extract code from Org file
-
-#+BEGIN_SRC bash
-cd ~/ice_discharge
-emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "ice_discharge.org")'
-#+END_SRC
-
-Or edit file in emacs and tangle with =C-c C-v C-t=
-
-** Set up Python environment
-
-Set up Conda environment using ~environment.yml~ tangled in the previous step.
-
-#+BEGIN_SRC bash
-conda env create -f environment.yml
-#+END_SRC
-
-Install the jupyter kernel so jupyter-python can access it.
-
-#+BEGIN_SRC bash
-conda activate ice_discharge
-python -m ipykernel install --user --name ice_discharge
-#+END_SRC
-
-
-*** Test
-
-=C-c C-c= in the following code block
-
-#+begin_src jupyter-python :kernel ice_discharge :session test
-import pandas as pd
-import numpy as np
-pd.DataFrame(np.random.random(9).reshape(3,3))
-#+end_src
-
-#+RESULTS:
-|   |        0 |         1 |        2 |
-|---+----------+-----------+----------|
-| 0 | 0.800724 |  0.101175 | 0.508561 |
-| 1 | 0.913836 | 0.0612402 | 0.837248 |
-| 2 | 0.700911 |  0.122884 | 0.787603 |
-
+** Install Docker 
 ** Fetch Data
 
 The data files could be in the VM or external to the VM and accessible by a "shared folder".
@@ -130,10 +53,10 @@ tree -d -L 2 ${DATADIR}
 ** Run code
 
 + Make sure ~DATADIR~ is defined
-+ Make sure ~conda ice_discharge~ environment is active
 
 #+BEGIN_SRC bash
 make
+make all
 #+END_SRC
 
 After this, results should exist.
@@ -144,28 +67,8 @@ When comparing results between machines, I have been unable to get bit-reproduci
 GIS-wide results usually change by ~0.1 %.
 Individual glacier results change by up to 1 %.
 
-** Eval Org file
-
-To check if results match with the latest version on GitHub, 
-+ Compare output files with released output files.
-
-If differences exist, you can diagnose them by re-running all code in the workbook (=ice_discharge.org=), and comparing how the file has changed using git. This is also the step to take after adding new velocity file(s) to see the effect of the new files. The workbook shows md5sum hashes and metadata from most of the input files to verify identical inputs, intermediate results, and final results.
-
-+ WARNING :: This requires a similar Emacs setup to the development environment. See [[Miscellaneous]] section below.
-
-In =emacs= while viewing =ice_discharge.org=
-+ Navigate to the "workflow-update" babel code block in the About This Document > Workflow subsection.
-+ Place cursor at end of last ")"
-+ C-x C-e to eval region
-
-Wait while the babel code blocks are evaluated. Once code has finished running, save the workbook (write changes to disk) and then view differences, either by running ~git diff --color-words~ at the bash prompt, or with =magit= in emacs.
-
-Note that when comparing results between machines, I have been unable to get bit-reproducibility.
-GIS-wide results usually change by ~0.1 %.
-Individual glacier results change by up to 1 %.
-
-** Miscellaneous
-*** jupyter+pandas output Org tables
+* Miscellaneous
+** jupyter+pandas output Org tables
 
 In order for the Babel code blocks to print Org tables (and not HTML tables), the following code needs to be placed into =~/.ipython/profile_default/startup/50-middle.py=:
 
@@ -188,112 +91,3 @@ except ImportError:
   print("no tabulate")
 #+END_SRC
 
-*** Emacs Org config
-:PROPERTIES:
-:header-args:emacs-lisp+: :tangle ~/.emacs.d/emacs.el
-:END:
-
-This is the part of my Emacs initialization file that configures Org mode for programming.
-
-+ Note that the current version of =emacs-jupyter= requires a recent Emacs build with "module" support.
-
-#+BEGIN_SRC emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp ~/.emacs.d
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-
-(package-initialize)
-;; Bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(setq package-enable-at-startup nil)
-
-(defvar use-package-verbose t)
-(require 'use-package)
-(setq use-package-always-ensure t)
-(setq use-package-always-defer nil)
-(use-package diminish)
-(require 'bind-key)   
-
-
-(setenv "PATH" (concat "/home/ice/miniconda3/bin:" (getenv "PATH")))
-(setq exec-path (split-string (getenv "PATH") ":"))
-
-(use-package org
-  :ensure org-plus-contrib
-
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(;(emacs-lisp. t)   
-     (shell . t)
-     (calc . t)
-     (python . t)
-     (jupyter . t)
-     ))
-
-  (setq org-confirm-babel-evaluate nil) ;; don't ask to eval code
-  (setq org-src-fontify-natively t)
-  (setq org-export-use-babel t)
-
-  ;; allow comment region in the code edit buffer (according to language)
-  (defun my-org-comment-dwim (&optional arg)
-    (interactive "P")
-    (or (org-babel-do-key-sequence-in-edit-buffer (kbd "M-;"))
-	(comment-dwim arg)))
-  (define-key org-mode-map
-    (kbd "M-;") 'my-org-comment-dwim))
-
-(use-package jupyter
-  :after org
-  :init 
-  ;;(add-hook 'org-mode-hook (lambda () (jupyter-org-interaction-mode)))
-  :config 
-  (setq jupyter-org-resource-directory "~/tmp/ob-jupyter-figs/")
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-  :commands (jupyter-repl-history-previous jupyter-repl-history-next)
-  :bind (:map jupyter-repl-mode-map
-	      ("C-n" . jupyter-repl-history-next)
-	      ("C-p" . jupyter-repl-history-previous))
-  :custom-face
-  (jupyter-repl-input-prompt ((t (:foreground "#000000"))))
-  (jupyter-repl-output-prompt ((t (:foreground "#000000"))))
-  (jupyter-repl-traceback ((t (:background "#FFFFFF"))))
-)
-
-(setq-default
- ;; Don't warn me when guessing indent
- python-indent-guess-indent-offset-verbose nil
- ;; Don't enable native readline completion
- ;; python-shell-completion-native-enable nil
- )
-
-(add-hook 'jupyter-repl-mode-hook (lambda () (bind-key "C-n" #'jupyter-repl-history-next jupyter-repl-mode-map)))
-(add-hook 'jupyter-repl-mode-hook (lambda () (bind-key "C-p" #'jupyter-repl-history-previous jupyter-repl-mode-map)))
-
-(use-package ob-async
-  :after org
-  :config 
-  (setq ob-async-no-async-languages-alist '("jupyter-python"))
-)
-
-(use-package org-make-toc
-  :after org
-  :commands (org-make-toc)
-  :config (setq-default toc-org-noexport-regexp "noexport_nomatch"
-			toc-org-comment-regexp "comment_nomatch"))
-
-(use-package magit
-  :bind ("C-x g" . magit-status)
-  :config (setq magit-diff-refine-hunk 'all)
-          (add-hook 'magit-mode-hook 'visual-line-mode)
-  :init
-    ;; Close popup when commiting - this stops the commit window
-    ;; hanging around
-    ;; From: http://git.io/rPBE0Q
-    (defadvice git-commit-commit (after delete-window activate) (delete-window))
-    (defadvice git-commit-abort (after delete-window activate) (delete-window))
-)
-#+END_SRC
