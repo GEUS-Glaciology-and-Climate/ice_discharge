@@ -5729,9 +5729,10 @@ hash = subprocess.check_output(["git", "describe", "--always"]).strip().decode('
 hash = subprocess.check_output(["git", "describe", "--always", "--dirty='*'"]).strip().decode('utf-8')
 assert("*" not in hash)
 
-base_url = 'TODO'
-api_token = 'SECRET'
+import secret
+api_token = secret.dataverse_api_token
 
+base_url = 'https://dataverse01.geus.dk/'
 api = NativeApi(base_url, api_token) # establish connection
 
 # get dataverse metadata
