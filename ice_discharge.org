@@ -5715,8 +5715,9 @@ MAPSET=gates_100_5000
 #+END_SRC
 *** Upload
 
-# #+header-args :tangle upload.py  # don't overwrite local copy without manual effort.
-#+BEGIN_SRC jupyter-python 
+# python -m pip install --upgrade git+https://github.com/aussda/pyDataverse.git@3b040ff23b665ec2650bebcf4bd5478de6881af0
+
+#+BEGIN_SRC jupyter-python :tangle upload.py
 from pyDataverse.api import NativeApi
 import os
 import json
@@ -5770,6 +5771,8 @@ for f in files:
     # https://github.com/IQSS/dataverse/issues/7223
     file_id = d.json()['data']['files'][0]['dataFile']['id']
     d2 = api.update_datafile_metadata(file_id, json_str=json_str, is_filepid=False)
+
+resp = api.publish_dataset(identifier, "major")
 #+END_SRC
 
 
