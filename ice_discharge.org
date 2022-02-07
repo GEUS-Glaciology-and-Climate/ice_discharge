@@ -2893,18 +2893,6 @@ for g in meta['gates'].unique():
 vel_baseline = pd.read_csv("./tmp/dat_100_5000.csv", usecols=['vel_baseline@MEaSUREs.0478'])
 vel_baseline.rename(inplace=True, columns={'vel_baseline@MEaSUREs.0478':'vel'})
 
-###
-### Load all velocity
-###
-vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
-vel.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])), inplace=True)
-# vel.drop(columns=dt.datetime(1999, 7, 1), inplace=True) # bad year?
-vel.replace(0, np.nan, inplace=True)
-# vel = vel.loc[:,vel.columns.year < 2018] # drop 2018
-vel = vel.loc[:,vel.columns.year >= 1985] # drop early years
-vel.sort_index(axis='columns', inplace=True)
-vel.drop(labels=vel.columns[vel.columns.duplicated(keep='first')], axis='columns', inplace=True)
-
 ####################
 # Filter Velocity: Rolling Windows
 ##################
@@ -2918,48 +2906,93 @@ def filter_bad_v(v):
     v[vel_outlier] = np.nan
     return v
 ####################
-vel = filter_bad_v(vel)
-vel = filter_bad_v(vel)
-vel = filter_bad_v(vel)
 
-fill = vel.copy() / vel # 1 where data, nan where not
 
-vel = vel.interpolate(method='time', axis='columns', limit_area='inside', limit_direction='both')
-vel.fillna(method='ffill', axis=1, inplace=True)
-vel.fillna(method='bfill', axis=1, inplace=True)
+###
+### Load all velocity
+###
+vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
+all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18]))).columns
 
-# vel[meta.name == TESTNAME].T.sort_index().head()
-# fill[meta.name == TESTNAME].T.sort_index().head()
+# from IPython import embed; embed()
 
-# vel.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_area='inside').resample('A').mean()/1E6
+# 'velocity source' as in Sentinel, measures.X, measures.Y, etc.
+vel_sources = np.unique([_.split('@')[1] for _ in vel.columns])
+for vs in vel_sources:
+    vs_vel = vel.drop(labels=vel.columns[~vel.columns.str.contains(vs)], axis='columns')
+    vs_vel = vs_vel.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])))\
+                   .replace(0, np.nan)\
+                   .sort_index(axis='columns')\
+                   .reindex(all_t, axis='columns')
 
+    vs_vel = vs_vel.loc[:,vs_vel.columns.year >= 1985] # drop early years
+
+    # filter 3x
+    vs_vel = filter_bad_v(vs_vel); vs_vel = filter_bad_v(vs_vel); vs_vel = filter_bad_v(vs_vel)
+
+    vs_fill = vs_vel.copy() / vs_vel # 1 where data, nan where not
+    vs_vel = vs_vel.interpolate(method='time', axis='columns', limit_area='inside', limit_direction='both')\
+        .replace(np.nan,0)
+
+    if vs == vel_sources[0]:
+        vel_sum = vs_vel.copy()
+        vel_navg = (vs_vel != 0).replace({True:1, False:0})
+        vel_fill = vs_fill.copy().replace(np.nan,0)
+    else:
+        vel_sum += vs_vel
+        vel_navg += (vs_vel.replace(np.nan,0) != 0).replace({True:1, False:0})
+        vel_fill += (vs_fill.replace(np.nan,0)) # != 0).replace({True:1, False:0})
+
+vel_final = vel_sum / vel_navg
+vel_final = vel_final.fillna(method='bfill', axis=1).fillna(method='ffill', axis=1)
+
+vel = vel_final
+# fill = (vel_fill >= 1).replace({True: 1, False: 0})
+fill = vel_fill; fill[fill > 1] = 1
+
+err = vel * 0.1
+
+# from IPython import embed; embed()
+
+# vel.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])), inplace=True)
+# vel.replace(0, np.nan, inplace=True)
+# vel = vel.loc[:,vel.columns.year >= 1985] # drop early years
+# vel.sort_index(axis='columns', inplace=True)
+# vel.drop(labels=vel.columns[vel.columns.duplicated(keep='first')], axis='columns', inplace=True)
+
+
+# fill = vel.copy() / vel # 1 where data, nan where not
+
+# vel = vel.interpolate(method='time', axis='columns', limit_area='inside', limit_direction='both')
+# vel.fillna(method='ffill', axis=1, inplace=True)
+# vel.fillna(method='bfill', axis=1, inplace=True)
 
 ###
 ### Load all velocity ERROR
 ###
-err = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('err_eff' in c)))
-err.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])), inplace=True)
-err.replace(0, np.nan, inplace=True)
-err = err.loc[:,err.columns.year > 1985] # drop early years
-err.sort_index(axis='columns', inplace=True)
-err.drop(labels=err.columns[err.columns.duplicated(keep='first')], axis='columns', inplace=True)
-# err.interpolate(method='time', limit_area='inside', axis=1 inplace=True)
-err.fillna(method='ffill', axis=1, inplace=True)
-err.fillna(method='backfill', axis=1, inplace=True)
+# err = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('err_eff' in c)))
+# err.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])), inplace=True)
+# err.replace(0, np.nan, inplace=True)
+# err = err.loc[:,err.columns.year > 1985] # drop early years
+# err.sort_index(axis='columns', inplace=True)
+# err.drop(labels=err.columns[err.columns.duplicated(keep='first')], axis='columns', inplace=True)
+# # err.interpolate(method='time', limit_area='inside', axis=1 inplace=True)
+# err.fillna(method='ffill', axis=1, inplace=True)
+# err.fillna(method='backfill', axis=1, inplace=True)
 
-for c in err.columns[err.columns.duplicated()]:
-    err.drop(columns=c, inplace=True)
+# for c in err.columns[err.columns.duplicated()]:
+#     err.drop(columns=c, inplace=True)
 
-# make sure we have error (even if 0) for each velocity, and no err w/o vel
-for c in vel.columns:
-    if c not in err.columns:
-        err[c] = np.nan
+# # make sure we have error (even if 0) for each velocity, and no err w/o vel
+# for c in vel.columns:
+#     if c not in err.columns:
+#         err[c] = np.nan
 
-for c in err.columns:
-    if c not in vel.columns:
-        err.drop(columns=c, inplace=True)
+# for c in err.columns:
+#     if c not in vel.columns:
+#         err.drop(columns=c, inplace=True)
     
-err.sort_index(axis='columns', inplace=True)
+# err.sort_index(axis='columns', inplace=True)
 
 # tmp = np.array([c if c not in err.columns else None for c in vel.columns]); print(tmp[tmp != None])
 
@@ -3452,7 +3485,7 @@ dhdt_ts[dhdt_ts.columns.min()] = dhdt_ts[dhdt_ts.columns.min()]
 dhdt_ts[vel.columns.min()] = dhdt_ts[dhdt_ts.columns.min()]
 dhdt_ts = dhdt_ts.T.resample('1D').interpolate().T
 
-th_ts = pd.DataFrame().reindex_like(dhdt_ts)
+th_ts = pd.DataFrame(dtype=np.float64).reindex_like(dhdt_ts)
 for idx in th.index:
     t0_pix = th.loc[idx]
     # adjusted thickness at t0_pix['day']
@@ -3523,7 +3556,7 @@ DD_err[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','r
 # D_gate_fill ::
 D_gates = DD.groupby('gates').sum().drop(['ones','sectors'], axis=1)
 D_gates_err = DD_err.groupby('gates').sum().drop(['ones','sectors'], axis=1)
-D_gates_fill_weight = pd.DataFrame().reindex_like(D_gates)
+D_gates_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_gates)
 for g in D_gates.index:
     g_idx = (DD['gates'] == g)
     D_gates_fill_weight.loc[g] = ((D[g_idx]*fill[g_idx])/D[g_idx].sum()).sum()
@@ -3540,7 +3573,7 @@ D_gates_fill_weight.clip(lower=0, upper=1, inplace=True)
 # D_sector_fill ::
 D_sectors = DD.groupby('name').sum().drop(['ones','sectors','gates'], axis=1)
 D_sectors_err = DD_err.groupby('name').sum().drop(['ones','sectors','gates'], axis=1)
-D_sectors_fill_weight = pd.DataFrame().reindex_like(D_sectors)
+D_sectors_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_sectors)
 for s in D_sectors.index:
     s_idx = (DD['name'] == s)
     D_sectors_fill_weight.loc[s] = ((D[s_idx]*fill[s_idx])/D[s_idx].sum()).sum()
@@ -3556,7 +3589,7 @@ D_sectors_fill_weight.clip(lower=0, upper=1, inplace=True)
 # D_region_fill ::
 D_regions = DD.groupby('regions').sum().drop(['ones','sectors','gates'], axis=1)
 D_regions_err = DD_err.groupby('regions').sum().drop(['ones','sectors','gates'], axis=1)
-D_regions_fill_weight = pd.DataFrame().reindex_like(D_regions)
+D_regions_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_regions)
 for r in D_regions.index:
     r_idx = DD['regions'] == r
     D_regions_fill_weight.loc[r] = ((D[r_idx]*fill[r_idx])/D[r_idx].sum()).sum()
@@ -3581,7 +3614,7 @@ D_regions_fill_weight.clip(lower=0, upper=1, inplace=True)
 # D_all_fill ::
 D_all = DD.drop(['regions','sectors','ones','name','gates'], axis=1).sum()
 D_all_err = DD_err.drop(['regions','sectors','ones','name','gates'], axis=1).sum()
-D_all_fill_weight = pd.Series().reindex_like(D_all)
+D_all_fill_weight = pd.Series(dtype=np.float64).reindex_like(D_all)
 for c in D.columns:
     D_all_fill_weight.loc[c] = (fill[c] * (D[c] / D[c].sum())).sum()
 #+END_SRC
