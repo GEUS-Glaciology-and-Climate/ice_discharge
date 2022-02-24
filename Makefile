@@ -22,7 +22,15 @@ help: ## This help
 discharge: G import gates velocity export errors output figures ## Make all ice discharge
 
 update: ## Update with latest Sentinel data
-	./update_wrapper.sh
+	./update.sh
+	python ./errors.py
+	python ./raw2discharge.py
+	python ./csv2nc.py
+	cp ./out/* ~/data/Mankoff_2020/ice/latest
+	make org
+	/usr/bin/git commit ice_discharge.org -m "Auto update: `/bin/date +%Y-%m-%d\ %T`"
+	python ./upload.py
+
 
 org: ## Update the Org document
 	# use emacsclient --eval to run in existing Emacs.
