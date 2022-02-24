@@ -5855,6 +5855,7 @@ for f in files:
     description = f['dataFile']['description']
     filename = f['dataFile']['filename']
     fileId = f['dataFile']['id']
+    print(filename)
 
     assert(os.path.isfile("./out/"+filename))
 
