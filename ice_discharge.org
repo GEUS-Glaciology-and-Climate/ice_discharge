@@ -2876,8 +2876,6 @@ R = pd.read_csv('./out/gate_meta.csv')
 meta['name'] = ''
 for g in meta['gates'].unique(): meta.loc[meta['gates'] == g, 'name'] = R[R['gate'] == g]['Mouginot_2019'].values[0]
 
-# from IPython import embed; embed()
- 
 ### https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/issues/28
 ### Gates span sectors and regions. Assign to their primary sector or region
 ### meta.groupby('gates').mean()['sectors'].values  
@@ -2916,13 +2914,13 @@ all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
                                                  int(c[13:15]),
                                                  int(c[16:18]))).columns.unique()
 
-# from IPython import embed; embed()
-
 # 'velocity source' as in Sentinel, measures.X, measures.Y, etc.
 vel_sources = np.unique([_.split('@')[1] for _ in vel.columns])
 for vs in vel_sources:
     vs_vel = vel.drop(labels=vel.columns[~vel.columns.str.contains(vs)], axis='columns')
-    vs_vel = vs_vel.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])))\
+    vs_vel = vs_vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
+                                                         int(c[13:15]),
+                                                         int(c[16:18])))\
                    .replace(0, np.nan)\
                    .sort_index(axis='columns')\
                    .reindex(all_t, axis='columns')
@@ -2933,8 +2931,9 @@ for vs in vel_sources:
     vs_vel = filter_bad_v(vs_vel); vs_vel = filter_bad_v(vs_vel); vs_vel = filter_bad_v(vs_vel)
 
     vs_fill = vs_vel.copy() / vs_vel # 1 where data, nan where not
-    vs_vel = vs_vel.interpolate(method='time', axis='columns', limit_area='inside', limit_direction='both')\
-        .replace(np.nan,0)
+    vs_vel = vs_vel.interpolate(method='time', axis='columns',
+                                limit_area='inside', limit_direction='both')\
+                   .replace(np.nan,0)
 
     if vs == vel_sources[0]:
         vel_sum = vs_vel.copy()
@@ -2948,69 +2947,46 @@ for vs in vel_sources:
 vel_final = vel_sum / vel_navg
 vel_final = vel_final.fillna(method='bfill', axis=1).fillna(method='ffill', axis=1)
 
-# drop duplicate times
-vel_final = vel_final.loc[:,~vel_final.columns.duplicated()]
-vel_fill = vel_fill.loc[:,~vel_fill.columns.duplicated()]
-
 vel = vel_final
-# fill = (vel_fill >= 1).replace({True: 1, False: 0})
 fill = vel_fill; fill[fill > 1] = 1
 
-err = vel * 0.1
-
-# from IPython import embed; embed()
-
-# vel.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])), inplace=True)
-# vel.replace(0, np.nan, inplace=True)
-# vel = vel.loc[:,vel.columns.year >= 1985] # drop early years
-# vel.sort_index(axis='columns', inplace=True)
-# vel.drop(labels=vel.columns[vel.columns.duplicated(keep='first')], axis='columns', inplace=True)
-
-
-# fill = vel.copy() / vel # 1 where data, nan where not
-
-# vel = vel.interpolate(method='time', axis='columns', limit_area='inside', limit_direction='both')
-# vel.fillna(method='ffill', axis=1, inplace=True)
-# vel.fillna(method='bfill', axis=1, inplace=True)
 
 ###
 ### Load all velocity ERROR
 ###
-# err = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('err_eff' in c)))
-# err.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])), inplace=True)
-# err.replace(0, np.nan, inplace=True)
-# err = err.loc[:,err.columns.year > 1985] # drop early years
-# err.sort_index(axis='columns', inplace=True)
-# err.drop(labels=err.columns[err.columns.duplicated(keep='first')], axis='columns', inplace=True)
-# # err.interpolate(method='time', limit_area='inside', axis=1 inplace=True)
-# err.fillna(method='ffill', axis=1, inplace=True)
-# err.fillna(method='backfill', axis=1, inplace=True)
+err = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('err_eff' in c)))
+err.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18])), inplace=True)
+err.replace(0, np.nan, inplace=True)
+err = err.loc[:,err.columns.year > 1985] # drop early years
+err.sort_index(axis='columns', inplace=True)
+err.drop(labels=err.columns[err.columns.duplicated(keep='first')], axis='columns', inplace=True)
+# err.interpolate(method='time', limit_area='inside', axis=1 inplace=True)
+err.fillna(method='ffill', axis=1, inplace=True)
+err.fillna(method='backfill', axis=1, inplace=True)
 
-# for c in err.columns[err.columns.duplicated()]:
-#     err.drop(columns=c, inplace=True)
+for c in err.columns[err.columns.duplicated()]:
+    err.drop(columns=c, inplace=True)
 
-# # make sure we have error (even if 0) for each velocity, and no err w/o vel
-# for c in vel.columns:
-#     if c not in err.columns:
-#         err[c] = np.nan
+# make sure we have error (even if 0) for each velocity, and no err w/o vel
+for c in vel.columns:
+    if c not in err.columns:
+        err[c] = np.nan
 
-# for c in err.columns:
-#     if c not in vel.columns:
-#         err.drop(columns=c, inplace=True)
+for c in err.columns:
+    if c not in vel.columns:
+        err.drop(columns=c, inplace=True)
     
-# err.sort_index(axis='columns', inplace=True)
-
-# tmp = np.array([c if c not in err.columns else None for c in vel.columns]); print(tmp[tmp != None])
+err.sort_index(axis='columns', inplace=True)
 
 
 ###
 ### Thickness
 ###
 th = pd.read_csv("./tmp/dat_100_5000.csv", usecols=["thickness@BedMachine",
-                                           "surface@BedMachine",
-                                           "bed@BedMachine",
-                                           "errbed@BedMachine",
-                                           "gates_gateID@gates_100_5000"])
+                                                    "surface@BedMachine",
+                                                    "bed@BedMachine",
+                                                    "errbed@BedMachine",
+                                                    "gates_gateID@gates_100_5000"])
 th.rename(inplace=True, columns={'thickness@BedMachine':'thick',
                                  'errbed@BedMachine': 'err',
                                  'gates_gateID@gates_100_5000':'gates'})
