@@ -2912,7 +2912,9 @@ def filter_bad_v(v):
 ### Load all velocity
 ###
 vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
-all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]), int(c[13:15]), int(c[16:18]))).columns
+all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
+                                                 int(c[13:15]),
+                                                 int(c[16:18]))).columns.unique()
 
 # from IPython import embed; embed()
 
@@ -2945,6 +2947,10 @@ for vs in vel_sources:
 
 vel_final = vel_sum / vel_navg
 vel_final = vel_final.fillna(method='bfill', axis=1).fillna(method='ffill', axis=1)
+
+# drop duplicate times
+vel_final = vel_final.loc[:,~vel_final.columns.duplicated()]
+vel_fill = vel_fill.loc[:,~vel_fill.columns.duplicated()]
 
 vel = vel_final
 # fill = (vel_fill >= 1).replace({True: 1, False: 0})
