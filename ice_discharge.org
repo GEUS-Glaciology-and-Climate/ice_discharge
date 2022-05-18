@@ -164,12 +164,15 @@ We have produced an open and reproducible estimate of Greenland ice sheet solid 
 
 * New in this version
 
-The data have been updated approximately every 12 days since the last version of the paper citep:mankoff_2020_solid was released. Every change is versioned with unique DOIs and posted on the new GEUS data portal at http://dataverse01.geus.dk/ or doi:10.22008/promice/data/ice_discharge. The git commit for this version of the paper is \input{|"git describe --always --dirty='*'"}.
+The data were updated approximately every 12 days between the last published version of the paper citep:mankoff_2020_solid and the failure of one of the Sentinel satellites. Updates occur approximately monthly at the moment. Every change is versioned with unique DOIs and posted on the new GEUS data portal at doi:10.22008/promice/data/ice_discharge. The git commit for this version of the paper is \input{|"git describe --always --dirty='*'"}.
 
 BedMachine has been updated from v3 to v4. Uncertainty has declined by ~10 % (that is, from ~10 % of total discharge to ~9 %, or from ~50 Gt yr^{-1} to ~45 Gt yr^{-1}). With the BedMachine v4 update, the southeast sector is no longer patched with citet:millan_2018 data.
 
 The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v3 with no significant changes. The early portion of the record has 1 less velocity map per month and ~1 Gt (~0.2 %) less discharge per year.
 
+Additional metadata has been added - each gate now includes the citet:zwally_2012_data sector containing the gate (similar to the already included citet:mouginot_2019_data basins and regions). We also include the citet:moon_2008 citep:NSIDC_0642 IDs nearest the gate. Because there are more gates in this product than IDs in the citet:moon_2008 product, some gates may be assigned to citet:moon_2008 IDs far away - even in another basin. We therefore include the distance from the gate to the nearest citet:moon_2008 IDs so that users can apply a spatial cutoff if desired.
+
+The reputability has been significantly improved. Users now only need =docker= and =make= installed - requirements for GRASS GIS, specific Python versions, and various GNU utilities are now encapsulated in Docker. 
 
 * Introduction
 
@@ -276,18 +279,19 @@ This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n'
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
 #+NAME: tab:data
-| Property                       | Name used in this paper  | Reference                                                      |
-|--------------------------------+--------------------------+----------------------------------------------------------------|
-| Basal topography               | BedMachine v4            | citet:morlighem_2017_bedmachine,NSIDC_BedMachine               |
-| Surface elevation              | GIMP 0715                | citet:howat_2014_greenland,NSIDC_0715                          |
-| Surface elevation Change       | Surface elevation change | citet:khan_2016_geodetic,GEUS_discharge_paper_elevation_change |
-| Baseline velocity              | MEaSUREs 0478            | citet:NSIDC_0478                                               |
-| Velocity                       | Sentinel                 | Appendix                                                       |
-| Velocity                       | MEaSUREs 0646            | citet:NSIDC_0646                                               |
-| Velocity                       | MEaSUREs 0731            | citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland |
-| Velocity                       | pre-2000                 | citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000        |
-| Sectors and regions            | Sectors and regions      | citet:mouginot_2019_glacier                                    |
-| Names                          |                          | citet:bjork_2015_brief,mouginot_2019_glacier                   |
+| Property                 | Name used in this paper  | Reference                                                      |
+|--------------------------+--------------------------+----------------------------------------------------------------|
+| Basal topography         | BedMachine v4            | citet:morlighem_2017_bedmachine,NSIDC_BedMachine               |
+| Surface elevation        | GIMP 0715                | citet:howat_2014_greenland,NSIDC_0715                          |
+| Surface elevation Change | Surface elevation change | citet:khan_2016_geodetic,GEUS_discharge_paper_elevation_change |
+| Baseline velocity        | MEaSUREs 0478            | citet:NSIDC_0478                                               |
+| Velocity                 | Sentinel                 | Appendix                                                       |
+| Velocity                 | MEaSUREs 0646            | citet:NSIDC_0646                                               |
+| Velocity                 | MEaSUREs 0731            | citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland |
+| Velocity                 | pre-2000                 | citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000        |
+| Sectors and regions      | Sectors and regions      | citet:mouginot_2019_glacier                                    |
+| Names                    |                          | citet:bjork_2015_brief,mouginot_2019_glacier                   |
+| Additional metadata      |                          | citet:Moon_2008,NSIDC_0642,Zwally_2012                         |
 
 * Methods
 ** Terminology 
@@ -1494,6 +1498,33 @@ db.select table=sectors | head
 #+END_SRC
 
 
+**** NSIDC 0642
+
++ https://nsidc.org/data/NSIDC-0642/versions/1
+
+#+BEGIN_SRC bash
+MSG_OK "NSIDC 0642"
+g.mapset -c NSIDC_0642
+ROOT=${DATADIR}/Moon_2008
+v.in.ogr input=${ROOT}/GlacierIDs_v01.2.shp output=GlacierIDs
+# v.db.select map=GlacierIDs | head
+#+END_SRC
+
+#+BEGIN_SRC bash :tangle no :results verbatim
+ROOT=${DATADIR}/Moon_2008
+md5sum ${ROOT}/GlacierIDs_v01.2.*
+#+END_SRC
+
+#+RESULTS:
+: ae3b3df9970b49b6523e608759bc957d  /home/kdm/data/Moon_2008/GlacierIDs_v01.2.cpg
+: 747fb606bc2ced46dbb020944931e371  /home/kdm/data/Moon_2008/GlacierIDs_v01.2.dbf
+: aaf791cc3eb7ea0d02168bfb4e99f172  /home/kdm/data/Moon_2008/GlacierIDs_v01.2.prj
+: 160ce28c84cbe1a15327c9df41fae8dd  /home/kdm/data/Moon_2008/GlacierIDs_v01.2.sbn
+: 07691ecf56c66e435fa412f9910eb1a6  /home/kdm/data/Moon_2008/GlacierIDs_v01.2.sbx
+: 501396d9e65b1baf1230d9fee5586b54  /home/kdm/data/Moon_2008/GlacierIDs_v01.2.shp
+: 87a4113fa1584c779bda04c9624d158c  /home/kdm/data/Moon_2008/GlacierIDs_v01.2.shx
+: d961cdcc967b7cd15103f077859fc558  /home/kdm/data/Moon_2008/GlacierIDs_v01.2.xml
+
 *** Elevation
 
 + h_0 (BedMachine v4) is assumed to be 2007
@@ -1832,6 +1863,16 @@ v.db.addcolumn map=gates_final_pts columns="Zwally_2012 INT"
 v.distance from=gates_final to=Zwally_2012@Zwally_2012 upload=to_attr column=Zwally_2012 to_column=cat_
 v.distance from=gates_final_pts to=Zwally_2012@Zwally_2012 upload=to_attr column=Zwally_2012 to_column=cat_
 
+v.db.addcolumn map=gates_final columns="Moon_2008 INT"
+v.db.addcolumn map=gates_final_pts columns="Moon_2008 INT"
+v.distance from=gates_final to=GlacierIDs@NSIDC_0642 upload=to_attr column=Moon_2008 to_column=GlacierID
+v.distance from=gates_final_pts to=GlacierIDs@NSIDC_0642 upload=to_attr column=Moon_2008 to_column=GlacierID
+
+v.db.addcolumn map=gates_final columns="Moon_2008_dist INT"
+v.db.addcolumn map=gates_final_pts columns="Moon_2008_dist INT"
+v.distance from=gates_final to=GlacierIDs@NSIDC_0642 upload=dist column=Moon_2008_dist
+v.distance from=gates_final_pts to=GlacierIDs@NSIDC_0642 upload=dist column=Moon_2008_dist
+
 v.db.addcolumn map=gates_final columns="n_pixels INT"
 v.db.addcolumn map=gates_final_pts columns="n_pixels INT"
 for G in $(db.select -c sql="select gate from gates_final"|sort -n|uniq); do
@@ -1849,7 +1890,7 @@ db.dropcolumn -f table=gates_final column=area
 **** Export as metadata CSV
 #+BEGIN_SRC bash :results verbatim
 mkdir -p out
-db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019,Zwally_2012 from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
+db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019,Zwally_2012,Moon_2008,Moon_2008_dist from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
 #+END_SRC
 
 *** Export Gates to KML                                            :noexport:
@@ -4185,6 +4226,12 @@ ds["name_Bjørk"].attrs["long_name"] = "Nearest name from Bjørk (2015)"
 
 ds["name_Mouginot"] = (("gate"), meta.Mouginot_2019)
 ds["name_Mouginot"].attrs["long_name"] = "Nearest name from Mouginot (2019)"
+
+ds["ID_Moon"] = (("gate"), meta.Moon_2008)
+ds["ID_Moon"].attrs["long_name"] = "Moon 2008 glacier ID (a.k.a NSIDC 0642)"
+
+ds["ID_Moon_dist"] = (("gate"), meta.Moon_2008_dist)
+ds["ID_Moon_dist"].attrs["long_name"] = "Moon 2008 glacier ID (a.k.a NSIDC 0642) distance"
 
 ds.attrs["featureType"] = "timeSeries"
 ds.attrs["title"] = "Greenland discharge"
