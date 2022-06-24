@@ -6019,7 +6019,8 @@ RUN conda install \
   nc-time-axis \
   pyshp \
   semver \
-  uncertainties
+  uncertainties \
+  git+https://github.com/aussda/pyDataverse.git@3b040ff23b665ec2650bebcf4bd5478de6881af0
 
 # create a user
 RUN useradd --create-home user && chmod a+rwx /home/user
