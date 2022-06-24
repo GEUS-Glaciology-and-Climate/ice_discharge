@@ -5829,9 +5829,12 @@ done
 MSG_OK "New Sentinel velocity files found..."
 cd ${workingdir}
 
-grass ./G/PERMANENT --exec ./update_worker.sh
+container_cmd=docker
+container_args="run -it --user $(id -u):$(id -g) --mount type=bind,src=${DATADIR},dst=/data --mount type=bind,src=$(pwd),dst=/home/user --env PARALLEL=\"--delay 0.1 -j -1\""
+
+${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./update_worker.sh
 cp ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last
-grass ./G/PERMANENT --exec ./export.sh
+${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./export.sh
 
 if cmp -s ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last; then 
   MSG_ERR "No change"
