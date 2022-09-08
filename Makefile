@@ -85,6 +85,15 @@ zip: ## ZIP file of outputs
 
 FORCE: # dummy target
 
+clean_org: ## Update the Org document
+        # use emacsclient --eval to run in existing Emacs.
+        # If running new emacs, don't use -Q because I need my ~/.emacs.d/init.el loaded
+	emacs --batch -l emacs.el --eval "(progn \
+	(find-file \"ice_discharge.org\") \
+	(org-babel-map-src-blocks nil (if (org-babel-where-is-src-block-result)  \
+	                                (org-babel-insert-result \"\" '(\"replace\")))) \
+	(save-buffer) (kill-emacs))"
+
 clean_grass: ## Clean grass
 	rm -fR G tmp out ice_discharge ice_discharge.zip
 
