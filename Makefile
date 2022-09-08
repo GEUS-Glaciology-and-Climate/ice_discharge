@@ -1,5 +1,5 @@
 container_cmd ?= docker
-container_args ?= run -it --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1"
+container_args ?= run --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1"
 
 org-babel = emacsclient --eval "(progn                  \
         (find-file \"$(1)\")                            \
@@ -14,22 +14,24 @@ SHELL = bash
 TANGLED := $(shell grep -Eo ":tangle.*" ice_discharge.org | cut -d" " -f2 | grep -Ev 'identity|no')
 
 
-all: docker tangle discharge zip org ## make all (setup and discharge)
+all: docker tangle discharge zip #org ## make all (setup and discharge)
 
 help: ## This help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 discharge: G import gates velocity export errors output figures ## Make all ice discharge
 
-update: ## Update with latest Sentinel data
+update: docker ## Update with latest Sentinel data
 	./update.sh
-	python ./errors.py
-	python ./raw2discharge.py
-	python ./csv2nc.py
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./errors.py
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./raw2discharge.py
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./csv2nc.py
 	cp ./out/* ~/data/Mankoff_2020/ice/latest
-	make org
-	/usr/bin/git commit ice_discharge.org -m "Auto update: `/bin/date +%Y-%m-%d\ %T`"
-	python ./upload.py
+	#make org
+	#/usr/bin/git pull
+	#/usr/bin/git commit ice_discharge.org -m "Auto update: `/bin/date +%Y-%m-%d\ %T`"
+	#/usr/bin/git push
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./upload.py
 
 
 org: ## Update the Org document
