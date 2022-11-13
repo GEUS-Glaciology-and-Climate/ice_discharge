@@ -23,6 +23,10 @@ This is the source for "Greenland Ice Sheet solid ice discharge from 1986 throug
   + This [[https://github.com/mankoff/ice_discharge/compare/10.5194/essd-12-1367-2020...main][diff]] shows changes between the latest version (V2) of the paper and the current (active) development version.
   + Major changes post-publication are tagged [[https://github.com/GEUS-PROMICE/ice_discharge/issues?q=label%3Amajor_change]["major_change"]].
 
+* https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/labels/WARNING
+
+Before using the data you should check for any open/active issue tagged https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/labels/WARNING
+
 * Related Work  
 
 + Companion paper: "Greenland ice sheet mass balance from 1840 through next week"
