@@ -1,0 +1,192 @@
+#+PROPERTY: header-args: :session :noweb yes
+
+
+
+* Code
+
+
+** Looking into the tmp/dat_100_500.csv
++ What columns are in the file?
++ Don't show all the "vel_eff_YYYY_MM_DD" and "err_eff_YYYY_MM_DD" columns.
+
+#+BEGIN_SRC bash :results verbatim :tangle no :eval no-export
+head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep -v "vel_eff_*" | grep -v "err_eff_*" | grep -v "dh_*" | sort | uniq | tr '\n' '\t'
+echo "also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc."
+#+END_SRC
+
+#+RESULTS:
+: bed@BedMachine	day@GIMP.0715	dem@GIMP.0715	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_100_5000	gates_x@gates_100_5000	gates_y@gates_100_5000	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness@Bamber_2013	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
+
+
+
+#+BEGIN_SRC jupyter-python
+import pandas as pd
+import matplotlib.pyplot as plt
+data = pd.read_csv('tmp/dat_100_5000.csv')
+#print(list(data.keys()))
+# subsetting to thickness and gate data
+data = data[['x', 'y','gates_gateID@gates_100_5000' , 'bed@BedMachine', 'day@GIMP.0715', 'dem@GIMP.0715','dh_1995@Khan_2016', 'dh_1996@Khan_2016', 'dh_1997@Khan_2016', 'dh_1998@Khan_2016', 'dh_1999@Khan_2016', 'dh_2000@Khan_2016', 'dh_2001@Khan_2016', 'dh_2002@Khan_2016', 'dh_2003@Khan_2016', 'dh_2004@Khan_2016', 'dh_2005@Khan_2016', 'dh_2006@Khan_2016', 'dh_2007@Khan_2016', 'dh_2008@Khan_2016', 'dh_2009@Khan_2016', 'dh_2010@Khan_2016', 'dh_2011@Khan_2016', 'dh_2012@Khan_2016', 'dh_2013@Khan_2016', 'dh_2014@Khan_2016', 'dh_2015@Khan_2016', 'dh_2016@Khan_2016', 'dh_2017@Khan_2016', 'dh_2018@Khan_2016', 'dh_2019@Khan_2016']]
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC jupyter-python
+print(data[['x', 'y','gates_gateID@gates_100_5000', 'day@GIMP.0715']])
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+            x        y  gates_gateID@gates_100_5000  day@GIMP.0715
+  0       100  -811700                            1           5631
+  1       300  -811900                            1           5631
+  2       500  -812100                            1           5631
+  3       700  -812300                            1           5631
+  4       700  -812500                            1           5631
+  ...     ...      ...                          ...            ...
+  5863  44300 -3244100                          357           4556
+  5864  44500 -3244100                          357           4556
+  5865  44700 -3244100                          357           4556
+  5866  44900 -3244100                          357           4556
+  5867  43500 -3244300                          357           4556
+
+  [5868 rows x 4 columns]
+#+end_example
+
+#+BEGIN_SRC jupyter-python
+# Then write out an example with just GIMP elevation at gates
+
+gates_gimp = data[]
+
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+data.plot(ax = ax)
+fig.savefig('gate_thk/dh_all_years.png')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+: [0;36m  File [0;32m"/tmp/ipykernel_26790/1849738689.py"[0;36m, line [0;32m8[0m
+: [0;31m    gates_gimp = data[][0m
+: [0m                      ^[0m
+: [0;31mSyntaxError[0m[0;31m:[0m invalid syntax
+:END:
+
+
+** Looking into the th_ts.csv file
+#+BEGIN_SRC jupyter-python
+import pandas as pd
+import matplotlib.pyplot as plt
+th_ts = pd.read_csv('gate_thk/thk_ts.csv', index_col = 0)
+
+gate_meta = pd.read_csv('tmp/dat_100_5000.csv')
+gate_meta = gate_meta[['x', 'y','gates_gateID@gates_100_5000', 'bed@BedMachine']]
+surf_ts = th_ts.add(gate_meta['bed@BedMachine'], axis = 'rows')
+
+th_ts_T = th_ts.T
+surf_ts_T = surf_ts.T
+
+
+th_ts_T.index = pd.to_datetime(th_ts_T.index)
+th_ts_T_annual = th_ts_T.resample('Y').mean()
+th_ts_T_annual.index = th_ts_T_annual.index.year
+
+surf_ts_T.index = pd.to_datetime(surf_ts_T.index)
+surf_ts_T_annual = surf_ts_T.resample('Y').mean()
+surf_ts_T_annual.index = surf_ts_T_annual.index.year
+
+
+th_ts_annual = th_ts_T_annual.T
+th_ts_annual[['x', 'y','gateID']] = gate_meta[['x', 'y','gates_gateID@gates_100_5000']]
+#print(th_ts_annual)
+
+th_ts_annual.to_csv('gate_thk/th_ts_annual.csv')
+
+surf_ts_annual = surf_ts_T_annual.T
+surf_ts_annual[['x', 'y','gateID']] = gate_meta[['x', 'y','gates_gateID@gates_100_5000']]
+print(surf_ts_annual)
+
+surf_ts_annual.to_csv('gate_thk/surf_ts_annual.csv')
+
+
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+               1985         1986         1987         1988         1989  \
+  0      399.150660   399.407886   399.629440   399.861010   400.091940   
+  1      466.912920   467.170146   467.391700   467.623270   467.854200   
+  2      495.581225   495.781444   495.953897   496.134146   496.313897   
+  3      514.619884   514.820103   514.992556   515.172805   515.352556   
+  4      513.767937   513.968156   514.140610   514.320859   514.500610   
+  ...           ...          ...          ...          ...          ...   
+  5863  1144.194107  1144.639038  1145.022267  1145.422821  1145.822267   
+  5864  1108.147660  1108.592592  1108.975821  1109.376374  1109.775821   
+  5865  1062.895643  1063.340574  1063.723803  1064.124357  1064.523803   
+  5866  1043.159287  1043.604218  1043.987447  1044.388001  1044.787447   
+  5867  1067.406776  1067.829461  1068.193529  1068.574055  1068.953529   
+
+               1990         1991         1992         1993         1994  ...  \
+  0      400.323190   400.492589   400.791091   400.994211   401.068825  ...   
+  1      468.085450   468.254849   468.553351   468.756471   468.831085  ...   
+  2      496.493897   496.625753   496.858101   497.016205   496.968927  ...   
+  3      515.532556   515.664413   515.896760   516.054865   516.007586  ...   
+  4      514.680610   514.812466   515.044814   515.202918   515.155639  ...   
+  ...           ...          ...          ...          ...          ...  ...   
+  5863  1146.222267  1146.515281  1147.031609  1147.382952  1147.767628  ...   
+  5864  1110.175821  1110.468834  1110.985163  1111.336505  1111.721181  ...   
+  5865  1064.923803  1065.216817  1065.733146  1066.084488  1066.469164  ...   
+  5866  1045.187447  1045.480461  1045.996790  1046.348132  1046.732808  ...   
+  5867  1069.333529  1069.611892  1070.102404  1070.436179  1070.803661  ...   
+
+               2016         2017         2018         2019         2020  \
+  0      397.421939   397.283253   396.787703   396.005150   395.251590   
+  1      465.184199   465.045513   464.549963   463.767410   463.013850   
+  2      492.759841   492.608934   492.118336   491.385225   490.679276   
+  3      511.798501   511.647594   511.156995   510.423884   509.717935   
+  4      510.946554   510.795647   510.305048   509.571938   508.865988   
+  ...           ...          ...          ...          ...          ...   
+  5863  1153.183022  1153.214601  1153.301651  1153.189127  1153.080772   
+  5864  1117.136575  1117.168154  1117.255204  1117.142680  1117.034325   
+  5865  1071.884558  1071.916137  1072.003187  1071.890663  1071.782308   
+  5866  1052.148202  1052.179781  1052.266831  1052.154307  1052.045952   
+  5867  1076.119693  1076.164304  1076.261030  1076.168965  1076.080311   
+
+               2021         2022      x        y  gateID  
+  0      394.485560   394.097820    100  -811700       1  
+  1      462.247820   461.860080    300  -811900       1  
+  2      489.961644   489.598402    500  -812100       1  
+  3      509.000303   508.637061    700  -812300       1  
+  4      508.148356   507.785114    700  -812500       1  
+  ...           ...          ...    ...      ...     ...  
+  5863  1152.970623  1152.914870  44300 -3244100     357  
+  5864  1116.924177  1116.868424  44500 -3244100     357  
+  5865  1071.672160  1071.616406  44700 -3244100     357  
+  5866  1051.935804  1051.880050  44900 -3244100     357  
+  5867  1075.990189  1075.944573  43500 -3244300     357  
+
+  [5868 rows x 41 columns]
+#+end_example
+
+#+BEGIN_SRC jupyter-python
+fig, ax = plt.subplots(1,1,figsize = (10,5))
+gate = surf_ts_annual.loc[surf_ts_annual['gateID'] == 1]
+
+for year in range(1985,2022+1):
+    ax.plot(gate['y'],gate[year])
+fig.savefig('gate_thk/gate_test.png')
+print(gate.keys())
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+: Index([    1985,     1986,     1987,     1988,     1989,     1990,     1991,
+:            1992,     1993,     1994,     1995,     1996,     1997,     1998,
+:            1999,     2000,     2001,     2002,     2003,     2004,     2005,
+:            2006,     2007,     2008,     2009,     2010,     2011,     2012,
+:            2013,     2014,     2015,     2016,     2017,     2018,     2019,
+:            2020,     2021,     2022,      'x',      'y', 'gateID'],
+:       dtype='object')
+[[file:./.ob-jupyter/51f08d7247b4ac4328ef70138ab9bf71c22e7c7d.png]]
+:END:
+

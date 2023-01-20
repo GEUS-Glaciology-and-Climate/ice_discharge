@@ -3126,6 +3126,8 @@ th_ts = th_ts[vel.columns]
 bad = th_ts.min(axis=1) < 20 # Pixels with bad thickness somewhere in the time series
 for px in bad[bad == True].index:
     th_ts.loc[px] = fits.predict(np.log10([1,vel_baseline.iloc[px].values[0]]))
+
+th_ts.to_csv('gate_thk/thk_ts.csv')
 #+END_SRC
 
 *** Discharge
@@ -3173,7 +3175,6 @@ D_err = vel.apply(lambda c: c * (th['fit_err'] * 200 * meta['err_2D'].values), a
 [DD,DD_err] = [_.copy() for _ in [D,D_err]]
 DD[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','regions','ones','name']]
 DD_err[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','regions','ones','name']]
-
 
 # D_gate :: Same, but at the gate scale
 # D_gate_err ::
@@ -3262,11 +3263,11 @@ for c in D.columns:
 %store D_all_err
 %store D_all_fill_weight
 %store meta
+%store th
 #+END_SRC
 
 #+BEGIN_SRC jupyter-python :results raw drawer :tangle no
 %store -r
-
 D = D.T['2000':].T
 D_err = D_err.T['2000':].T
 fill = fill.T['2000':].T
