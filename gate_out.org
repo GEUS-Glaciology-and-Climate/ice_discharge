@@ -73,7 +73,7 @@ fig.savefig('gate_thk/dh_all_years.png')
 :END:
 
 
-** Looking into the th_ts.csv file
+** Getting surface elevation from the th_ts.csv file
 #+BEGIN_SRC jupyter-python
 import pandas as pd
 import matplotlib.pyplot as plt
