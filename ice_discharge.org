@@ -1445,7 +1445,7 @@ BUFFER_DIST=5000
 Create a new mapset for this specific velocity cutoff and buffer distance
 
 #+BEGIN_SRC bash :results verbatim
-g.mapset -c gates_${VELOCITY_CUTOFF}_${BUFFER_DIST}
+g.mapset -c gates_vel_buf
 g.region -d
 #+END_SRC
 
@@ -1854,7 +1854,7 @@ df.round()
 Effective velocity (because gates may only be valid in =x= or =y= direction) was calculated for the sensitivity test above at one time, but for all gate locations (buffer dist and speed cutoff). Now we need to calculate it at all times
 
 #+BEGIN_SRC bash :results verbatim :tangle no
-g.mapsets gates_100_5000
+g.mapsets gates_vel_buf
 r.mask -r
 
 mapset=$(g.mapset -l | tr ' ' '\n' | grep -E gates_??_????| head -n1) # DEBUG
@@ -1899,7 +1899,7 @@ g.mapsets -l
 
 r.mask -r
 
-MAPSET=gates_100_5000
+MAPSET=gates_vel_buf
 
 g.mapset MEaSUREs.0478
 g.region -d
@@ -1971,7 +1971,7 @@ MSG_OK "Exporting..."
 g.mapset PERMANENT
 g.region -dp
 
-MAPSET=gates_100_5000
+MAPSET=gates_vel_buf
 
 VEL_baseline="vel_baseline@MEaSUREs.0478 vx_baseline@MEaSUREs.0478 vy_baseline@MEaSUREs.0478 vel_err_baseline@MEaSUREs.0478 ex_baseline@MEaSUREs.0478 ey_baseline@MEaSUREs.0478"
 VEL_0478=$(g.list -m mapset=MEaSUREs.0478 type=raster pattern=vel_eff_????_??_?? separator=space)
@@ -2090,13 +2090,13 @@ df = pd.read_csv("./tmp/dat_100_5000.csv")
 thick = df['thickness@BedMachine']
 # thick[thick < 50] = 50  # IS THIS REASONABLE? IMPORTANT?
 # vel = df['vel_baseline@MEaSUREs.0478']
-vel = np.abs(df['vx_baseline@MEaSUREs.0478'])*df['gates_x@gates_100_5000'] + np.abs(df['vy_baseline@MEaSUREs.0478'])*df['gates_y@gates_100_5000']
+vel = np.abs(df['vx_baseline@MEaSUREs.0478'])*df['gates_x@gates_vel_buf'] + np.abs(df['vy_baseline@MEaSUREs.0478'])*df['gates_y@gates_vel_buf']
 D = 200  * thick * vel * 917 / 1E12
 df_out.loc['D'] = [np.sum(D), 'Gt']
 
 err_thick = np.abs(df['errbed@BedMachine'].values)
 # err_vel = np.abs(df['vel_err_baseline@MEaSUREs.0478'])
-err_vel = np.abs(df['ex_baseline@MEaSUREs.0478'])*df['gates_x@gates_100_5000'] + np.abs(df['ey_baseline@MEaSUREs.0478'])*df['gates_y@gates_100_5000']
+err_vel = np.abs(df['ex_baseline@MEaSUREs.0478'])*df['gates_x@gates_vel_buf'] + np.abs(df['ey_baseline@MEaSUREs.0478'])*df['gates_y@gates_vel_buf']
 
 e_th = 200 * err_thick * vel * 917 / 1E12
 df_out.loc['Err (Thickness)'] = [np.sum(e_th), 'Gt']
@@ -2137,7 +2137,7 @@ for s in sectors:
     sub_s = df[df['sectors@Mouginot_2019'] == s]
     thick = sub_s['thickness@BedMachine']
     # vel = sub_s['vel_baseline@MEaSUREs.0478']
-    vel = np.abs(sub_s['vx_baseline@MEaSUREs.0478']*sub_s['gates_x@gates_100_5000']) + np.abs(sub_s['vy_baseline@MEaSUREs.0478']*sub_s['gates_y@gates_100_5000'])
+    vel = np.abs(sub_s['vx_baseline@MEaSUREs.0478']*sub_s['gates_x@gates_vel_buf']) + np.abs(sub_s['vy_baseline@MEaSUREs.0478']*sub_s['gates_y@gates_vel_buf'])
     D = 200  * thick * vel * 917 / 1E12
     err_thick = np.abs(sub_s['errbed@BedMachine'].values)
     # err_thick[np.where(err_thick < 50)] = 50  # IS THIS REASONABLE? IMPORTANT?
@@ -2174,7 +2174,7 @@ regions = np.unique(df['regions@Mouginot_2019'].values)
 for r in regions:
    sub_r = df[df['regions@Mouginot_2019'] == r]
    thick = sub_r['thickness@BedMachine']
-   vel = np.abs(sub_r['vx_baseline@MEaSUREs.0478']*sub_r['gates_x@gates_100_5000']) + np.abs(sub_r['vy_baseline@MEaSUREs.0478']*sub_r['gates_y@gates_100_5000'])
+   vel = np.abs(sub_r['vx_baseline@MEaSUREs.0478']*sub_r['gates_x@gates_vel_buf']) + np.abs(sub_r['vy_baseline@MEaSUREs.0478']*sub_r['gates_y@gates_vel_buf'])
    D = 200  * thick * vel * 917 / 1E12
    err_thick = np.abs(sub_r['errbed@BedMachine'].values)
    # err_thick[np.where(err_thick < 50)] = 50  # IS THIS REASONABLE? IMPORTANT?
@@ -2206,11 +2206,11 @@ df = pd.read_csv("./tmp/dat_100_5000.csv")
 err_gate = pd.DataFrame(columns=['D','E', 'E%'])
 err_gate.index.name = 'Gate'
 
-gates = np.unique(df['gates_gateID@gates_100_5000'].values)
+gates = np.unique(df['gates_gateID@gates_vel_buf'].values)
 for g in gates:
-    sub = df[df['gates_gateID@gates_100_5000'] == g]
+    sub = df[df['gates_gateID@gates_vel_buf'] == g]
     thick = sub['thickness@BedMachine']
-    vel = np.abs(sub['vx_baseline@MEaSUREs.0478'])*sub['gates_x@gates_100_5000'] + np.abs(sub['vy_baseline@MEaSUREs.0478'])*sub['gates_y@gates_100_5000']
+    vel = np.abs(sub['vx_baseline@MEaSUREs.0478'])*sub['gates_x@gates_vel_buf'] + np.abs(sub['vy_baseline@MEaSUREs.0478'])*sub['gates_y@gates_vel_buf']
     D = 200  * thick * vel * 917 / 1E12
     err_thick = np.abs(sub['errbed@BedMachine'].values)
     # err_thick[np.where(err_thick < 50)] = 50  # IS THIS REASONABLE? IMPORTANT?
@@ -2267,12 +2267,12 @@ import datetime as dt
 ### Load metadata
 ### 
 meta_cols = ["x", "y", "err_2D", 
-             "regions@Mouginot_2019", "sectors@Mouginot_2019", "gates_gateID@gates_100_5000"]
+             "regions@Mouginot_2019", "sectors@Mouginot_2019", "gates_gateID@gates_vel_buf"]
 meta = pd.read_csv("./tmp/dat_100_5000.csv", usecols=meta_cols)
 # rename columns
 meta.rename(inplace=True, columns={'regions@Mouginot_2019':'regions', 
                                    'sectors@Mouginot_2019':'sectors',
-                                   'gates_gateID@gates_100_5000':'gates'})
+                                   'gates_gateID@gates_vel_buf':'gates'})
 regions = {1:'NO', 2:'NE', 3:'CE', 4:'SE', 5:'SW', 6:'CW', 7:'NW'}
 meta['regions'] = meta['regions'].map(regions.get) # Convert sector numbers to meaningful names
 # UNDO with foo.replace({'NO':1,'NW':2,'NE':3,'CW':4,'CE':5,'SW':6,'SE':7}) 
@@ -2392,10 +2392,10 @@ th = pd.read_csv("./tmp/dat_100_5000.csv", usecols=["thickness@BedMachine",
                                                     "surface@BedMachine",
                                                     "bed@BedMachine",
                                                     "errbed@BedMachine",
-                                                    "gates_gateID@gates_100_5000"])
+                                                    "gates_gateID@gates_vel_buf"])
 th.rename(inplace=True, columns={'thickness@BedMachine':'thick',
                                  'errbed@BedMachine': 'err',
-                                 'gates_gateID@gates_100_5000':'gates'})
+                                 'gates_gateID@gates_vel_buf':'gates'})
 th_GIMP = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('@GIMP.0715' in c)))
 th_GIMP['day'] = [dt.datetime(2000,1,1) + dt.timedelta(days=int(_)) for _ in th_GIMP['day@GIMP.0715']]
 for _ in th_GIMP.columns: th[_] = th_GIMP[_]
@@ -2625,7 +2625,7 @@ for g in th[th['bad']]['gates'].unique():
 tmp = meta.copy()
 tmp['vel'] = vel_baseline
 gates = pd.DataFrame(index=th['gates'].unique())
-id = 'gates' #_gateID@gates_100_5000'
+id = 'gates' #_gateID@gates_vel_buf'
 gates['x'] = tmp.groupby(id).mean()['x']
 gates['y'] = tmp.groupby(id).mean()['y']
 gates['all_bad'] = th.groupby('gates').mean()['all_bad']
@@ -3110,7 +3110,7 @@ D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.3f', header=[
 
 **** Gates
 #+BEGIN_SRC bash :results verbatim :tangle gate_export.sh
-g.mapset gates_100_5000
+g.mapset gates_vel_buf
 
 v.out.ogr input=gates_final output=./out/gates.kml format=KML --o
 (cd out; zip gates.kmz gates.kml; rm gates.kml)
@@ -3588,7 +3588,7 @@ EOF
 
 g.copy vector=sectors@Mouginot_2019,sectors --o
 g.copy vector=regions@Mouginot_2019,regions --o
-g.copy vector=gates_final@gates_100_5000,gates --o
+g.copy vector=gates_final@gates_vel_buf,gates --o
 
 
 ### get baseline discharge at each gate
@@ -4417,7 +4417,7 @@ if 'bamber' not in locals():
     z_b[z_s == 0] = np.nan
     thick = z_s - z_b
     diff = thick - bamber
-    gates = garray.array("gates_final@gates_100_5000", null=np.nan)
+    gates = garray.array("gates_final@gates_vel_buf", null=np.nan)
 
     # v.out_ogr(input='gate_lines', output='./tmp/SHP/E2014_gates.shp', format='ESRI_Shapefile', overwrite=True)
     # gates_E2014 = shapefile.Reader("./tmp/SHP/E2014_gates.shp")
@@ -4586,7 +4586,7 @@ fi
 <<GRASS_config>>
 <<sentinel1_import>>
 	
-MAPSET=gates_100_5000
+MAPSET=gates_vel_buf
 <<sentinel1_effective_velocity>>
 #+END_SRC
 *** Upload
