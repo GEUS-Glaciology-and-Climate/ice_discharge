@@ -2039,6 +2039,8 @@ MAPSET=gates_vel_buf
 VEL_baseline="vel_baseline@MEaSUREs.0478 vx_baseline@MEaSUREs.0478 vy_baseline@MEaSUREs.0478 vel_err_baseline@MEaSUREs.0478 ex_baseline@MEaSUREs.0478 ey_baseline@MEaSUREs.0478"
 VEL_0478=$(g.list -m mapset=MEaSUREs.0478 type=raster pattern=vel_eff_????_??_?? separator=space)
 ERR_0478=$(g.list -m mapset=MEaSUREs.0478 type=raster pattern=err_eff_????_??_?? separator=space)
+VEL_0481=$(g.list -m mapset=MEaSUREs.0481 type=raster pattern=vel_eff_????_??_?? separator=space)
+ERR_0481=$(g.list -m mapset=MEaSUREs.0481 type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_0646=$(g.list -m mapset=MEaSUREs.0646 type=raster pattern=vel_eff_????_??_?? separator=space)
 ERR_0646=$(g.list -m mapset=MEaSUREs.0646 type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_0731=$(g.list -m mapset=MEaSUREs.0731 type=raster pattern=vel_eff_????_??_?? separator=space)
@@ -2049,7 +2051,8 @@ VEL_MOUGINOT=$(g.list -m mapset=Mouginot_pre2000 type=raster pattern=vel_eff_???
 THICK=$(g.list -m mapset=Khan_2016 type=raster pattern=dh_???? separator=space)
 GIMP_0715="dem@GIMP.0715 day@GIMP.0715" # ,err@GIMP.0715
 
-LIST="lon lat err_2D gates_x@${MAPSET} gates_y@${MAPSET} gates_gateID@${MAPSET} sectors@Mouginot_2019 regions@Mouginot_2019 bed@BedMachine thickness@BedMachine surface@BedMachine thickness@Bamber_2013 ${THICK} ${GIMP_0715} ${VEL_baseline} ${VEL_0478} ${VEL_0646} ${VEL_0731} ${VEL_SENTINEL} ${VEL_MOUGINOT} errbed@BedMachine ${ERR_0478} ${ERR_0646} ${ERR_0731} ${ERR_SENTINEL}"
+LIST="lon lat err_2D gates_x@${MAPSET} gates_y@${MAPSET} gates_gateID@${MAPSET} sectors@Mouginot_2019 regions@Mouginot_2019 bed@BedMachine thickness@BedMachine surface@BedMachine thickness@Bamber_2013 ${THICK} ${GIMP_0715} ${VEL_baseline} ${VEL_0478}
+${VEL_0481} ${VEL_0646} ${VEL_0731} ${VEL_SENTINEL} ${VEL_MOUGINOT} errbed@BedMachine ${ERR_0478} ${ERR_0481} ${ERR_0646} ${ERR_0731} ${ERR_SENTINEL}"
 
 mkdir tmp/dat
 r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(dem@GIMP.0715) | if(mask_GIC@Mouginot_2019)" --o
