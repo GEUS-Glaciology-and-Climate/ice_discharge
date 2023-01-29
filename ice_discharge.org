@@ -1035,7 +1035,7 @@ g.region -d
 + See: [[file:~/data/MEaSUREs/README.org][MEaSUREs README]]
 
 + [X] 0478 :: 2000 -- 2017 annual average
-+ [ ] 0481 :: 6-11 day velocity
++ [X] 0481 :: 6-11 day velocity TSX
 + [X] 0646 :: Monthly velocity - sparse glacier coverage 1985 through 2016
 + [ ] 0670 :: 1995 -- 2015 average
 + [ ] 0725 :: 2015 & 2016 annual average
@@ -1143,6 +1143,61 @@ d.mon start=wx0
 d.erase
 d.rast vel
 d.rast vel_filled
+#+END_SRC
+
+***** 0481.004 TSX
+****** Generate VRTs
++ One map per date
++ Build GDAL virtual tiles for every date (when data exists)
+#+BEGIN_SRC bash :results verbatim
+g.mapset -c MEaSUREs.0481
+
+ROOT=${DATADIR}/MEaSUREs/NSIDC-0481.004
+VRTROOT=./tmp/NSIDC-0481.004.vrt/
+mkdir -p ${VRTROOT}
+for date in $(cd ${ROOT}; ls -d */|tr -d '/' ); do
+  if [[ ! -f ${VRTROOT}/${date}_vx.vrt ]]; then # VRT file does not exist?
+    LIST=$(find ${ROOT}/${date}/ -name "TSX*vx*.tif" | LC_ALL=C sort)
+    if [[ ! -z ${LIST} ]]; then
+      MSG_OK "Building VRTs for ${date}"
+
+      VX=$(ls $ROOT/$date/*vx*)
+      T0=$(basename ${VX} | cut -d_ -f3)
+      T1=$(basename ${VX} | cut -d_ -f4)
+      SEC0=$(date --utc --date="${T0}" +"%s")
+      SEC1=$(date --utc --date="${T1}" +"%s")
+      MID=$(echo "(${SEC0}+${SEC1})/2"|bc)
+      DATE=$(date --utc --date="@${MID}" +"%Y_%m_%d")
+      
+      parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${DATE}_{}.vrt $\(find ${ROOT}/${date} -name "TSX*{}*.tif" \| LC_ALL=C sort\) ::: vx vy ex ey
+    fi
+  fi
+done
+#+END_SRC
+
+****** Import VRTs
+#+BEGIN_SRC bash :results verbatim
+MSG_OK "MEaSURES.0481"
+g.mapset -c MEaSUREs.0481
+
+# Set a super region
+gdalbuildvrt -overwrite tmp/0481.vrt ./tmp/NSIDC-0481.004.vrt/*_vx.vrt
+r.external source=tmp/0481.vrt output=tmp -e -r 
+g.region raster=tmp -pa res=250
+g.remove -f type=raster name=tmp
+
+r.mask -r
+ROOT=./tmp/NSIDC-0481.004.vrt/
+VX=$(find ${ROOT} -name "*vx*.vrt" | head -n1) # debug
+for VX in $(find ${ROOT} -name "*vx*.vrt" | LC_ALL=C sort); do
+    VY=${VX/vx/vy}
+    EX=${VX/vx/ex}
+    EY=${EX/ex/ey}
+    DATE=$(basename $VX | cut -d"_" -f1 | tr '.' '_')
+    echo $DATE
+    
+    parallel --verbose --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
+done
 #+END_SRC
 
 ***** 0646.003
@@ -1907,6 +1962,14 @@ r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, nul
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(VX_{1} == -2*10^9, 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(VY_{1} == -2*10^9, 0, abs(VY_{1})), 0)\"" ::: ${dates}
 parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(EX_{1} == -2*10^9, 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(EY_{1} == -2*10^9, 0, abs(EY_{1})), 0)\"" ::: ${dates}
+
+
+g.mapset MEaSUREs.0481
+g.region -d
+r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
+dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
+parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
+parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
 
 
 g.mapset MEaSUREs.0646
