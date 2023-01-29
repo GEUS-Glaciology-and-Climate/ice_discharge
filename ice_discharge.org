@@ -1194,7 +1194,7 @@ g.region raster=VX_${DATE} -pa
 
 
 
-***** 0731.001
+***** 0731.004
 MEaSUREs Greenland Monthly Ice Sheet Velocity Mosaics from SAR and Landsat, Version 1
 
 ****** Import
@@ -1202,7 +1202,7 @@ MEaSUREs Greenland Monthly Ice Sheet Velocity Mosaics from SAR and Landsat, Vers
 MSG_OK "MEaSURES.0731"
 g.mapset -c MEaSUREs.0731
 r.mask -r
-ROOT=${DATADIR}/MEaSUREs/NSIDC-0731.001/
+ROOT=${DATADIR}/MEaSUREs/NSIDC-0731.004/
 VX=$(find ${ROOT} -name "*mosaic_*vx*.tif" | head -n1) # DEBUG
 for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
   VY=${VX/vx/vy}
@@ -5088,34 +5088,183 @@ find ${DATADIR}/MEaSUREs/NSIDC-0646.003/ -type f -name "*vx_v03.0.tif" | rev | c
 Subset to vx
 
 #+BEGIN_SRC bash :results verbatim :eval no-export
-(cd ${DATADIR}/MEaSUREs/NSIDC-0731.001; find -name "*vx*.tif"| LC_ALL=C sort)
+(cd ${DATADIR}/MEaSUREs/NSIDC-0731.004; find -name "*vx*.tif"| LC_ALL=C sort)
 #+END_SRC
 
 #+RESULTS:
+#+begin_example
+./2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v04.0.tif
+./2015.01.01/GL_vel_mosaic_Monthly_01Jan15_31Jan15_vx_v04.0.tif
+./2015.02.01/GL_vel_mosaic_Monthly_01Feb15_28Feb15_vx_v04.0.tif
+./2015.03.01/GL_vel_mosaic_Monthly_01Mar15_31Mar15_vx_v04.0.tif
+./2015.04.01/GL_vel_mosaic_Monthly_01Apr15_30Apr15_vx_v04.0.tif
+./2015.05.01/GL_vel_mosaic_Monthly_01May15_31May15_vx_v04.0.tif
+./2015.06.01/GL_vel_mosaic_Monthly_01Jun15_30Jun15_vx_v04.0.tif
+./2015.07.01/GL_vel_mosaic_Monthly_01Jul15_31Jul15_vx_v04.0.tif
+./2015.08.01/GL_vel_mosaic_Monthly_01Aug15_31Aug15_vx_v04.0.tif
+./2015.09.01/GL_vel_mosaic_Monthly_01Sep15_30Sep15_vx_v04.0.tif
+./2015.10.01/GL_vel_mosaic_Monthly_01Oct15_31Oct15_vx_v04.0.tif
+./2015.11.01/GL_vel_mosaic_Monthly_01Nov15_30Nov15_vx_v04.0.tif
+./2015.12.01/GL_vel_mosaic_Monthly_01Dec15_31Dec15_vx_v04.0.tif
+./2016.01.01/GL_vel_mosaic_Monthly_01Jan16_31Jan16_vx_v04.0.tif
+./2016.02.01/GL_vel_mosaic_Monthly_01Feb16_29Feb16_vx_v04.0.tif
+./2016.03.01/GL_vel_mosaic_Monthly_01Mar16_31Mar16_vx_v04.0.tif
+./2016.04.01/GL_vel_mosaic_Monthly_01Apr16_30Apr16_vx_v04.0.tif
+./2016.05.01/GL_vel_mosaic_Monthly_01May16_31May16_vx_v04.0.tif
+./2016.06.01/GL_vel_mosaic_Monthly_01Jun16_30Jun16_vx_v04.0.tif
+./2016.07.01/GL_vel_mosaic_Monthly_01Jul16_31Jul16_vx_v04.0.tif
+./2016.08.01/GL_vel_mosaic_Monthly_01Aug16_31Aug16_vx_v04.0.tif
+./2016.09.01/GL_vel_mosaic_Monthly_01Sep16_30Sep16_vx_v04.0.tif
+./2016.10.01/GL_vel_mosaic_Monthly_01Oct16_31Oct16_vx_v04.0.tif
+./2016.11.01/GL_vel_mosaic_Monthly_01Nov16_30Nov16_vx_v04.0.tif
+./2016.12.01/GL_vel_mosaic_Monthly_01Dec16_31Dec16_vx_v04.0.tif
+./2017.01.01/GL_vel_mosaic_Monthly_01Jan17_31Jan17_vx_v04.0.tif
+./2017.02.01/GL_vel_mosaic_Monthly_01Feb17_28Feb17_vx_v04.0.tif
+./2017.03.01/GL_vel_mosaic_Monthly_01Mar17_31Mar17_vx_v04.0.tif
+./2017.04.01/GL_vel_mosaic_Monthly_01Apr17_30Apr17_vx_v04.0.tif
+./2017.05.01/GL_vel_mosaic_Monthly_01May17_31May17_vx_v04.0.tif
+./2017.06.01/GL_vel_mosaic_Monthly_01Jun17_30Jun17_vx_v04.0.tif
+./2017.07.01/GL_vel_mosaic_Monthly_01Jul17_31Jul17_vx_v04.0.tif
+./2017.08.01/GL_vel_mosaic_Monthly_01Aug17_31Aug17_vx_v04.0.tif
+./2017.09.01/GL_vel_mosaic_Monthly_01Sep17_30Sep17_vx_v04.0.tif
+./2017.10.01/GL_vel_mosaic_Monthly_01Oct17_31Oct17_vx_v04.0.tif
+./2017.11.01/GL_vel_mosaic_Monthly_01Nov17_30Nov17_vx_v04.0.tif
+./2017.12.01/GL_vel_mosaic_Monthly_01Dec17_31Dec17_vx_v04.0.tif
+./2018.01.01/GL_vel_mosaic_Monthly_01Jan18_31Jan18_vx_v04.0.tif
+./2018.02.01/GL_vel_mosaic_Monthly_01Feb18_28Feb18_vx_v04.0.tif
+./2018.03.01/GL_vel_mosaic_Monthly_01Mar18_31Mar18_vx_v04.0.tif
+./2018.04.01/GL_vel_mosaic_Monthly_01Apr18_30Apr18_vx_v04.0.tif
+./2018.05.01/GL_vel_mosaic_Monthly_01May18_31May18_vx_v04.0.tif
+./2018.06.01/GL_vel_mosaic_Monthly_01Jun18_30Jun18_vx_v04.0.tif
+./2018.07.01/GL_vel_mosaic_Monthly_01Jul18_31Jul18_vx_v04.0.tif
+./2018.08.01/GL_vel_mosaic_Monthly_01Aug18_31Aug18_vx_v04.0.tif
+./2018.09.01/GL_vel_mosaic_Monthly_01Sep18_30Sep18_vx_v04.0.tif
+./2018.10.01/GL_vel_mosaic_Monthly_01Oct18_31Oct18_vx_v04.0.tif
+./2018.11.01/GL_vel_mosaic_Monthly_01Nov18_30Nov18_vx_v04.0.tif
+./2018.12.01/GL_vel_mosaic_Monthly_01Dec18_31Dec18_vx_v04.0.tif
+./2019.01.01/GL_vel_mosaic_Monthly_01Jan19_31Jan19_vx_v04.0.tif
+./2019.02.01/GL_vel_mosaic_Monthly_01Feb19_28Feb19_vx_v04.0.tif
+./2019.03.01/GL_vel_mosaic_Monthly_01Mar19_31Mar19_vx_v04.0.tif
+./2019.04.01/GL_vel_mosaic_Monthly_01Apr19_30Apr19_vx_v04.0.tif
+./2019.05.01/GL_vel_mosaic_Monthly_01May19_31May19_vx_v04.0.tif
+./2019.06.01/GL_vel_mosaic_Monthly_01Jun19_30Jun19_vx_v04.0.tif
+./2019.07.01/GL_vel_mosaic_Monthly_01Jul19_31Jul19_vx_v04.0.tif
+./2019.08.01/GL_vel_mosaic_Monthly_01Aug19_31Aug19_vx_v04.0.tif
+./2019.09.01/GL_vel_mosaic_Monthly_01Sep19_30Sep19_vx_v04.0.tif
+./2019.10.01/GL_vel_mosaic_Monthly_01Oct19_31Oct19_vx_v04.0.tif
+./2019.11.01/GL_vel_mosaic_Monthly_01Nov19_30Nov19_vx_v04.0.tif
+./2019.12.01/GL_vel_mosaic_Monthly_01Dec19_31Dec19_vx_v04.0.tif
+./2020.01.01/GL_vel_mosaic_Monthly_01Jan20_31Jan20_vx_v04.0.tif
+./2020.02.01/GL_vel_mosaic_Monthly_01Feb20_29Feb20_vx_v04.0.tif
+./2020.03.01/GL_vel_mosaic_Monthly_01Mar20_31Mar20_vx_v04.0.tif
+./2020.04.01/GL_vel_mosaic_Monthly_01Apr20_30Apr20_vx_v04.0.tif
+./2020.05.01/GL_vel_mosaic_Monthly_01May20_31May20_vx_v04.0.tif
+./2020.06.01/GL_vel_mosaic_Monthly_01Jun20_30Jun20_vx_v04.0.tif
+./2020.07.01/GL_vel_mosaic_Monthly_01Jul20_31Jul20_vx_v04.0.tif
+./2020.08.01/GL_vel_mosaic_Monthly_01Aug20_31Aug20_vx_v04.0.tif
+./2020.09.01/GL_vel_mosaic_Monthly_01Sep20_30Sep20_vx_v04.0.tif
+./2020.10.01/GL_vel_mosaic_Monthly_01Oct20_31Oct20_vx_v04.0.tif
+./2020.11.01/GL_vel_mosaic_Monthly_01Nov20_30Nov20_vx_v04.0.tif
+./2020.12.01/GL_vel_mosaic_Monthly_01Dec20_31Dec20_vx_v04.0.tif
+./2021.01.01/GL_vel_mosaic_Monthly_01Jan21_31Jan21_vx_v04.0.tif
+./2021.02.01/GL_vel_mosaic_Monthly_01Feb21_28Feb21_vx_v04.0.tif
+./2021.03.01/GL_vel_mosaic_Monthly_01Mar21_31Mar21_vx_v04.0.tif
+./2021.04.01/GL_vel_mosaic_Monthly_01Apr21_30Apr21_vx_v04.0.tif
+./2021.05.01/GL_vel_mosaic_Monthly_01May21_31May21_vx_v04.0.tif
+./2021.06.01/GL_vel_mosaic_Monthly_01Jun21_30Jun21_vx_v04.0.tif
+./2021.07.01/GL_vel_mosaic_Monthly_01Jul21_31Jul21_vx_v04.0.tif
+./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v04.0.tif
+./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v04.0.tif
+./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v04.0.tif
+./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v04.0.tif
+./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v04.0.tif
+./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v04.0.tif
+./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v04.0.tif
+#+end_example
 
 ***** File Metadata
 
 #+NAME: QC_gdalinfo_NSIDC_0731
 #+BEGIN_SRC bash :results verbatim :eval no-export
-somefile=$(find ${DATADIR}/MEaSUREs/NSIDC-0731.001 -name "*vx*.tif" | LC_ALL=C sort | head -n1)
+somefile=$(find ${DATADIR}/MEaSUREs/NSIDC-0731.004 -name "*vx*.tif" | LC_ALL=C sort | head -n1)
 md5sum ${somefile}
 echo ""
 gdalinfo -mm ${somefile}
 #+END_SRC
 
 #+RESULTS: QC_gdalinfo_NSIDC_0731
+#+begin_example
+6c1db350f34bfaf58bf39f610489a56b  /home/kdm/data/MEaSUREs/NSIDC-0731.004/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v04.0.tif
+
+Driver: GTiff/GeoTIFF
+Files: /home/kdm/data/MEaSUREs/NSIDC-0731.004/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v04.0.tif
+Size is 7585, 13700
+Coordinate System is:
+ENGCRS["unnamed",
+    EDATUM[""],
+    CS[Cartesian,2],
+        AXIS["(E)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["(N)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    ID["EPSG",3413]]
+Data axis to CRS axis mapping: 1,2
+Origin = (-659100.000000000000000,-639100.000000000000000)
+Pixel Size = (200.000000000000000,-200.000000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Image Structure Metadata:
+  COMPRESSION=DEFLATE
+  INTERLEAVE=BAND
+  LAYOUT=COG
+Corner Coordinates:
+Upper Left  ( -659100.000, -639100.000) 
+Lower Left  ( -659100.000,-3379100.000) 
+Upper Right (  857900.000, -639100.000) 
+Lower Right (  857900.000,-3379100.000) 
+Center      (   99400.000,-2009100.000) 
+Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
+  Min=-17040.645 Max=8270.308   Computed Min/Max=-17040.645,8270.308
+  Minimum=-17040.645, Maximum=8270.308, Mean=-69.842, StdDev=332.209
+  NoData Value=-2000000000
+  Overviews: 3792x6850, 1896x3425, 948x1712, 474x856, 237x428
+  Metadata:
+    STATISTICS_MAXIMUM=8270.3076171875
+    STATISTICS_MEAN=-69.842322897928
+    STATISTICS_MINIMUM=-17040.64453125
+    STATISTICS_STDDEV=332.209488003
+    STATISTICS_VALID_PERCENT=3.612
+#+end_example
 
 ***** md5sum hashes of all data
 
 #+NAME: QC_md5sum_NSIDC_0731
 #+BEGIN_SRC bash :results table :eval no-export
-cd ${DATADIR}/MEaSUREs/NSIDC-0731.001
+cd ${DATADIR}/MEaSUREs/NSIDC-0731.004
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
 find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-order "md5sum {}"
 #+END_SRC
 
 #+RESULTS: QC_md5sum_NSIDC_0731
+| fdfe96d5c0af7302ac22536c39a2595c | ./2020.11.01/GL_vel_mosaic_Monthly_01Nov20_30Nov20_vx_v04.0.tif |
+| a9988ce5824a6fd48783fcec45f73540 | ./2020.12.01/GL_vel_mosaic_Monthly_01Dec20_31Dec20_vx_v04.0.tif |
+| f91c216c133fdb8eccb10bb6d1277c43 | ./2021.01.01/GL_vel_mosaic_Monthly_01Jan21_31Jan21_vx_v04.0.tif |
+| 1325211690e22ff06850822688ac0ad4 | ./2021.02.01/GL_vel_mosaic_Monthly_01Feb21_28Feb21_vx_v04.0.tif |
+| e099be24f72c6e465ce23f2b3f44f71a | ./2021.03.01/GL_vel_mosaic_Monthly_01Mar21_31Mar21_vx_v04.0.tif |
+| 81b10f672925b45ef1910fb30c7f50e3 | ./2021.04.01/GL_vel_mosaic_Monthly_01Apr21_30Apr21_vx_v04.0.tif |
+| 1060ce9efa868ba554bbcf58d68c273e | ./2021.05.01/GL_vel_mosaic_Monthly_01May21_31May21_vx_v04.0.tif |
+| 77cd75ed6b9d9aaa0ac67f4942a4cfa3 | ./2021.06.01/GL_vel_mosaic_Monthly_01Jun21_30Jun21_vx_v04.0.tif |
+| 4bf52b4f2d5b4cd2c54b9503b17510d9 | ./2021.07.01/GL_vel_mosaic_Monthly_01Jul21_31Jul21_vx_v04.0.tif |
+| 39aad9e8a2bcddfbbe8b7c15afd31701 | ./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v04.0.tif |
+| f165eaad13ced2369c3698016373e99a | ./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v04.0.tif |
+| 9f94ebaf0bae1836b78d90d9585ee042 | ./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v04.0.tif |
+| e5e55acc24a24918daa5cfc785bb4767 | ./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v04.0.tif |
+| 340c727bbb596f78f0627d9788dc49d8 | ./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v04.0.tif |
+| e15c720663de43671e0223aa938f759e | ./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v04.0.tif |
+| 71b66458e67b89c7bec79a74bad8fbb6 | ./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v04.0.tif |
 
 *** Sentinel 1
 ***** File List
