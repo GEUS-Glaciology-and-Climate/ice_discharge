@@ -1155,13 +1155,14 @@ g.mapset -c MEaSUREs.0481
 ROOT=${DATADIR}/MEaSUREs/NSIDC-0481.004
 VRTROOT=./tmp/NSIDC-0481.004.vrt/
 mkdir -p ${VRTROOT}
-for date in $(cd ${ROOT}; ls -d */|tr -d '/' ); do
+
+for date in $(cd ${ROOT}; ls -d */|tr -d '/'); do
   if [[ ! -f ${VRTROOT}/${date}_vx.vrt ]]; then # VRT file does not exist?
     LIST=$(find ${ROOT}/${date}/ -name "TSX*vx*.tif" | LC_ALL=C sort)
     if [[ ! -z ${LIST} ]]; then
       MSG_OK "Building VRTs for ${date}"
 
-      VX=$(ls $ROOT/$date/*vx*)
+      VX=$(ls $ROOT/$date/*vx* | head -n1)
       T0=$(basename ${VX} | cut -d_ -f3)
       T1=$(basename ${VX} | cut -d_ -f4)
       SEC0=$(date --utc --date="${T0}" +"%s")
@@ -1193,7 +1194,7 @@ for VX in $(find ${ROOT} -name "*vx*.vrt" | LC_ALL=C sort); do
     VY=${VX/vx/vy}
     EX=${VX/vx/ex}
     EY=${EX/ex/ey}
-    DATE=$(basename $VX | cut -d"_" -f1 | tr '.' '_')
+    DATE=$(basename $VX | cut -d"_" -f1-3)
     echo $DATE
     
     parallel --verbose --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
