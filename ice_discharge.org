@@ -2056,7 +2056,7 @@ LIST="lon lat err_2D gates_x@${MAPSET} gates_y@${MAPSET} gates_gateID@${MAPSET} 
 ${VEL_0481} ${VEL_0646} ${VEL_0731} ${VEL_SENTINEL} ${VEL_MOUGINOT} errbed@BedMachine ${ERR_0478} ${ERR_0481} ${ERR_0646} ${ERR_0731} ${ERR_SENTINEL}"
 
 mkdir tmp/dat
-r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(dem@GIMP.0715) | if(mask_GIC@Mouginot_2019)" --o
+r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(dem@GIMP.0715) | if(mask_GIC@Mouginot_2019) | if(vel_err_baseline@MEaSUREs.0478)" --o
 parallel --bar "if [[ ! -e ./tmp/dat/{1}.bsv ]]; then (echo x\|y\|{1}; r.out.xyz input={1}) > ./tmp/dat/{1}.bsv; fi" ::: ${LIST}
 r.mask -r
 
