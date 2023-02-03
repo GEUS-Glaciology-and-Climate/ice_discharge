@@ -2519,8 +2519,9 @@ dhdt.rename(inplace=True, columns=mv)
 
 # assume trend continues from last measured value
 dhdt[2020] = dhdt[2019]
-dhdt[2021] = dhdt[2020]
-dhdt[2022] = dhdt[2021]
+dhdt[2021] = dhdt[2019]
+dhdt[2022] = dhdt[2019]
+dhdt[2023] = dhdt[2019]
 for y in np.arange(1985,1994+1): dhdt[y] = dhdt.loc[:,1995:1997].mean(axis='columns')
 dhdt.sort_index(axis='columns', inplace=True)
 
