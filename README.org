@@ -1,6 +1,7 @@
 
 * Table of Contents                               :toc_2:noexport:
-- [[#greenland-ice-sheet-solid-ice-discharge-from-1986-through-march-2020][Greenland Ice Sheet solid ice discharge from 1986 through March 2020]]
+- [[#greenland-ice-sheet-solid-ice-discharge-from-1986-through-last-month][Greenland Ice Sheet solid ice discharge from 1986 through last month]]
+- [[#httpsgithubcomgeus-glaciology-and-climateice_dischargelabelswarning][https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/labels/WARNING]]
 - [[#related-work][Related Work]]
 - [[#citation][Citation]]
   - [[#publication][Publication]]
@@ -9,7 +10,7 @@
   - [[#discharge-gates][Discharge gates]]
 - [[#open-science-vs-reproducible-science][Open science vs. reproducible science]]
 
-* Greenland Ice Sheet solid ice discharge from 1986 through March 2020
+* Greenland Ice Sheet solid ice discharge from 1986 through last month
 
 This is the source for "Greenland Ice Sheet solid ice discharge from 1986 through March 2020" and previous and subsequent versions.
 
