@@ -1288,9 +1288,9 @@ g.region raster=VX_${DATE} -pa
 MSG_OK "MEaSURES.0766"
 g.mapset -c MEaSUREs.0766
 r.mask -r
-ROOT=${DATADIR}/MEaSUREs/NSIDC-0766.002/
-VX=$(find ${ROOT} -name "*mosaic_*vx*.tif" | head -n1) # DEBUG
-for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
+ROOT=${DATADIR}/MEaSUREs/NSIDC-0766.002
+VX=$(find ${ROOT} ${ROOT}-updates -name "*mosaic_*vx*.tif" | tail -n1) # DEBUG
+for VX in $(find ${ROOT} ${ROOT}-updates -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
   VY=${VX/vx/vy}
   EX=${VX/vx/ex}
   EY=${EX/ex/ey}
