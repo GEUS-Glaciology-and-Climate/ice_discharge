@@ -1035,11 +1035,12 @@ g.region -d
 + See: [[file:~/data/MEaSUREs/README.org][MEaSUREs README]]
 
 + [X] 0478 :: 2000 -- 2017 annual average
-+ [ ] 0481 :: 6-11 day velocity
++ [X] 0481 :: 6-11 day velocity TSX
 + [X] 0646 :: Monthly velocity - sparse glacier coverage 1985 through 2016
 + [ ] 0670 :: 1995 -- 2015 average
 + [ ] 0725 :: 2015 & 2016 annual average
 + [X] 0731 :: Monthly  ice sheet velocity 2015 through 2018
++ [X] 0766 :: S1 6-d16
 
 ***** 0478.002 
 + MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2
@@ -1145,6 +1146,62 @@ d.rast vel
 d.rast vel_filled
 #+END_SRC
 
+***** 0481.004 TSX
+****** Generate VRTs
++ One map per date
++ Build GDAL virtual tiles for every date (when data exists)
+#+BEGIN_SRC bash :results verbatim
+g.mapset -c MEaSUREs.0481
+
+ROOT=${DATADIR}/MEaSUREs/NSIDC-0481.004
+VRTROOT=./tmp/NSIDC-0481.004.vrt/
+mkdir -p ${VRTROOT}
+
+for date in $(cd ${ROOT}; ls -d */|tr -d '/'); do
+  if [[ ! -f ${VRTROOT}/${date}_vx.vrt ]]; then # VRT file does not exist?
+    LIST=$(find ${ROOT}/${date}/ -name "TSX*vx*.tif" | LC_ALL=C sort)
+    if [[ ! -z ${LIST} ]]; then
+      MSG_OK "Building VRTs for ${date}"
+
+      VX=$(ls $ROOT/$date/*vx* | head -n1)
+      T0=$(basename ${VX} | cut -d_ -f3)
+      T1=$(basename ${VX} | cut -d_ -f4)
+      SEC0=$(date --utc --date="${T0}" +"%s")
+      SEC1=$(date --utc --date="${T1}" +"%s")
+      MID=$(echo "(${SEC0}+${SEC1})/2"|bc)
+      DATE=$(date --utc --date="@${MID}" +"%Y_%m_%d")
+      
+      parallel --verbose --bar gdalbuildvrt -overwrite ${VRTROOT}/${DATE}_{}.vrt $\(find ${ROOT}/${date} -name "TSX*{}*.tif" \| LC_ALL=C sort\) ::: vx vy ex ey
+    fi
+  fi
+done
+#+END_SRC
+
+****** Import VRTs
+#+BEGIN_SRC bash :results verbatim
+MSG_OK "MEaSURES.0481"
+g.mapset -c MEaSUREs.0481
+
+# Set a super region
+gdalbuildvrt -overwrite tmp/0481.vrt ./tmp/NSIDC-0481.004.vrt/*_vx.vrt
+r.external source=tmp/0481.vrt output=tmp -e -r 
+g.region raster=tmp -pa res=250
+g.remove -f type=raster name=tmp
+
+r.mask -r
+ROOT=./tmp/NSIDC-0481.004.vrt/
+VX=$(find ${ROOT} -name "*vx*.vrt" | head -n1) # debug
+for VX in $(find ${ROOT} -name "*vx*.vrt" | LC_ALL=C sort); do
+    VY=${VX/vx/vy}
+    EX=${VX/vx/ex}
+    EY=${EX/ex/ey}
+    DATE=$(basename $VX | cut -d"_" -f1-3)
+    echo $DATE
+    
+    parallel --verbose --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
+done
+#+END_SRC
+
 ***** 0646.003
 + MEaSUREs Greenland Ice Velocity: Selected Glacier Site Velocity Maps from Optical Images, Version 2
 + Monthly velocity maps
@@ -1194,7 +1251,7 @@ g.region raster=VX_${DATE} -pa
 
 
 
-***** 0731.001
+***** 0731.004
 MEaSUREs Greenland Monthly Ice Sheet Velocity Mosaics from SAR and Landsat, Version 1
 
 ****** Import
@@ -1202,7 +1259,7 @@ MEaSUREs Greenland Monthly Ice Sheet Velocity Mosaics from SAR and Landsat, Vers
 MSG_OK "MEaSURES.0731"
 g.mapset -c MEaSUREs.0731
 r.mask -r
-ROOT=${DATADIR}/MEaSUREs/NSIDC-0731.001/
+ROOT=${DATADIR}/MEaSUREs/NSIDC-0731.004/
 VX=$(find ${ROOT} -name "*mosaic_*vx*.tif" | head -n1) # DEBUG
 for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
   VY=${VX/vx/vy}
@@ -1223,6 +1280,35 @@ done
 g.region raster=VX_${DATE} -pa
 #+END_SRC
 
+
+***** 0766.002 Sentinel
+
+****** Import
+#+BEGIN_SRC bash :results verbatim
+MSG_OK "MEaSURES.0766"
+g.mapset -c MEaSUREs.0766
+r.mask -r
+ROOT=${DATADIR}/MEaSUREs/NSIDC-0766.002
+VX=$(find ${ROOT} ${ROOT}-updates -name "*mosaic_*vx*.tif" | tail -n1) # DEBUG
+for VX in $(find ${ROOT} ${ROOT}-updates -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
+  VY=${VX/vx/vy}
+  EX=${VX/vx/ex}
+  EY=${EX/ex/ey}
+
+  T0=$(basename ${VX} | cut -d_ -f5)
+  T1=$(basename ${VX} | cut -d_ -f6)
+  SEC0=$(date --utc --date="${T0}" +"%s")
+  SEC1=$(date --utc --date="${T1}" +"%s")
+  MID=$(echo "(${SEC0}+${SEC1})/2"|bc)
+  DATE=$(date --utc --date="@${MID}" +"%Y_%m_%d")
+
+  # echo $DATE
+  parallel --verbose --bar r.external source={1} output={2}_${DATE} ::: ${VX} ${VY} ${EX} ${EY} :::+ VX VY EX EY
+  # Can't r.null for external maps.
+  # parallel --verbose --bar r.null map={}_${DATE} null=0 ::: VX VY EX EY 
+done
+g.region raster=VX_${DATE} -pa
+#+END_SRC
 
 **** Sentinel 1
 ***** Data Intro                                                   :noexport:
@@ -1445,7 +1531,7 @@ BUFFER_DIST=5000
 Create a new mapset for this specific velocity cutoff and buffer distance
 
 #+BEGIN_SRC bash :results verbatim
-g.mapset -c gates_${VELOCITY_CUTOFF}_${BUFFER_DIST}
+g.mapset -c gates_vel_buf
 g.region -d
 #+END_SRC
 
@@ -1854,7 +1940,7 @@ df.round()
 Effective velocity (because gates may only be valid in =x= or =y= direction) was calculated for the sensitivity test above at one time, but for all gate locations (buffer dist and speed cutoff). Now we need to calculate it at all times
 
 #+BEGIN_SRC bash :results verbatim :tangle no
-g.mapsets gates_100_5000
+g.mapsets gates_vel_buf
 r.mask -r
 
 mapset=$(g.mapset -l | tr ' ' '\n' | grep -E gates_??_????| head -n1) # DEBUG
@@ -1899,7 +1985,7 @@ g.mapsets -l
 
 r.mask -r
 
-MAPSET=gates_100_5000
+MAPSET=gates_vel_buf
 
 g.mapset MEaSUREs.0478
 g.region -d
@@ -1907,6 +1993,14 @@ r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, nul
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(VX_{1} == -2*10^9, 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(VY_{1} == -2*10^9, 0, abs(VY_{1})), 0)\"" ::: ${dates}
 parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(EX_{1} == -2*10^9, 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(EY_{1} == -2*10^9, 0, abs(EY_{1})), 0)\"" ::: ${dates}
+
+
+g.mapset MEaSUREs.0481
+g.region -d
+r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
+dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
+parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
+parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
 
 
 g.mapset MEaSUREs.0646
@@ -1918,6 +2012,14 @@ parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(E
 
 
 g.mapset MEaSUREs.0731
+g.region -d
+r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
+dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
+parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
+parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
+
+
+g.mapset MEaSUREs.0766
 g.region -d
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
@@ -1971,25 +2073,30 @@ MSG_OK "Exporting..."
 g.mapset PERMANENT
 g.region -dp
 
-MAPSET=gates_100_5000
+MAPSET=gates_vel_buf
 
 VEL_baseline="vel_baseline@MEaSUREs.0478 vx_baseline@MEaSUREs.0478 vy_baseline@MEaSUREs.0478 vel_err_baseline@MEaSUREs.0478 ex_baseline@MEaSUREs.0478 ey_baseline@MEaSUREs.0478"
 VEL_0478=$(g.list -m mapset=MEaSUREs.0478 type=raster pattern=vel_eff_????_??_?? separator=space)
 ERR_0478=$(g.list -m mapset=MEaSUREs.0478 type=raster pattern=err_eff_????_??_?? separator=space)
+VEL_0481=$(g.list -m mapset=MEaSUREs.0481 type=raster pattern=vel_eff_????_??_?? separator=space)
+ERR_0481=$(g.list -m mapset=MEaSUREs.0481 type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_0646=$(g.list -m mapset=MEaSUREs.0646 type=raster pattern=vel_eff_????_??_?? separator=space)
 ERR_0646=$(g.list -m mapset=MEaSUREs.0646 type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_0731=$(g.list -m mapset=MEaSUREs.0731 type=raster pattern=vel_eff_????_??_?? separator=space)
 ERR_0731=$(g.list -m mapset=MEaSUREs.0731 type=raster pattern=err_eff_????_??_?? separator=space)
+VEL_0766=$(g.list -m mapset=MEaSUREs.0766 type=raster pattern=vel_eff_????_??_?? separator=space)
+ERR_0766=$(g.list -m mapset=MEaSUREs.0766 type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_SENTINEL=$(g.list -m mapset=Sentinel1 type=raster pattern=vel_eff_????_??_?? separator=space)
 ERR_SENTINEL=$(g.list -m mapset=Sentinel1 type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_MOUGINOT=$(g.list -m mapset=Mouginot_pre2000 type=raster pattern=vel_eff_????_??_?? separator=space)
 THICK=$(g.list -m mapset=Khan_2016 type=raster pattern=dh_???? separator=space)
 GIMP_0715="dem@GIMP.0715 day@GIMP.0715" # ,err@GIMP.0715
 
-LIST="lon lat err_2D gates_x@${MAPSET} gates_y@${MAPSET} gates_gateID@${MAPSET} sectors@Mouginot_2019 regions@Mouginot_2019 bed@BedMachine thickness@BedMachine surface@BedMachine thickness@Bamber_2013 ${THICK} ${GIMP_0715} ${VEL_baseline} ${VEL_0478} ${VEL_0646} ${VEL_0731} ${VEL_SENTINEL} ${VEL_MOUGINOT} errbed@BedMachine ${ERR_0478} ${ERR_0646} ${ERR_0731} ${ERR_SENTINEL}"
+LIST="lon lat err_2D gates_x@${MAPSET} gates_y@${MAPSET} gates_gateID@${MAPSET} sectors@Mouginot_2019 regions@Mouginot_2019 bed@BedMachine thickness@BedMachine surface@BedMachine thickness@Bamber_2013 ${THICK} ${GIMP_0715} ${VEL_baseline} ${VEL_0478}
+${VEL_0481} ${VEL_0646} ${VEL_0731} ${VEL_0766} ${VEL_SENTINEL} ${VEL_MOUGINOT} errbed@BedMachine ${ERR_0478} ${ERR_0481} ${ERR_0646} ${ERR_0731} ${ERR_0766} ${ERR_SENTINEL}"
 
 mkdir tmp/dat
-r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(dem@GIMP.0715) | if(mask_GIC@Mouginot_2019)" --o
+r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(dem@GIMP.0715) | if(mask_GIC@Mouginot_2019) | if(vel_err_baseline@MEaSUREs.0478)" --o
 parallel --bar "if [[ ! -e ./tmp/dat/{1}.bsv ]]; then (echo x\|y\|{1}; r.out.xyz input={1}) > ./tmp/dat/{1}.bsv; fi" ::: ${LIST}
 r.mask -r
 
@@ -2090,13 +2197,13 @@ df = pd.read_csv("./tmp/dat_100_5000.csv")
 thick = df['thickness@BedMachine']
 # thick[thick < 50] = 50  # IS THIS REASONABLE? IMPORTANT?
 # vel = df['vel_baseline@MEaSUREs.0478']
-vel = np.abs(df['vx_baseline@MEaSUREs.0478'])*df['gates_x@gates_100_5000'] + np.abs(df['vy_baseline@MEaSUREs.0478'])*df['gates_y@gates_100_5000']
+vel = np.abs(df['vx_baseline@MEaSUREs.0478'])*df['gates_x@gates_vel_buf'] + np.abs(df['vy_baseline@MEaSUREs.0478'])*df['gates_y@gates_vel_buf']
 D = 200  * thick * vel * 917 / 1E12
 df_out.loc['D'] = [np.sum(D), 'Gt']
 
 err_thick = np.abs(df['errbed@BedMachine'].values)
 # err_vel = np.abs(df['vel_err_baseline@MEaSUREs.0478'])
-err_vel = np.abs(df['ex_baseline@MEaSUREs.0478'])*df['gates_x@gates_100_5000'] + np.abs(df['ey_baseline@MEaSUREs.0478'])*df['gates_y@gates_100_5000']
+err_vel = np.abs(df['ex_baseline@MEaSUREs.0478'])*df['gates_x@gates_vel_buf'] + np.abs(df['ey_baseline@MEaSUREs.0478'])*df['gates_y@gates_vel_buf']
 
 e_th = 200 * err_thick * vel * 917 / 1E12
 df_out.loc['Err (Thickness)'] = [np.sum(e_th), 'Gt']
@@ -2137,7 +2244,7 @@ for s in sectors:
     sub_s = df[df['sectors@Mouginot_2019'] == s]
     thick = sub_s['thickness@BedMachine']
     # vel = sub_s['vel_baseline@MEaSUREs.0478']
-    vel = np.abs(sub_s['vx_baseline@MEaSUREs.0478']*sub_s['gates_x@gates_100_5000']) + np.abs(sub_s['vy_baseline@MEaSUREs.0478']*sub_s['gates_y@gates_100_5000'])
+    vel = np.abs(sub_s['vx_baseline@MEaSUREs.0478']*sub_s['gates_x@gates_vel_buf']) + np.abs(sub_s['vy_baseline@MEaSUREs.0478']*sub_s['gates_y@gates_vel_buf'])
     D = 200  * thick * vel * 917 / 1E12
     err_thick = np.abs(sub_s['errbed@BedMachine'].values)
     # err_thick[np.where(err_thick < 50)] = 50  # IS THIS REASONABLE? IMPORTANT?
@@ -2174,7 +2281,7 @@ regions = np.unique(df['regions@Mouginot_2019'].values)
 for r in regions:
    sub_r = df[df['regions@Mouginot_2019'] == r]
    thick = sub_r['thickness@BedMachine']
-   vel = np.abs(sub_r['vx_baseline@MEaSUREs.0478']*sub_r['gates_x@gates_100_5000']) + np.abs(sub_r['vy_baseline@MEaSUREs.0478']*sub_r['gates_y@gates_100_5000'])
+   vel = np.abs(sub_r['vx_baseline@MEaSUREs.0478']*sub_r['gates_x@gates_vel_buf']) + np.abs(sub_r['vy_baseline@MEaSUREs.0478']*sub_r['gates_y@gates_vel_buf'])
    D = 200  * thick * vel * 917 / 1E12
    err_thick = np.abs(sub_r['errbed@BedMachine'].values)
    # err_thick[np.where(err_thick < 50)] = 50  # IS THIS REASONABLE? IMPORTANT?
@@ -2206,11 +2313,11 @@ df = pd.read_csv("./tmp/dat_100_5000.csv")
 err_gate = pd.DataFrame(columns=['D','E', 'E%'])
 err_gate.index.name = 'Gate'
 
-gates = np.unique(df['gates_gateID@gates_100_5000'].values)
+gates = np.unique(df['gates_gateID@gates_vel_buf'].values)
 for g in gates:
-    sub = df[df['gates_gateID@gates_100_5000'] == g]
+    sub = df[df['gates_gateID@gates_vel_buf'] == g]
     thick = sub['thickness@BedMachine']
-    vel = np.abs(sub['vx_baseline@MEaSUREs.0478'])*sub['gates_x@gates_100_5000'] + np.abs(sub['vy_baseline@MEaSUREs.0478'])*sub['gates_y@gates_100_5000']
+    vel = np.abs(sub['vx_baseline@MEaSUREs.0478'])*sub['gates_x@gates_vel_buf'] + np.abs(sub['vy_baseline@MEaSUREs.0478'])*sub['gates_y@gates_vel_buf']
     D = 200  * thick * vel * 917 / 1E12
     err_thick = np.abs(sub['errbed@BedMachine'].values)
     # err_thick[np.where(err_thick < 50)] = 50  # IS THIS REASONABLE? IMPORTANT?
@@ -2267,12 +2374,12 @@ import datetime as dt
 ### Load metadata
 ### 
 meta_cols = ["x", "y", "err_2D", 
-             "regions@Mouginot_2019", "sectors@Mouginot_2019", "gates_gateID@gates_100_5000"]
+             "regions@Mouginot_2019", "sectors@Mouginot_2019", "gates_gateID@gates_vel_buf"]
 meta = pd.read_csv("./tmp/dat_100_5000.csv", usecols=meta_cols)
 # rename columns
 meta.rename(inplace=True, columns={'regions@Mouginot_2019':'regions', 
                                    'sectors@Mouginot_2019':'sectors',
-                                   'gates_gateID@gates_100_5000':'gates'})
+                                   'gates_gateID@gates_vel_buf':'gates'})
 regions = {1:'NO', 2:'NE', 3:'CE', 4:'SE', 5:'SW', 6:'CW', 7:'NW'}
 meta['regions'] = meta['regions'].map(regions.get) # Convert sector numbers to meaningful names
 # UNDO with foo.replace({'NO':1,'NW':2,'NE':3,'CW':4,'CE':5,'SW':6,'SE':7}) 
@@ -2392,10 +2499,10 @@ th = pd.read_csv("./tmp/dat_100_5000.csv", usecols=["thickness@BedMachine",
                                                     "surface@BedMachine",
                                                     "bed@BedMachine",
                                                     "errbed@BedMachine",
-                                                    "gates_gateID@gates_100_5000"])
+                                                    "gates_gateID@gates_vel_buf"])
 th.rename(inplace=True, columns={'thickness@BedMachine':'thick',
                                  'errbed@BedMachine': 'err',
-                                 'gates_gateID@gates_100_5000':'gates'})
+                                 'gates_gateID@gates_vel_buf':'gates'})
 th_GIMP = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('@GIMP.0715' in c)))
 th_GIMP['day'] = [dt.datetime(2000,1,1) + dt.timedelta(days=int(_)) for _ in th_GIMP['day@GIMP.0715']]
 for _ in th_GIMP.columns: th[_] = th_GIMP[_]
@@ -2412,8 +2519,9 @@ dhdt.rename(inplace=True, columns=mv)
 
 # assume trend continues from last measured value
 dhdt[2020] = dhdt[2019]
-dhdt[2021] = dhdt[2020]
-dhdt[2022] = dhdt[2021]
+dhdt[2021] = dhdt[2019]
+dhdt[2022] = dhdt[2019]
+dhdt[2023] = dhdt[2019]
 for y in np.arange(1985,1994+1): dhdt[y] = dhdt.loc[:,1995:1997].mean(axis='columns')
 dhdt.sort_index(axis='columns', inplace=True)
 
@@ -2625,7 +2733,7 @@ for g in th[th['bad']]['gates'].unique():
 tmp = meta.copy()
 tmp['vel'] = vel_baseline
 gates = pd.DataFrame(index=th['gates'].unique())
-id = 'gates' #_gateID@gates_100_5000'
+id = 'gates' #_gateID@gates_vel_buf'
 gates['x'] = tmp.groupby(id).mean()['x']
 gates['y'] = tmp.groupby(id).mean()['y']
 gates['all_bad'] = th.groupby('gates').mean()['all_bad']
@@ -3110,7 +3218,7 @@ D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.3f', header=[
 
 **** Gates
 #+BEGIN_SRC bash :results verbatim :tangle gate_export.sh
-g.mapset gates_100_5000
+g.mapset gates_vel_buf
 
 v.out.ogr input=gates_final output=./out/gates.kml format=KML --o
 (cd out; zip gates.kmz gates.kml; rm gates.kml)
@@ -3588,7 +3696,7 @@ EOF
 
 g.copy vector=sectors@Mouginot_2019,sectors --o
 g.copy vector=regions@Mouginot_2019,regions --o
-g.copy vector=gates_final@gates_100_5000,gates --o
+g.copy vector=gates_final@gates_vel_buf,gates --o
 
 
 ### get baseline discharge at each gate
@@ -4417,7 +4525,7 @@ if 'bamber' not in locals():
     z_b[z_s == 0] = np.nan
     thick = z_s - z_b
     diff = thick - bamber
-    gates = garray.array("gates_final@gates_100_5000", null=np.nan)
+    gates = garray.array("gates_final@gates_vel_buf", null=np.nan)
 
     # v.out_ogr(input='gate_lines', output='./tmp/SHP/E2014_gates.shp', format='ESRI_Shapefile', overwrite=True)
     # gates_E2014 = shapefile.Reader("./tmp/SHP/E2014_gates.shp")
@@ -4586,7 +4694,7 @@ fi
 <<GRASS_config>>
 <<sentinel1_import>>
 	
-MAPSET=gates_100_5000
+MAPSET=gates_vel_buf
 <<sentinel1_effective_velocity>>
 #+END_SRC
 *** Upload
@@ -5088,34 +5196,183 @@ find ${DATADIR}/MEaSUREs/NSIDC-0646.003/ -type f -name "*vx_v03.0.tif" | rev | c
 Subset to vx
 
 #+BEGIN_SRC bash :results verbatim :eval no-export
-(cd ${DATADIR}/MEaSUREs/NSIDC-0731.001; find -name "*vx*.tif"| LC_ALL=C sort)
+(cd ${DATADIR}/MEaSUREs/NSIDC-0731.004; find -name "*vx*.tif"| LC_ALL=C sort)
 #+END_SRC
 
 #+RESULTS:
+#+begin_example
+./2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v04.0.tif
+./2015.01.01/GL_vel_mosaic_Monthly_01Jan15_31Jan15_vx_v04.0.tif
+./2015.02.01/GL_vel_mosaic_Monthly_01Feb15_28Feb15_vx_v04.0.tif
+./2015.03.01/GL_vel_mosaic_Monthly_01Mar15_31Mar15_vx_v04.0.tif
+./2015.04.01/GL_vel_mosaic_Monthly_01Apr15_30Apr15_vx_v04.0.tif
+./2015.05.01/GL_vel_mosaic_Monthly_01May15_31May15_vx_v04.0.tif
+./2015.06.01/GL_vel_mosaic_Monthly_01Jun15_30Jun15_vx_v04.0.tif
+./2015.07.01/GL_vel_mosaic_Monthly_01Jul15_31Jul15_vx_v04.0.tif
+./2015.08.01/GL_vel_mosaic_Monthly_01Aug15_31Aug15_vx_v04.0.tif
+./2015.09.01/GL_vel_mosaic_Monthly_01Sep15_30Sep15_vx_v04.0.tif
+./2015.10.01/GL_vel_mosaic_Monthly_01Oct15_31Oct15_vx_v04.0.tif
+./2015.11.01/GL_vel_mosaic_Monthly_01Nov15_30Nov15_vx_v04.0.tif
+./2015.12.01/GL_vel_mosaic_Monthly_01Dec15_31Dec15_vx_v04.0.tif
+./2016.01.01/GL_vel_mosaic_Monthly_01Jan16_31Jan16_vx_v04.0.tif
+./2016.02.01/GL_vel_mosaic_Monthly_01Feb16_29Feb16_vx_v04.0.tif
+./2016.03.01/GL_vel_mosaic_Monthly_01Mar16_31Mar16_vx_v04.0.tif
+./2016.04.01/GL_vel_mosaic_Monthly_01Apr16_30Apr16_vx_v04.0.tif
+./2016.05.01/GL_vel_mosaic_Monthly_01May16_31May16_vx_v04.0.tif
+./2016.06.01/GL_vel_mosaic_Monthly_01Jun16_30Jun16_vx_v04.0.tif
+./2016.07.01/GL_vel_mosaic_Monthly_01Jul16_31Jul16_vx_v04.0.tif
+./2016.08.01/GL_vel_mosaic_Monthly_01Aug16_31Aug16_vx_v04.0.tif
+./2016.09.01/GL_vel_mosaic_Monthly_01Sep16_30Sep16_vx_v04.0.tif
+./2016.10.01/GL_vel_mosaic_Monthly_01Oct16_31Oct16_vx_v04.0.tif
+./2016.11.01/GL_vel_mosaic_Monthly_01Nov16_30Nov16_vx_v04.0.tif
+./2016.12.01/GL_vel_mosaic_Monthly_01Dec16_31Dec16_vx_v04.0.tif
+./2017.01.01/GL_vel_mosaic_Monthly_01Jan17_31Jan17_vx_v04.0.tif
+./2017.02.01/GL_vel_mosaic_Monthly_01Feb17_28Feb17_vx_v04.0.tif
+./2017.03.01/GL_vel_mosaic_Monthly_01Mar17_31Mar17_vx_v04.0.tif
+./2017.04.01/GL_vel_mosaic_Monthly_01Apr17_30Apr17_vx_v04.0.tif
+./2017.05.01/GL_vel_mosaic_Monthly_01May17_31May17_vx_v04.0.tif
+./2017.06.01/GL_vel_mosaic_Monthly_01Jun17_30Jun17_vx_v04.0.tif
+./2017.07.01/GL_vel_mosaic_Monthly_01Jul17_31Jul17_vx_v04.0.tif
+./2017.08.01/GL_vel_mosaic_Monthly_01Aug17_31Aug17_vx_v04.0.tif
+./2017.09.01/GL_vel_mosaic_Monthly_01Sep17_30Sep17_vx_v04.0.tif
+./2017.10.01/GL_vel_mosaic_Monthly_01Oct17_31Oct17_vx_v04.0.tif
+./2017.11.01/GL_vel_mosaic_Monthly_01Nov17_30Nov17_vx_v04.0.tif
+./2017.12.01/GL_vel_mosaic_Monthly_01Dec17_31Dec17_vx_v04.0.tif
+./2018.01.01/GL_vel_mosaic_Monthly_01Jan18_31Jan18_vx_v04.0.tif
+./2018.02.01/GL_vel_mosaic_Monthly_01Feb18_28Feb18_vx_v04.0.tif
+./2018.03.01/GL_vel_mosaic_Monthly_01Mar18_31Mar18_vx_v04.0.tif
+./2018.04.01/GL_vel_mosaic_Monthly_01Apr18_30Apr18_vx_v04.0.tif
+./2018.05.01/GL_vel_mosaic_Monthly_01May18_31May18_vx_v04.0.tif
+./2018.06.01/GL_vel_mosaic_Monthly_01Jun18_30Jun18_vx_v04.0.tif
+./2018.07.01/GL_vel_mosaic_Monthly_01Jul18_31Jul18_vx_v04.0.tif
+./2018.08.01/GL_vel_mosaic_Monthly_01Aug18_31Aug18_vx_v04.0.tif
+./2018.09.01/GL_vel_mosaic_Monthly_01Sep18_30Sep18_vx_v04.0.tif
+./2018.10.01/GL_vel_mosaic_Monthly_01Oct18_31Oct18_vx_v04.0.tif
+./2018.11.01/GL_vel_mosaic_Monthly_01Nov18_30Nov18_vx_v04.0.tif
+./2018.12.01/GL_vel_mosaic_Monthly_01Dec18_31Dec18_vx_v04.0.tif
+./2019.01.01/GL_vel_mosaic_Monthly_01Jan19_31Jan19_vx_v04.0.tif
+./2019.02.01/GL_vel_mosaic_Monthly_01Feb19_28Feb19_vx_v04.0.tif
+./2019.03.01/GL_vel_mosaic_Monthly_01Mar19_31Mar19_vx_v04.0.tif
+./2019.04.01/GL_vel_mosaic_Monthly_01Apr19_30Apr19_vx_v04.0.tif
+./2019.05.01/GL_vel_mosaic_Monthly_01May19_31May19_vx_v04.0.tif
+./2019.06.01/GL_vel_mosaic_Monthly_01Jun19_30Jun19_vx_v04.0.tif
+./2019.07.01/GL_vel_mosaic_Monthly_01Jul19_31Jul19_vx_v04.0.tif
+./2019.08.01/GL_vel_mosaic_Monthly_01Aug19_31Aug19_vx_v04.0.tif
+./2019.09.01/GL_vel_mosaic_Monthly_01Sep19_30Sep19_vx_v04.0.tif
+./2019.10.01/GL_vel_mosaic_Monthly_01Oct19_31Oct19_vx_v04.0.tif
+./2019.11.01/GL_vel_mosaic_Monthly_01Nov19_30Nov19_vx_v04.0.tif
+./2019.12.01/GL_vel_mosaic_Monthly_01Dec19_31Dec19_vx_v04.0.tif
+./2020.01.01/GL_vel_mosaic_Monthly_01Jan20_31Jan20_vx_v04.0.tif
+./2020.02.01/GL_vel_mosaic_Monthly_01Feb20_29Feb20_vx_v04.0.tif
+./2020.03.01/GL_vel_mosaic_Monthly_01Mar20_31Mar20_vx_v04.0.tif
+./2020.04.01/GL_vel_mosaic_Monthly_01Apr20_30Apr20_vx_v04.0.tif
+./2020.05.01/GL_vel_mosaic_Monthly_01May20_31May20_vx_v04.0.tif
+./2020.06.01/GL_vel_mosaic_Monthly_01Jun20_30Jun20_vx_v04.0.tif
+./2020.07.01/GL_vel_mosaic_Monthly_01Jul20_31Jul20_vx_v04.0.tif
+./2020.08.01/GL_vel_mosaic_Monthly_01Aug20_31Aug20_vx_v04.0.tif
+./2020.09.01/GL_vel_mosaic_Monthly_01Sep20_30Sep20_vx_v04.0.tif
+./2020.10.01/GL_vel_mosaic_Monthly_01Oct20_31Oct20_vx_v04.0.tif
+./2020.11.01/GL_vel_mosaic_Monthly_01Nov20_30Nov20_vx_v04.0.tif
+./2020.12.01/GL_vel_mosaic_Monthly_01Dec20_31Dec20_vx_v04.0.tif
+./2021.01.01/GL_vel_mosaic_Monthly_01Jan21_31Jan21_vx_v04.0.tif
+./2021.02.01/GL_vel_mosaic_Monthly_01Feb21_28Feb21_vx_v04.0.tif
+./2021.03.01/GL_vel_mosaic_Monthly_01Mar21_31Mar21_vx_v04.0.tif
+./2021.04.01/GL_vel_mosaic_Monthly_01Apr21_30Apr21_vx_v04.0.tif
+./2021.05.01/GL_vel_mosaic_Monthly_01May21_31May21_vx_v04.0.tif
+./2021.06.01/GL_vel_mosaic_Monthly_01Jun21_30Jun21_vx_v04.0.tif
+./2021.07.01/GL_vel_mosaic_Monthly_01Jul21_31Jul21_vx_v04.0.tif
+./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v04.0.tif
+./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v04.0.tif
+./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v04.0.tif
+./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v04.0.tif
+./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v04.0.tif
+./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v04.0.tif
+./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v04.0.tif
+#+end_example
 
 ***** File Metadata
 
 #+NAME: QC_gdalinfo_NSIDC_0731
 #+BEGIN_SRC bash :results verbatim :eval no-export
-somefile=$(find ${DATADIR}/MEaSUREs/NSIDC-0731.001 -name "*vx*.tif" | LC_ALL=C sort | head -n1)
+somefile=$(find ${DATADIR}/MEaSUREs/NSIDC-0731.004 -name "*vx*.tif" | LC_ALL=C sort | head -n1)
 md5sum ${somefile}
 echo ""
 gdalinfo -mm ${somefile}
 #+END_SRC
 
 #+RESULTS: QC_gdalinfo_NSIDC_0731
+#+begin_example
+6c1db350f34bfaf58bf39f610489a56b  /home/kdm/data/MEaSUREs/NSIDC-0731.004/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v04.0.tif
+
+Driver: GTiff/GeoTIFF
+Files: /home/kdm/data/MEaSUREs/NSIDC-0731.004/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v04.0.tif
+Size is 7585, 13700
+Coordinate System is:
+ENGCRS["unnamed",
+    EDATUM[""],
+    CS[Cartesian,2],
+        AXIS["(E)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["(N)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    ID["EPSG",3413]]
+Data axis to CRS axis mapping: 1,2
+Origin = (-659100.000000000000000,-639100.000000000000000)
+Pixel Size = (200.000000000000000,-200.000000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Image Structure Metadata:
+  COMPRESSION=DEFLATE
+  INTERLEAVE=BAND
+  LAYOUT=COG
+Corner Coordinates:
+Upper Left  ( -659100.000, -639100.000) 
+Lower Left  ( -659100.000,-3379100.000) 
+Upper Right (  857900.000, -639100.000) 
+Lower Right (  857900.000,-3379100.000) 
+Center      (   99400.000,-2009100.000) 
+Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
+  Min=-17040.645 Max=8270.308   Computed Min/Max=-17040.645,8270.308
+  Minimum=-17040.645, Maximum=8270.308, Mean=-69.842, StdDev=332.209
+  NoData Value=-2000000000
+  Overviews: 3792x6850, 1896x3425, 948x1712, 474x856, 237x428
+  Metadata:
+    STATISTICS_MAXIMUM=8270.3076171875
+    STATISTICS_MEAN=-69.842322897928
+    STATISTICS_MINIMUM=-17040.64453125
+    STATISTICS_STDDEV=332.209488003
+    STATISTICS_VALID_PERCENT=3.612
+#+end_example
 
 ***** md5sum hashes of all data
 
 #+NAME: QC_md5sum_NSIDC_0731
 #+BEGIN_SRC bash :results table :eval no-export
-cd ${DATADIR}/MEaSUREs/NSIDC-0731.001
+cd ${DATADIR}/MEaSUREs/NSIDC-0731.004
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
 find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-order "md5sum {}"
 #+END_SRC
 
 #+RESULTS: QC_md5sum_NSIDC_0731
+| fdfe96d5c0af7302ac22536c39a2595c | ./2020.11.01/GL_vel_mosaic_Monthly_01Nov20_30Nov20_vx_v04.0.tif |
+| a9988ce5824a6fd48783fcec45f73540 | ./2020.12.01/GL_vel_mosaic_Monthly_01Dec20_31Dec20_vx_v04.0.tif |
+| f91c216c133fdb8eccb10bb6d1277c43 | ./2021.01.01/GL_vel_mosaic_Monthly_01Jan21_31Jan21_vx_v04.0.tif |
+| 1325211690e22ff06850822688ac0ad4 | ./2021.02.01/GL_vel_mosaic_Monthly_01Feb21_28Feb21_vx_v04.0.tif |
+| e099be24f72c6e465ce23f2b3f44f71a | ./2021.03.01/GL_vel_mosaic_Monthly_01Mar21_31Mar21_vx_v04.0.tif |
+| 81b10f672925b45ef1910fb30c7f50e3 | ./2021.04.01/GL_vel_mosaic_Monthly_01Apr21_30Apr21_vx_v04.0.tif |
+| 1060ce9efa868ba554bbcf58d68c273e | ./2021.05.01/GL_vel_mosaic_Monthly_01May21_31May21_vx_v04.0.tif |
+| 77cd75ed6b9d9aaa0ac67f4942a4cfa3 | ./2021.06.01/GL_vel_mosaic_Monthly_01Jun21_30Jun21_vx_v04.0.tif |
+| 4bf52b4f2d5b4cd2c54b9503b17510d9 | ./2021.07.01/GL_vel_mosaic_Monthly_01Jul21_31Jul21_vx_v04.0.tif |
+| 39aad9e8a2bcddfbbe8b7c15afd31701 | ./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v04.0.tif |
+| f165eaad13ced2369c3698016373e99a | ./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v04.0.tif |
+| 9f94ebaf0bae1836b78d90d9585ee042 | ./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v04.0.tif |
+| e5e55acc24a24918daa5cfc785bb4767 | ./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v04.0.tif |
+| 340c727bbb596f78f0627d9788dc49d8 | ./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v04.0.tif |
+| e15c720663de43671e0223aa938f759e | ./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v04.0.tif |
+| 71b66458e67b89c7bec79a74bad8fbb6 | ./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v04.0.tif |
 
 *** Sentinel 1
 ***** File List
