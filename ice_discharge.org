@@ -1164,6 +1164,10 @@ function ctrl_c() {
 
 *** Bed and Surface
 **** BedMachine v4
+
+
+wget --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --keep-session-cookies --no-check-certificate --auth-no-challenge=on -r --reject "index.html*" -np -e robots=off https://n5eil01u.ecs.nsidc.org/ICEBRIDGE/IDBMG4.005/1993.01.01/BedMachineGreenland-v5.nc
+
 + from [[textcite:Morlighem:2017BedMachine][Morlighem /et al./ (2017)]]
 #+BEGIN_SRC bash :results verbatim
 MSG_OK "BedMachine"

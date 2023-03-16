@@ -15,40 +15,40 @@ echo "also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc."
 #+END_SRC
 
 #+RESULTS:
-: bed@BedMachine	day@GIMP.0715	dem@GIMP.0715	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_100_5000	gates_x@gates_100_5000	gates_y@gates_100_5000	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness@Bamber_2013	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
+: bed@BedMachine	day@GIMP.0715	dem@GIMP.0715	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_vel_buf	gates_x@gates_vel_buf	gates_y@gates_vel_buf	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness@Bamber_2013	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
 
 
 
 #+BEGIN_SRC jupyter-python
 import pandas as pd
 import matplotlib.pyplot as plt
-data = pd.read_csv('tmp/dat_100_5000.csv')
+data = pd.read_csv('tmp/dat_100_5000_BMv4.csv')
 #print(list(data.keys()))
 # subsetting to thickness and gate data
-data = data[['x', 'y','gates_gateID@gates_100_5000' , 'bed@BedMachine', 'day@GIMP.0715', 'dem@GIMP.0715','dh_1995@Khan_2016', 'dh_1996@Khan_2016', 'dh_1997@Khan_2016', 'dh_1998@Khan_2016', 'dh_1999@Khan_2016', 'dh_2000@Khan_2016', 'dh_2001@Khan_2016', 'dh_2002@Khan_2016', 'dh_2003@Khan_2016', 'dh_2004@Khan_2016', 'dh_2005@Khan_2016', 'dh_2006@Khan_2016', 'dh_2007@Khan_2016', 'dh_2008@Khan_2016', 'dh_2009@Khan_2016', 'dh_2010@Khan_2016', 'dh_2011@Khan_2016', 'dh_2012@Khan_2016', 'dh_2013@Khan_2016', 'dh_2014@Khan_2016', 'dh_2015@Khan_2016', 'dh_2016@Khan_2016', 'dh_2017@Khan_2016', 'dh_2018@Khan_2016', 'dh_2019@Khan_2016']]
+data = data[['x', 'y','gates_gateID@gates_vel_buf' , 'bed@BedMachine', 'day@GIMP.0715', 'dem@GIMP.0715','dh_1995@Khan_2016', 'dh_1996@Khan_2016', 'dh_1997@Khan_2016', 'dh_1998@Khan_2016', 'dh_1999@Khan_2016', 'dh_2000@Khan_2016', 'dh_2001@Khan_2016', 'dh_2002@Khan_2016', 'dh_2003@Khan_2016', 'dh_2004@Khan_2016', 'dh_2005@Khan_2016', 'dh_2006@Khan_2016', 'dh_2007@Khan_2016', 'dh_2008@Khan_2016', 'dh_2009@Khan_2016', 'dh_2010@Khan_2016', 'dh_2011@Khan_2016', 'dh_2012@Khan_2016', 'dh_2013@Khan_2016', 'dh_2014@Khan_2016', 'dh_2015@Khan_2016', 'dh_2016@Khan_2016', 'dh_2017@Khan_2016', 'dh_2018@Khan_2016', 'dh_2019@Khan_2016']]
 
 #+END_SRC
 
 #+RESULTS:
 
 #+BEGIN_SRC jupyter-python
-print(data[['x', 'y','gates_gateID@gates_100_5000', 'day@GIMP.0715']])
+print(data[['x', 'y','gates_gateID@gates_vel_buf', 'day@GIMP.0715']])
 #+END_SRC
 
 #+RESULTS:
 #+begin_example
-            x        y  gates_gateID@gates_100_5000  day@GIMP.0715
-  0       100  -811700                            1           5631
-  1       300  -811900                            1           5631
-  2       500  -812100                            1           5631
-  3       700  -812300                            1           5631
-  4       700  -812500                            1           5631
-  ...     ...      ...                          ...            ...
-  5863  44300 -3244100                          357           4556
-  5864  44500 -3244100                          357           4556
-  5865  44700 -3244100                          357           4556
-  5866  44900 -3244100                          357           4556
-  5867  43500 -3244300                          357           4556
+            x        y  gates_gateID@gates_vel_buf  day@GIMP.0715
+  0       100  -811700                           1           5631
+  1       300  -811900                           1           5631
+  2       500  -812100                           1           5631
+  3       700  -812300                           1           5631
+  4       700  -812500                           1           5631
+  ...     ...      ...                         ...            ...
+  5863  44300 -3244100                         357           4556
+  5864  44500 -3244100                         357           4556
+  5865  44700 -3244100                         357           4556
+  5866  44900 -3244100                         357           4556
+  5867  43500 -3244300                         357           4556
 
   [5868 rows x 4 columns]
 #+end_example
@@ -189,4 +189,51 @@ print(gate.keys())
 :       dtype='object')
 [[file:./.ob-jupyter/51f08d7247b4ac4328ef70138ab9bf71c22e7c7d.png]]
 :END:
+
+
+
+** Gate bed and GIMP 
+
+#+BEGIN_SRC jupyter-python
+import pandas as pd
+import matplotlib.pyplot as plt
+data_v5 = pd.read_csv('tmp/dat_100_5000_BMv5.csv')
+data_v4 = pd.read_csv('tmp/dat_100_5000_BMv4.csv')
+# subsetting to thickness and gate data
+data_v5 = data_v5[['x', 'y','gates_gateID@gates_vel_buf' , 'bed@BedMachine', 'day@GIMP.0715', 'dem@GIMP.0715']]
+data_v4 = data_v4[['x', 'y','gates_gateID@gates_vel_buf' , 'bed@BedMachine', 'day@GIMP.0715', 'dem@GIMP.0715']]
+
+
+#+END_SRC
+
+#+RESULTS:
+
+
+
+
+#+BEGIN_SRC jupyter-python
+#print(data_v4.loc[data_v4['gates_gateID@gates_vel_buf']==134,'y'].values)
+print(data_v4.loc[data_v4['gates_gateID@gates_vel_buf']==gateid, 'y'].values)
+#+END_SRC
+
+#+RESULTS:
+: []
+
+#+BEGIN_SRC jupyter-python
+gateid = 134  #144
+fig, ax = plt.subplots(1,1, figsize = (10,10))
+ax.plot(data_v4.loc[data_v4['gates_gateID@gates_vel_buf']==gateid, 'y'].values,data_v4.loc[data_v4['gates_gateID@gates_vel_buf']==gateid, 'bed@BedMachine'].values, label = 'BedMachine_v4')
+ax.plot(data_v5.loc[data_v5['gates_gateID@gates_vel_buf']==gateid, 'y'].values,data_v5.loc[data_v5['gates_gateID@gates_vel_buf']==gateid, 'bed@BedMachine'].values, label = 'BedMachine_v5')
+#ax.plot(data_v4.loc[data_v4['gates_gateID@gates_vel_buf']==144, 'x'].values,data_v4.loc[data_v4['dem@GIMP.0715']==144, 'bed@BedMachine'].values, label = 'BedMachine_v4')
+#data_v5.loc[data_v5['gates_gateID@gates_vel_buf']==144, 'bed@BedMachine'].plot(ax = ax, label = 'BedMachine_v5')
+#data_v4.loc[data_v4['gates_gateID@gates_vel_buf']==144, 'dem@GIMP.0715'].plot(ax = ax, label = 'GIMP dem')
+ax.legend()
+ax.set_ylabel('m a.s.l.')
+fig.savefig('gate_thk/gate'+str(gateid)+'_bed_dem.png', dpi = 300)
+#+END_SRC
+
+#+RESULTS:
+[[file:./.ob-jupyter/61b86d3687b3a27505cf35be539f07de4d0d473d.png]]
+
+
 
