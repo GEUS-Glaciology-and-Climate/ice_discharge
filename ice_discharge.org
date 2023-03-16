@@ -1284,6 +1284,8 @@ g.region raster=VX_${DATE} -pa
 ***** 0766.002 Sentinel
 
 ****** Import
+
+#+NAME: MEaSURES_0766_import
 #+BEGIN_SRC bash :results verbatim
 MSG_OK "MEaSURES.0766"
 g.mapset -c MEaSUREs.0766
@@ -2018,15 +2020,6 @@ dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
 parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
 
-
-g.mapset MEaSUREs.0766
-g.region -d
-r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
-dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
-parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
-parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
-
-
 g.mapset Mouginot_pre2000
 g.region -d
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
@@ -2038,6 +2031,16 @@ for VX in $(g.list type=raster pattern=vx_????_??_??); do
   r.mapcalc "vel_eff_${DATE} = if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(${VY}), 0, abs(${VY})), 0)"
 done
 
+#+END_SRC
+
+#+NAME: MEaSUREs_0766_effective_velocity
+#+BEGIN_SRC bash
+g.mapset MEaSUREs.0766
+g.region -d
+r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
+dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
+parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
+parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
 #+END_SRC
 
 #+NAME: sentinel1_effective_velocity
@@ -4665,8 +4668,8 @@ if [[ -e urls.txt ]]; then cp urls.txt urls.txt.last; fi
 curl https://dataverse.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/FK2/ZEGVXU | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
 
 if cmp -s urls.txt urls.txt.last; then
-  MSG_WARN "No new files..."
-  exit 255
+  MSG_WARN "No new Sentinel1 files..."
+  # exit 255
 fi
 
 # for PID in $(cat urls.txt); do
@@ -4693,9 +4696,11 @@ fi
 <<MSGS_pretty_print>>
 <<GRASS_config>>
 <<sentinel1_import>>
-	
+<<MEaSURES_0766_import>>
+
 MAPSET=gates_vel_buf
 <<sentinel1_effective_velocity>>
+<<MEaSUREs_0766_effective_velocity>>
 #+END_SRC
 *** Upload
 
