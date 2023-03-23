@@ -1251,7 +1251,7 @@ g.region raster=VX_${DATE} -pa
 
 
 
-***** 0731.004
+***** 0731.005
 MEaSUREs Greenland Monthly Ice Sheet Velocity Mosaics from SAR and Landsat, Version 1
 
 ****** Import
@@ -1259,15 +1259,15 @@ MEaSUREs Greenland Monthly Ice Sheet Velocity Mosaics from SAR and Landsat, Vers
 MSG_OK "MEaSURES.0731"
 g.mapset -c MEaSUREs.0731
 r.mask -r
-ROOT=${DATADIR}/MEaSUREs/NSIDC-0731.004/
+ROOT=${DATADIR}/MEaSUREs/NSIDC-0731.005/
 VX=$(find ${ROOT} -name "*mosaic_*vx*.tif" | head -n1) # DEBUG
 for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
   VY=${VX/vx/vy}
   EX=${VX/vx/ex}
   EY=${EX/ex/ey}
 
-  T0=$(dirname ${VX} | rev | cut -d"/" -f1 | rev|cut -d"_" -f4)
-  T1=$(dirname ${VX} | rev | cut -d"/" -f1 | rev|cut -d"_" -f5)
+  T0=$(dirname ${VX} | rev | cut -d"/" -f1 | rev|cut -d"_" -f4 | tr '.' '-')
+  T1=$(dirname ${VX} | rev | cut -d"/" -f1 | rev|cut -d"_" -f5 | tr '.' '-')
   SEC0=$(date --utc --date="${T0}" +"%s")
   SEC1=$(date --utc --date="${T1}" +"%s")
   MID=$(echo "(${SEC0}+${SEC1})/2"|bc)
@@ -5201,7 +5201,7 @@ find ${DATADIR}/MEaSUREs/NSIDC-0646.003/ -type f -name "*vx_v03.0.tif" | rev | c
 Subset to vx
 
 #+BEGIN_SRC bash :results verbatim :eval no-export
-(cd ${DATADIR}/MEaSUREs/NSIDC-0731.004; find -name "*vx*.tif"| LC_ALL=C sort)
+(cd ${DATADIR}/MEaSUREs/NSIDC-0731.005; find -name "*vx*.tif"| LC_ALL=C sort)
 #+END_SRC
 
 #+RESULTS:
@@ -5299,7 +5299,7 @@ Subset to vx
 
 #+NAME: QC_gdalinfo_NSIDC_0731
 #+BEGIN_SRC bash :results verbatim :eval no-export
-somefile=$(find ${DATADIR}/MEaSUREs/NSIDC-0731.004 -name "*vx*.tif" | LC_ALL=C sort | head -n1)
+somefile=$(find ${DATADIR}/MEaSUREs/NSIDC-0731.005 -name "*vx*.tif" | LC_ALL=C sort | head -n1)
 md5sum ${somefile}
 echo ""
 gdalinfo -mm ${somefile}
@@ -5307,21 +5307,50 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0731
 #+begin_example
-6c1db350f34bfaf58bf39f610489a56b  /home/kdm/data/MEaSUREs/NSIDC-0731.004/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v04.0.tif
+33e6afb888f11a8fc61f2e59c89ea657  /home/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 
 Driver: GTiff/GeoTIFF
-Files: /home/kdm/data/MEaSUREs/NSIDC-0731.004/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v04.0.tif
+Files: /home/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 Size is 7585, 13700
 Coordinate System is:
-ENGCRS["unnamed",
-    EDATUM[""],
+PROJCRS["WGS 84 / NSIDC Sea Ice Polar Stereographic North",
+    BASEGEOGCRS["WGS 84",
+        DATUM["World Geodetic System 1984",
+            ELLIPSOID["WGS 84",6378137,298.257223563,
+                LENGTHUNIT["metre",1]]],
+        PRIMEM["Greenwich",0,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4326]],
+    CONVERSION["US NSIDC Sea Ice polar stereographic north",
+        METHOD["Polar Stereographic (variant B)",
+            ID["EPSG",9829]],
+        PARAMETER["Latitude of standard parallel",70,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8832]],
+        PARAMETER["Longitude of origin",-45,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8833]],
+        PARAMETER["False easting",0,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",0,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
     CS[Cartesian,2],
-        AXIS["(E)",east,
+        AXIS["easting (X)",south,
+            MERIDIAN[45,
+                ANGLEUNIT["degree",0.0174532925199433]],
             ORDER[1],
             LENGTHUNIT["metre",1]],
-        AXIS["(N)",north,
+        AXIS["northing (Y)",south,
+            MERIDIAN[135,
+                ANGLEUNIT["degree",0.0174532925199433]],
             ORDER[2],
             LENGTHUNIT["metre",1]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World - N hemisphere - north of 60°N"],
+        BBOX[60,-180,90,180]],
     ID["EPSG",3413]]
 Data axis to CRS axis mapping: 1,2
 Origin = (-659100.000000000000000,-639100.000000000000000)
@@ -5331,23 +5360,22 @@ Metadata:
 Image Structure Metadata:
   COMPRESSION=DEFLATE
   INTERLEAVE=BAND
-  LAYOUT=COG
 Corner Coordinates:
-Upper Left  ( -659100.000, -639100.000) 
-Lower Left  ( -659100.000,-3379100.000) 
-Upper Right (  857900.000, -639100.000) 
-Lower Right (  857900.000,-3379100.000) 
-Center      (   99400.000,-2009100.000) 
+Upper Left  ( -659100.000, -639100.000) ( 90d52'57.45"W, 81d32'23.19"N)
+Lower Left  ( -659100.000,-3379100.000) ( 56d 2'13.47"W, 58d58'10.19"N)
+Upper Right (  857900.000, -639100.000) (  8d18'55.49"E, 80d 8'52.35"N)
+Lower Right (  857900.000,-3379100.000) ( 30d45'16.18"W, 58d35'44.75"N)
+Center      (   99400.000,-2009100.000) ( 42d10' 3.39"W, 71d35' 4.30"N)
 Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
-  Min=-17040.645 Max=8270.308   Computed Min/Max=-17040.645,8270.308
-  Minimum=-17040.645, Maximum=8270.308, Mean=-69.842, StdDev=332.209
+  Min=-17040.822 Max=8270.726   Computed Min/Max=-17040.822,8270.726
+  Minimum=-17040.822, Maximum=8270.726, Mean=-69.922, StdDev=332.203
   NoData Value=-2000000000
   Overviews: 3792x6850, 1896x3425, 948x1712, 474x856, 237x428
   Metadata:
-    STATISTICS_MAXIMUM=8270.3076171875
-    STATISTICS_MEAN=-69.842322897928
-    STATISTICS_MINIMUM=-17040.64453125
-    STATISTICS_STDDEV=332.209488003
+    STATISTICS_MAXIMUM=8270.7255859375
+    STATISTICS_MEAN=-69.922317558065
+    STATISTICS_MINIMUM=-17040.822265625
+    STATISTICS_STDDEV=332.20318780299
     STATISTICS_VALID_PERCENT=3.612
 #+end_example
 
@@ -5355,29 +5383,29 @@ Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
 
 #+NAME: QC_md5sum_NSIDC_0731
 #+BEGIN_SRC bash :results table :eval no-export
-cd ${DATADIR}/MEaSUREs/NSIDC-0731.004
+cd ${DATADIR}/MEaSUREs/NSIDC-0731.005
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
 find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-order "md5sum {}"
 #+END_SRC
 
 #+RESULTS: QC_md5sum_NSIDC_0731
-| fdfe96d5c0af7302ac22536c39a2595c | ./2020.11.01/GL_vel_mosaic_Monthly_01Nov20_30Nov20_vx_v04.0.tif |
-| a9988ce5824a6fd48783fcec45f73540 | ./2020.12.01/GL_vel_mosaic_Monthly_01Dec20_31Dec20_vx_v04.0.tif |
-| f91c216c133fdb8eccb10bb6d1277c43 | ./2021.01.01/GL_vel_mosaic_Monthly_01Jan21_31Jan21_vx_v04.0.tif |
-| 1325211690e22ff06850822688ac0ad4 | ./2021.02.01/GL_vel_mosaic_Monthly_01Feb21_28Feb21_vx_v04.0.tif |
-| e099be24f72c6e465ce23f2b3f44f71a | ./2021.03.01/GL_vel_mosaic_Monthly_01Mar21_31Mar21_vx_v04.0.tif |
-| 81b10f672925b45ef1910fb30c7f50e3 | ./2021.04.01/GL_vel_mosaic_Monthly_01Apr21_30Apr21_vx_v04.0.tif |
-| 1060ce9efa868ba554bbcf58d68c273e | ./2021.05.01/GL_vel_mosaic_Monthly_01May21_31May21_vx_v04.0.tif |
-| 77cd75ed6b9d9aaa0ac67f4942a4cfa3 | ./2021.06.01/GL_vel_mosaic_Monthly_01Jun21_30Jun21_vx_v04.0.tif |
-| 4bf52b4f2d5b4cd2c54b9503b17510d9 | ./2021.07.01/GL_vel_mosaic_Monthly_01Jul21_31Jul21_vx_v04.0.tif |
-| 39aad9e8a2bcddfbbe8b7c15afd31701 | ./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v04.0.tif |
-| f165eaad13ced2369c3698016373e99a | ./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v04.0.tif |
-| 9f94ebaf0bae1836b78d90d9585ee042 | ./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v04.0.tif |
-| e5e55acc24a24918daa5cfc785bb4767 | ./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v04.0.tif |
-| 340c727bbb596f78f0627d9788dc49d8 | ./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v04.0.tif |
-| e15c720663de43671e0223aa938f759e | ./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v04.0.tif |
-| 71b66458e67b89c7bec79a74bad8fbb6 | ./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v04.0.tif |
+| 13039c11df27ca9f337221fe88bd2394 | ./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v05.0.tif |
+| 55fc5cc6eeadd35b3e550ca99b10aa0b | ./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v05.0.tif |
+| 1a5c03d0c868aafa7b72ed85cc498dd1 | ./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v05.0.tif |
+| b024338814172429bf53d769b58f93b0 | ./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v05.0.tif |
+| 57fbeb606692bc436193862e757684c9 | ./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v05.0.tif |
+| 2059149ebf1434f506e0a63400c9161e | ./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v05.0.tif |
+| a16a0f0ca27201348dad60853361cd32 | ./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v05.0.tif |
+| 4ec84ba26bf9c50a5b7c06ffc6a8e916 | ./2022.03.01/GL_vel_mosaic_Monthly_01Mar22_31Mar22_vx_v05.0.tif |
+| 916f01f2946dc516adfd6c3efe009a95 | ./2022.04.01/GL_vel_mosaic_Monthly_01Apr22_30Apr22_vx_v05.0.tif |
+| b6cc0dcc40964bea458e7e0fa696aeb9 | ./2022.05.01/GL_vel_mosaic_Monthly_01May22_31May22_vx_v05.0.tif |
+| abe3dc0370f5f6f483128e722861980b | ./2022.06.01/GL_vel_mosaic_Monthly_01Jun22_30Jun22_vx_v05.0.tif |
+| 1d459b95bbbc9106d26a3d1caa5f16eb | ./2022.07.01/GL_vel_mosaic_Monthly_01Jul22_31Jul22_vx_v05.0.tif |
+| fc81cc7ac5bc8f48dc6495df316cc529 | ./2022.08.01/GL_vel_mosaic_Monthly_01Aug22_31Aug22_vx_v05.0.tif |
+| 3e82d61042b74a18d47ef88d1156d99f | ./2022.09.01/GL_vel_mosaic_Monthly_01Sep22_30Sep22_vx_v05.0.tif |
+| eb464f88c91336997da72319f44bfae5 | ./2022.10.01/GL_vel_mosaic_Monthly_01Oct22_31Oct22_vx_v05.0.tif |
+| 32c77418957e3a16badd0ef39baa0f3d | ./2022.11.01/GL_vel_mosaic_Monthly_01Nov22_30Nov22_vx_v05.0.tif |
 
 *** Sentinel 1
 ***** File List
