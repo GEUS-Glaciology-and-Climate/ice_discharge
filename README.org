@@ -8,6 +8,7 @@
   - [[#project][Project]]
   - [[#discharge-data][Discharge data]]
   - [[#discharge-gates][Discharge gates]]
+- [[#funding][Funding]]
 - [[#open-science-vs-reproducible-science][Open science vs. reproducible science]]
 
 * Greenland Ice Sheet solid ice discharge from 1986 through last month
@@ -101,6 +102,30 @@ Before using the data you should check for any open/active issue tagged https://
     url       = {https://doi.org/10.22008/promice/data/ice_discharge/gates/v02}}
 #+END_EXAMPLE
     
+* Funding
+
+| Dates        | Organization | Program                                   | Effort                                 |
+|--------------+--------------+-------------------------------------------+----------------------------------------|
+| 2023 --      | NASA GISS    | Modeling Analysis and Prediction program. | Maintenance                            |
+| 2022 --      | GEUS         | PROMICE                                   | Distribution (data hosting)            |
+| 2018 -- 2022 | GEUS         | PROMICE                                   | Development; publication; distribution |
+
+
+#+BEGIN_HTML
+<br><br>
+<table><tr>
+<td>
+<img src="https://github.com/GEUS-Glaciology-and-Climate/.github/blob/main/PROMICE.png" width="300px">
+</td>
+<td>
+<img src="https://raw.githubusercontent.com/NASA-GISS/.github/main/profile/nasa-logo-web-rgb.png" width="300 px">
+</td>
+</tr></table>
+<br><br>
+#+END_HTML
+
+
+
 * Open science vs. reproducible science
 
 + This work is open - every line of code needed to recreate it is include in this git repository, although the ~100 GB of velocity inputs are not included.
