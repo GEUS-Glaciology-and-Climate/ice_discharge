@@ -2021,6 +2021,7 @@ mkdir -p out
 db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019,Zwally_2012,Moon_2008,Moon_2008_dist from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
 #+END_SRC
 
+
 *** Export Gates to KML                                            :noexport:
 #+BEGIN_SRC bash :results verbatim
 v.out.ogr input=gates_final output=./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml format=KML --o
