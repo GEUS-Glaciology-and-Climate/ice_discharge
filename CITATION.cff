@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: >-
+  Greenland Ice Sheet solid ice discharge from 1986 through last month
+message: >-
+  If you use this software, please cite it using the metadata from this file.
+type: software
+authors:
+  - given-names: Kenneth
+    family-names: Mankoff
+    email: mankoff@gmail.com
+    affiliation: NASA GISS
+    orcid: 'https://orcid.org/0000-0001-5453-2019'
+identifiers:
+  - type: url
+    value: >-
+      https://github.com/GEUS-Glaciology-and-Climate/ice_discharge
+    description: Github repository
+repository-code: >-
+  https://github.com/GEUS-Glaciology-and-Climate/ice_discharge
+url: >-
+  https://github.com/GEUS-Glaciology-and-Climate/ice_discharge
+license: CC-BY-4.0
