@@ -1038,17 +1038,15 @@ function ctrl_c() {
 #+END_SRC
 
 *** Bed and Surface
-**** BedMachine v4
+**** BedMachine v5
 + from [[textcite:Morlighem:2017BedMachine][Morlighem /et al./ (2017)]]
 #+BEGIN_SRC bash :results verbatim
 MSG_OK "BedMachine"
 g.mapset -c BedMachine
 
-# Now provided in EPSG:3411.
-# Reprojected to EPSG:3413 GeoTIFFs in [[file:~/data/Morlighem_2017/README.org]]
 for var in mask surface thickness bed errbed; do
   echo $var
-  r.external source=${DATADIR}/Morlighem_2017/BMv4_3413/${var}.tif output=${var}
+  r.external source=NetCDF:${DATADIR}/Morlighem_2017/BedMachineGreenland-v5.nc:${var} output=${var}
 done
 
 r.colors -a map=errbed color=haxby
