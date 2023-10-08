@@ -3064,6 +3064,9 @@ all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
 
 # 'velocity source' as in Sentinel, measures.X, measures.Y, etc.
 vel_sources = np.unique([_.split('@')[1] for _ in vel.columns])
+print(vel_sources)
+vel_sources = np.delete(vel_sources,np.where(vel_sources == 'Sentinel1'))
+print("Dropping PROMICE Sentinel", vel_sources)
 for vs in vel_sources:
     vs_vel = vel.drop(labels=vel.columns[~vel.columns.str.contains(vs)], axis='columns')
     vs_vel = vs_vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
