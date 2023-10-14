@@ -3058,15 +3058,16 @@ def filter_bad_v(v):
 ### Load all velocity
 ###
 vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
+
+# For now, drop Sentinel1
+vel = vel[vel.columns.drop(list(vel.filter(regex='Sentinel1')))] 
+
 all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
                                                  int(c[13:15]),
                                                  int(c[16:18]))).columns.unique()
 
 # 'velocity source' as in Sentinel, measures.X, measures.Y, etc.
 vel_sources = np.unique([_.split('@')[1] for _ in vel.columns])
-print(vel_sources)
-vel_sources = np.delete(vel_sources,np.where(vel_sources == 'Sentinel1'))
-print("Dropping PROMICE Sentinel", vel_sources)
 for vs in vel_sources:
     vs_vel = vel.drop(labels=vel.columns[~vel.columns.str.contains(vs)], axis='columns')
     vs_vel = vs_vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
