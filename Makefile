@@ -33,6 +33,8 @@ update: docker ## Update with latest Sentinel data
 	#/usr/bin/git push
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./upload.py
 
+upload: docker ## Upload to dataverse
+	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./upload.py
 
 org: ## Update the Org document
 	# use emacsclient --eval to run in existing Emacs.
