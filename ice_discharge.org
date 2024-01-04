@@ -930,60 +930,7 @@ df.round(0).astype(int)
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab:thick_adjust}.
 #+RESULTS: tab:thick_adjust
-:RESULTS:
-# [goto error]
-#+begin_example
-[0;31m[0m
-[0;31mFileNotFoundError[0mTraceback (most recent call last)
-[0;32m<ipython-input-1-cdbb2764110f>[0m in [0;36m<module>[0;34m[0m
-[1;32m     21[0m [0mmeta[0m[0;34m[[0m[0;34m'ones'[0m[0;34m][0m [0;34m=[0m [0;36m1[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     22[0m [0;34m[0m[0m
-[0;32m---> 23[0;31m [0mR[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mread_csv[0m[0;34m([0m[0;34m'./out/gate_meta.csv'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     24[0m [0mmeta[0m[0;34m[[0m[0;34m'name'[0m[0;34m][0m [0;34m=[0m [0;34m''[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     25[0m [0;32mfor[0m [0mg[0m [0;32min[0m [0mmeta[0m[0;34m[[0m[0;34m'gates'[0m[0;34m][0m[0;34m.[0m[0munique[0m[0;34m([0m[0;34m)[0m[0;34m:[0m [0mmeta[0m[0;34m.[0m[0mloc[0m[0;34m[[0m[0mmeta[0m[0;34m[[0m[0;34m'gates'[0m[0;34m][0m [0;34m==[0m [0mg[0m[0;34m,[0m [0;34m'name'[0m[0;34m][0m [0;34m=[0m [0mR[0m[0;34m[[0m[0mR[0m[0;34m[[0m[0;34m'gate'[0m[0;34m][0m [0;34m==[0m [0mg[0m[0;34m][0m[0;34m[[0m[0;34m'Mouginot_2019'[0m[0;34m][0m[0;34m.[0m[0mvalues[0m[0;34m[[0m[0;36m0[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36mparser_f[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, dialect, error_bad_lines, warn_bad_lines, delim_whitespace, low_memory, memory_map, float_precision)[0m
-[1;32m    674[0m         )
-[1;32m    675[0m [0;34m[0m[0m
-[0;32m--> 676[0;31m         [0;32mreturn[0m [0m_read[0m[0;34m([0m[0mfilepath_or_buffer[0m[0;34m,[0m [0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    677[0m [0;34m[0m[0m
-[1;32m    678[0m     [0mparser_f[0m[0;34m.[0m[0m__name__[0m [0;34m=[0m [0mname[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_read[0;34m(filepath_or_buffer, kwds)[0m
-[1;32m    446[0m [0;34m[0m[0m
-[1;32m    447[0m     [0;31m# Create the parser.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 448[0;31m     [0mparser[0m [0;34m=[0m [0mTextFileReader[0m[0;34m([0m[0mfp_or_buf[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    449[0m [0;34m[0m[0m
-[1;32m    450[0m     [0;32mif[0m [0mchunksize[0m [0;32mor[0m [0miterator[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, f, engine, **kwds)[0m
-[1;32m    878[0m             [0mself[0m[0;34m.[0m[0moptions[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m [0;34m=[0m [0mkwds[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m    879[0m [0;34m[0m[0m
-[0;32m--> 880[0;31m         [0mself[0m[0;34m.[0m[0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mengine[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    881[0m [0;34m[0m[0m
-[1;32m    882[0m     [0;32mdef[0m [0mclose[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_make_engine[0;34m(self, engine)[0m
-[1;32m   1112[0m     [0;32mdef[0m [0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mengine[0m[0;34m=[0m[0;34m"c"[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1113[0m         [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"c"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1114[0;31m             [0mself[0m[0;34m.[0m[0m_engine[0m [0;34m=[0m [0mCParserWrapper[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mf[0m[0;34m,[0m [0;34m**[0m[0mself[0m[0;34m.[0m[0moptions[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1115[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1116[0m             [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"python"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, src, **kwds)[0m
-[1;32m   1889[0m         [0mkwds[0m[0;34m[[0m[0;34m"usecols"[0m[0;34m][0m [0;34m=[0m [0mself[0m[0;34m.[0m[0musecols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1890[0m [0;34m[0m[0m
-[0;32m-> 1891[0;31m         [0mself[0m[0;34m.[0m[0m_reader[0m [0;34m=[0m [0mparsers[0m[0;34m.[0m[0mTextReader[0m[0;34m([0m[0msrc[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1892[0m         [0mself[0m[0;34m.[0m[0munnamed_cols[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_reader[0m[0;34m.[0m[0munnamed_cols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1893[0m [0;34m[0m[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader.__cinit__[0;34m()[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader._setup_parser_source[0;34m()[0m
-
-[0;31mFileNotFoundError[0m: [Errno 2] File ./out/gate_meta.csv does not exist: './out/gate_meta.csv'
-#+end_example
-:END:
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 src_jupyter-python{vel.shape[0]} {{{results(=5863=)}}}
 src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5301=)}}}
@@ -1038,60 +985,53 @@ df
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Effect of different thickness adjustments on baseline discharge\label{tab:thick_treatments}
 #+RESULTS: tab:thick_treatments
-:RESULTS:
-# [goto error]
-#+begin_example
-[0;31m[0m
-[0;31mFileNotFoundError[0mTraceback (most recent call last)
-[0;32m<ipython-input-1-0416b88dd9cc>[0m in [0;36m<module>[0;34m[0m
-[1;32m     21[0m [0mmeta[0m[0;34m[[0m[0;34m'ones'[0m[0;34m][0m [0;34m=[0m [0;36m1[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     22[0m [0;34m[0m[0m
-[0;32m---> 23[0;31m [0mR[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mread_csv[0m[0;34m([0m[0;34m'./out/gate_meta.csv'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     24[0m [0mmeta[0m[0;34m[[0m[0;34m'name'[0m[0;34m][0m [0;34m=[0m [0;34m''[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     25[0m [0;32mfor[0m [0mg[0m [0;32min[0m [0mmeta[0m[0;34m[[0m[0;34m'gates'[0m[0;34m][0m[0;34m.[0m[0munique[0m[0;34m([0m[0;34m)[0m[0;34m:[0m [0mmeta[0m[0;34m.[0m[0mloc[0m[0;34m[[0m[0mmeta[0m[0;34m[[0m[0;34m'gates'[0m[0;34m][0m [0;34m==[0m [0mg[0m[0;34m,[0m [0;34m'name'[0m[0;34m][0m [0;34m=[0m [0mR[0m[0;34m[[0m[0mR[0m[0;34m[[0m[0;34m'gate'[0m[0;34m][0m [0;34m==[0m [0mg[0m[0;34m][0m[0;34m[[0m[0;34m'Mouginot_2019'[0m[0;34m][0m[0;34m.[0m[0mvalues[0m[0;34m[[0m[0;36m0[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+#+begin_export html
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36mparser_f[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, dialect, error_bad_lines, warn_bad_lines, delim_whitespace, low_memory, memory_map, float_precision)[0m
-[1;32m    674[0m         )
-[1;32m    675[0m [0;34m[0m[0m
-[0;32m--> 676[0;31m         [0;32mreturn[0m [0m_read[0m[0;34m([0m[0mfilepath_or_buffer[0m[0;34m,[0m [0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    677[0m [0;34m[0m[0m
-[1;32m    678[0m     [0mparser_f[0m[0;34m.[0m[0m__name__[0m [0;34m=[0m [0mname[0m[0;34m[0m[0;34m[0m[0m
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
 
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_read[0;34m(filepath_or_buffer, kwds)[0m
-[1;32m    446[0m [0;34m[0m[0m
-[1;32m    447[0m     [0;31m# Create the parser.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 448[0;31m     [0mparser[0m [0;34m=[0m [0mTextFileReader[0m[0;34m([0m[0mfp_or_buf[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    449[0m [0;34m[0m[0m
-[1;32m    450[0m     [0;32mif[0m [0mchunksize[0m [0;32mor[0m [0miterator[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, f, engine, **kwds)[0m
-[1;32m    878[0m             [0mself[0m[0;34m.[0m[0moptions[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m [0;34m=[0m [0mkwds[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m    879[0m [0;34m[0m[0m
-[0;32m--> 880[0;31m         [0mself[0m[0;34m.[0m[0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mengine[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    881[0m [0;34m[0m[0m
-[1;32m    882[0m     [0;32mdef[0m [0mclose[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_make_engine[0;34m(self, engine)[0m
-[1;32m   1112[0m     [0;32mdef[0m [0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mengine[0m[0;34m=[0m[0;34m"c"[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1113[0m         [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"c"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1114[0;31m             [0mself[0m[0;34m.[0m[0m_engine[0m [0;34m=[0m [0mCParserWrapper[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mf[0m[0;34m,[0m [0;34m**[0m[0mself[0m[0;34m.[0m[0moptions[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1115[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1116[0m             [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"python"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, src, **kwds)[0m
-[1;32m   1889[0m         [0mkwds[0m[0;34m[[0m[0;34m"usecols"[0m[0;34m][0m [0;34m=[0m [0mself[0m[0;34m.[0m[0musecols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1890[0m [0;34m[0m[0m
-[0;32m-> 1891[0;31m         [0mself[0m[0;34m.[0m[0m_reader[0m [0;34m=[0m [0mparsers[0m[0;34m.[0m[0mTextReader[0m[0;34m([0m[0msrc[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1892[0m         [0mself[0m[0;34m.[0m[0munnamed_cols[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_reader[0m[0;34m.[0m[0munnamed_cols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1893[0m [0;34m[0m[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader.__cinit__[0;34m()[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader._setup_parser_source[0;34m()[0m
-
-[0;31mFileNotFoundError[0m: [Errno 2] File ./out/gate_meta.csv does not exist: './out/gate_meta.csv'
-#+end_example
-:END:
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Discharge (Gt)</th>
+    </tr>
+    <tr>
+      <th>Treatment</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>NoAdj</th>
+      <td>463 \pm 41</td>
+    </tr>
+    <tr>
+      <th>300</th>
+      <td>467 \pm 43</td>
+    </tr>
+    <tr>
+      <th>400</th>
+      <td>473 \pm 46</td>
+    </tr>
+    <tr>
+      <th>Fit</th>
+      <td>470 \pm 45</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+#+end_export
 
 
 Finally, Figure [[fig:gate_map]] shows the geospatial locations, concentration, and speed of gates with and without bad pixels.
@@ -2708,60 +2648,7 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-[0;31m[0m
-[0;31mFileNotFoundError[0mTraceback (most recent call last)
-[0;32m<ipython-input-4-43896326e192>[0m in [0;36m<module>[0;34m[0m
-[1;32m     22[0m [0merr_gate[0m[0;34m.[0m[0mloc[0m[0;34m[[0m[0;34m'GIS'[0m[0;34m][0m[0;34m[[0m[0;34m'E%'[0m[0;34m][0m [0;34m=[0m [0merr_gate[0m[0;34m.[0m[0mloc[0m[0;34m[[0m[0;34m'GIS'[0m[0;34m][0m[0;34m[[0m[0;34m'E'[0m[0;34m][0m[0;34m/[0m[0merr_gate[0m[0;34m.[0m[0mloc[0m[0;34m[[0m[0;34m'GIS'[0m[0;34m][0m[0;34m[[0m[0;34m'D'[0m[0;34m][0m[0;34m*[0m[0;36m100[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     23[0m [0;34m[0m[0m
-[0;32m---> 24[0;31m [0mgate_meta[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mread_csv[0m[0;34m([0m[0;34m"./out/gate_meta.csv"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     25[0m [0merr_gate[0m[0;34m[[0m[0;34m'name'[0m[0;34m][0m [0;34m=[0m [0;34m''[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     26[0m [0;32mfor[0m [0mg[0m [0;32min[0m [0merr_gate[0m[0;34m.[0m[0mindex[0m[0;34m.[0m[0mvalues[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36mparser_f[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, dialect, error_bad_lines, warn_bad_lines, delim_whitespace, low_memory, memory_map, float_precision)[0m
-[1;32m    674[0m         )
-[1;32m    675[0m [0;34m[0m[0m
-[0;32m--> 676[0;31m         [0;32mreturn[0m [0m_read[0m[0;34m([0m[0mfilepath_or_buffer[0m[0;34m,[0m [0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    677[0m [0;34m[0m[0m
-[1;32m    678[0m     [0mparser_f[0m[0;34m.[0m[0m__name__[0m [0;34m=[0m [0mname[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_read[0;34m(filepath_or_buffer, kwds)[0m
-[1;32m    446[0m [0;34m[0m[0m
-[1;32m    447[0m     [0;31m# Create the parser.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 448[0;31m     [0mparser[0m [0;34m=[0m [0mTextFileReader[0m[0;34m([0m[0mfp_or_buf[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    449[0m [0;34m[0m[0m
-[1;32m    450[0m     [0;32mif[0m [0mchunksize[0m [0;32mor[0m [0miterator[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, f, engine, **kwds)[0m
-[1;32m    878[0m             [0mself[0m[0;34m.[0m[0moptions[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m [0;34m=[0m [0mkwds[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m    879[0m [0;34m[0m[0m
-[0;32m--> 880[0;31m         [0mself[0m[0;34m.[0m[0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mengine[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    881[0m [0;34m[0m[0m
-[1;32m    882[0m     [0;32mdef[0m [0mclose[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_make_engine[0;34m(self, engine)[0m
-[1;32m   1112[0m     [0;32mdef[0m [0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mengine[0m[0;34m=[0m[0;34m"c"[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1113[0m         [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"c"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1114[0;31m             [0mself[0m[0;34m.[0m[0m_engine[0m [0;34m=[0m [0mCParserWrapper[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mf[0m[0;34m,[0m [0;34m**[0m[0mself[0m[0;34m.[0m[0moptions[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1115[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1116[0m             [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"python"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, src, **kwds)[0m
-[1;32m   1889[0m         [0mkwds[0m[0;34m[[0m[0;34m"usecols"[0m[0;34m][0m [0;34m=[0m [0mself[0m[0;34m.[0m[0musecols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1890[0m [0;34m[0m[0m
-[0;32m-> 1891[0;31m         [0mself[0m[0;34m.[0m[0m_reader[0m [0;34m=[0m [0mparsers[0m[0;34m.[0m[0mTextReader[0m[0;34m([0m[0msrc[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1892[0m         [0mself[0m[0;34m.[0m[0munnamed_cols[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_reader[0m[0;34m.[0m[0munnamed_cols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1893[0m [0;34m[0m[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader.__cinit__[0;34m()[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader._setup_parser_source[0;34m()[0m
-
-[0;31mFileNotFoundError[0m: [Errno 2] File ./out/gate_meta.csv does not exist: './out/gate_meta.csv'
-#+end_example
-:END:
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 ** Raw data to discharge product
@@ -3001,60 +2888,7 @@ th.describe().T
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-[0;31m[0m
-[0;31mFileNotFoundError[0mTraceback (most recent call last)
-[0;32m<ipython-input-5-7238ac02af15>[0m in [0;36m<module>[0;34m[0m
-[1;32m     21[0m [0mmeta[0m[0;34m[[0m[0;34m'ones'[0m[0;34m][0m [0;34m=[0m [0;36m1[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     22[0m [0;34m[0m[0m
-[0;32m---> 23[0;31m [0mR[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mread_csv[0m[0;34m([0m[0;34m'./out/gate_meta.csv'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     24[0m [0mmeta[0m[0;34m[[0m[0;34m'name'[0m[0;34m][0m [0;34m=[0m [0;34m''[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     25[0m [0;32mfor[0m [0mg[0m [0;32min[0m [0mmeta[0m[0;34m[[0m[0;34m'gates'[0m[0;34m][0m[0;34m.[0m[0munique[0m[0;34m([0m[0;34m)[0m[0;34m:[0m [0mmeta[0m[0;34m.[0m[0mloc[0m[0;34m[[0m[0mmeta[0m[0;34m[[0m[0;34m'gates'[0m[0;34m][0m [0;34m==[0m [0mg[0m[0;34m,[0m [0;34m'name'[0m[0;34m][0m [0;34m=[0m [0mR[0m[0;34m[[0m[0mR[0m[0;34m[[0m[0;34m'gate'[0m[0;34m][0m [0;34m==[0m [0mg[0m[0;34m][0m[0;34m[[0m[0;34m'Mouginot_2019'[0m[0;34m][0m[0;34m.[0m[0mvalues[0m[0;34m[[0m[0;36m0[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36mparser_f[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, dialect, error_bad_lines, warn_bad_lines, delim_whitespace, low_memory, memory_map, float_precision)[0m
-[1;32m    674[0m         )
-[1;32m    675[0m [0;34m[0m[0m
-[0;32m--> 676[0;31m         [0;32mreturn[0m [0m_read[0m[0;34m([0m[0mfilepath_or_buffer[0m[0;34m,[0m [0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    677[0m [0;34m[0m[0m
-[1;32m    678[0m     [0mparser_f[0m[0;34m.[0m[0m__name__[0m [0;34m=[0m [0mname[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_read[0;34m(filepath_or_buffer, kwds)[0m
-[1;32m    446[0m [0;34m[0m[0m
-[1;32m    447[0m     [0;31m# Create the parser.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 448[0;31m     [0mparser[0m [0;34m=[0m [0mTextFileReader[0m[0;34m([0m[0mfp_or_buf[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    449[0m [0;34m[0m[0m
-[1;32m    450[0m     [0;32mif[0m [0mchunksize[0m [0;32mor[0m [0miterator[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, f, engine, **kwds)[0m
-[1;32m    878[0m             [0mself[0m[0;34m.[0m[0moptions[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m [0;34m=[0m [0mkwds[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m    879[0m [0;34m[0m[0m
-[0;32m--> 880[0;31m         [0mself[0m[0;34m.[0m[0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mengine[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    881[0m [0;34m[0m[0m
-[1;32m    882[0m     [0;32mdef[0m [0mclose[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_make_engine[0;34m(self, engine)[0m
-[1;32m   1112[0m     [0;32mdef[0m [0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mengine[0m[0;34m=[0m[0;34m"c"[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1113[0m         [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"c"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1114[0;31m             [0mself[0m[0;34m.[0m[0m_engine[0m [0;34m=[0m [0mCParserWrapper[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mf[0m[0;34m,[0m [0;34m**[0m[0mself[0m[0;34m.[0m[0moptions[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1115[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1116[0m             [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"python"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, src, **kwds)[0m
-[1;32m   1889[0m         [0mkwds[0m[0;34m[[0m[0;34m"usecols"[0m[0;34m][0m [0;34m=[0m [0mself[0m[0;34m.[0m[0musecols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1890[0m [0;34m[0m[0m
-[0;32m-> 1891[0;31m         [0mself[0m[0;34m.[0m[0m_reader[0m [0;34m=[0m [0mparsers[0m[0;34m.[0m[0mTextReader[0m[0;34m([0m[0msrc[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1892[0m         [0mself[0m[0;34m.[0m[0munnamed_cols[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_reader[0m[0;34m.[0m[0munnamed_cols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1893[0m [0;34m[0m[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader.__cinit__[0;34m()[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader._setup_parser_source[0;34m()[0m
-
-[0;31mFileNotFoundError[0m: [Errno 2] File ./out/gate_meta.csv does not exist: './out/gate_meta.csv'
-#+end_example
-:END:
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 #+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge :eval no-export
 D0 = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=0) * 917 / 1E12
@@ -3065,37 +2899,7 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-[0;31m[0m
-[0;31mTypeError[0mTraceback (most recent call last)
-[0;32m<ipython-input-6-0225f52d175b>[0m in [0;36m<module>[0;34m[0m
-[0;32m----> 1[0;31m [0mD0[0m [0;34m=[0m [0;34m([0m[0mvel[0m[0;34m)[0m[0;34m.[0m[0mapply[0m[0;34m([0m[0;32mlambda[0m [0mc[0m[0;34m:[0m [0mc[0m [0;34m*[0m [0;34m([0m[0;36m200[0m [0;34m*[0m [0mth[0m[0;34m[[0m[0;34m'thick'[0m[0;34m][0m [0;34m*[0m [0mmeta[0m[0;34m[[0m[0;34m'err_2D'[0m[0;34m][0m[0;34m.[0m[0mvalues[0m[0;34m)[0m[0;34m,[0m [0maxis[0m[0;34m=[0m[0;36m0[0m[0;34m)[0m [0;34m*[0m [0;36m917[0m [0;34m/[0m [0;36m1E12[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m      2[0m [0mD1[0m [0;34m=[0m [0;34m([0m[0mvel[0m[0;34m)[0m[0;34m.[0m[0mapply[0m[0;34m([0m[0;32mlambda[0m [0mc[0m[0;34m:[0m [0mc[0m [0;34m*[0m [0;34m([0m[0;36m200[0m [0;34m*[0m [0mth[0m[0;34m[[0m[0;34m'thick_adj_300'[0m[0;34m][0m [0;34m*[0m [0mmeta[0m[0;34m[[0m[0;34m'err_2D'[0m[0;34m][0m[0;34m.[0m[0mvalues[0m[0;34m)[0m[0;34m,[0m [0maxis[0m[0;34m=[0m[0;36m0[0m[0;34m)[0m [0;34m*[0m [0;36m917[0m [0;34m/[0m [0;36m1E12[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      3[0m [0mD0[0m [0;34m=[0m [0mD0[0m[0;34m.[0m[0msum[0m[0;34m([0m[0maxis[0m[0;34m=[0m[0;34m'rows'[0m[0;34m)[0m[0;34m.[0m[0mresample[0m[0;34m([0m[0;34m'1D'[0m[0;34m)[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0minterpolate[0m[0;34m([0m[0mmethod[0m[0;34m=[0m[0;34m'time'[0m[0;34m,[0m [0mlimit_area[0m[0;34m=[0m[0;34m'inside'[0m[0;34m)[0m[0;34m.[0m[0mresample[0m[0;34m([0m[0;34m'A'[0m[0;34m)[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      4[0m [0mD1[0m [0;34m=[0m [0mD1[0m[0;34m.[0m[0msum[0m[0;34m([0m[0maxis[0m[0;34m=[0m[0;34m'rows'[0m[0;34m)[0m[0;34m.[0m[0mresample[0m[0;34m([0m[0;34m'1D'[0m[0;34m)[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0;34m)[0m[0;34m.[0m[0minterpolate[0m[0;34m([0m[0mmethod[0m[0;34m=[0m[0;34m'time'[0m[0;34m,[0m [0mlimit_area[0m[0;34m=[0m[0;34m'inside'[0m[0;34m)[0m[0;34m.[0m[0mresample[0m[0;34m([0m[0;34m'A'[0m[0;34m)[0m[0;34m.[0m[0mmean[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      5[0m [0mpd[0m[0;34m.[0m[0mconcat[0m[0;34m([0m[0;34m[[0m[0mD0[0m[0;34m,[0m[0mD1[0m[0;34m,[0m [0mD1[0m[0;34m-[0m[0mD0[0m[0;34m][0m[0;34m,[0m [0maxis[0m[0;34m=[0m[0;34m'columns'[0m[0;34m,[0m [0mkeys[0m[0;34m=[0m[0;34m[[0m[0;34m'BedMachine'[0m[0;34m,[0m[0;34m'300'[0m[0;34m,[0m[0;34m'diff'[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/core/series.py[0m in [0;36mapply[0;34m(self, func, convert_dtype, args, **kwds)[0m
-[1;32m   3846[0m             [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   3847[0m                 [0mvalues[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0mastype[0m[0;34m([0m[0mobject[0m[0;34m)[0m[0;34m.[0m[0mvalues[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 3848[0;31m                 [0mmapped[0m [0;34m=[0m [0mlib[0m[0;34m.[0m[0mmap_infer[0m[0;34m([0m[0mvalues[0m[0;34m,[0m [0mf[0m[0;34m,[0m [0mconvert[0m[0;34m=[0m[0mconvert_dtype[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   3849[0m [0;34m[0m[0m
-[1;32m   3850[0m         [0;32mif[0m [0mlen[0m[0;34m([0m[0mmapped[0m[0;34m)[0m [0;32mand[0m [0misinstance[0m[0;34m([0m[0mmapped[0m[0;34m[[0m[0;36m0[0m[0;34m][0m[0;34m,[0m [0mSeries[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32mpandas/_libs/lib.pyx[0m in [0;36mpandas._libs.lib.map_infer[0;34m()[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/core/series.py[0m in [0;36mf[0;34m(x)[0m
-[1;32m   3831[0m [0;34m[0m[0m
-[1;32m   3832[0m             [0;32mdef[0m [0mf[0m[0;34m([0m[0mx[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 3833[0;31m                 [0;32mreturn[0m [0mfunc[0m[0;34m([0m[0mx[0m[0;34m,[0m [0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   3834[0m [0;34m[0m[0m
-[1;32m   3835[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;31mTypeError[0m: <lambda>() got an unexpected keyword argument 'axis'
-#+end_example
-:END:
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Adjust thickness w thickness v. velocity fit.
@@ -3162,19 +2966,48 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 #+END_SRC
 
 #+RESULTS: adjust_thickness_fit
-:RESULTS:
-# [goto error]
-: [0;31m[0m
-: [0;31mNameError[0mTraceback (most recent call last)
-: [0;32m<ipython-input-7-202c12c43de4>[0m in [0;36m<module>[0;34m[0m
-: [1;32m      1[0m [0mCUTOFF[0m [0;34m=[0m [0;36m20[0m[0;34m[0m[0;34m[0m[0m
-: [0;32m----> 2[0;31m [0mdf[0m [0;34m=[0m [0mvel_baseline[0m[0;34m.[0m[0mjoin[0m[0;34m([0m[0mth[0m[0;34m[[0m[0;34m'thick'[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-: [0m[1;32m      3[0m [0mmax_vel[0m [0;34m=[0m [0mdf[0m[0;34m.[0m[0mloc[0m[0;34m[[0m[0mdf[0m[0;34m[[0m[0;34m'thick'[0m[0;34m][0m [0;34m<=[0m [0mCUTOFF[0m[0;34m,[0m [0;34m'vel'[0m[0;34m][0m[0;34m.[0m[0mmax[0m[0;34m([0m[0;34m)[0m [0;31m# limit fit to velocities where data is missing[0m[0;34m[0m[0;34m[0m[0m
-: [1;32m      4[0m [0;31m# df = df[(df['thick'] > CUTOFF) & (df['vel'] <= max_vel)][0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-: [1;32m      5[0m [0mdf[0m [0;34m=[0m [0mdf[0m[0;34m[[0m[0mdf[0m[0;34m[[0m[0;34m'thick'[0m[0;34m][0m [0;34m>[0m [0mCUTOFF[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-: 
-: [0;31mNameError[0m: name 'vel_baseline' is not defined
-:END:
+#+begin_example
+                   300         fit      diff
+1985-12-31  393.810537  397.448020  3.637483
+1986-12-31  403.621790  407.143284  3.521494
+1987-12-31  404.365408  407.540752  3.175344
+1988-12-31  395.613192  398.371912  2.758720
+1989-12-31  399.864935  402.658843  2.793908
+1990-12-31  401.664134  405.084540  3.420406
+1991-12-31  400.462215  403.736095  3.273880
+1992-12-31  402.519731  405.770122  3.250392
+1993-12-31  403.423903  406.542109  3.118206
+1994-12-31  399.933315  402.914126  2.980811
+1995-12-31  389.067728  391.995398  2.927670
+1996-12-31  392.167165  395.031045  2.863880
+1997-12-31  391.297053  394.007069  2.710016
+1998-12-31  393.170860  395.913105  2.742245
+1999-12-31  398.630186  401.359739  2.729553
+2000-12-31  401.634050  404.374435  2.740385
+2001-12-31  397.664092  400.359660  2.695569
+2002-12-31  411.781589  414.561559  2.779970
+2003-12-31  426.282367  429.163926  2.881559
+2004-12-31  439.521487  442.449812  2.928325
+2005-12-31  451.184821  454.168586  2.983765
+2006-12-31  447.452914  450.423805  2.970891
+2007-12-31  442.788037  445.753816  2.965779
+2008-12-31  449.601460  452.588288  2.986828
+2009-12-31  455.659977  458.697265  3.037288
+2010-12-31  461.181847  464.301524  3.119676
+2011-12-31  468.530811  471.659178  3.128366
+2012-12-31  467.967179  471.201219  3.234040
+2013-12-31  477.413165  480.623358  3.210193
+2014-12-31  477.917362  481.074540  3.157178
+2015-12-31  481.916935  485.012330  3.095395
+2016-12-31  473.822767  476.881356  3.058589
+2017-12-31  485.067498  488.212923  3.145424
+2018-12-31  485.992336  489.154601  3.162265
+2019-12-31  493.257814  496.544119  3.286305
+2020-12-31  505.170590  508.516843  3.346252
+2021-12-31  510.813279  514.069424  3.256144
+2022-12-31  508.353288  511.518189  3.164901
+2023-12-31  495.140473  498.106154  2.965681
+#+end_example
 
 **** Table of thickness adjustments
 :PROPERTIES:
@@ -3186,15 +3019,7 @@ th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-: [0;31m[0m
-: [0;31mNameError[0mTraceback (most recent call last)
-: [0;32m<ipython-input-8-8921e30cdfd6>[0m in [0;36m<module>[0;34m[0m
-: [0;32m----> 1[0;31m [0mth[0m[0;34m[[0m[0;34m[[0m[0;34m'thick'[0m[0;34m,[0m[0;34m'thick_adj_300'[0m[0;34m,[0m[0;34m'thick_adj_400'[0m[0;34m,[0m[0;34m'fit'[0m[0;34m][0m[0;34m][0m[0;34m.[0m[0mdescribe[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-: [0m
-: [0;31mNameError[0m: name 'th' is not defined
-:END:
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Baseline discharge values for various thickness adjustments
@@ -3232,19 +3057,16 @@ D_th.sum(axis=0)
 #+END_SRC
 
 #+RESULTS: discharge_th
-:RESULTS:
-# [goto error]
-: [0;31m[0m
-: [0;31mNameError[0mTraceback (most recent call last)
-: [0;32m<ipython-input-9-2a993250c8c0>[0m in [0;36m<module>[0;34m[0m
-: [0;32m----> 1[0;31m D_th = pd.DataFrame(index=th.index,
-: [0m[1;32m      2[0m                     columns=['NoAdj','NoAdj_err','300','300_err','400','400_err','fit','fit_err'])
-: [1;32m      3[0m [0;34m[0m[0m
-: [1;32m      4[0m [0;31m# + D_baseline_th_noadj :: Discharge with no thickness adjustment[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-: [1;32m      5[0m [0mD_th[0m[0;34m[[0m[0;34m'NoAdj'[0m[0;34m][0m [0;34m=[0m [0mvel_baseline[0m[0;34m.[0m[0mapply[0m[0;34m([0m[0;32mlambda[0m [0mc[0m[0;34m:[0m [0mc[0m [0;34m*[0m [0;34m([0m[0mth[0m[0;34m[[0m[0;34m'thick'[0m[0;34m][0m[0;34m.[0m[0mvalues[0m [0;34m*[0m [0;36m200[0m [0;34m*[0m [0mmeta[0m[0;34m[[0m[0;34m'err_2D'[0m[0;34m][0m[0;34m.[0m[0mvalues[0m[0;34m)[0m[0;34m,[0m [0maxis[0m[0;34m=[0m[0;36m0[0m[0;34m)[0m [0;34m*[0m [0;36m917[0m [0;34m/[0m [0;36m1E12[0m[0;34m[0m[0;34m[0m[0m
-: 
-: [0;31mNameError[0m: name 'th' is not defined
-:END:
+: NoAdj        462.883690
+: NoAdj_err     41.680738
+: 300          467.881433
+: 300_err       43.985599
+: 400          473.705747
+: 400_err       46.234386
+: fit          470.996240
+: fit_err       45.034132
+: NoMillan     463.309375
+: dtype: float64
 
 **** Map of where thickness adjustments occur
 
@@ -4163,60 +3985,6 @@ ds.to_netcdf('./out/gate.nc', mode='w', encoding=encoding)
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-[0;31m[0m
-[0;31mFileNotFoundError[0mTraceback (most recent call last)
-[0;32m<ipython-input-14-dc9037ff93d1>[0m in [0;36m<module>[0;34m[0m
-[1;32m      5[0m [0mdf_coverage[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mread_csv[0m[0;34m([0m[0;34m'./out/'[0m [0;34m+[0m [0mcsvfile[0m [0;34m+[0m [0;34m'_coverage.csv'[0m[0;34m,[0m [0mindex_col[0m[0;34m=[0m[0;36m0[0m[0;34m,[0m [0mparse_dates[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      6[0m [0;34m[0m[0m
-[0;32m----> 7[0;31m [0mmeta[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mread_csv[0m[0;34m([0m[0;34m"./out/gate_meta.csv"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m      8[0m [0;34m[0m[0m
-[1;32m      9[0m [0mds[0m [0;34m=[0m [0mxr[0m[0;34m.[0m[0mDataset[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36mparser_f[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, dialect, error_bad_lines, warn_bad_lines, delim_whitespace, low_memory, memory_map, float_precision)[0m
-[1;32m    674[0m         )
-[1;32m    675[0m [0;34m[0m[0m
-[0;32m--> 676[0;31m         [0;32mreturn[0m [0m_read[0m[0;34m([0m[0mfilepath_or_buffer[0m[0;34m,[0m [0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    677[0m [0;34m[0m[0m
-[1;32m    678[0m     [0mparser_f[0m[0;34m.[0m[0m__name__[0m [0;34m=[0m [0mname[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_read[0;34m(filepath_or_buffer, kwds)[0m
-[1;32m    446[0m [0;34m[0m[0m
-[1;32m    447[0m     [0;31m# Create the parser.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 448[0;31m     [0mparser[0m [0;34m=[0m [0mTextFileReader[0m[0;34m([0m[0mfp_or_buf[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    449[0m [0;34m[0m[0m
-[1;32m    450[0m     [0;32mif[0m [0mchunksize[0m [0;32mor[0m [0miterator[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, f, engine, **kwds)[0m
-[1;32m    878[0m             [0mself[0m[0;34m.[0m[0moptions[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m [0;34m=[0m [0mkwds[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m    879[0m [0;34m[0m[0m
-[0;32m--> 880[0;31m         [0mself[0m[0;34m.[0m[0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mengine[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    881[0m [0;34m[0m[0m
-[1;32m    882[0m     [0;32mdef[0m [0mclose[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_make_engine[0;34m(self, engine)[0m
-[1;32m   1112[0m     [0;32mdef[0m [0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mengine[0m[0;34m=[0m[0;34m"c"[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1113[0m         [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"c"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1114[0;31m             [0mself[0m[0;34m.[0m[0m_engine[0m [0;34m=[0m [0mCParserWrapper[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mf[0m[0;34m,[0m [0;34m**[0m[0mself[0m[0;34m.[0m[0moptions[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1115[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1116[0m             [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"python"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, src, **kwds)[0m
-[1;32m   1889[0m         [0mkwds[0m[0;34m[[0m[0;34m"usecols"[0m[0;34m][0m [0;34m=[0m [0mself[0m[0;34m.[0m[0musecols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1890[0m [0;34m[0m[0m
-[0;32m-> 1891[0;31m         [0mself[0m[0;34m.[0m[0m_reader[0m [0;34m=[0m [0mparsers[0m[0;34m.[0m[0mTextReader[0m[0;34m([0m[0msrc[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1892[0m         [0mself[0m[0;34m.[0m[0munnamed_cols[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_reader[0m[0;34m.[0m[0munnamed_cols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1893[0m [0;34m[0m[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader.__cinit__[0;34m()[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader._setup_parser_source[0;34m()[0m
-
-[0;31mFileNotFoundError[0m: [Errno 2] File ./out/gate_meta.csv does not exist: './out/gate_meta.csv'
-#+end_example
-:END:
 
 
 ** Figures
@@ -4262,60 +4030,7 @@ out
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-#+begin_example
-[0;31m[0m
-[0;31mFileNotFoundError[0mTraceback (most recent call last)
-[0;32m<ipython-input-1-9737c5027949>[0m in [0;36m<module>[0;34m[0m
-[1;32m     18[0m [0;31m# names["NIOGHALVFJERDSFJORDEN"] = "(Nioghalvfjerdsfjorden)"[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[1;32m     19[0m [0;34m[0m[0m
-[0;32m---> 20[0;31m [0mmeta[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mread_csv[0m[0;34m([0m[0;34m"./out/gate_meta.csv"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m     21[0m [0;34m[0m[0m
-[1;32m     22[0m [0mout[0m [0;34m=[0m [0mpd[0m[0;34m.[0m[0mDataFrame[0m[0;34m([0m[0mindex[0m[0;34m=[0m[0mtop_few[0m[0;34m.[0m[0mindex[0m[0;34m,[0m [0mcolumns[0m[0;34m=[0m[0;34m[[0m[0;34m"D"[0m[0;34m,[0m[0;34m"x"[0m[0;34m,[0m[0;34m"y"[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36mparser_f[0;34m(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, squeeze, prefix, mangle_dupe_cols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, dialect, error_bad_lines, warn_bad_lines, delim_whitespace, low_memory, memory_map, float_precision)[0m
-[1;32m    674[0m         )
-[1;32m    675[0m [0;34m[0m[0m
-[0;32m--> 676[0;31m         [0;32mreturn[0m [0m_read[0m[0;34m([0m[0mfilepath_or_buffer[0m[0;34m,[0m [0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    677[0m [0;34m[0m[0m
-[1;32m    678[0m     [0mparser_f[0m[0;34m.[0m[0m__name__[0m [0;34m=[0m [0mname[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_read[0;34m(filepath_or_buffer, kwds)[0m
-[1;32m    446[0m [0;34m[0m[0m
-[1;32m    447[0m     [0;31m# Create the parser.[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[0;32m--> 448[0;31m     [0mparser[0m [0;34m=[0m [0mTextFileReader[0m[0;34m([0m[0mfp_or_buf[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    449[0m [0;34m[0m[0m
-[1;32m    450[0m     [0;32mif[0m [0mchunksize[0m [0;32mor[0m [0miterator[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, f, engine, **kwds)[0m
-[1;32m    878[0m             [0mself[0m[0;34m.[0m[0moptions[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m [0;34m=[0m [0mkwds[0m[0;34m[[0m[0;34m"has_index_names"[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
-[1;32m    879[0m [0;34m[0m[0m
-[0;32m--> 880[0;31m         [0mself[0m[0;34m.[0m[0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mengine[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    881[0m [0;34m[0m[0m
-[1;32m    882[0m     [0;32mdef[0m [0mclose[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m_make_engine[0;34m(self, engine)[0m
-[1;32m   1112[0m     [0;32mdef[0m [0m_make_engine[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mengine[0m[0;34m=[0m[0;34m"c"[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1113[0m         [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"c"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[0;32m-> 1114[0;31m             [0mself[0m[0;34m.[0m[0m_engine[0m [0;34m=[0m [0mCParserWrapper[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mf[0m[0;34m,[0m [0;34m**[0m[0mself[0m[0;34m.[0m[0moptions[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1115[0m         [0;32melse[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1116[0m             [0;32mif[0m [0mengine[0m [0;34m==[0m [0;34m"python"[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
-
-[0;32m/home/kdm/local/miniconda3/envs/ice_discharge/lib/python3.8/site-packages/pandas/io/parsers.py[0m in [0;36m__init__[0;34m(self, src, **kwds)[0m
-[1;32m   1889[0m         [0mkwds[0m[0;34m[[0m[0;34m"usecols"[0m[0;34m][0m [0;34m=[0m [0mself[0m[0;34m.[0m[0musecols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1890[0m [0;34m[0m[0m
-[0;32m-> 1891[0;31m         [0mself[0m[0;34m.[0m[0m_reader[0m [0;34m=[0m [0mparsers[0m[0;34m.[0m[0mTextReader[0m[0;34m([0m[0msrc[0m[0;34m,[0m [0;34m**[0m[0mkwds[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m   1892[0m         [0mself[0m[0;34m.[0m[0munnamed_cols[0m [0;34m=[0m [0mself[0m[0;34m.[0m[0m_reader[0m[0;34m.[0m[0munnamed_cols[0m[0;34m[0m[0;34m[0m[0m
-[1;32m   1893[0m [0;34m[0m[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader.__cinit__[0;34m()[0m
-
-[0;32mpandas/_libs/parsers.pyx[0m in [0;36mpandas._libs.parsers.TextReader._setup_parser_source[0;34m()[0m
-
-[0;31mFileNotFoundError[0m: [Errno 2] File ./out/gate_meta.csv does not exist: './out/gate_meta.csv'
-#+end_example
-:END:
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 **** Prep data
 
