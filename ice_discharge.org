@@ -1611,47 +1611,48 @@ done
 g.region raster=VX_${DATE} -pa
 #+END_SRC
 
-**** Sentinel 1
-***** Data Intro                                                   :noexport:
-#+BEGIN_SRC bash :results verbatim :tangle no
-DIR=${DATADIR}/Sentinel1/Sentinel1_IV_maps
-(cd ${DIR}; ls *.nc | head)
-(cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")
+**** PROMICE IV 200m
+***** Data Intro                                                   :noexport:                                                                                                                               
+#+BEGIN_SRC bash :results verbatim :tangle no                                                                                                                                                               
+DIR=${DATADIR}/Promice200m/                                                                                                                                                                                 
+(cd ${DIR}; ls *.nc | head)                                                                                                                                                                                 
+(cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")                                                                                                                                                 
+#+END_SRC 
+
+***** Import data                                                  :noexport:                                                                                                                               
++ Read in all the data                                                                                                                                                                                      
++ Conversion from [m day-1] to [m year-1] is done in section Just one velocity cutoff & buffer distance                                                                                                     
+                                                                                                                                                                                                            
+#+NAME: promice_import                                                                                                                                                                                      
+#+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
+MSG_OK "Promice 200m"                                                                                                                                                                                       
+g.mapset -c promice                                                                                                                                                                                         
+ROOT=${DATADIR}/Promice200m/                                                                                                                                                                                
+                                                                                                                                                                                                            
+find ${ROOT} -name "*.nc"                                                                                                                                                                                   
+# FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing                                                                                                                                                      
+                                                                                                                                                                                                            
+FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG                                                                                                                                                        
+for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do                                                                                                                                                
+  T=$(ncdump -v time $FILE | tail -n2 | tr -dc '[0-9]')                                                                                                                                                     
+  DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)                                                                                                                                              
+  DATE_STR=$(echo ${DATE} | sed s/-/_/g)                                                                                                                                                                    
+  echo $DATE                                                                                                                                                                                                
+                                                                                                                                                                                                            
+  # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)                                                                                                                                                   
+  # T0=$(echo ${TT} | cut -d, -f1)                                                                                                                                                                          
+  # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])                                                                                                                                                           
+  # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)                                                                                                                                                   
+  # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)                                                                                                                                                   
+                                                                                                                                                                                                            
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}                                                                                                             
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}                                                                                                            
+                                                                                                                                                                                                            
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}                                                                                                         
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}                                                                                                        
+done                                                                                                                                                                                                        
 #+END_SRC
 
-***** Import data                                                  :noexport:
-+ Read in all the data
-+ Conversion from [m day-1] to [m year-1] is done in section [[id:20210102T152009.186822][Just one velocity cutoff & buffer distance]]
-
-#+NAME: sentinel1_import  
-#+BEGIN_SRC bash :results verbatim
-MSG_OK "Sentinel 1"
-g.mapset -c Sentinel1
-ROOT=${DATADIR}/Sentinel1/Sentinel1_IV_maps
-
-find ${ROOT} -name "*.nc"
-# FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing
-
-FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG
-for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do
-  T=$(ncdump -v time $FILE | tail -n2 | tr -dc '[0-9]')
-  DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)
-  DATE_STR=$(echo ${DATE} | sed s/-/_/g)
-  echo $DATE
-
-  # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)
-  # T0=$(echo ${TT} | cut -d, -f1)
-  # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])
-  # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)
-  # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)
-
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}
-
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}
-done
-#+END_SRC
 
 **** Mouginot 2018 (pre-2000 velocities)
 + See citet:mouginot_2018_1972to1990 and citet:mouginot_2018_1991to2000
@@ -2342,17 +2343,19 @@ parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(V
 parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
 #+END_SRC
 
-#+NAME: sentinel1_effective_velocity
-#+BEGIN_SRC bash :results verbatim
-g.mapset Sentinel1
-g.region -d
 
-dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)
+#+NAME: promice_effective_velocity                                                                                                                                                                          
+#+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
+g.mapset promice                                                                                                                                                                                            
+g.region -d                                                                                                                                                                                                 
+                                                                                                                                                                                                            
+dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)                                                                                                                                          
+                                                                                                                                                                                                            
+parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}     
+                                                                                                                                                                                                            
+parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}     
+#+END_SRC                                                                                                                                                                                                   
 
-parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}
-
-parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}
-#+END_SRC
 
 #+BEGIN_SRC bash :results verbatim
 # fix return code of this script so make continues
@@ -2388,8 +2391,8 @@ VEL_0731=$(g.list -m mapset=MEaSUREs.0731 type=raster pattern=vel_eff_????_??_??
 ERR_0731=$(g.list -m mapset=MEaSUREs.0731 type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_0766=$(g.list -m mapset=MEaSUREs.0766 type=raster pattern=vel_eff_????_??_?? separator=space)
 ERR_0766=$(g.list -m mapset=MEaSUREs.0766 type=raster pattern=err_eff_????_??_?? separator=space)
-VEL_SENTINEL=$(g.list -m mapset=Sentinel1 type=raster pattern=vel_eff_????_??_?? separator=space)
-ERR_SENTINEL=$(g.list -m mapset=Sentinel1 type=raster pattern=err_eff_????_??_?? separator=space)
+VEL_SENTINEL=$(g.list -m mapset=promice type=raster pattern=vel_eff_????_??_?? separator=space)
+ERR_SENTINEL=$(g.list -m mapset=promice type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_MOUGINOT=$(g.list -m mapset=Mouginot_pre2000 type=raster pattern=vel_eff_????_??_?? separator=space)
 THICK=$(g.list -m mapset=Khan_2016 type=raster pattern=dh_???? separator=space)
 GIMP_0715="dem@GIMP.0715 day@GIMP.0715" # ,err@GIMP.0715
@@ -2732,7 +2735,7 @@ def filter_bad_v(v):
 vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
 
 # For now, drop Sentinel1
-vel = vel[vel.columns.drop(list(vel.filter(regex='Sentinel1')))] 
+# vel = vel[vel.columns.drop(list(vel.filter(regex='Sentinel1')))] 
 
 all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
                                                  int(c[13:15]),
@@ -2833,6 +2836,7 @@ dhdt[2020] = dhdt[2019]
 dhdt[2021] = dhdt[2019]
 dhdt[2022] = dhdt[2019]
 dhdt[2023] = dhdt[2019]
+dhdt[2024] = dhdt[2019]
 for y in np.arange(1985,1994+1): dhdt[y] = dhdt.loc[:,1995:1997].mean(axis='columns')
 dhdt.sort_index(axis='columns', inplace=True)
 
