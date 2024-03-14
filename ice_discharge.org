@@ -246,9 +246,9 @@ done
 
 #+RESULTS:
 #+begin_example
-times  all:  3195
+times  all:  3230
 times 19XX:  108
-times 20XX:  3087
+times 20XX:  3122
 times 2000:  12
 times 2001:  9
 times 2002:  10
@@ -272,12 +272,12 @@ times 2019:  254
 times 2020:  254
 times 2021:  244
 times 2022:  230
-times 2023:  21
+times 2023:  56
 times 2024:  0
 times 2025:  0
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3195=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3230=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -390,12 +390,12 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 #+END_SRC
 
 #+RESULTS:
-: pixels:  5868
+: pixels:  5865
 : gates:  267
 : sectors:  173
-: times:  3195
+: times:  3230
 
-Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5868=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
+Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5865=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
 The widest gate (~47 km) is Sermersuaq (Humboldt Gletsjer) and both Ikertivaq and Sermeq Kujalleq (Jakobshavn Isbræ) are ~34 km wide. A total of 14 glaciers have gate lengths longer than 10 km. The minimum gate width is 3 pixels (600 m) by definition in the algorithm. 
 
@@ -433,45 +433,148 @@ t[t.index.year > 2005]
 :RESULTS:
 #+begin_example
 Initial:
- D      452.452429
-err     42.965429
+ D      451.333571
+err     42.192857
 Name: 1986-01-01 00:00:00, dtype: float64
 
 Minimum
- D      427.822250
-err     39.854375
+ D      427.602500
+err     39.111375
 Name: 1995-01-01 00:00:00, dtype: float64
 
 Y2K
- D      437.680333
-err     39.694250
+ D      436.74975
+err     39.26875
 Name: 2000-01-01 00:00:00, dtype: float64
 
 2005
- D      483.080667
-err     43.975444
+ D      481.440667
+err     43.364889
 Name: 2005-01-01 00:00:00, dtype: float64
 #+end_example
-| Date                |       D |     err |
-|---------------------+---------+---------|
-| 2006-01-01 00:00:00 | 474.937 | 43.5121 |
-| 2007-01-01 00:00:00 | 469.133 | 43.2722 |
-| 2008-01-01 00:00:00 | 475.48  | 44.0682 |
-| 2009-01-01 00:00:00 | 478.746 | 44.766  |
-| 2010-01-01 00:00:00 | 482.784 | 45.065  |
-| 2011-01-01 00:00:00 | 488.354 | 45.7832 |
-| 2012-01-01 00:00:00 | 485.628 | 45.6983 |
-| 2013-01-01 00:00:00 | 494.442 | 46.6122 |
-| 2014-01-01 00:00:00 | 493.842 | 46.7586 |
-| 2015-01-01 00:00:00 | 496.166 | 46.9614 |
-| 2016-01-01 00:00:00 | 484.414 | 45.8763 |
-| 2017-01-01 00:00:00 | 495.481 | 46.9805 |
-| 2018-01-01 00:00:00 | 493.718 | 46.9151 |
-| 2019-01-01 00:00:00 | 497.63  | 47.3645 |
-| 2020-01-01 00:00:00 | 509.391 | 48.4301 |
-| 2021-01-01 00:00:00 | 514.076 | 48.7934 |
-| 2022-01-01 00:00:00 | 508.981 | 48.1625 |
-| 2023-01-01 00:00:00 | 499.162 | 46.8345 |
+#+begin_export html
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>D</th>
+      <th>err</th>
+    </tr>
+    <tr>
+      <th>Date</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2006-01-01</th>
+      <td>473.318000</td>
+      <td>42.879000</td>
+    </tr>
+    <tr>
+      <th>2007-01-01</th>
+      <td>467.606000</td>
+      <td>42.603667</td>
+    </tr>
+    <tr>
+      <th>2008-01-01</th>
+      <td>474.021800</td>
+      <td>43.371133</td>
+    </tr>
+    <tr>
+      <th>2009-01-01</th>
+      <td>477.455140</td>
+      <td>44.100123</td>
+    </tr>
+    <tr>
+      <th>2010-01-01</th>
+      <td>481.589118</td>
+      <td>44.351225</td>
+    </tr>
+    <tr>
+      <th>2011-01-01</th>
+      <td>487.247062</td>
+      <td>45.082894</td>
+    </tr>
+    <tr>
+      <th>2012-01-01</th>
+      <td>484.692217</td>
+      <td>45.045319</td>
+    </tr>
+    <tr>
+      <th>2013-01-01</th>
+      <td>493.267596</td>
+      <td>45.942585</td>
+    </tr>
+    <tr>
+      <th>2014-01-01</th>
+      <td>492.537368</td>
+      <td>46.075218</td>
+    </tr>
+    <tr>
+      <th>2015-01-01</th>
+      <td>494.864302</td>
+      <td>46.241978</td>
+    </tr>
+    <tr>
+      <th>2016-01-01</th>
+      <td>485.886684</td>
+      <td>45.526039</td>
+    </tr>
+    <tr>
+      <th>2017-01-01</th>
+      <td>497.332472</td>
+      <td>46.631374</td>
+    </tr>
+    <tr>
+      <th>2018-01-01</th>
+      <td>496.769102</td>
+      <td>46.685527</td>
+    </tr>
+    <tr>
+      <th>2019-01-01</th>
+      <td>502.399554</td>
+      <td>47.236974</td>
+    </tr>
+    <tr>
+      <th>2020-01-01</th>
+      <td>514.965330</td>
+      <td>48.298712</td>
+    </tr>
+    <tr>
+      <th>2021-01-01</th>
+      <td>518.639242</td>
+      <td>48.624907</td>
+    </tr>
+    <tr>
+      <th>2022-01-01</th>
+      <td>515.802703</td>
+      <td>48.269588</td>
+    </tr>
+    <tr>
+      <th>2023-01-01</th>
+      <td>502.132722</td>
+      <td>46.819222</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+#+end_export
 :END:
 
 
@@ -499,48 +602,48 @@ print("\nSE max and last:", r['SE'].max(), '\n', r['SE'].iloc[-10:].describe())
 
 #+RESULTS:
 #+begin_example
-SE range:  125.62692882590233 150.24600777128438 13.074756920257396 16.72832122628461
-SE %:  29.744789551573625
-NE,NO,NW %: 32.63906549687203
+SE range:  124.73322672211614 152.16356746480093 12.741238095760728 16.575369162978905
+SE %:  29.649568914720653
+NE,NO,NW %: 32.62058436148845
 
 NW increase
 : Date
-1999-01-01     91.547129
-2000-01-01     91.711047
-2001-01-01     90.116528
-2002-01-01     91.640375
-2003-01-01     94.249577
-2004-01-01     97.920329
-2005-01-01     98.696625
-2006-01-01     96.686292
-2007-01-01     96.741675
-2008-01-01     99.191550
-2009-01-01    101.668876
-2010-01-01    102.560677
-2011-01-01    106.260569
-2012-01-01    104.972155
-2013-01-01    109.010250
-2014-01-01    111.275167
-2015-01-01    110.857807
-2016-01-01    112.723833
-2017-01-01    115.436855
-2018-01-01    115.497043
-2019-01-01    110.282029
-2020-01-01    110.476415
-2021-01-01    112.669356
-2022-01-01    115.567258
-2023-01-01    115.717928
+1999-01-01     91.620024
+2000-01-01     91.793270
+2001-01-01     90.213475
+2002-01-01     91.736174
+2003-01-01     94.356057
+2004-01-01     98.025738
+2005-01-01     98.776836
+2006-01-01     96.801529
+2007-01-01     96.880708
+2008-01-01     99.331709
+2009-01-01    101.805364
+2010-01-01    102.702630
+2011-01-01    106.417633
+2012-01-01    105.129677
+2013-01-01    109.163402
+2014-01-01    111.407470
+2015-01-01    111.005718
+2016-01-01    113.303207
+2017-01-01    116.022516
+2018-01-01    116.360810
+2019-01-01    111.306665
+2020-01-01    111.425655
+2021-01-01    113.225821
+2022-01-01    116.448423
+2023-01-01    115.689001
 Freq: AS-JAN, Name: NW, dtype: float64
 
-SE max and last: 150.24600777128438 
+SE max and last: 152.16356746480093 
  count     10.000000
-mean     143.772477
-std        5.077121
-min      134.252176
-25%      141.576625
-50%      143.239330
-75%      148.196378
-max      150.246008
+mean     144.739725
+std        5.988034
+min      134.857358
+25%      141.057452
+50%      144.069866
+75%      150.266705
+max      152.163567
 Name: SE, dtype: float64
 #+end_example
 
@@ -570,21 +673,21 @@ print(s.loc['2013-01-01':, 'JAKOBSHAVN_ISBRAE'])
 #+RESULTS:
 #+begin_example
 2013-01-01 00:00:00
-52.63472731660344 4.747829146574791
+52.287053607327515 4.8754132696099335
 2018-01-01 00:00:00
-36.294832013938745 4.747829146574791
+36.2345921605291 4.8754132696099335
 Date
-2013-01-01    52.634727
-2014-01-01    50.966006
-2015-01-01    50.054508
-2016-01-01    46.839486
-2017-01-01    39.332353
-2018-01-01    36.294832
-2019-01-01    39.166373
-2020-01-01    42.389278
-2021-01-01    48.009093
-2022-01-01    42.056417
-2023-01-01    39.809328
+2013-01-01    52.287054
+2014-01-01    50.616675
+2015-01-01    49.729753
+2016-01-01    46.700591
+2017-01-01    39.330943
+2018-01-01    36.234592
+2019-01-01    39.313432
+2020-01-01    42.554549
+2021-01-01    48.253045
+2022-01-01    42.241685
+2023-01-01    40.120191
 Freq: AS-JAN, Name: JAKOBSHAVN_ISBRAE, dtype: float64
 #+end_example
 
@@ -827,16 +930,7 @@ df.round(0).astype(int)
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab:thick_adjust}.
 #+RESULTS: tab:thick_adjust
-|         | Good pixels | Bad pixels |
-|---------+-------------+------------|
-| Count   |        5306 |        562 |
-| Mean    |         824 |        255 |
-| SD      |         993 |        226 |
-| Minimum |         100 |        100 |
-| 25%     |         235 |        130 |
-| 50%     |         502 |        178 |
-| 75%     |         972 |        265 |
-| Maximum |        8093 |       1505 |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 src_jupyter-python{vel.shape[0]} {{{results(=5863=)}}}
 src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5301=)}}}
@@ -891,12 +985,53 @@ df
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Effect of different thickness adjustments on baseline discharge\label{tab:thick_treatments}
 #+RESULTS: tab:thick_treatments
-| Treatment | Discharge (Gt) |
-|-----------+----------------|
-| NoAdj     | 462 \pm 42     |
-| 300       | 468 \pm 44     |
-| 400       | 475 \pm 47     |
-| Fit       | 471 \pm 45     |
+#+begin_export html
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Discharge (Gt)</th>
+    </tr>
+    <tr>
+      <th>Treatment</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>NoAdj</th>
+      <td>463 \pm 41</td>
+    </tr>
+    <tr>
+      <th>300</th>
+      <td>467 \pm 43</td>
+    </tr>
+    <tr>
+      <th>400</th>
+      <td>473 \pm 46</td>
+    </tr>
+    <tr>
+      <th>Fit</th>
+      <td>470 \pm 45</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+#+end_export
 
 
 Finally, Figure [[fig:gate_map]] shows the geospatial locations, concentration, and speed of gates with and without bad pixels.
@@ -1476,47 +1611,48 @@ done
 g.region raster=VX_${DATE} -pa
 #+END_SRC
 
-**** Sentinel 1
-***** Data Intro                                                   :noexport:
-#+BEGIN_SRC bash :results verbatim :tangle no
-DIR=${DATADIR}/Sentinel1/Sentinel1_IV_maps
-(cd ${DIR}; ls *.nc | head)
-(cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")
+**** PROMICE IV 200m
+***** Data Intro                                                   :noexport:                                                                                                                               
+#+BEGIN_SRC bash :results verbatim :tangle no                                                                                                                                                               
+DIR=${DATADIR}/Promice200m/                                                                                                                                                                                 
+(cd ${DIR}; ls *.nc | head)                                                                                                                                                                                 
+(cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")                                                                                                                                                 
+#+END_SRC 
+
+***** Import data                                                  :noexport:                                                                                                                               
++ Read in all the data                                                                                                                                                                                      
++ Conversion from [m day-1] to [m year-1] is done in section Just one velocity cutoff & buffer distance                                                                                                     
+                                                                                                                                                                                                            
+#+NAME: promice_import                                                                                                                                                                                      
+#+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
+MSG_OK "Promice 200m"                                                                                                                                                                                       
+g.mapset -c promice                                                                                                                                                                                         
+ROOT=${DATADIR}/Promice200m/                                                                                                                                                                                
+                                                                                                                                                                                                            
+find ${ROOT} -name "*.nc"                                                                                                                                                                                   
+# FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing                                                                                                                                                      
+                                                                                                                                                                                                            
+FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG                                                                                                                                                        
+for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do                                                                                                                                                
+  T=$(ncdump -v time $FILE | tail -n2 | tr -dc '[0-9]')                                                                                                                                                     
+  DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)                                                                                                                                              
+  DATE_STR=$(echo ${DATE} | sed s/-/_/g)                                                                                                                                                                    
+  echo $DATE                                                                                                                                                                                                
+                                                                                                                                                                                                            
+  # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)                                                                                                                                                   
+  # T0=$(echo ${TT} | cut -d, -f1)                                                                                                                                                                          
+  # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])                                                                                                                                                           
+  # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)                                                                                                                                                   
+  # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)                                                                                                                                                   
+                                                                                                                                                                                                            
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}                                                                                                             
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}                                                                                                            
+                                                                                                                                                                                                            
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}                                                                                                         
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}                                                                                                        
+done                                                                                                                                                                                                        
 #+END_SRC
 
-***** Import data                                                  :noexport:
-+ Read in all the data
-+ Conversion from [m day-1] to [m year-1] is done in section [[id:20210102T152009.186822][Just one velocity cutoff & buffer distance]]
-
-#+NAME: sentinel1_import  
-#+BEGIN_SRC bash :results verbatim
-MSG_OK "Sentinel 1"
-g.mapset -c Sentinel1
-ROOT=${DATADIR}/Sentinel1/Sentinel1_IV_maps
-
-find ${ROOT} -name "*.nc"
-# FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing
-
-FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG
-for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do
-  T=$(ncdump -v time $FILE | tail -n2 | tr -dc '[0-9]')
-  DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)
-  DATE_STR=$(echo ${DATE} | sed s/-/_/g)
-  echo $DATE
-
-  # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)
-  # T0=$(echo ${TT} | cut -d, -f1)
-  # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])
-  # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)
-  # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)
-
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}
-
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}
-done
-#+END_SRC
 
 **** Mouginot 2018 (pre-2000 velocities)
 + See citet:mouginot_2018_1972to1990 and citet:mouginot_2018_1991to2000
@@ -2207,17 +2343,19 @@ parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(V
 parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
 #+END_SRC
 
-#+NAME: sentinel1_effective_velocity
-#+BEGIN_SRC bash :results verbatim
-g.mapset Sentinel1
-g.region -d
 
-dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)
+#+NAME: promice_effective_velocity                                                                                                                                                                          
+#+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
+g.mapset promice                                                                                                                                                                                            
+g.region -d                                                                                                                                                                                                 
+                                                                                                                                                                                                            
+dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)                                                                                                                                          
+                                                                                                                                                                                                            
+parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}     
+                                                                                                                                                                                                            
+parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}     
+#+END_SRC                                                                                                                                                                                                   
 
-parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}
-
-parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}
-#+END_SRC
 
 #+BEGIN_SRC bash :results verbatim
 # fix return code of this script so make continues
@@ -2253,8 +2391,8 @@ VEL_0731=$(g.list -m mapset=MEaSUREs.0731 type=raster pattern=vel_eff_????_??_??
 ERR_0731=$(g.list -m mapset=MEaSUREs.0731 type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_0766=$(g.list -m mapset=MEaSUREs.0766 type=raster pattern=vel_eff_????_??_?? separator=space)
 ERR_0766=$(g.list -m mapset=MEaSUREs.0766 type=raster pattern=err_eff_????_??_?? separator=space)
-VEL_SENTINEL=$(g.list -m mapset=Sentinel1 type=raster pattern=vel_eff_????_??_?? separator=space)
-ERR_SENTINEL=$(g.list -m mapset=Sentinel1 type=raster pattern=err_eff_????_??_?? separator=space)
+VEL_SENTINEL=$(g.list -m mapset=promice type=raster pattern=vel_eff_????_??_?? separator=space)
+ERR_SENTINEL=$(g.list -m mapset=promice type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_MOUGINOT=$(g.list -m mapset=Mouginot_pre2000 type=raster pattern=vel_eff_????_??_?? separator=space)
 THICK=$(g.list -m mapset=Khan_2016 type=raster pattern=dh_???? separator=space)
 GIMP_0715="dem@GIMP.0715 day@GIMP.0715" # ,err@GIMP.0715
@@ -2394,17 +2532,7 @@ df_out
 #+END_SRC
 
 #+RESULTS:
-| Method            |                 Val | Unit |
-|-------------------+---------------------+------|
-| D                 |   473.4938186056146 | Gt   |
-| Err (Thickness)   |   42.98833923972508 | Gt   |
-| Err (Thickness %) |   9.078965247386089 | %    |
-| Err (Velocity)    |   3.183633882559306 | Gt   |
-| Err (Velocity %)  |  0.6723707380034538 | %    |
-| Err (Combined)    |   46.17197312228439 | Gt   |
-| Err (%)           |   9.751335985389545 | %    |
-| Random Errors     |         473.5+/-1.2 | Gt   |
-| Random Errors (%) | 0.25881172672039293 | %    |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 *** Results (Mouginot 2019 Sector)
 #+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
@@ -2442,182 +2570,7 @@ err_sector
 #+END_SRC
 
 #+RESULTS:
-| Sector |      D [Gt] | Error [Gt] | Error [%] |
-|--------+-------------+------------+-----------|
-|      1 |     1.29434 |   0.136064 |   10.5123 |
-|      2 |    0.310441 |  0.0856028 |   27.5746 |
-|      3 |     12.5661 |   0.939911 |   7.47971 |
-|      4 |     1.61918 |   0.207414 |   12.8098 |
-|      6 |     5.83553 |     0.3352 |   5.74413 |
-|      7 |    0.753161 |  0.0537997 |   7.14319 |
-|      8 |    0.671818 |  0.0507243 |   7.55031 |
-|      9 |     8.78286 |   0.722524 |   8.22653 |
-|     10 |     2.03277 |   0.192084 |   9.44934 |
-|     14 |     2.73795 |   0.355127 |   12.9706 |
-|     15 |    0.495287 |  0.0462638 |   9.34081 |
-|     16 |     4.78698 |   0.428187 |   8.94482 |
-|     19 |    0.363465 |  0.0406867 |   11.1941 |
-|     20 |    0.501707 |  0.0430607 |   8.58283 |
-|     21 |      3.0592 |   0.390581 |   12.7674 |
-|     22 |    0.880568 |   0.150125 |   17.0487 |
-|     23 |     1.17253 |   0.143493 |    12.238 |
-|     25 |    0.100281 |  0.0105313 |   10.5018 |
-|     26 |     1.10096 |  0.0820469 |   7.45232 |
-|     27 |       6.236 |   0.271305 |   4.35063 |
-|     28 |    0.732422 |  0.0274421 |   3.74676 |
-|     29 |     1.91275 |   0.116042 |   6.06673 |
-|     30 |     1.85558 |   0.175475 |   9.45657 |
-|     31 |    0.674545 |  0.0560263 |   8.30578 |
-|     32 |     5.17382 |   0.332576 |   6.42806 |
-|     33 |      7.0551 |   0.822821 |   11.6628 |
-|     34 |     4.07864 |   0.350655 |   8.59734 |
-|     35 |     5.61639 |   0.577209 |   10.2772 |
-|     36 |     5.72035 |   0.390594 |   6.82814 |
-|     37 |     6.14091 |   0.344634 |   5.61211 |
-|     38 |     5.67528 |   0.510757 |   8.99968 |
-|     41 |     2.50069 |   0.215477 |   8.61669 |
-|     42 |     1.11047 |  0.0828285 |   7.45885 |
-|     43 |     5.65026 |   0.258664 |   4.57791 |
-|     44 |     1.04221 |  0.0645174 |   6.19044 |
-|     45 |    0.768413 |  0.0774267 |   10.0762 |
-|     47 |     1.56308 |   0.269684 |   17.2534 |
-|     48 |     3.70632 |   0.280493 |   7.56798 |
-|     49 |    0.975524 |   0.119691 |   12.2694 |
-|     50 |     7.33424 |   0.855919 |   11.6702 |
-|     53 |     2.99802 |   0.197197 |   6.57756 |
-|     55 |    0.125037 |  0.0235311 |   18.8193 |
-|     56 |    0.429022 |  0.0837076 |   19.5113 |
-|     58 |     12.3048 |   0.726285 |   5.90244 |
-|     59 |      14.362 |    1.33702 |   9.30939 |
-|     60 |     8.85146 |    0.66088 |   7.46634 |
-|     61 |    0.493074 |  0.0970721 |   19.6871 |
-|     62 |     0.78548 |  0.0285448 |   3.63406 |
-|     63 |     28.0768 |    2.31913 |   8.25998 |
-|     64 |     5.20947 |   0.543664 |   10.4361 |
-|     65 |     2.93238 |   0.429566 |   14.6491 |
-|     66 | 0.000699729 | 0.00949918 |   1357.55 |
-|     67 |   0.0657542 |  0.0975227 |   148.314 |
-|     68 |     3.93266 |   0.191297 |   4.86431 |
-|     69 |     1.91713 |   0.171482 |   8.94474 |
-|     72 |     1.23267 |  0.0895882 |   7.26785 |
-|     73 |   0.0274574 |   0.139179 |    506.89 |
-|     74 |     3.47983 |   0.266339 |    7.6538 |
-|     75 |    0.152973 |  0.0346264 |   22.6356 |
-|     76 |     2.16139 |   0.338545 |   15.6633 |
-|     77 |  0.00102352 |  0.0105629 |   1032.01 |
-|     78 |     1.80909 |   0.142042 |   7.85158 |
-|     80 |     5.37923 |   0.543447 |   10.1027 |
-|     81 |     6.85403 |   0.416911 |   6.08271 |
-|     82 |     1.43431 |   0.119975 |   8.36461 |
-|     83 |     4.44982 |    0.74864 |   16.8241 |
-|     84 |     1.66881 |   0.163146 |   9.77618 |
-|     86 |     8.00699 |   0.832367 |   10.3955 |
-|     88 |   0.0122772 |  0.0389889 |   317.572 |
-|     93 |     2.65156 |   0.242343 |   9.13966 |
-|     94 |     1.18184 |   0.352761 |   29.8485 |
-|     95 |     9.04089 |   0.660398 |   7.30456 |
-|     96 |     4.62319 |   0.188674 |   4.08104 |
-|     97 |  0.00700837 |  0.0171578 |   244.819 |
-|     98 |     1.65434 |   0.229888 |   13.8961 |
-|    100 |     0.15114 |   0.123635 |   81.8017 |
-|    102 |     25.4252 |    1.41528 |   5.56646 |
-|    103 |    0.465713 |  0.0582159 |   12.5004 |
-|    104 |    0.722786 |   0.113957 |   15.7664 |
-|    105 |   0.0797765 |  0.0153041 |   19.1838 |
-|    106 |     16.4891 |   0.971272 |    5.8904 |
-|    107 |     3.62598 |   0.152852 |   4.21546 |
-|    108 |    0.470035 |  0.0870481 |   18.5195 |
-|    109 |   0.0560792 |   0.035348 |   63.0322 |
-|    110 |    0.116119 |  0.0095286 |   8.20588 |
-|    111 |  0.00261868 |  0.0281084 |   1073.38 |
-|    112 | 0.000165757 |  0.0016189 |   976.672 |
-|    113 |    0.204822 |  0.0940625 |   45.9239 |
-|    114 |     1.91905 |   0.127665 |   6.65251 |
-|    115 |     1.04673 |   0.230855 |   22.0548 |
-|    116 |  0.00356805 |  0.0239411 |   670.984 |
-|    117 |     6.46127 |   0.894339 |   13.8415 |
-|    118 | 4.74541e-05 |  0.0722375 |    152226 |
-|    120 |    0.383151 |   0.119956 |   31.3077 |
-|    121 |     1.10862 |    0.25799 |   23.2712 |
-|    122 |  0.00557583 |   0.107683 |   1931.25 |
-|    123 |  0.00242364 |  0.0172075 |   709.987 |
-|    124 | 0.000548375 |  0.0922697 |     16826 |
-|    125 |     1.33598 |   0.135961 |   10.1769 |
-|    126 |     1.65857 |   0.199918 |   12.0536 |
-|    127 |     8.59129 |   0.513162 |   5.97305 |
-|    128 |   0.0185826 |   0.148707 |   800.253 |
-|    132 |    0.048675 |  0.0449842 |   92.4175 |
-|    134 |     3.50718 |   0.238443 |   6.79871 |
-|    136 |  0.00667032 |  0.0401559 |   602.008 |
-|    138 |   0.0342112 |  0.0214605 |   62.7295 |
-|    139 |    0.207769 |  0.0357031 |   17.1841 |
-|    140 |     0.30231 |   0.149658 |   49.5048 |
-|    141 |    0.040187 |  0.0278161 |   69.2166 |
-|    142 |   0.0558514 |  0.0337221 |   60.3783 |
-|    144 |  0.00143109 |  0.0148342 |   1036.57 |
-|    146 |    0.325284 |  0.0250945 |   7.71464 |
-|    147 |     2.37626 |   0.275304 |   11.5856 |
-|    148 |     1.42446 |   0.095962 |   6.73671 |
-|    150 |    0.107048 |  0.0452214 |   42.2439 |
-|    151 |    0.264086 |  0.0614225 |   23.2586 |
-|    152 |    0.167549 |  0.0675334 |   40.3066 |
-|    153 |    0.210167 |  0.0277339 |   13.1961 |
-|    154 |    0.653104 |  0.0494449 |   7.57075 |
-|    156 |   0.0008353 |  0.0444572 |    5322.3 |
-|    157 |   0.0654157 |  0.0407158 |   62.2417 |
-|    158 |    0.319222 |  0.0660561 |   20.6928 |
-|    164 |    0.133574 |  0.0159528 |   11.9431 |
-|    172 |  0.00342035 | 0.00731703 |   213.926 |
-|    174 | 0.000449007 | 0.00560105 |   1247.43 |
-|    183 |    0.291862 |   0.113124 |   38.7593 |
-|    185 |     0.45523 |   0.116634 |   25.6209 |
-|    186 |    0.762048 |   0.150728 |   19.7794 |
-|    188 |  0.00692874 | 0.00905537 |   130.693 |
-|    189 |     7.74408 |   0.677343 |   8.74659 |
-|    190 |     2.97442 |   0.423447 |   14.2363 |
-|    191 |  0.00175983 |  0.0142211 |   808.095 |
-|    192 |     4.56864 |   0.433671 |   9.49233 |
-|    193 |     1.70132 |   0.104329 |   6.13228 |
-|    195 |    0.264522 |  0.0630687 |   23.8425 |
-|    196 |   0.0293809 |  0.0144538 |   49.1947 |
-|    197 |    0.644652 |   0.167497 |   25.9826 |
-|    199 |      0.2142 |   0.279288 |   130.386 |
-|    200 |  0.00223796 |  0.0100746 |   450.168 |
-|    203 |    0.869672 |  0.0875002 |   10.0613 |
-|    204 |  0.00332712 |   0.017985 |   540.558 |
-|    207 |     6.91323 |   0.857874 |   12.4092 |
-|    208 |     2.69131 |   0.229882 |   8.54165 |
-|    209 |      1.1033 |  0.0400644 |   3.63131 |
-|    210 |    0.749633 |   0.141274 |   18.8458 |
-|    211 |     2.76138 |   0.213416 |    7.7286 |
-|    212 |     5.62277 |   0.342385 |   6.08925 |
-|    213 |      4.9766 |   0.264797 |   5.32085 |
-|    214 |     9.47696 |   0.998415 |   10.5352 |
-|    215 |   0.0187021 |  0.0563013 |   301.043 |
-|    216 |    0.551284 |  0.0696341 |   12.6313 |
-|    218 |     45.6895 |    3.95977 |   8.66668 |
-|    219 |    0.176738 |  0.0381168 |   21.5669 |
-|    222 |    0.112622 |  0.0571112 |   50.7103 |
-|    223 |     11.3287 |   0.484608 |   4.27771 |
-|    224 |    0.496508 |  0.0688425 |   13.8654 |
-|    231 |     1.12647 |  0.0470152 |   4.17367 |
-|    232 | 6.54031e-05 |  0.0199037 |   30432.4 |
-|    233 |     4.89196 |   0.635047 |   12.9814 |
-|    234 |   0.0218779 |  0.0144015 |   65.8269 |
-|    236 |  0.00629822 |  0.0150542 |   239.023 |
-|    237 |    0.177072 |  0.0939192 |   53.0401 |
-|    239 |    0.158561 |  0.0379821 |   23.9542 |
-|    240 |   0.0295809 |  0.0162384 |    54.895 |
-|    243 |     3.11635 |   0.316295 |   10.1495 |
-|    248 |     4.76912 |   0.363199 |   7.61565 |
-|    249 |     1.55874 |   0.172696 |   11.0792 |
-|    251 |  0.00678222 |  0.0048316 |   71.2392 |
-|    252 | 0.000672232 | 0.00326744 |   486.058 |
-|    254 |   0.0813008 |  0.0311141 |   38.2703 |
-|    255 |     0.84425 |  0.0795268 |   9.41981 |
-|    257 | 0.000331188 |  0.0320457 |      9676 |
-|    259 | 4.38906e-05 |  0.0125338 |   28556.8 |
-|    GIS |     473.494 |    42.9883 |   9.07897 |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 *** Results (Mouginot 2019 Region)
 
@@ -2655,16 +2608,7 @@ err_region
 #+END_SRC
 
 #+RESULTS:
-| Region |  D [Gt] | Error [Gt] | Error [%] |
-|--------+---------+------------+-----------|
-|      1 | 25.3327 |    2.07389 |   8.18662 |
-|      2 | 27.3086 |     2.3465 |   8.59251 |
-|      3 | 67.0944 |    5.55597 |   8.28082 |
-|      4 | 131.266 |     13.473 |   10.2639 |
-|      5 | 18.3048 |     1.9491 |    10.648 |
-|      6 | 87.7614 |    7.18312 |   8.18484 |
-|      7 | 116.426 |    10.4068 |   8.93856 |
-|    GIS | 473.494 |    42.9883 |   9.07897 |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 *** Results (Gate)                                                 :noexport:
 #+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
@@ -2707,276 +2651,7 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-| Gate |      D [Gt] |  Error [Gt] |   Error [%] | name                             |
-|------+-------------+-------------+-------------+----------------------------------|
-|    1 | 0.000242779 |  0.00728336 |        3000 | JUNGERSEN_HENSON_NARAVANA        |
-|    3 | 0.000780741 |   0.0032795 |      420.05 | JUNGERSEN_HENSON_NARAVANA        |
-|    4 |    0.125037 |   0.0235311 |     18.8193 | MARIE_SOPHIE_GLETSCHER           |
-|    5 |    0.551284 |   0.0696341 |     12.6313 | HAGEN_BRAE                       |
-|    6 |   0.0187021 |   0.0563013 |     301.043 | BRIKKERNE_GLETSCHER              |
-|    7 |    0.429022 |   0.0837076 |     19.5113 | ACADEMY                          |
-|    8 |   0.0560792 |    0.035348 |     63.0322 | HARDER_GLETSCHER                 |
-|   10 |     2.52867 |    0.132506 |     5.24016 | RYDER_GLETSCHER                  |
-|   11 |       1.627 |    0.138648 |     8.52171 | OSTENFELD_GLETSCHER              |
-|   12 |    0.325284 |   0.0250945 |     7.71464 | STEENSBY_GLETSCHER               |
-|   17 |   0.0274536 |   0.0123187 |     44.8709 | OSTENFELD_GLETSCHER              |
-|   19 |   0.0143599 |   0.0121794 |     84.8151 | OSTENFELD_GLETSCHER              |
-|   22 |    0.197205 |   0.0163773 |      8.3047 | RYDER_GLETSCHER                  |
-|   23 |    0.272153 |   0.0483133 |     17.7523 | RYDER_GLETSCHER                  |
-|   25 |   0.0128398 |   0.0236532 |     184.218 | PETERMANN_GLETSCHER_N            |
-|   26 |    0.483668 |   0.0451894 |     9.34306 | PETERMANN_GLETSCHER_N            |
-|   27 |     11.3287 |    0.484608 |     4.27771 | PETERMANN_GLETSCHER              |
-|   28 |     7.10706 |    0.834849 |     11.7468 | HUMBOLDT_GLETSCHER               |
-|   29 |     12.3048 |    0.726285 |     5.90244 | NIOGHALVFJERDSFJORDEN            |
-|   30 |    0.227178 |   0.0210705 |     9.27487 | HUMBOLDT_GLETSCHER               |
-|   31 |      14.362 |     1.33702 |     9.30939 | ZACHARIAE_ISSTROM                |
-|   32 | 7.55834e-05 |   0.0022675 |        3000 | DIEBITSCH                        |
-|   33 | 0.000373423 |  0.00333355 |       892.7 | DIEBITSCH                        |
-|   34 |  0.00342035 |  0.00731703 |     213.926 | MORRIS_JESUP                     |
-|   35 |    0.133574 |   0.0159528 |     11.9431 | BOWDOIN                          |
-|   36 |    0.722786 |    0.113957 |     15.7664 | MELVILLE_GLETSCHER               |
-|   37 |   0.0797765 |   0.0153041 |     19.1838 | SHARP                            |
-|   38 |    0.465713 |   0.0582159 |     12.5004 | FARQUHAR_GLETSCHER               |
-|   39 |     3.70632 |    0.280493 |     7.56798 | TRACY_GLETSCHER                  |
-|   40 |     1.56308 |    0.269684 |     17.2534 | HEILPRIN_GLETSCHER               |
-|   46 |    0.975524 |    0.119691 |     12.2694 | HARALD_MOLTKE_BRAE               |
-|   47 |    0.020235 |  0.00273122 |     13.4975 | SAVISSUAQ_WW                     |
-|   48 |   0.0093459 |   0.0135072 |     144.526 | SAVISSUAQ_WW                     |
-|   49 |    0.291862 |    0.113124 |     38.7593 | SAVISSUAQ_WWWW                   |
-|   50 |    0.118435 |   0.0284501 |     24.0216 | SAVISSUAQ_W                      |
-|   51 |   0.0401259 |  0.00953196 |     23.7552 | SAVISSUAQ_W                      |
-|   52 |     0.45523 |    0.116634 |     25.6209 | SAVISSUAQ                        |
-|   53 |    0.264522 |   0.0630687 |     23.8425 | YNGVAR_NIELSEN_BRAE_W            |
-|   54 |    0.644652 |    0.167497 |     25.9826 | YNGVAR_NIELSEN_BRAE              |
-|   55 |    0.766022 |   0.0751315 |       9.808 | CARLOS                           |
-|   57 |  0.00239114 |  0.00229522 |     95.9883 | CARLOS                           |
-|   58 |   0.0293809 |   0.0144538 |     49.1947 | HELLAND                          |
-|   59 |     2.33572 |     0.25057 |     10.7277 | GADE-MORELL                      |
-|   60 |   0.0405424 |   0.0247337 |      61.007 | GADE-MORELL                      |
-|   61 |   0.0079617 |   0.0023071 |     28.9774 | DOCKER_SMITH_GLETSCHER_W         |
-|   62 |      1.4165 |   0.0936549 |     6.61171 | DOCKER_SMITH_GLETSCHER_W         |
-|   63 |     1.56217 |    0.119625 |     7.65766 | DOCKER_SMITH_GLETSCHER           |
-|   64 |    0.246925 |   0.0224169 |     9.07843 | DOCKER_SMITH_GLETSCHER           |
-|   66 |     1.04221 |   0.0645174 |     6.19044 | RINK_GLETSCHER                   |
-|   67 |     3.49275 |     0.17966 |     5.14379 | ISSUUARSUIT_SERMIA               |
-|   69 |     1.02198 |    0.036123 |     3.53462 | ISSUUARSUIT_SERMIA               |
-|   71 |     1.13553 |   0.0428808 |     3.77627 | ISSUUARSUIT_SERMIA               |
-|   72 |     1.11047 |   0.0828285 |     7.45885 | NONAME_NORTH_OSCAR               |
-|   73 |      8.5488 |    0.510303 |     5.96929 | KONG_OSCAR_GLETSCHER             |
-|   77 |   0.0424876 |  0.00285902 |     6.72907 | KONG_OSCAR_GLETSCHER             |
-|   78 |   0.0640827 |   0.0024583 |     3.83613 | NORDENSKIOLD_GLESCHER_NW         |
-|   79 |     8.21547 |    0.519692 |     6.32577 | NORDENSKIOLD_GLESCHER_NW         |
-|   89 |    0.362045 |    0.037961 |     10.4852 | NANSEN_GLETSCHER                 |
-|   90 |   0.0702968 |   0.0128468 |     18.2752 | SVERDRUP_GLETSCHER               |
-|   91 |     5.65005 |    0.377747 |     6.68572 | SVERDRUP_GLETSCHER               |
-|   92 |     1.18789 |    0.112152 |     9.44133 | STEENSTRUP-DIETRICHSON           |
-|   93 |     1.12866 |    0.114259 |     10.1235 | STEENSTRUP-DIETRICHSON           |
-|   94 |     3.35873 |    0.284345 |     8.46584 | STEENSTRUP-DIETRICHSON           |
-|   95 |     5.61639 |    0.577209 |     10.2772 | KJER_GLETSCHER                   |
-|   96 |    0.244419 |   0.0240648 |      9.8457 | HAYES_GLETSCHER_N_NN             |
-|   99 |    0.146128 |   0.0126128 |     8.63134 | HAYES_GLETSCHER_N_NN             |
-|  100 |    0.541581 |   0.0373377 |     6.89421 | HAYES_GLETSCHER_N_NN             |
-|  102 |    0.728696 |   0.0381139 |     5.23043 | HAYES_GLETSCHER_N_NN             |
-|  103 |     7.81614 |    0.886286 |     11.3392 | HAYES_GLETSCHER_N_NN             |
-|  104 |     3.28116 |    0.298289 |     9.09097 | HAYES_GLETSCHER_M_SS             |
-|  111 |     0.65018 |   0.0380979 |     5.85959 | HAYES_GLETSCHER_M_SS             |
-|  112 |    0.147303 |   0.0142676 |     9.68583 | HAYES_GLETSCHER_M_SS             |
-|  113 |     5.48604 |    0.649588 |     11.8407 | ALISON_GLETSCHER                 |
-|  114 |    0.207769 |   0.0357031 |     17.1841 | WALTERSHAUSEN                    |
-|  115 |     1.56905 |    0.173233 |     11.0406 | ALISON_GLETSCHER                 |
-|  116 |   0.0342112 |   0.0214605 |     62.7295 | ADOLF_HOEL                       |
-|  117 |     5.17382 |    0.332576 |     6.42806 | ILLULLIP_SERMIA                  |
-|  118 |    0.432423 |   0.0427062 |     9.87602 | CORNELL_GLETSCHER                |
-|  119 |    0.242122 |   0.0133201 |     5.50138 | CORNELL_GLETSCHER                |
-|  120 |     0.30231 |    0.149658 |     49.5048 | GERARD_DE_GEER                   |
-|  122 |    0.903184 |   0.0799699 |     8.85422 | USSING_BRAEER_N                  |
-|  123 |    0.952401 |   0.0955048 |     10.0278 | USSING_BRAEER_N                  |
-|  124 |    0.040187 |   0.0278161 |     69.2166 | JAETTEGLETSCHER                  |
-|  125 |     1.76395 |   0.0922633 |     5.23049 | USSING_BRAEER                    |
-|  126 |    0.148799 |   0.0237782 |       15.98 | USSING_BRAEER                    |
-|  127 |    0.732422 |   0.0274421 |     3.74676 | QEQERTARSUUP_SERMIA              |
-|  128 |   0.0558514 |   0.0337221 |     60.3783 | NORDENSKIOLD_NE                  |
-|  129 |     6.19615 |    0.266278 |     4.29747 | KAKIVFAAT_SERMIAT                |
-|  130 |   0.0398482 |  0.00502754 |     12.6167 | KAKIVFAAT_SERMIAT                |
-|  131 |  0.00143109 |   0.0148342 |     1036.57 | HISINGER_GLETSCHER               |
-|  132 |     1.10096 |   0.0820469 |     7.45232 | NUNATAKASSAAP_SERMIA             |
-|  133 |    0.563711 |   0.0564402 |     10.0123 | UPERNAVIK_ISSTROM_N              |
-|  134 |     7.44328 |    0.775927 |     10.4245 | UPERNAVIK_ISSTROM_N              |
-|  135 |     6.91323 |    0.857874 |     12.4092 | UPERNAVIK_ISSTROM_C              |
-|  136 |     2.69131 |    0.229882 |     8.54165 | UPERNAVIK_ISSTROM_S              |
-|  137 |    0.100281 |   0.0105313 |     10.5018 | UPERNAVIK_ISSTROM_SS             |
-|  138 |    0.869672 |   0.0875002 |     10.0613 | F_GRAAE                          |
-|  139 |  0.00332712 |    0.017985 |     540.558 | CHARCOT                          |
-|  140 |     8.85146 |     0.66088 |     7.46634 | DAUGAARD-JENSEN                  |
-|  141 |     1.17253 |    0.143493 |      12.238 | INNGIA_ISBRAE                    |
-|  142 |     1.29434 |    0.136064 |     10.5123 | UMIAMMAKKU_ISBRAE                |
-|  143 |     12.5661 |    0.939911 |     7.47971 | RINK_ISBRAE                      |
-|  144 |   0.0196263 |   0.0101391 |     51.6609 | EIELSON_HARE_FJORD-ROLIGE        |
-|  145 |     1.61918 |    0.207414 |     12.8098 | KANGERLUSSUUP_SERMERSUA          |
-|  146 | 0.000237044 |  0.00797006 |     3362.27 | GEIKIE3                          |
-|  148 | 4.44987e-05 |   0.0149735 |     33649.3 | GEIKIE3                          |
-|  149 | 0.000553758 |   0.0215136 |     3885.03 | GEIKIE3                          |
-|  150 |    0.473448 |    0.086933 |     18.3617 | EIELSON_HARE_FJORD-ROLIGE        |
-|  151 |    0.653104 |   0.0494449 |     7.57075 | BREDEGLETSJER                    |
-|  152 |    0.210167 |   0.0277339 |     13.1961 | SYDBR                            |
-|  153 |    0.674378 |   0.0354955 |     5.26344 | SERMEQ_SILARLEQ                  |
-|  154 |     2.16139 |    0.338545 |     15.6633 | VESTFJORD                        |
-|  155 |     5.16115 |    0.299705 |     5.80694 | SERMEQ_SILARLEQ                  |
-|  156 |     1.65434 |    0.229888 |     13.8961 | MAGGA_DAN_GLETSCHER              |
-|  157 |    0.753161 |   0.0537997 |     7.14319 | CW_NONAME2                       |
-|  158 |    0.253973 |   0.0462155 |      18.197 | GEIKIE_UNNAMED_VESTFORD_S        |
-|  159 |  0.00829508 |  0.00621452 |     74.9182 | GEIKIE_UNNAMED_VESTFORD_S        |
-|  160 |   0.0481725 |   0.0331728 |     68.8626 | GEIKIE_UNNAMED_VESTFORD_S        |
-|  161 |    0.515418 |   0.0392759 |      7.6202 | LILLE_GLETSCHER                  |
-|  162 |      0.1564 |   0.0114484 |     7.31998 | LILLE_GLETSCHER                  |
-|  163 |    0.353756 |   0.0173541 |     4.90566 | STORE_GLETSCHER                  |
-|  164 |    0.319222 |   0.0660561 |     20.6928 | DENDRITGLETSCHER                 |
-|  165 |      8.4291 |     0.70517 |      8.3659 | STORE_GLETSCHER                  |
-|  166 |   0.0218779 |   0.0144015 |     65.8269 | GEIKIE7                          |
-|  167 |     2.03277 |    0.192084 |     9.44934 | SERMEQ_AVANNARLEQ2               |
-|  169 |     7.28039 |    0.477909 |     6.56432 | SERMEQ_KUJALLEQ                  |
-|  170 |   0.0654157 |   0.0407158 |     62.2417 | GEIKIE6                          |
-|  177 |     1.00795 |   0.0589765 |     5.85115 | KANGILERNGATA_SERMIA             |
-|  180 |     1.23267 |   0.0895882 |     7.26785 | EQIP_SERMIA                      |
-|  181 |    0.167549 |   0.0675334 |     40.3066 | BORGGRAVEN                       |
-|  182 |    0.112622 |   0.0571112 |     50.7103 | SERMEQ_AVANNARLEQ                |
-|  183 |    0.264086 |   0.0614225 |     23.2586 | KRONBORG                         |
-|  184 |     45.6895 |     3.95977 |     8.66668 | JAKOBSHAVN_ISBRAE                |
-|  185 |   0.0874711 |   0.0396699 |      45.352 | ROSENBORG                        |
-|  186 |   0.0195772 |  0.00555149 |      28.357 | ROSENBORG                        |
-|  187 |   0.0413026 |   0.0055195 |     13.3636 | KONG_CHRISTIAN                   |
-|  188 |  0.00678222 |   0.0048316 |     71.2392 | STYRTE                           |
-|  189 |     3.43852 |    0.260819 |     7.58521 | KONG_CHRISTIAN                   |
-|  190 |     25.4252 |     1.41528 |     5.56646 | KANGERLUSSUAQ                    |
-|  191 | 0.000672232 |  0.00326744 |     486.058 | COURTAULD                        |
-|  192 |     0.78548 |   0.0285448 |     3.63406 | UNNAMED_KANGER_W                 |
-|  193 |    0.152973 |   0.0346264 |     22.6356 | SORGENFRI                        |
-|  194 |  0.00700837 |   0.0171578 |     244.819 | UNNAMED_KANGER_E                 |
-|  195 |    0.176738 |   0.0381168 |     21.5669 | SAQQARLIUP_ALANGORLIUP           |
-|  197 |     0.15114 |    0.123635 |     81.8017 | FREDERIKSBORG_GLETSCHER          |
-|  200 |   0.0150577 |   0.0140329 |     93.1938 | UNNAMED_DECEPTION_N              |
-|  201 |   0.0578931 |   0.0093586 |     16.1653 | UNNAMED_DECEPTION_N              |
-|  202 |  0.00834998 |  0.00772258 |     92.4862 | UNNAMED_DECEPTION_N              |
-|  203 |     1.39705 |    0.108099 |     7.73761 | POLARIC-DECEPTION_O_N            |
-|  204 |   0.0432955 |  0.00885205 |     20.4456 | POLARIC-DECEPTION_O_N            |
-|  205 |    0.118394 |   0.0557454 |     47.0848 | POLARIC-DECEPTION_O_N            |
-|  206 | 0.000342672 |   0.0512118 |     14944.9 | UNNAMED_POLARIC_S                |
-|  207 | 0.000179647 |   0.0387051 |     21545.1 | UNNAMED_POLARIC_S                |
-|  208 | 2.60566e-05 |  0.00235279 |     9029.57 | UNNAMED_POLARIC_S                |
-|  209 |     1.95296 |    0.186065 |     9.52735 | UNNAMED_DECEPTION_O_CN_CS        |
-|  210 |     7.08793 |    0.474332 |     6.69211 | UNNAMED_DECEPTION_O_CN_CS        |
-|  211 |     4.76912 |    0.363199 |     7.61565 | UNNAMED_UUNARTIT_ISLANDS         |
-|  212 |    0.655444 |     0.04343 |     6.62604 | KRUUSE_FJORD                     |
-|  213 |      0.1849 |    0.030493 |     16.4916 | KRUUSE_FJORD                     |
-|  214 |  0.00390585 |  0.00560381 |     143.472 | KRUUSE_FJORD                     |
-|  215 |  0.00242364 |   0.0172075 |     709.987 | LAUBE_GLETSCHER                  |
-|  216 | 0.000895396 |   0.0180409 |     2014.86 | UNNAMED_LAUBE_S                  |
-|  218 |   0.0013842 |  0.00623487 |      450.43 | UNNAMED_LAUBE_S                  |
-|  223 |  0.00329622 |   0.0834072 |     2530.38 | UNNAMED_LAUBE_S                  |
-|  224 |     4.62319 |    0.188674 |     4.08104 | KIV_STEENSTRUP_NODRE_BRAE        |
-|  225 |  0.00629822 |   0.0150542 |     239.023 | KIV_STEENSTRUP_SONDRE_BRAE       |
-|  226 | 4.38906e-05 |   0.0125338 |     28556.8 | NIGERTULUUP_KATTILERTARPIA       |
-|  227 | 0.000331188 |   0.0320457 |        9676 | GLACIERDEFRANCE                  |
-|  228 |     1.17893 |    0.350131 |      29.699 | MIDGARDGLETSCHER                 |
-|  229 |  0.00290894 |  0.00263047 |     90.4271 | MIDGARDGLETSCHER                 |
-|  230 |     2.65156 |    0.242343 |     9.13966 | FENRISGLETSCHER                  |
-|  231 |     28.0768 |     2.31913 |     8.25998 | HELHEIMGLETSCHER                 |
-|  235 |      0.2142 |    0.279288 |     130.386 | HEIM_GLETSCHER                   |
-|  236 |  0.00223796 |   0.0100746 |     450.168 | BRCKNER_GLETSCHER                |
-|  237 |    0.762048 |    0.150728 |     19.7794 | NONAME_IKERTIVAQ_N               |
-|  238 |      7.7734 |    0.743415 |     9.56357 | IKERTIVAQ_NN                     |
-|  239 |     10.7968 |    0.620846 |     5.75027 | IKERTIVAQ_M                      |
-|  240 |  0.00692874 |  0.00905537 |     130.693 | NONAME_IKERTIVAQ_S               |
-|  243 |   0.0122772 |   0.0389889 |     317.572 | SE_NONAME1                       |
-|  244 |     3.93266 |    0.191297 |     4.86431 | KOGE_BUGT_N                      |
-|  245 |     16.4891 |    0.971272 |      5.8904 | KOGE_BUGT_C                      |
-|  246 |    0.302505 |  0.00961623 |     3.17887 | KOGE_BUGT_S                      |
-|  251 |     6.98951 |    0.625501 |     8.94914 | KOGE_BUGT_S                      |
-|  252 |    0.452066 |   0.0422256 |     9.34057 | KOGE_BUGT_S                      |
-|  254 |  0.00364907 |   0.0319215 |     874.784 | KOGE_BUGT_SS                     |
-|  257 |   0.0218876 |   0.0402259 |     183.784 | KOGE_BUGT_SS                     |
-|  258 |   0.0402176 |   0.0253753 |      63.095 | KOGE_BUGT_SS                     |
-|  259 |   0.0271875 |   0.0955379 |     351.403 | UMIIVIK_FJORD                    |
-|  260 |  0.00344372 |  0.00851455 |     247.249 | UMIIVIK_FJORD                    |
-|  262 |     2.73795 |    0.355127 |     12.9706 | NARSAP_SERMIA                    |
-|  263 |   0.0203162 |   0.0355178 |     174.825 | UMIIVIK_FJORD                    |
-|  264 |     2.82727 |    0.248288 |     8.78193 | UMIIVIK_FJORD                    |
-|  266 |   0.0962046 |   0.0355878 |     36.9918 | UMIIVIK_FJORD                    |
-|  270 |    0.495287 |   0.0462638 |     9.34081 | AKULLERSUUP-QAMANAARSUUP         |
-|  271 |  0.00175983 |   0.0142211 |     808.095 | APUSEERSERPIA                    |
-|  272 |     4.13803 |    0.697642 |     16.8593 | GRAULV                           |
-|  274 |    0.311788 |   0.0509983 |     16.3567 | GRAULV                           |
-|  275 |     4.78698 |    0.428187 |     8.94482 | KANGIATA_NUNAATA_SERMIA          |
-|  276 |     4.56864 |    0.433671 |     9.49233 | GYLDENLOVE                       |
-|  277 |    0.176447 |    0.061789 |     35.0184 | GYLDENLOVE_S                     |
-|  278 | 0.000220243 | 0.000909541 |     412.971 | SE_NONAME2                       |
-|  280 | 6.54031e-05 |   0.0199037 |     30432.3 | GYLDENLOVE_SS                    |
-|  281 | 0.000624784 |   0.0321302 |      5142.6 | GYLDENLOVE_S                     |
-|  282 | 0.000329127 |   0.0011841 |      359.77 | SE_NONAME2                       |
-|  283 | 0.000333843 |  0.00250701 |     750.954 | SE_NONAME2                       |
-|  284 |  0.00810576 |   0.0413596 |     510.249 | SE_NONAME2                       |
-|  285 |  0.00512678 |   0.0254535 |     496.482 | SE_NONAME2                       |
-|  286 | 0.000432231 |   0.0194031 |     4489.06 | FIMBULGETLSCHER                  |
-|  287 |   0.0181503 |    0.129304 |     712.408 | FIMBULGETLSCHER                  |
-|  288 |  7.2802e-05 |  0.00218406 |        3000 | SE_NONAME2                       |
-|  289 |  0.00892266 |   0.0437654 |     490.497 | SE_NONAME2                       |
-|  290 |     3.66364 |    0.471227 |     12.8623 | AP_BERNSTOFF_GLETSCHER           |
-|  292 |     1.22833 |     0.16382 |     13.3369 | AP_BERNSTOFF_GLETSCHER           |
-|  295 |  0.00255828 |   0.0120061 |     469.304 | SE_NONAME2                       |
-|  296 |  0.00178793 |  0.00980965 |      548.66 | SE_NONAME2                       |
-|  299 |     1.10862 |     0.25799 |     23.2712 | MAELKEVEJEN                      |
-|  300 |  0.00277807 |   0.0111532 |     401.475 | SKINFAXE                         |
-|  302 |      1.6558 |    0.188765 |     11.4002 | SKINFAXE                         |
-|  303 |     1.70132 |    0.104329 |     6.13228 | RIMFAXE                          |
-|  304 |     1.33598 |    0.135961 |     10.1769 | HEIMDAL_GLETSCHER                |
-|  305 |  0.00578033 |  0.00183866 |     31.8089 | TINGMIARMIUT_FJORD               |
-|  306 |     5.37345 |    0.541609 |     10.0793 | TINGMIARMIUT_FJORD               |
-|  307 |   0.0694883 |  0.00434221 |     6.24883 | MOGENS_HEINESEN_N                |
-|  308 |     3.04686 |    0.311953 |     10.2385 | MOGENS_HEINESEN_N                |
-|  309 |     1.12647 |   0.0470152 |     4.17367 | MOGENS_HEINESEN_C                |
-|  310 |     2.93238 |    0.429566 |     14.6491 | MOGENS_HEINESEN_S                |
-|  311 | 9.79168e-07 |   0.0185923 | 1.89878e+06 | MOGENS_HEINESEN_SS_SSS           |
-|  312 |    0.349623 |   0.0337482 |     9.65275 | AVANNARLEQ-NIGERLIKASIK          |
-|  314 |    0.470034 |   0.0684558 |      14.564 | MOGENS_HEINESEN_SS_SSS           |
-|  315 |   0.0138418 |  0.00693849 |     50.1273 | AVANNARLEQ-NIGERLIKASIK          |
-|  316 |     3.62598 |    0.152852 |     4.21546 | PUISORTOQ_N                      |
-|  317 |     1.91713 |    0.171482 |     8.94474 | UKAASORSUAQ                      |
-|  318 |     1.01671 |   0.0329246 |     3.23836 | PUISORTOQ_S                      |
-|  319 |   0.0865965 |  0.00713975 |     8.24485 | PUISORTOQ_S                      |
-|  320 |    0.404488 |   0.0685195 |     16.9398 | NAPASORSUAQ_N                    |
-|  322 |    0.345145 |   0.0727546 |     21.0794 | NAPASORSUAQ_N                    |
-|  323 | 0.000473992 |  0.00352352 |     743.371 | NAPASORSUAQ_C_S                  |
-|  324 | 3.30976e-09 |  0.00404423 | 1.22191e+08 | NAPASORSUAQ_C_S                  |
-|  325 | 0.000225734 |  0.00193143 |     855.622 | NAPASORSUAQ_C_S                  |
-|  326 |     5.38764 |    0.718943 |     13.3443 | ANORITUUP_KANGERLUA              |
-|  327 |    0.501707 |   0.0430607 |     8.58283 | SERMILIGAARSSUK_BRAE             |
-|  328 | 0.000157787 |  0.00205764 |     1304.07 | ANORITUUP_KANGERLUA              |
-|  329 |     1.07347 |    0.173339 |     16.1475 | ANORITUUP_KANGERLUA              |
-|  331 | 4.74541e-05 |   0.0722375 |      152226 | UNNAMED_ANORITUUP_KANGERLUA_S    |
-|  332 |  0.00125657 |  0.00950143 |      756.14 | UNNAMED_ANORITUUP_KANGERLUA_SS   |
-|  333 |  0.00157755 |  0.00793918 |     503.261 | UNNAMED_ANORITUUP_KANGERLUA_SS   |
-|  334 | 0.000733935 |  0.00650046 |     885.699 | UNNAMED_ANORITUUP_KANGERLUA_SS   |
-|  335 |      3.0592 |    0.390581 |     12.7674 | QAJUUTTAP_SERMIA                 |
-|  336 |     1.04673 |    0.230855 |     22.0548 | UNNAMED_HERLUF_TROLLE_N          |
-|  337 |    0.220755 |   0.0251017 |     11.3708 | EQALORUTSIT_KILLIIT_SERMIAT      |
-|  338 |     3.28643 |    0.213341 |     6.49159 | EQALORUTSIT_KILLIIT_SERMIAT      |
-|  340 |    0.880568 |    0.150125 |     17.0487 | KIATTUUT-QOOQQUP                 |
-|  341 |     1.91905 |    0.127665 |     6.65251 | UNNAMED_HERLUF_TROLLE_S          |
-|  342 |    0.204512 |   0.0821902 |     40.1884 | UNNAMED_KANGERLULUK              |
-|  343 |  0.00667032 |   0.0401559 |     602.008 | NAAJAT_SERMIAT                   |
-|  344 |    0.048675 |   0.0449842 |     92.4175 | SERMILIK                         |
-|  345 | 0.000165757 |   0.0016189 |     976.672 | HERLUF_TROLLE-KANGERLULUK-DANELL |
-|  346 | 0.000208966 |  0.00878844 |     4205.68 | UNNAMED_KANGERLULUK              |
-|  347 | 0.000101103 |  0.00308389 |     3050.24 | UNNAMED_KANGERLULUK              |
-|  349 |    0.383151 |    0.119956 |     31.3077 | UNNAMED_DANELL_FJORD             |
-|  350 |    0.116119 |   0.0095286 |     8.20588 | UNNAMED_SOUTH_DANELL_FJORD       |
-|  352 | 6.05612e-05 |  0.00393648 |        6500 | SOUTHERN_TIP                     |
-|  353 |  0.00162942 |  0.00688749 |     422.697 | SOUTHERN_TIP                     |
-|  354 | 1.50282e-05 | 0.000464533 |     3091.08 | SOUTHERN_TIP                     |
-|  355 | 0.000142931 |  0.00571725 |        4000 | SOUTHERN_TIP                     |
-|  356 | 0.000467526 |  0.00200598 |     429.062 | SOUTHERN_TIP                     |
-|  357 | 0.000303222 |  0.00909665 |        3000 | SOUTHERN_TIP                     |
-|  GIS |     473.494 |     42.9883 |     9.07897 |                                  |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 ** Raw data to discharge product
@@ -3060,7 +2735,7 @@ def filter_bad_v(v):
 vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
 
 # For now, drop Sentinel1
-vel = vel[vel.columns.drop(list(vel.filter(regex='Sentinel1')))] 
+# vel = vel[vel.columns.drop(list(vel.filter(regex='Sentinel1')))] 
 
 all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
                                                  int(c[13:15]),
@@ -3161,6 +2836,7 @@ dhdt[2020] = dhdt[2019]
 dhdt[2021] = dhdt[2019]
 dhdt[2022] = dhdt[2019]
 dhdt[2023] = dhdt[2019]
+dhdt[2024] = dhdt[2019]
 for y in np.arange(1985,1994+1): dhdt[y] = dhdt.loc[:,1995:1997].mean(axis='columns')
 dhdt.sort_index(axis='columns', inplace=True)
 
@@ -3216,19 +2892,7 @@ th.describe().T
 #+END_SRC
 
 #+RESULTS:
-|                    | count |    mean |     std |      min |      25% |      50% |     75% |     max |
-|--------------------+-------+---------+---------+----------+----------+----------+---------+---------|
-| bed@BedMachine     |  5868 | 16.7468 | 371.991 | -1291.62 | -240.858 | -21.6207 | 294.901 | 1336.69 |
-| err                |  5868 | 46.4453 | 25.6183 |       10 |       29 |       40 |      62 |     176 |
-| gates              |  5868 | 162.443 | 98.4049 |        1 |       73 |      160 |     239 |     357 |
-| surface@BedMachine |  5868 | 417.018 | 225.774 |  61.2696 |  243.609 |  379.043 | 536.345 | 1443.94 |
-| thick              |  5868 | 400.271 | 255.864 |        0 |  209.621 |  414.527 | 558.692 | 1623.28 |
-| day@GIMP.0715      |  5868 | 4762.14 | 1333.13 |        0 |     4545 |     5224 |    5555 |    5782 |
-| dem@GIMP.0715      |  5868 | 438.463 | 234.666 |  72.2317 |   259.04 |  395.093 | 570.862 | 1490.26 |
-| thick_adj_300      |  5868 | 423.743 | 230.698 |  20.0887 |      300 |  414.527 | 558.692 | 1623.28 |
-| thick_adj_300_err  |  5868 | 56.4891 | 39.3305 |       10 |       30 |       44 |      72 |     176 |
-| thick_adj_400      |  5868 |  450.51 | 208.508 |  50.0438 |  344.551 |  414.527 | 558.692 | 1623.28 |
-| thick_adj_400_err  |  5868 | 66.7568 | 57.0433 |       10 |       30 |       46 |      78 |     200 |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 #+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge :eval no-export
 D0 = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=0) * 917 / 1E12
@@ -3239,47 +2903,7 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 #+END_SRC
 
 #+RESULTS:
-|                     | BedMachine |     300 |    diff |
-|---------------------+------------+---------+---------|
-| 1985-12-31 00:00:00 |      383.1 | 393.841 | 10.7411 |
-| 1986-12-31 00:00:00 |    393.203 | 403.657 | 10.4542 |
-| 1987-12-31 00:00:00 |    395.635 | 404.602 | 8.96771 |
-| 1988-12-31 00:00:00 |    388.123 | 395.822 | 7.69924 |
-| 1989-12-31 00:00:00 |     391.93 | 399.888 |   7.958 |
-| 1990-12-31 00:00:00 |    392.236 | 401.705 | 9.46918 |
-| 1991-12-31 00:00:00 |    391.389 | 400.579 | 9.18997 |
-| 1992-12-31 00:00:00 |    393.722 | 402.608 | 8.88639 |
-| 1993-12-31 00:00:00 |    394.864 | 403.445 | 8.58058 |
-| 1994-12-31 00:00:00 |    391.062 | 399.754 | 8.69245 |
-| 1995-12-31 00:00:00 |    379.957 | 388.739 | 8.78132 |
-| 1996-12-31 00:00:00 |    383.499 | 391.926 | 8.42693 |
-| 1997-12-31 00:00:00 |    383.344 | 390.858 |  7.5144 |
-| 1998-12-31 00:00:00 |      386.1 | 392.685 | 6.58564 |
-| 1999-12-31 00:00:00 |    392.328 | 398.392 | 6.06433 |
-| 2000-12-31 00:00:00 |    395.431 | 401.268 | 5.83676 |
-| 2001-12-31 00:00:00 |    391.741 | 397.487 | 5.74555 |
-| 2002-12-31 00:00:00 |    405.959 | 411.847 | 5.88752 |
-| 2003-12-31 00:00:00 |    420.264 |  426.36 | 6.09599 |
-| 2004-12-31 00:00:00 |    433.405 | 439.722 | 6.31763 |
-| 2005-12-31 00:00:00 |    445.244 | 451.641 | 6.39684 |
-| 2006-12-31 00:00:00 |    441.511 | 447.832 | 6.32097 |
-| 2007-12-31 00:00:00 |    436.867 | 443.063 | 6.19574 |
-| 2008-12-31 00:00:00 |    443.429 | 449.725 | 6.29569 |
-| 2009-12-31 00:00:00 |    449.271 | 455.747 | 6.47529 |
-| 2010-12-31 00:00:00 |    454.792 | 461.287 | 6.49561 |
-| 2011-12-31 00:00:00 |    462.111 |  468.56 | 6.44912 |
-| 2012-12-31 00:00:00 |    461.407 | 467.953 | 6.54617 |
-| 2013-12-31 00:00:00 |    471.204 | 477.627 | 6.42362 |
-| 2014-12-31 00:00:00 |    471.979 | 478.173 | 6.19343 |
-| 2015-12-31 00:00:00 |    475.872 | 482.123 | 6.25071 |
-| 2016-12-31 00:00:00 |    465.598 | 471.693 | 6.09449 |
-| 2017-12-31 00:00:00 |     475.98 | 482.351 | 6.37108 |
-| 2018-12-31 00:00:00 |    475.475 |     482 |  6.5255 |
-| 2019-12-31 00:00:00 |    480.489 | 487.319 | 6.82913 |
-| 2020-12-31 00:00:00 |     491.43 | 498.541 | 7.11117 |
-| 2021-12-31 00:00:00 |    498.304 | 505.201 | 6.89698 |
-| 2022-12-31 00:00:00 |    494.299 | 501.013 | 6.71384 |
-| 2023-12-31 00:00:00 |    484.635 | 490.677 | 6.04223 |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Adjust thickness w thickness v. velocity fit.
@@ -3348,45 +2972,45 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 #+RESULTS: adjust_thickness_fit
 #+begin_example
                    300         fit      diff
-1985-12-31  393.841362  397.560203  3.718841
-1986-12-31  403.657046  407.230913  3.573867
-1987-12-31  404.602397  407.694607  3.092210
-1988-12-31  395.822031  398.457203  2.635172
-1989-12-31  399.888437  402.569959  2.681522
-1990-12-31  401.705153  405.027545  3.322392
-1991-12-31  400.579267  403.739276  3.160009
-1992-12-31  402.608188  405.715803  3.107615
-1993-12-31  403.444803  406.377868  2.933065
-1994-12-31  399.754425  402.623395  2.868970
-1995-12-31  388.738788  391.661272  2.922484
-1996-12-31  391.926324  394.899849  2.973526
-1997-12-31  390.858245  393.783987  2.925742
-1998-12-31  392.685483  395.790848  3.105365
-1999-12-31  398.392055  401.501437  3.109382
-2000-12-31  401.268014  404.283716  3.015702
-2001-12-31  397.486948  400.446472  2.959524
-2002-12-31  411.846922  414.865899  3.018977
-2003-12-31  426.359991  429.464605  3.104613
-2004-12-31  439.722154  442.874489  3.152335
-2005-12-31  451.640723  454.811532  3.170809
-2006-12-31  447.831501  451.094935  3.263435
-2007-12-31  443.063200  446.387590  3.324390
-2008-12-31  449.724806  453.103092  3.378286
-2009-12-31  455.746732  459.080532  3.333800
-2010-12-31  461.287483  464.691694  3.404212
-2011-12-31  468.559961  471.996795  3.436834
-2012-12-31  467.953377  471.432104  3.478727
-2013-12-31  477.627132  481.046072  3.418940
-2014-12-31  478.172786  481.601578  3.428793
-2015-12-31  482.122697  485.511601  3.388904
-2016-12-31  471.692875  474.984085  3.291210
-2017-12-31  482.350612  485.729601  3.378988
-2018-12-31  482.000055  485.362334  3.362279
-2019-12-31  487.318580  490.872624  3.554045
-2020-12-31  498.541434  502.191825  3.650391
-2021-12-31  505.201277  508.750057  3.548780
-2022-12-31  501.013137  504.505435  3.492298
-2023-12-31  490.677254  493.913447  3.236193
+1985-12-31  393.810537  397.448020  3.637483
+1986-12-31  403.621790  407.143284  3.521494
+1987-12-31  404.365408  407.540752  3.175344
+1988-12-31  395.613192  398.371912  2.758720
+1989-12-31  399.864935  402.658843  2.793908
+1990-12-31  401.664134  405.084540  3.420406
+1991-12-31  400.462215  403.736095  3.273880
+1992-12-31  402.519731  405.770122  3.250392
+1993-12-31  403.423903  406.542109  3.118206
+1994-12-31  399.933315  402.914126  2.980811
+1995-12-31  389.067728  391.995398  2.927670
+1996-12-31  392.167165  395.031045  2.863880
+1997-12-31  391.297053  394.007069  2.710016
+1998-12-31  393.170860  395.913105  2.742245
+1999-12-31  398.630186  401.359739  2.729553
+2000-12-31  401.634050  404.374435  2.740385
+2001-12-31  397.664092  400.359660  2.695569
+2002-12-31  411.781589  414.561559  2.779970
+2003-12-31  426.282367  429.163926  2.881559
+2004-12-31  439.521487  442.449812  2.928325
+2005-12-31  451.184821  454.168586  2.983765
+2006-12-31  447.452914  450.423805  2.970891
+2007-12-31  442.788037  445.753816  2.965779
+2008-12-31  449.601460  452.588288  2.986828
+2009-12-31  455.659977  458.697265  3.037288
+2010-12-31  461.181847  464.301524  3.119676
+2011-12-31  468.530811  471.659178  3.128366
+2012-12-31  467.967179  471.201219  3.234040
+2013-12-31  477.413165  480.623358  3.210193
+2014-12-31  477.917362  481.074540  3.157178
+2015-12-31  481.916935  485.012330  3.095395
+2016-12-31  473.822767  476.881356  3.058589
+2017-12-31  485.067498  488.212923  3.145424
+2018-12-31  485.992336  489.154601  3.162265
+2019-12-31  493.257814  496.544119  3.286305
+2020-12-31  505.170590  508.516843  3.346252
+2021-12-31  510.813279  514.069424  3.256144
+2022-12-31  508.353288  511.518189  3.164901
+2023-12-31  495.140473  498.106154  2.965681
 #+end_example
 
 **** Table of thickness adjustments
@@ -3399,16 +3023,7 @@ th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 #+END_SRC
 
 #+RESULTS:
-|       |   thick | thick_adj_300 | thick_adj_400 |     fit |
-|-------+---------+---------------+---------------+---------|
-| count |    5868 |          5868 |          5868 |    5868 |
-| mean  | 400.271 |       423.743 |        450.51 | 430.569 |
-| std   | 255.864 |       230.698 |       208.508 | 225.463 |
-| min   |       0 |       20.0887 |       50.0438 | 20.0887 |
-| 25%   | 209.621 |           300 |       344.551 | 284.807 |
-| 50%   | 414.527 |       414.527 |       414.527 | 421.217 |
-| 75%   | 558.692 |       558.692 |       558.692 |  560.49 |
-| max   | 1623.28 |       1623.28 |       1623.28 | 1623.28 |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Baseline discharge values for various thickness adjustments
@@ -3446,15 +3061,15 @@ D_th.sum(axis=0)
 #+END_SRC
 
 #+RESULTS: discharge_th
-: NoAdj        462.018298
-: NoAdj_err     42.040846
-: 300          468.290299
-: 300_err       44.732864
-: 400          475.415920
-: 400_err       47.433071
-: fit          471.848842
-: fit_err       45.844964
-: NoMillan     462.417372
+: NoAdj        462.883690
+: NoAdj_err     41.680738
+: 300          467.881433
+: 300_err       43.985599
+: 400          473.705747
+: 400_err       46.234386
+: fit          470.996240
+: fit_err       45.034132
+: NoMillan     463.309375
 : dtype: float64
 
 **** Map of where thickness adjustments occur
@@ -4419,16 +4034,7 @@ out
 #+END_SRC
 
 #+RESULTS:
-|                       |       D |       x |            y |
-|-----------------------+---------+---------+--------------|
-| JAKOBSHAVN_ISBRAE     | 39.5768 | -180364 | -2.26899e+06 |
-| HELHEIMGLETSCHER      | 31.5933 |  304157 | -2.57653e+06 |
-| KANGERLUSSUAQ         | 28.6244 |  483816 | -2.28704e+06 |
-| ZACHARIAE_ISSTROM     | 16.1717 |  488293 | -1.10001e+06 |
-| NIOGHALVFJERDSFJORDEN | 13.2632 |  439081 | -1.07345e+06 |
-| KOGE_BUGT_C           | 12.6765 |  184648 | -2.72185e+06 |
-| RINK_ISBRAE           |  12.558 | -224044 | -1.97626e+06 |
-| PETERMANN_GLETSCHER   | 11.9906 | -261906 |      -996844 |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 **** Prep data
 
@@ -4811,43 +4417,43 @@ disp
                D        err
 Year                       
 1986         NaN        NaN
-1987  448.658184  41.484724
-1988  439.161864  40.280570
+1987  447.571965  40.731675
+1988  438.272793  39.562075
 1989         NaN        NaN
-1990  449.276367  42.178830
+1990  448.391882  41.448095
 1991         NaN        NaN
 1992         NaN        NaN
 1993         NaN        NaN
-1994  439.681940  40.953258
+1994  439.233822  40.221859
 1995         NaN        NaN
 1996         NaN        NaN
 1997         NaN        NaN
-1998  426.371305  39.192985
+1998  426.078395  38.710171
 1999         NaN        NaN
-2000  437.430315  39.664158
-2001  432.576969  39.067881
-2002  446.079360  40.382440
-2003  458.757892  41.634851
-2004  471.478600  43.001320
-2005  481.935905  43.874150
-2006  475.478843  43.540720
-2007  468.903355  43.239322
-2008  474.000787  43.899875
-2009  477.936152  44.672103
-2010  482.184014  45.032231
-2011  487.816594  45.764340
-2012  484.680605  45.563292
-2013  493.740909  46.532933
-2014  492.597687  46.615024
-2015  495.629267  46.929300
-2016  483.999225  45.845762
-2017  494.430419  46.883008
-2018  493.295951  46.883589
-2019  498.129816  47.461159
-2020  508.347501  48.351638
-2021  513.165558  48.710052
-2022  508.080979  48.064318
-2023  497.172405  46.532624
+2000  436.422819  39.234398
+2001  431.464416  38.624944
+2002  444.747109  39.908560
+2003  457.373584  41.151188
+2004  469.996108  42.460564
+2005  480.294016  43.264098
+2006  473.831618  42.907318
+2007  467.318725  42.565083
+2008  472.535644  43.198605
+2009  476.667893  44.003825
+2010  481.050419  44.338760
+2011  486.817935  45.086304
+2012  483.717250  44.916699
+2013  492.594149  45.866201
+2014  491.289392  45.932832
+2015  494.338556  46.210351
+2016  485.145596  45.459783
+2017  496.170200  46.518489
+2018  496.307744  46.639915
+2019  503.011919  47.335262
+2020  513.825813  48.205240
+2021  517.570056  48.528812
+2022  514.252681  48.109528
+2023  500.465456  46.675900
 #+end_example
 : <Figure size 648x360 with 2 Axes>
 :END:
@@ -4989,43 +4595,43 @@ tbl
 #+begin_example
      CE (Err %) CW (Err %) NE (Err %) NO (Err %) NW (Err %) SE (Err %)  \
 1986     70 (9)     74 (8)     23 (8)    0 (NaN)    0 (NaN)    0 (NaN)   
-1987     70 (9)     72 (8)     23 (8)     25 (8)     95 (9)    0 (NaN)   
-1988     70 (9)     70 (8)     22 (8)     24 (8)    0 (NaN)    0 (NaN)   
-1989     73 (9)     72 (8)     22 (8)     24 (8)    0 (NaN)    0 (NaN)   
-1990    75 (10)     69 (8)     22 (8)     23 (8)    0 (NaN)    0 (NaN)   
+1987     70 (9)     71 (8)     23 (8)     24 (7)     95 (9)    0 (NaN)   
+1988     70 (9)     70 (8)     22 (8)     24 (7)    0 (NaN)    0 (NaN)   
+1989     73 (9)     71 (8)     22 (8)     24 (7)    0 (NaN)    0 (NaN)   
+1990    76 (10)     68 (8)     22 (8)     23 (7)    0 (NaN)    0 (NaN)   
 1991    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
 1992    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
 1993    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-1994    71 (10)     69 (8)     24 (9)     25 (8)     96 (9)    0 (NaN)   
+1994    72 (10)     68 (8)     24 (9)     25 (7)     96 (8)    0 (NaN)   
 1995    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
 1996    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
 1997    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-1998     69 (9)     74 (8)     22 (8)     23 (8)     92 (9)   130 (10)   
-1999     69 (9)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-2000     69 (9)     79 (8)     23 (8)    0 (NaN)     92 (9)   131 (10)   
-2001     69 (9)     80 (8)    0 (NaN)    0 (NaN)     90 (9)   126 (10)   
-2002     72 (9)     82 (8)    0 (NaN)    0 (NaN)     92 (9)   133 (10)   
-2003     75 (9)     83 (8)    0 (NaN)    0 (NaN)     94 (9)   139 (10)   
-2004     78 (9)     83 (8)    0 (NaN)    0 (NaN)     98 (9)   145 (10)   
-2005     85 (9)     84 (8)    0 (NaN)    0 (NaN)     99 (9)   147 (10)   
-2006     84 (9)     86 (8)     25 (8)    0 (NaN)     97 (9)   139 (11)   
-2007     81 (9)     85 (8)    0 (NaN)     26 (8)     96 (9)   136 (11)   
-2008     79 (9)     87 (8)    0 (NaN)    0 (NaN)     98 (9)   140 (11)   
-2009     78 (9)     89 (8)     25 (8)    0 (NaN)    101 (9)   143 (11)   
-2010     77 (9)     89 (8)    0 (NaN)    0 (NaN)    103 (9)   143 (11)   
-2011     79 (9)     89 (8)    0 (NaN)    0 (NaN)    106 (9)   142 (11)   
-2012     79 (9)     93 (8)     26 (8)     25 (8)    105 (9)   139 (11)   
-2013     78 (9)     95 (8)     26 (8)     25 (8)    109 (9)   140 (11)   
-2014     76 (9)     94 (8)     28 (8)     26 (8)    111 (9)   138 (11)   
-2015     76 (9)     94 (8)     28 (8)     26 (8)    111 (9)   141 (11)   
-2016     73 (9)     90 (8)     29 (8)     27 (8)    113 (9)   134 (11)   
-2017     78 (9)     82 (8)     29 (8)     28 (8)    115 (9)   144 (11)   
-2018     80 (9)     79 (8)     30 (9)     29 (8)    115 (9)   142 (11)   
-2019     81 (9)     80 (8)     30 (9)     29 (9)    111 (9)   148 (11)   
-2020     86 (9)     85 (8)     30 (9)     28 (8)    110 (9)   150 (11)   
-2021     83 (9)     90 (8)     31 (9)     27 (8)    113 (9)   149 (11)   
-2022     85 (9)     84 (8)     31 (9)     27 (8)    115 (9)   147 (11)   
-2023     82 (9)     82 (8)     31 (9)     26 (8)    115 (9)   143 (11)   
+1998     70 (9)     74 (8)     22 (8)     22 (7)     92 (9)   128 (10)   
+1999     70 (9)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
+2000     69 (9)     79 (8)     23 (8)    0 (NaN)     92 (9)   130 (10)   
+2001     70 (9)     80 (8)    0 (NaN)    0 (NaN)     91 (8)   125 (10)   
+2002     72 (9)     81 (8)    0 (NaN)    0 (NaN)     92 (9)   132 (10)   
+2003     75 (9)     83 (8)    0 (NaN)    0 (NaN)     94 (9)   138 (10)   
+2004     79 (9)     83 (8)    0 (NaN)    0 (NaN)     98 (9)   144 (10)   
+2005     85 (9)     83 (8)    0 (NaN)    0 (NaN)     99 (9)   145 (10)   
+2006     85 (9)     85 (8)     25 (8)    0 (NaN)     97 (9)   138 (10)   
+2007     81 (9)     85 (8)    0 (NaN)     26 (7)     97 (9)   135 (10)   
+2008     79 (9)     87 (8)    0 (NaN)    0 (NaN)     98 (9)   139 (10)   
+2009     78 (9)     89 (8)     24 (8)    0 (NaN)    101 (9)   142 (10)   
+2010     77 (9)     89 (8)    0 (NaN)    0 (NaN)    103 (9)   142 (10)   
+2011     79 (9)     89 (8)    0 (NaN)    0 (NaN)    106 (9)   142 (10)   
+2012     79 (9)     93 (9)     26 (8)     25 (7)    105 (9)   138 (10)   
+2013     79 (9)     95 (9)     26 (8)     25 (7)    109 (9)   140 (11)   
+2014     76 (9)     94 (9)     28 (8)     26 (7)    111 (9)   138 (11)   
+2015     76 (9)     93 (9)     28 (8)     26 (7)    111 (9)   140 (11)   
+2016     74 (9)     90 (8)     28 (8)     27 (7)    113 (9)   135 (11)   
+2017     79 (9)     82 (8)     29 (8)     27 (7)    116 (9)   144 (11)   
+2018     82 (9)     79 (8)     30 (9)     28 (8)    116 (9)   144 (11)   
+2019     83 (9)     80 (8)     30 (9)     28 (8)    112 (9)   150 (11)   
+2020     88 (9)     85 (8)     30 (9)     27 (8)    111 (9)   152 (11)   
+2021     86 (9)     90 (8)     31 (9)     27 (8)    113 (9)   151 (11)   
+2022     88 (9)     84 (9)     31 (9)     27 (7)    116 (9)   150 (11)   
+2023     85 (9)     82 (9)     30 (9)     27 (7)    115 (9)   142 (11)   
 
      SW (Err %)  
 1986    0 (NaN)  
@@ -5055,17 +4661,17 @@ tbl
 2010    17 (10)  
 2011    19 (10)  
 2012    19 (10)  
-2013    20 (10)  
+2013    19 (10)  
 2014    19 (10)  
 2015    19 (10)  
 2016    18 (10)  
 2017    19 (10)  
 2018    18 (10)  
-2019    18 (10)  
+2019    19 (10)  
 2020    19 (10)  
-2021    19 (10)  
+2021    20 (10)  
 2022    19 (10)  
-2023    18 (10)  
+2023    19 (10)  
 #+end_example
 : <Figure size 648x504 with 2 Axes>
 :END:
@@ -5099,8 +4705,8 @@ print(err.values)
 #+END_SRC
 
 #+RESULTS:
-: [481.05479035]
-: [44.87783524]
+: [481.82975469]
+: [44.45386272]
 
 
 
@@ -5123,54 +4729,13 @@ df
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-: Min:  D      427.568582
-: err     39.809960
+: Min:  D      427.319029
+: err     39.061874
 : Name: 1995-12-31 00:00:00, dtype: float64
-: Max:  D      427.568582
-: err     39.809960
+: Max:  D      427.319029
+: err     39.061874
 : Name: 1995-12-31 00:00:00, dtype: float64
-| Date                |       D |     err |
-|---------------------+---------+---------|
-| 1986-12-31 00:00:00 | 454.326 | 43.0701 |
-| 1987-12-31 00:00:00 | 449.673 | 41.6226 |
-| 1988-12-31 00:00:00 | 438.438 | 40.067  |
-| 1989-12-31 00:00:00 | 442.085 | 40.8647 |
-| 1990-12-31 00:00:00 | 444.86  | 42.069  |
-| 1991-12-31 00:00:00 | 442.924 | 41.5558 |
-| 1992-12-31 00:00:00 | 444.773 | 41.6151 |
-| 1993-12-31 00:00:00 | 444.837 | 41.4889 |
-| 1994-12-31 00:00:00 | 439.998 | 40.9887 |
-| 1995-12-31 00:00:00 | 427.569 | 39.81   |
-| 1996-12-31 00:00:00 | 429.92  | 39.8771 |
-| 1997-12-31 00:00:00 | 428.058 | 39.3368 |
-| 1998-12-31 00:00:00 | 429.577 | 39.3815 |
-| 1999-12-31 00:00:00 | 434.933 | 39.4917 |
-| 2000-12-31 00:00:00 | 437.076 | 39.6488 |
-| 2001-12-31 00:00:00 | 431.869 | 39.0528 |
-| 2002-12-31 00:00:00 | 445.69  | 40.3664 |
-| 2003-12-31 00:00:00 | 459.334 | 41.7081 |
-| 2004-12-31 00:00:00 | 471.617 | 43.0324 |
-| 2005-12-31 00:00:00 | 482.065 | 43.8994 |
-| 2006-12-31 00:00:00 | 475.759 | 43.5711 |
-| 2007-12-31 00:00:00 | 469.001 | 43.2449 |
-| 2008-12-31 00:00:00 | 474.007 | 43.908  |
-| 2009-12-31 00:00:00 | 478.13  | 44.7219 |
-| 2010-12-31 00:00:00 | 482.01  | 45.007  |
-| 2011-12-31 00:00:00 | 487.996 | 45.7561 |
-| 2012-12-31 00:00:00 | 485.44  | 45.6948 |
-| 2013-12-31 00:00:00 | 493.769 | 46.535  |
-| 2014-12-31 00:00:00 | 492.68  | 46.629  |
-| 2015-12-31 00:00:00 | 495.696 | 46.9425 |
-| 2016-12-31 00:00:00 | 484.007 | 45.8472 |
-| 2017-12-31 00:00:00 | 494.43  | 46.8824 |
-| 2018-12-31 00:00:00 | 493.302 | 46.8844 |
-| 2019-12-31 00:00:00 | 498.128 | 47.461  |
-| 2020-12-31 00:00:00 | 508.347 | 48.3516 |
-| 2021-12-31 00:00:00 | 513.163 | 48.7098 |
-| 2022-12-31 00:00:00 | 508.07  | 48.0627 |
-| 2023-12-31 00:00:00 | 496.957 | 46.5037 |
-:END:
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Contribution from SE
@@ -5191,70 +4756,29 @@ df
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
 #+begin_example
 D SE described:
  count     38.000000
-mean     138.768054
-std        6.316258
-min      125.883129
-25%      133.361429
-50%      138.973207
-75%      143.447892
-max      150.430592
+mean     138.291279
+std        6.892419
+min      124.989006
+25%      132.422066
+50%      138.057842
+75%      143.363096
+max      152.195128
 Name: SE, dtype: float64
 
 D SE err percent: count    38.000000
-mean     10.685450
-std       0.246582
-min      10.217591
-25%      10.528329
-50%      10.679413
-75%      10.831245
-max      11.217678
+mean     10.397273
+std       0.243655
+min       9.990886
+25%      10.202179
+50%      10.329802
+75%      10.526437
+max      10.886265
 Name: SE, dtype: float64
+Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 #+end_example
-| Date                |      SE |   SEerr |
-|---------------------+---------+---------|
-| 1986-12-31 00:00:00 | 146.477 | 16.4313 |
-| 1987-12-31 00:00:00 | 147.282 | 15.6248 |
-| 1988-12-31 00:00:00 | 136.209 | 14.1303 |
-| 1989-12-31 00:00:00 | 129.317 | 13.883  |
-| 1990-12-31 00:00:00 | 129.506 | 14.1214 |
-| 1991-12-31 00:00:00 | 131.31  | 14.2121 |
-| 1992-12-31 00:00:00 | 132.891 | 14.3105 |
-| 1993-12-31 00:00:00 | 133.269 | 14.2036 |
-| 1994-12-31 00:00:00 | 136.45  | 14.5255 |
-| 1995-12-31 00:00:00 | 135.896 | 14.4905 |
-| 1996-12-31 00:00:00 | 135.343 | 14.4761 |
-| 1997-12-31 00:00:00 | 133.639 | 14.0645 |
-| 1998-12-31 00:00:00 | 131.464 | 13.7019 |
-| 1999-12-31 00:00:00 | 133.267 | 13.6167 |
-| 2000-12-31 00:00:00 | 130.441 | 13.4632 |
-| 2001-12-31 00:00:00 | 125.883 | 13.0724 |
-| 2002-12-31 00:00:00 | 132.794 | 13.7248 |
-| 2003-12-31 00:00:00 | 138.928 | 14.3234 |
-| 2004-12-31 00:00:00 | 144.72  | 14.9853 |
-| 2005-12-31 00:00:00 | 146.509 | 15.2549 |
-| 2006-12-31 00:00:00 | 139.462 | 14.7001 |
-| 2007-12-31 00:00:00 | 136.508 | 14.4635 |
-| 2008-12-31 00:00:00 | 139.912 | 14.7946 |
-| 2009-12-31 00:00:00 | 142.949 | 15.2253 |
-| 2010-12-31 00:00:00 | 143.614 | 15.2595 |
-| 2011-12-31 00:00:00 | 142.855 | 15.3527 |
-| 2012-12-31 00:00:00 | 139.019 | 15.0349 |
-| 2013-12-31 00:00:00 | 140.349 | 15.2053 |
-| 2014-12-31 00:00:00 | 138.44  | 14.9417 |
-| 2015-12-31 00:00:00 | 141.273 | 15.2715 |
-| 2016-12-31 00:00:00 | 134.463 | 14.6856 |
-| 2017-12-31 00:00:00 | 143.71  | 15.6086 |
-| 2018-12-31 00:00:00 | 142.495 | 15.5488 |
-| 2019-12-31 00:00:00 | 148.236 | 16.3509 |
-| 2020-12-31 00:00:00 | 150.431 | 16.7433 |
-| 2021-12-31 00:00:00 | 149.101 | 16.4775 |
-| 2022-12-31 00:00:00 | 147.081 | 16.1294 |
-| 2023-12-31 00:00:00 | 141.692 | 15.3209 |
-:END:
 
 **** Contribution from SE relative to the total
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
@@ -5276,54 +4800,54 @@ print(D_SE/D_rest*100)
 #+RESULTS:
 #+begin_example
 count    38.000000
-mean     29.813736
-std       1.136677
-min      27.781179
-25%      29.075873
-50%      29.702452
-75%      30.550446
-max      32.753232
+mean     29.713065
+std       1.099440
+min      27.808566
+25%      29.031697
+50%      29.640930
+75%      30.371081
+max      32.596791
 dtype: float64
 
 Date
-1986-12-31    32.240501
-1987-12-31    32.753232
-1988-12-31    31.066865
-1989-12-31    29.251529
-1990-12-31    29.111668
-1991-12-31    29.646277
-1992-12-31    29.878428
-1993-12-31    29.959006
-1994-12-31    31.011484
-1995-12-31    31.783406
-1996-12-31    31.481029
-1997-12-31    31.219857
-1998-12-31    30.603238
-1999-12-31    30.640860
-2000-12-31    29.843961
-2001-12-31    29.148454
-2002-12-31    29.795154
-2003-12-31    30.245485
-2004-12-31    30.685856
-2005-12-31    30.392070
-2006-12-31    29.313652
-2007-12-31    29.106057
-2008-12-31    29.516842
-2009-12-31    29.897536
-2010-12-31    29.794829
-2011-12-31    29.273691
-2012-12-31    28.637638
-2013-12-31    28.424125
-2014-12-31    28.099308
-2015-12-31    28.499974
-2016-12-31    27.781179
-2017-12-31    29.065812
-2018-12-31    28.886036
-2019-12-31    29.758628
-2020-12-31    29.592123
-2021-12-31    29.055255
-2022-12-31    28.948988
-2023-12-31    28.511928
+1986-12-31    32.040417
+1987-12-31    32.596791
+1988-12-31    30.885145
+1989-12-31    29.090778
+1990-12-31    28.958664
+1991-12-31    29.502650
+1992-12-31    29.717096
+1993-12-31    29.794237
+1994-12-31    30.890164
+1995-12-31    31.683188
+1996-12-31    31.350933
+1997-12-31    31.073897
+1998-12-31    30.408797
+1999-12-31    30.458090
+2000-12-31    29.694343
+2001-12-31    29.012003
+2002-12-31    29.661837
+2003-12-31    30.102408
+2004-12-31    30.544283
+2005-12-31    30.257933
+2006-12-31    29.194009
+2007-12-31    28.983158
+2008-12-31    29.384475
+2009-12-31    29.753981
+2010-12-31    29.668176
+2011-12-31    29.161677
+2012-12-31    28.536150
+2013-12-31    28.330343
+2014-12-31    28.010865
+2015-12-31    28.382860
+2016-12-31    27.808566
+2017-12-31    29.108359
+2018-12-31    28.934484
+2019-12-31    29.819273
+2020-12-31    29.620024
+2021-12-31    29.107293
+2022-12-31    29.134331
+2023-12-31    28.434808
 Freq: A-DEC, dtype: float64
 #+end_example
 
@@ -5356,52 +4880,52 @@ print("\nNW increase:", D['NW'])
 #+RESULTS:
 #+begin_example
 
-NO+NE+NW: min    136.469034
-max    173.736533
+NO+NE+NW: min    136.428939
+max    174.103273
 dtype: float64
 
-NO+NE+NW%: mean    32.598989
+NO+NE+NW%: mean    32.58172
 dtype: float64
 
 NW increase: Date
-1986-12-31     96.496397
-1987-12-31     92.862851
-1988-12-31     95.006921
-1989-12-31    101.772012
-1990-12-31    104.618894
-1991-12-31    100.237828
-1992-12-31     97.977607
-1993-12-31     98.644627
-1994-12-31     96.594746
-1995-12-31     93.870144
-1996-12-31     92.740240
-1997-12-31     92.221623
-1998-12-31     92.398789
-1999-12-31     91.051295
-2000-12-31     91.598269
-2001-12-31     90.025259
-2002-12-31     91.807139
-2003-12-31     94.210115
-2004-12-31     97.557232
-2005-12-31     98.611414
-2006-12-31     96.756100
-2007-12-31     96.439084
-2008-12-31     98.405259
-2009-12-31    101.525054
-2010-12-31    102.224684
-2011-12-31    106.102903
-2012-12-31    105.008889
-2013-12-31    108.741384
-2014-12-31    110.893100
-2015-12-31    111.037594
-2016-12-31    112.542958
-2017-12-31    115.149024
-2018-12-31    115.274547
-2019-12-31    111.108780
-2020-12-31    110.418597
-2021-12-31    112.792247
-2022-12-31    115.458632
-2023-12-31    115.222801
+1986-12-31     96.645465
+1987-12-31     92.974927
+1988-12-31     95.109558
+1989-12-31    101.858613
+1990-12-31    104.692036
+1991-12-31    100.315951
+1992-12-31     98.081768
+1993-12-31     98.754362
+1994-12-31     96.692112
+1995-12-31     93.941137
+1996-12-31     92.816277
+1997-12-31     92.313659
+1998-12-31     92.488797
+1999-12-31     91.119894
+2000-12-31     91.680503
+2001-12-31     90.120946
+2002-12-31     91.902165
+2003-12-31     94.317583
+2004-12-31     97.661136
+2005-12-31     98.691659
+2006-12-31     96.866300
+2007-12-31     96.577331
+2008-12-31     98.545629
+2009-12-31    101.659798
+2010-12-31    102.365247
+2011-12-31    106.259923
+2012-12-31    105.166248
+2013-12-31    108.893707
+2014-12-31    111.026920
+2015-12-31    111.183305
+2016-12-31    113.011913
+2017-12-31    115.667132
+2018-12-31    116.099060
+2019-12-31    112.183245
+2020-12-31    111.312978
+2021-12-31    113.320830
+2022-12-31    116.252923
+2023-12-31    115.191811
 Freq: A-DEC, Name: NW, dtype: float64
 #+end_example
 
@@ -5423,58 +4947,19 @@ df
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-: Jakobshavn described:
-:  count    38.000000
-: mean     37.909171
-: std       8.699360
-: min      22.965200
-: 25%      28.758679
-: 50%      39.323182
-: 75%      44.759136
-: max      52.504916
-: Name: JAKOBSHAVN_ISBRAE, dtype: float64
-| Date                |    Jako |     err |
-|---------------------+---------+---------|
-| 1986-12-31 00:00:00 | 30.0694 | 2.94844 |
-| 1987-12-31 00:00:00 | 28.4973 | 2.76829 |
-| 1988-12-31 00:00:00 | 27.1905 | 2.60827 |
-| 1989-12-31 00:00:00 | 29.5428 | 2.82119 |
-| 1990-12-31 00:00:00 | 27.4376 | 2.56382 |
-| 1991-12-31 00:00:00 | 27.4078 | 2.5204  |
-| 1992-12-31 00:00:00 | 26.771  | 2.45333 |
-| 1993-12-31 00:00:00 | 27.3313 | 2.48955 |
-| 1994-12-31 00:00:00 | 27.0754 | 2.43262 |
-| 1995-12-31 00:00:00 | 22.9652 | 2.00195 |
-| 1996-12-31 00:00:00 | 25.6347 | 2.23086 |
-| 1997-12-31 00:00:00 | 27.5869 | 2.41926 |
-| 1998-12-31 00:00:00 | 31.1235 | 2.74723 |
-| 1999-12-31 00:00:00 | 32.2674 | 2.79699 |
-| 2000-12-31 00:00:00 | 36.1055 | 3.09343 |
-| 2001-12-31 00:00:00 | 38.0701 | 3.25624 |
-| 2002-12-31 00:00:00 | 39.3184 | 3.36438 |
-| 2003-12-31 00:00:00 | 41.1942 | 3.54728 |
-| 2004-12-31 00:00:00 | 42.4089 | 3.6943  |
-| 2005-12-31 00:00:00 | 43.244  | 3.80556 |
-| 2006-12-31 00:00:00 | 44.6191 | 3.98249 |
-| 2007-12-31 00:00:00 | 44.0222 | 3.94868 |
-| 2008-12-31 00:00:00 | 44.8058 | 4.02564 |
-| 2009-12-31 00:00:00 | 45.9134 | 4.12488 |
-| 2010-12-31 00:00:00 | 46.8509 | 4.2132  |
-| 2011-12-31 00:00:00 | 47.0474 | 4.23118 |
-| 2012-12-31 00:00:00 | 51.8602 | 4.66304 |
-| 2013-12-31 00:00:00 | 52.5049 | 4.73629 |
-| 2014-12-31 00:00:00 | 50.6695 | 4.59013 |
-| 2015-12-31 00:00:00 | 49.54   | 4.49441 |
-| 2016-12-31 00:00:00 | 46.6134 | 4.18591 |
-| 2017-12-31 00:00:00 | 39.3279 | 3.56637 |
-| 2018-12-31 00:00:00 | 36.3479 | 3.31966 |
-| 2019-12-31 00:00:00 | 38.4804 | 3.50201 |
-| 2020-12-31 00:00:00 | 41.802  | 3.79305 |
-| 2021-12-31 00:00:00 | 47.4748 | 4.28543 |
-| 2022-12-31 00:00:00 | 41.8499 | 3.8189  |
-| 2023-12-31 00:00:00 | 39.5768 | 3.62474 |
-:END:
+#+begin_example
+Jakobshavn described:
+ count    38.000000
+mean     37.746250
+std       8.683167
+min      22.791587
+25%      28.544254
+50%      39.219407
+75%      44.484836
+max      52.157311
+Name: JAKOBSHAVN_ISBRAE, dtype: float64
+Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
+#+end_example
 
 *** Discharge Time Series - Sectors
 #+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export
@@ -5651,9 +5136,9 @@ tbl
      JAKOBSHAVN_ISBRAE (%) HELHEIMGLETSCHER (%) KANGERLUSSUAQ (%)  \
 1986                 0 (0)               32 (6)            18 (5)   
 1987                 0 (0)               32 (6)            19 (5)   
-1988               27 (10)               30 (6)            20 (5)   
-1989               30 (10)               27 (6)            22 (5)   
-1990                27 (9)               27 (6)            23 (5)   
+1988               27 (10)               29 (6)            19 (5)   
+1989               29 (10)               27 (6)            22 (4)   
+1990               27 (10)               27 (6)            22 (5)   
 1991                 0 (0)                0 (0)             0 (0)   
 1992                 0 (0)                0 (0)             0 (0)   
 1993                 0 (0)                0 (0)             0 (0)   
@@ -5661,32 +5146,32 @@ tbl
 1995                 0 (0)                0 (0)             0 (0)   
 1996                 0 (0)                0 (0)             0 (0)   
 1997                 0 (0)                0 (0)             0 (0)   
-1998                32 (9)               23 (8)            22 (5)   
+1998                32 (9)               23 (8)            21 (5)   
 1999                 0 (0)                0 (0)             0 (0)   
 2000                36 (9)               23 (8)            21 (5)   
-2001                38 (9)               23 (8)            23 (5)   
-2002                39 (9)               26 (8)            25 (5)   
-2003                41 (9)               28 (8)            27 (5)   
-2004                42 (9)               30 (8)            30 (5)   
-2005                43 (9)                0 (0)            36 (5)   
-2006                45 (9)               28 (8)            36 (5)   
-2007                44 (9)               27 (8)            32 (5)   
-2008                45 (9)               27 (8)            30 (5)   
-2009                46 (9)               28 (8)            28 (5)   
-2010                47 (9)               28 (8)            27 (5)   
-2011                47 (9)               27 (8)            29 (5)   
-2012                52 (9)               26 (8)            29 (5)   
-2013                53 (9)               27 (8)            29 (5)   
-2014                51 (9)               25 (8)            26 (5)   
-2015                50 (9)               28 (8)            26 (5)   
-2016                47 (9)               27 (8)            24 (6)   
-2017                39 (9)               31 (8)            27 (6)   
-2018                36 (9)               29 (8)            29 (6)   
-2019                38 (9)               32 (8)            28 (5)   
-2020                42 (9)               31 (8)            29 (5)   
-2021                47 (9)               30 (8)            28 (5)   
+2001                38 (9)               23 (8)            22 (5)   
+2002                39 (9)               26 (8)            24 (5)   
+2003                41 (9)               28 (8)            26 (5)   
+2004                42 (9)               29 (8)            29 (5)   
+2005                43 (9)                0 (0)            35 (5)   
+2006                44 (9)               28 (8)            35 (5)   
+2007                44 (9)               27 (8)            31 (5)   
+2008                45 (9)               27 (8)            29 (5)   
+2009                46 (9)               28 (8)            27 (5)   
+2010                47 (9)               28 (8)            26 (5)   
+2011                47 (9)               27 (8)            28 (5)   
+2012                52 (9)               26 (8)            28 (5)   
+2013                52 (9)               26 (8)            28 (5)   
+2014                50 (9)               25 (8)            26 (5)   
+2015                49 (9)               28 (8)            25 (5)   
+2016                46 (9)               27 (8)            24 (5)   
+2017                39 (9)               31 (8)            26 (5)   
+2018                36 (9)               29 (8)            28 (5)   
+2019                39 (9)               32 (8)            28 (5)   
+2020                42 (9)               30 (8)            28 (5)   
+2021                48 (9)               30 (8)            27 (5)   
 2022                42 (9)               31 (8)            29 (5)   
-2023                40 (9)               32 (8)             0 (0)   
+2023                40 (9)               30 (8)            27 (5)   
 
      KOGE_BUGT_C (%) ZACHARIAE_ISSTROM (%) RINK_ISBRAE (%)  \
 1986          16 (6)                 0 (0)          13 (7)   
@@ -5707,8 +5192,8 @@ tbl
 2001          15 (6)                 0 (0)          13 (7)   
 2002           0 (0)                 0 (0)          13 (7)   
 2003           0 (0)                 0 (0)           0 (0)   
-2004          17 (6)                 0 (0)          13 (7)   
-2005          17 (6)                 0 (0)          13 (7)   
+2004          16 (6)                 0 (0)          13 (7)   
+2005          16 (6)                 0 (0)          13 (7)   
 2006          16 (6)                 0 (0)          13 (7)   
 2007          15 (6)                11 (9)          13 (7)   
 2008          17 (6)                 0 (0)          13 (7)   
@@ -5716,23 +5201,23 @@ tbl
 2010          18 (6)                 0 (0)          13 (7)   
 2011          17 (6)                12 (9)          13 (7)   
 2012          17 (6)                13 (9)          13 (7)   
-2013          16 (6)                13 (9)          13 (7)   
-2014          17 (6)                14 (9)          13 (7)   
-2015          17 (6)                15 (9)          13 (7)   
+2013          16 (6)                13 (9)          12 (7)   
+2014          17 (6)                14 (9)          12 (7)   
+2015          17 (6)                14 (9)          13 (7)   
 2016          14 (6)                15 (9)          13 (7)   
 2017          16 (6)                15 (9)          13 (7)   
 2018          17 (6)                16 (9)          12 (7)   
 2019          16 (6)                16 (9)          12 (7)   
-2020          16 (6)                16 (9)          12 (7)   
-2021          16 (6)                17 (9)          12 (7)   
+2020          17 (6)                16 (9)          12 (7)   
+2021          17 (6)                16 (9)          12 (7)   
 2022          16 (6)                17 (9)          12 (7)   
-2023           0 (0)                16 (9)          13 (7)   
+2023          13 (6)                16 (9)          12 (7)   
 
      NIOGHALVFJERDSFJORDEN (%) PETERMANN_GLETSCHER (%)  
 1986                    12 (6)                   0 (0)  
 1987                    12 (6)                  12 (4)  
 1988                    12 (6)                  11 (4)  
-1989                    11 (6)                  12 (4)  
+1989                    11 (6)                  11 (4)  
 1990                    12 (6)                  11 (4)  
 1991                     0 (0)                   0 (0)  
 1992                     0 (0)                   0 (0)  
@@ -6045,7 +5530,7 @@ for f in files:
     file_id = d.json()['data']['files'][0]['dataFile']['id']
     d2 = api.update_datafile_metadata(file_id, json_str=json_str, is_filepid=False)
 
-resp = api.publish_dataset(identifier, "major")
+#resp = api.publish_dataset(identifier, "major")
 #+END_SRC
 
 
@@ -6306,33 +5791,7 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-| Gate |  D [Gt] | Error [Gt] | Error [%] | name                      |
-|------+---------+------------+-----------+---------------------------|
-|  184 | 45.6895 |    3.95977 |   8.66668 | JAKOBSHAVN_ISBRAE         |
-|  231 | 28.0768 |    2.31913 |   8.25998 | HELHEIMGLETSCHER          |
-|  190 | 25.4252 |    1.41528 |   5.56646 | KANGERLUSSUAQ             |
-|  245 | 16.4891 |   0.971272 |    5.8904 | KOGE_BUGT_C               |
-|   31 |  14.362 |    1.33702 |   9.30939 | ZACHARIAE_ISSTROM         |
-|  143 | 12.5661 |   0.939911 |   7.47971 | RINK_ISBRAE               |
-|   29 | 12.3048 |   0.726285 |   5.90244 | NIOGHALVFJERDSFJORDEN     |
-|   27 | 11.3287 |   0.484608 |   4.27771 | PETERMANN_GLETSCHER       |
-|  239 | 10.7968 |   0.620846 |   5.75027 | IKERTIVAQ_M               |
-|  140 | 8.85146 |    0.66088 |   7.46634 | DAUGAARD-JENSEN           |
-|   73 |  8.5488 |   0.510303 |   5.96929 | KONG_OSCAR_GLETSCHER      |
-|  165 |  8.4291 |    0.70517 |    8.3659 | STORE_GLETSCHER           |
-|   79 | 8.21547 |   0.519692 |   6.32577 | NORDENSKIOLD_GLESCHER_NW  |
-|  103 | 7.81614 |   0.886286 |   11.3392 | HAYES_GLETSCHER_N_NN      |
-|  238 |  7.7734 |   0.743415 |   9.56357 | IKERTIVAQ_NN              |
-|  134 | 7.44328 |   0.775927 |   10.4245 | UPERNAVIK_ISSTROM_N       |
-|  169 | 7.28039 |   0.477909 |   6.56432 | SERMEQ_KUJALLEQ           |
-|   28 | 7.10706 |   0.834849 |   11.7468 | HUMBOLDT_GLETSCHER        |
-|  210 | 7.08793 |   0.474332 |   6.69211 | UNNAMED_DECEPTION_O_CN_CS |
-|  251 | 6.98951 |   0.625501 |   8.94914 | KOGE_BUGT_S               |
-|  135 | 6.91323 |   0.857874 |   12.4092 | UPERNAVIK_ISSTROM_C       |
-|  129 | 6.19615 |   0.266278 |   4.29747 | KAKIVFAAT_SERMIAT         |
-|   91 | 5.65005 |   0.377747 |   6.68572 | SVERDRUP_GLETSCHER        |
-|   95 | 5.61639 |   0.577209 |   10.2772 | KJER_GLETSCHER            |
-|  113 | 5.48604 |   0.649588 |   11.8407 | ALISON_GLETSCHER          |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 **** Top by Error [Gt]
 #+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
@@ -6352,33 +5811,7 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-| Gate |  D [Gt] | Error [Gt] | Error [%] | name                     |
-|------+---------+------------+-----------+--------------------------|
-|  184 | 45.6895 |    3.95977 |   8.66668 | JAKOBSHAVN_ISBRAE        |
-|  231 | 28.0768 |    2.31913 |   8.25998 | HELHEIMGLETSCHER         |
-|  190 | 25.4252 |    1.41528 |   5.56646 | KANGERLUSSUAQ            |
-|   31 |  14.362 |    1.33702 |   9.30939 | ZACHARIAE_ISSTROM        |
-|  245 | 16.4891 |   0.971272 |    5.8904 | KOGE_BUGT_C              |
-|  143 | 12.5661 |   0.939911 |   7.47971 | RINK_ISBRAE              |
-|  103 | 7.81614 |   0.886286 |   11.3392 | HAYES_GLETSCHER_N_NN     |
-|  135 | 6.91323 |   0.857874 |   12.4092 | UPERNAVIK_ISSTROM_C      |
-|   28 | 7.10706 |   0.834849 |   11.7468 | HUMBOLDT_GLETSCHER       |
-|  134 | 7.44328 |   0.775927 |   10.4245 | UPERNAVIK_ISSTROM_N      |
-|  238 |  7.7734 |   0.743415 |   9.56357 | IKERTIVAQ_NN             |
-|   29 | 12.3048 |   0.726285 |   5.90244 | NIOGHALVFJERDSFJORDEN    |
-|  326 | 5.38764 |   0.718943 |   13.3443 | ANORITUUP_KANGERLUA      |
-|  165 |  8.4291 |    0.70517 |    8.3659 | STORE_GLETSCHER          |
-|  272 | 4.13803 |   0.697642 |   16.8593 | GRAULV                   |
-|  140 | 8.85146 |    0.66088 |   7.46634 | DAUGAARD-JENSEN          |
-|  113 | 5.48604 |   0.649588 |   11.8407 | ALISON_GLETSCHER         |
-|  251 | 6.98951 |   0.625501 |   8.94914 | KOGE_BUGT_S              |
-|  239 | 10.7968 |   0.620846 |   5.75027 | IKERTIVAQ_M              |
-|   95 | 5.61639 |   0.577209 |   10.2772 | KJER_GLETSCHER           |
-|  306 | 5.37345 |   0.541609 |   10.0793 | TINGMIARMIUT_FJORD       |
-|   79 | 8.21547 |   0.519692 |   6.32577 | NORDENSKIOLD_GLESCHER_NW |
-|   73 |  8.5488 |   0.510303 |   5.96929 | KONG_OSCAR_GLETSCHER     |
-|   27 | 11.3287 |   0.484608 |   4.27771 | PETERMANN_GLETSCHER      |
-|  169 | 7.28039 |   0.477909 |   6.56432 | SERMEQ_KUJALLEQ          |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Top by Error [%]
@@ -6399,33 +5832,7 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-| Gate |      D [Gt] |  Error [Gt] |   Error [%] | name                          |
-|------+-------------+-------------+-------------+-------------------------------|
-|  324 | 3.30976e-09 |  0.00404423 | 1.22191e+08 | NAPASORSUAQ_C_S               |
-|  311 | 9.79168e-07 |   0.0185923 | 1.89878e+06 | MOGENS_HEINESEN_SS_SSS        |
-|  331 | 4.74541e-05 |   0.0722375 |      152226 | UNNAMED_ANORITUUP_KANGERLUA_S |
-|  148 | 4.44987e-05 |   0.0149735 |     33649.3 | GEIKIE3                       |
-|  280 | 6.54031e-05 |   0.0199037 |     30432.3 | GYLDENLOVE_SS                 |
-|  226 | 4.38906e-05 |   0.0125338 |     28556.8 | NIGERTULUUP_KATTILERTARPIA    |
-|  207 | 0.000179647 |   0.0387051 |     21545.1 | UNNAMED_POLARIC_S             |
-|  206 | 0.000342672 |   0.0512118 |     14944.9 | UNNAMED_POLARIC_S             |
-|  227 | 0.000331188 |   0.0320457 |        9676 | GLACIERDEFRANCE               |
-|  208 | 2.60566e-05 |  0.00235279 |     9029.57 | UNNAMED_POLARIC_S             |
-|  352 | 6.05612e-05 |  0.00393648 |        6500 | SOUTHERN_TIP                  |
-|  281 | 0.000624784 |   0.0321302 |      5142.6 | GYLDENLOVE_S                  |
-|  286 | 0.000432231 |   0.0194031 |     4489.06 | FIMBULGETLSCHER               |
-|  346 | 0.000208966 |  0.00878844 |     4205.68 | UNNAMED_KANGERLULUK           |
-|  355 | 0.000142931 |  0.00571725 |        4000 | SOUTHERN_TIP                  |
-|  149 | 0.000553758 |   0.0215136 |     3885.03 | GEIKIE3                       |
-|  146 | 0.000237044 |  0.00797006 |     3362.27 | GEIKIE3                       |
-|  354 | 1.50282e-05 | 0.000464533 |     3091.08 | SOUTHERN_TIP                  |
-|  347 | 0.000101103 |  0.00308389 |     3050.24 | UNNAMED_KANGERLULUK           |
-|  357 | 0.000303222 |  0.00909665 |        3000 | SOUTHERN_TIP                  |
-|    1 | 0.000242779 |  0.00728336 |        3000 | JUNGERSEN_HENSON_NARAVANA     |
-|   32 | 7.55834e-05 |   0.0022675 |        3000 | DIEBITSCH                     |
-|  288 |  7.2802e-05 |  0.00218406 |        3000 | SE_NONAME2                    |
-|  223 |  0.00329622 |   0.0834072 |     2530.38 | UNNAMED_LAUBE_S               |
-|  216 | 0.000895396 |   0.0180409 |     2014.86 | UNNAMED_LAUBE_S               |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 **** Bottom by Error [%]
 #+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
@@ -6445,33 +5852,7 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-| Gate |    D [Gt] | Error [Gt] | Error [%] | name                      |
-|------+-----------+------------+-----------+---------------------------|
-|  246 |  0.302505 | 0.00961623 |   3.17887 | KOGE_BUGT_S               |
-|  318 |   1.01671 |  0.0329246 |   3.23836 | PUISORTOQ_S               |
-|   69 |   1.02198 |   0.036123 |   3.53462 | ISSUUARSUIT_SERMIA        |
-|  192 |   0.78548 |  0.0285448 |   3.63406 | UNNAMED_KANGER_W          |
-|  127 |  0.732422 |  0.0274421 |   3.74676 | QEQERTARSUUP_SERMIA       |
-|   71 |   1.13553 |  0.0428808 |   3.77627 | ISSUUARSUIT_SERMIA        |
-|   78 | 0.0640827 |  0.0024583 |   3.83613 | NORDENSKIOLD_GLESCHER_NW  |
-|  224 |   4.62319 |   0.188674 |   4.08104 | KIV_STEENSTRUP_NODRE_BRAE |
-|  309 |   1.12647 |  0.0470152 |   4.17367 | MOGENS_HEINESEN_C         |
-|  316 |   3.62598 |   0.152852 |   4.21546 | PUISORTOQ_N               |
-|   27 |   11.3287 |   0.484608 |   4.27771 | PETERMANN_GLETSCHER       |
-|  129 |   6.19615 |   0.266278 |   4.29747 | KAKIVFAAT_SERMIAT         |
-|  244 |   3.93266 |   0.191297 |   4.86431 | KOGE_BUGT_N               |
-|  163 |  0.353756 |  0.0173541 |   4.90566 | STORE_GLETSCHER           |
-|   67 |   3.49275 |    0.17966 |   5.14379 | ISSUUARSUIT_SERMIA        |
-|  102 |  0.728696 |  0.0381139 |   5.23043 | HAYES_GLETSCHER_N_NN      |
-|  125 |   1.76395 |  0.0922633 |   5.23049 | USSING_BRAEER             |
-|   10 |   2.52867 |   0.132506 |   5.24016 | RYDER_GLETSCHER           |
-|  153 |  0.674378 |  0.0354955 |   5.26344 | SERMEQ_SILARLEQ           |
-|  119 |  0.242122 |  0.0133201 |   5.50138 | CORNELL_GLETSCHER         |
-|  190 |   25.4252 |    1.41528 |   5.56646 | KANGERLUSSUAQ             |
-|  239 |   10.7968 |   0.620846 |   5.75027 | IKERTIVAQ_M               |
-|  155 |   5.16115 |   0.299705 |   5.80694 | SERMEQ_SILARLEQ           |
-|  177 |   1.00795 |  0.0589765 |   5.85115 | KANGILERNGATA_SERMIA      |
-|  111 |   0.65018 |  0.0380979 |   5.85959 | HAYES_GLETSCHER_M_SS      |
+: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 ** Annual averages from observations or linear interpolation
@@ -6749,10 +6130,10 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0478
 #+begin_example
-9bf8fcf0c4add78ed54c4a35b444bdc3  /home/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
+9bf8fcf0c4add78ed54c4a35b444bdc3  /mnt/data/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
 
 Driver: GTiff/GeoTIFF
-Files: /home/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
+Files: /mnt/data/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
 Size is 7585, 13700
 Coordinate System is:
 PROJCRS["unnamed",
@@ -7445,10 +6826,10 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0731
 #+begin_example
-33e6afb888f11a8fc61f2e59c89ea657  /home/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
+33e6afb888f11a8fc61f2e59c89ea657  /mnt/data/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 
 Driver: GTiff/GeoTIFF
-Files: /home/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
+Files: /mnt/data/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 Size is 7585, 13700
 Coordinate System is:
 PROJCRS["WGS 84 / NSIDC Sea Ice Polar Stereographic North",
@@ -7774,6 +7155,20 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 ./Sentinel1_IV_maps/IV_20230128_20230220.nc
 ./Sentinel1_IV_maps/IV_20230208_20230304.nc
 ./Sentinel1_IV_maps/IV_20230220_20230316.nc
+./Sentinel1_IV_maps/IV_20230304_20230328.nc
+./Sentinel1_IV_maps/IV_20230318_20230409.nc
+./Sentinel1_IV_maps/IV_20230330_20230421.nc
+./Sentinel1_IV_maps/IV_20230410_20230503.nc
+./Sentinel1_IV_maps/IV_20230422_20230515.nc
+./Sentinel1_IV_maps/IV_20230504_20230527.nc
+./Sentinel1_IV_maps/IV_20230516_20230608.nc
+./Sentinel1_IV_maps/IV_20230528_20230620.nc
+./Sentinel1_IV_maps/IV_20230609_20230702.nc
+./Sentinel1_IV_maps/IV_20230621_20230714.nc
+./Sentinel1_IV_maps/IV_20230703_20230726.nc
+./Sentinel1_IV_maps/IV_20230715_20230807.nc
+./Sentinel1_IV_maps/IV_20230727_20230819.nc
+./Sentinel1_IV_maps/IV_20230808_20230831.nc
 #+end_example
 
 ***** File Metadata
@@ -7972,22 +7367,22 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 #+END_SRC
 
 #+RESULTS: QC_md5sum_Sentinel1
-| 2cea948f4078026231d5d1ad4804fa66 | ./Sentinel1_IV_maps/IV_20220825_20220917.nc |
-| be36f84b5b5f1aad56789d7aff1ec189 | ./Sentinel1_IV_maps/IV_20220906_20220929.nc |
-| 2891152d075902bb5c7b7f921e536d2c | ./Sentinel1_IV_maps/IV_20220918_20221011.nc |
-| 985ebdfdc39d644c8804365e2aaf7a84 | ./Sentinel1_IV_maps/IV_20220930_20221023.nc |
-| 26d149e64bbeafa4ada53c2baec6df74 | ./Sentinel1_IV_maps/IV_20221012_20221104.nc |
-| 746fde85607fdc5a44b90b8c86b92118 | ./Sentinel1_IV_maps/IV_20221024_20221116.nc |
-| 18a09b702923ca8f1b1dedf5169bb9f1 | ./Sentinel1_IV_maps/IV_20221105_20221128.nc |
-| 1838f4e1b3af04702e70a2124a49abe2 | ./Sentinel1_IV_maps/IV_20221117_20221210.nc |
-| e304c19b5d7035fca10447cc665555db | ./Sentinel1_IV_maps/IV_20221129_20221222.nc |
-| c79d9fae4dacaa6890420d296bf34d39 | ./Sentinel1_IV_maps/IV_20221211_20230103.nc |
-| 9375f29dcac6dba0e3c72dc15aeb9e79 | ./Sentinel1_IV_maps/IV_20221223_20230115.nc |
-| fc6361789345ca9b636e857d049d5cc7 | ./Sentinel1_IV_maps/IV_20230104_20230127.nc |
-| 12c44f55e49a6a820e74125f07afabc7 | ./Sentinel1_IV_maps/IV_20230115_20230208.nc |
-| 527fe41d7f1c1b214aca2c94fbde6a66 | ./Sentinel1_IV_maps/IV_20230128_20230220.nc |
 | 145190eb640123335d0e364b60938a51 | ./Sentinel1_IV_maps/IV_20230208_20230304.nc |
 | d1b5003cfdbba0015b8b9c86b22496ec | ./Sentinel1_IV_maps/IV_20230220_20230316.nc |
+| 48c4ab1f41e8ba543d4213f40d1f2a3f | ./Sentinel1_IV_maps/IV_20230304_20230328.nc |
+| 710ac19f957d661c1cc99ffa68d72f0a | ./Sentinel1_IV_maps/IV_20230318_20230409.nc |
+| ef87a5721cc4071f01cecad1033dca7f | ./Sentinel1_IV_maps/IV_20230330_20230421.nc |
+| eb73aa3168b5ea4b1b031eb4fd1b102e | ./Sentinel1_IV_maps/IV_20230410_20230503.nc |
+| fc623759fd1d04e0c1c99845fdfcbbae | ./Sentinel1_IV_maps/IV_20230422_20230515.nc |
+| ec6ea1ea1089497f3a35bacd65bc05ab | ./Sentinel1_IV_maps/IV_20230504_20230527.nc |
+| 5e42a12ba2e30e1294474f806f206f38 | ./Sentinel1_IV_maps/IV_20230516_20230608.nc |
+| 23e364de5fac5667b076ab79e9e09cef | ./Sentinel1_IV_maps/IV_20230528_20230620.nc |
+| 2ee1f199a75c9f5d13144dd2508a0777 | ./Sentinel1_IV_maps/IV_20230609_20230702.nc |
+| 101f51af2ca9dc0a40af823d3b88f439 | ./Sentinel1_IV_maps/IV_20230621_20230714.nc |
+| fff4bf73791d0af2f99d593b0b76a780 | ./Sentinel1_IV_maps/IV_20230703_20230726.nc |
+| e96c459bb9d23a4647b5a965b8af6baf | ./Sentinel1_IV_maps/IV_20230715_20230807.nc |
+| 81ff75b5cdbfc78934901143fb802d3e | ./Sentinel1_IV_maps/IV_20230727_20230819.nc |
+| 7b6d336643ff5d8c35cc1154d9d386a5 | ./Sentinel1_IV_maps/IV_20230808_20230831.nc |
 
 ** Results
 *** GIS
@@ -8057,7 +7452,7 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass-core; do dp
 #+END_SRC
 
 #+RESULTS:
-: Org mode version 9.5 (9.5-g0a86ad @ /home/kdm/.emacs.d/elpa/org-9.5/)
+: Org mode version 9.5 (9.5-g0a86ad @ /home/tmb_operational/.emacs.d/elpa/org-9.5/)
 
 *** Python
 
