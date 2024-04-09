@@ -10,6 +10,7 @@
 #+PROPERTY: header-args:bash :eval no :noweb yes :tangle-mode (identity #o544)
 #+PROPERTY: header-args:jupyter-python :eval no :noweb yes :kernel ice_discharge :tangle-mode (identity #o544)
 #+PROPERTY: header-args: :session ice_discharge
+#+PROPERTY: header-args: :display plain
 
 #+MACRO: JAKO @@latex:Sermeq Kujalleq@@
 #+EXCLUDE_TAGS: noexport
@@ -1625,32 +1626,32 @@ DIR=${DATADIR}/Promice200m/
                                                                                                                                                                                                             
 #+NAME: promice_import                                                                                                                                                                                      
 #+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
-MSG_OK "Promice 200m"                                                                                                                                                                                       
-g.mapset -c promice                                                                                                                                                                                         
-ROOT=${DATADIR}/Promice200m/                                                                                                                                                                                
+  MSG_OK "Promice 200m"                                                                                                                                                                                       
+  g.mapset -c promice                                                                                                                                                                                         
+  ROOT=${DATADIR}/Promice200m/                                                                                                                                                                                
                                                                                                                                                                                                             
-find ${ROOT} -name "*.nc"                                                                                                                                                                                   
-# FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing                                                                                                                                                      
+  find ${ROOT} -name "*.nc"                                                                                                                                                                                   
+  # FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing                                                                                                                                                      
                                                                                                                                                                                                             
-FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG                                                                                                                                                        
-for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do                                                                                                                                                
-  T=$(ncdump -v time $FILE | tail -n2 | tr -dc '[0-9]')                                                                                                                                                     
-  DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)                                                                                                                                              
-  DATE_STR=$(echo ${DATE} | sed s/-/_/g)                                                                                                                                                                    
-  echo $DATE                                                                                                                                                                                                
+  FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG                                                                                                                                                        
+  for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do                                                                                                                                                
+    T=$(ncdump -t -v time ${FILE} | tail -n2 | tr -dc '[0-9\-]' | tr '-' '_')                                                                                                                                                     
+    DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)                                                                                                                                              
+    DATE_STR=$(echo ${DATE} | sed s/-/_/g)                                                                                                                                                                    
+    echo $DATE                                                                                                                                                                                                
                                                                                                                                                                                                             
-  # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)                                                                                                                                                   
-  # T0=$(echo ${TT} | cut -d, -f1)                                                                                                                                                                          
-  # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])                                                                                                                                                           
-  # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)                                                                                                                                                   
-  # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)                                                                                                                                                   
+    # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)                                                                                                                                                   
+    # T0=$(echo ${TT} | cut -d, -f1)                                                                                                                                                                          
+    # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])                                                                                                                                                           
+    # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)                                                                                                                                                   
+    # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)                                                                                                                                                   
                                                                                                                                                                                                             
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}                                                                                                             
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}                                                                                                            
+    r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}                                                                                                             
+    r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}                                                                                                            
                                                                                                                                                                                                             
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}                                                                                                         
-  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}                                                                                                        
-done                                                                                                                                                                                                        
+    r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}                                                                                                         
+    r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}                                                                                                        
+  done                                                                                                                                                                                                        
 #+END_SRC
 
 
@@ -2734,8 +2735,6 @@ def filter_bad_v(v):
 ###
 vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
 
-# For now, drop Sentinel1
-# vel = vel[vel.columns.drop(list(vel.filter(regex='Sentinel1')))] 
 
 all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
                                                  int(c[13:15]),
