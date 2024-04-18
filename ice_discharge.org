@@ -165,7 +165,7 @@ We have produced an open and reproducible estimate of Greenland ice sheet solid 
 
 The data were updated approximately every 12 days between the last published version of the paper citep:mankoff_2020_solid and the failure of one of the Sentinel satellites. Updates occur approximately monthly at the moment. Every change is versioned with unique DOIs and posted on the new GEUS data portal at doi:10.22008/promice/data/ice_discharge. The git commit for this version of the paper is \input{|"git describe --always --dirty='*'"}.
 
-BedMachine has been updated from v3 to v4. Uncertainty has declined by ~10 % (that is, from ~10 % of total discharge to ~9 %, or from ~50 Gt yr^{-1} to ~45 Gt yr^{-1}). With the BedMachine v4 update, the southeast sector is no longer patched with citet:millan_2018 data.
+BedMachine has been updated to v5. Uncertainty has declined by ~10 % (that is, from ~10 % of total discharge to ~9 %, or from ~50 Gt yr^{-1} to ~45 Gt yr^{-1}). With the BedMachine v5 update, the southeast sector is no longer patched with citet:millan_2018 data.
 
 The NSIDC 0646 ice velocity data citep:NSIDC_0646 have been updated from v2 to v3 with no significant changes. The early portion of the record has 1 less velocity map per month and ~1 Gt (~0.2 %) less discharge per year.
 
@@ -230,9 +230,9 @@ Historically, discharge gates were selected along well-constrained flight lines 
 
 Ice velocity data are available with increasing spatial and temporal resolution (e.g., citet:vijay_2019_resolving). Until recently, ice velocity mosaics were limited to once per year during winter citep:joughin_2010_greenland, and they are still temporally limited, often to annual resolution, prior to 2000 (e.g. citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000). Focusing on recent times, ice-sheet-wide velocity mosaics from the Sentinel-1A & 1B are now available every twelve days (http://PROMICE.org). The increased availability of satellite data has improved ice velocity maps both spatially and temporally, thereby decreasing the need to rely on spatial and temporal interpolation of velocities from annual/winter mosaics citep:andersen_2015_basin-scale,king_2018_seasonal,mouginot_2019_forty.
 
-The discharge gates in this study are generated using only surface speed and an ice mask. We use the MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2 citep:joughin_2010_greenland,NSIDC_0478, hereafter termed "MEaSUREs 0478" due to the National Snow and Ice Data Center (NSIDC) dateset ID number. We use the BedMachine v4 citep:morlighem_2017_bedmachine,NSIDC_BedMachine ice mask.
+The discharge gates in this study are generated using only surface speed and an ice mask. We use the MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2 citep:joughin_2010_greenland,NSIDC_0478, hereafter termed "MEaSUREs 0478" due to the National Snow and Ice Data Center (NSIDC) dateset ID number. We use the BedMachine v5 citep:morlighem_2017_bedmachine,NSIDC_BedMachine ice mask.
 
-For ice thickness estimates, we use surface elevation from GIMP (citet:howat_2014_greenland,NSIDC_0715; NSIDC dataset ID 0715), adjusted through time with surface elevation change from citet:khan_2016_geodetic and bed elevations from BedMachine v4. Ice sector and region delineation is from citet:mouginot_2019_glacier. Ice velocity data are obtained from a variety of products including Sentinel-1A & 1B derived by PROMICE (see Appendix), MEaSUREs 0478, MEaSUREs 0646 citep:NSIDC_0646, citet:mouginot_2018_1972to1990, and citet:mouginot_2018_1991to2000. Official glacier names come from citet:bjork_2015_brief. Other glacier names come from citet:mouginot_2019_glacier. See Table [[tab:data]] for an overview of datasets used in this work.
+For ice thickness estimates, we use bed elevations from BedMachine v5 and the annual PROMICE PRODEM surface elevation (citet:winstrup_2024,winstrup_2024_data) from 2019 through 2022 (or the latest available). Prior to 2019 we adjust with surface elevation change from citet:khan_2016_geodetic. Ice sector and region delineation is from citet:mouginot_2019_glacier. Ice velocity data are obtained from a variety of products including Sentinel-1A & 1B derived by PROMICE (see Appendix), MEaSUREs 0478, MEaSUREs 0646 citep:NSIDC_0646, citet:mouginot_2018_1972to1990, and citet:mouginot_2018_1991to2000. Official glacier names come from citet:bjork_2015_brief. Other glacier names come from citet:mouginot_2019_glacier. See Table [[tab:data]] for an overview of datasets used in this work.
 
 #+BEGIN_SRC bash :results verbatim :eval no-export
 echo "times  all: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l)
@@ -281,19 +281,20 @@ This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n'
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
 #+NAME: tab:data
-| Property                 | Name used in this paper  | Reference                                                      |
-|--------------------------+--------------------------+----------------------------------------------------------------|
-| Basal topography         | BedMachine v4            | citet:morlighem_2017_bedmachine,NSIDC_BedMachine               |
-| Surface elevation        | GIMP 0715                | citet:howat_2014_greenland,NSIDC_0715                          |
-| Surface elevation Change | Surface elevation change | citet:khan_2016_geodetic,GEUS_discharge_paper_elevation_change |
-| Baseline velocity        | MEaSUREs 0478            | citet:NSIDC_0478                                               |
-| Velocity                 | Sentinel                 | Appendix                                                       |
-| Velocity                 | MEaSUREs 0646            | citet:NSIDC_0646                                               |
-| Velocity                 | MEaSUREs 0731            | citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland |
-| Velocity                 | pre-2000                 | citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000        |
-| Sectors and regions      | Sectors and regions      | citet:mouginot_2019_glacier                                    |
-| Names                    |                          | citet:bjork_2015_brief,mouginot_2019_glacier                   |
-| Additional metadata      |                          | citet:Moon_2008,NSIDC_0642,Zwally_2012                         |
+| Property                 | Name used in this paper                | Reference                                                      |
+|--------------------------+----------------------------------------+----------------------------------------------------------------|
+| Basal topography         | BedMachine v5                          | citet:morlighem_2017_bedmachine,NSIDC_BedMachine               |
+| Surface elevation        | PROMICE PRODEM                         | citet:winstrup_2024,winstrup_2024_data                         |
+| Surface elevation Change | PROMICE PRODEM 2019 -- recent          | citet:winstrup_2024,winstrup_2024_data                         |
+| Surface elevation Change | Surface elevation change prior to 2019 | citet:khan_2016_geodetic,GEUS_discharge_paper_elevation_change |
+| Baseline velocity        | MEaSUREs 0478                          | citet:NSIDC_0478                                               |
+| Velocity                 | Sentinel                               | Appendix                                                       |
+| Velocity                 | MEaSUREs 0646                          | citet:NSIDC_0646                                               |
+| Velocity                 | MEaSUREs 0731                          | citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland |
+| Velocity                 | pre-2000                               | citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000        |
+| Sectors and regions      | Sectors and regions                    | citet:mouginot_2019_glacier                                    |
+| Names                    |                                        | citet:bjork_2015_brief,mouginot_2019_glacier                   |
+| Additional metadata      |                                        | citet:Moon_2008,NSIDC_0642,Zwally_2012                         |
 
 * Methods
 ** Terminology 
@@ -320,7 +321,7 @@ We select gates at 5000 m upstream from the baseline termini except at Sermeq Ku
 
 ** Thickness
 
-We derive thickness from surface and bed elevation. We use GIMP 0715 surface elevations in all locations, and the BedMachine bed elevations. The GIMP 0715 surface elevations are all time stamped per pixel. We adjust the surface through time by linearly interpolating elevation changes from citet:khan_2016_geodetic, which covers the period from 1995 to 2016. We use the average of the first and last 3 years for earlier and later times, respectively. Finally, from the fixed bed and temporally varying surface, we calculate the time-dependent ice thickness at each gate pixel.
+We derive thickness from surface and bed elevation. We use the PROMICE PRODEM 2020 surface elevation as our baseline surface assigning it a fixed date of 2020-08-01, and the BedMachine bed elevations. We adjust the surface through time from 2020-08-01 by linearly interpolating elevation changes to other PRODEM years. We adjust the surface backward from 2019-08-01 using the citet:khan_2016 surface elevation change product, that covers the period from 1995 to 2019. We assume no surface change for dates prior to 1995 and from the most recent PRODEM to the most recent velocity timestamp. Finally, from the fixed bed and temporally varying surface, we calculate the time-dependent ice thickness at each gate pixel.
 
 ** Missing or invalid data
 
@@ -955,7 +956,6 @@ Table [[tab:thick_treatments]] shows the estimated baseline discharge to these f
 D_tmp = D_th.sum(axis=0).astype(int).astype(str)
 
 df = pd.DataFrame(columns=['Discharge (Gt)'], index=['NoAdj',300,400,'Fit'])
-df.loc['NoAdj'] = D_tmp['NoMillan'] + ' \pm ' + D_tmp['NoAdj_err']
 df.loc[300] = D_tmp['300'] + ' \pm ' + D_tmp['300_err']
 df.loc[400] = D_tmp['400'] + ' \pm ' + D_tmp['400_err']
 df.loc['Fit'] = D_tmp['fit'] + ' \pm ' + D_tmp['fit_err']
@@ -1168,33 +1168,6 @@ g.region -dp
 r.colors map=mask color=haxby
 
 r.mapcalc "mask_ice = if(mask == 2, 1, null())"
-#+END_SRC
-
-**** GIMP 0715
-#+BEGIN_SRC bash :results verbatim
-MSG_OK "GIMP 0715"
-g.mapset -c GIMP.0715
-ROOT=${DATADIR}/GIMP/0715
-
-# reset
-# g.remove -f type=raster name=$(g.list type=raster mapset=. separator=",")
-
-# read in DEM, DAY, and ERR
-# for f in $(ls ${ROOT}/reg/tile_?_?_reg_30m_???.tif); do
-#   name=$(basename ${f})
-#   r.external input=${f} output=${name}
-# done
-ls ${ROOT}/reg/tile_?_?_reg_30m_???.tif | parallel --verbose --bar r.external input={} output={/.}
-ls ${ROOT}/fit/tile_?_?_fit_30m_???.tif | parallel --verbose --bar r.external input={} output={/.}
-
-r.patch -s input=$(g.list type=raster pattern=tile_?_?_reg_30m_dem separator=,),$(g.list type=raster pattern=tile_?_?_fit_30m_dem separator=,) output=dem
-
-# no fit day data to patch holes. We'll assign elevation pixels with DEM data but not DAY data to some day, TBD
-r.patch -s input=$(g.list type=raster pattern=tile_?_?_reg_30m_day separator=,) output=day
-
-r.patch -s input=$(g.list type=raster pattern=tile_?_?_reg_30m_err separator=,),$(g.list type=raster pattern=tile_?_?_fit_30m_err separator=,) output=err
-
-r.null map=day null=0
 #+END_SRC
 
 *** Sectors
@@ -2410,13 +2383,12 @@ VEL_SENTINEL=$(g.list -m mapset=promice type=raster pattern=vel_eff_????_??_?? s
 ERR_SENTINEL=$(g.list -m mapset=promice type=raster pattern=err_eff_????_??_?? separator=space)
 VEL_MOUGINOT=$(g.list -m mapset=Mouginot_pre2000 type=raster pattern=vel_eff_????_??_?? separator=space)
 THICK=$(g.list -m mapset=DEM type=raster pattern=DEM_???? separator=space)
-GIMP_0715="dem@GIMP.0715 day@GIMP.0715" # ,err@GIMP.0715
 
-LIST="lon lat err_2D gates_x@${MAPSET} gates_y@${MAPSET} gates_gateID@${MAPSET} sectors@Mouginot_2019 regions@Mouginot_2019 bed@BedMachine thickness@BedMachine surface@BedMachine ${THICK} ${GIMP_0715} ${VEL_baseline} ${VEL_0478}
+LIST="lon lat err_2D gates_x@${MAPSET} gates_y@${MAPSET} gates_gateID@${MAPSET} sectors@Mouginot_2019 regions@Mouginot_2019 bed@BedMachine thickness@BedMachine surface@BedMachine ${THICK} ${VEL_baseline} ${VEL_0478}
 ${VEL_0481} ${VEL_0646} ${VEL_0731} ${VEL_0766} ${VEL_SENTINEL} ${VEL_MOUGINOT} errbed@BedMachine ${ERR_0478} ${ERR_0481} ${ERR_0646} ${ERR_0731} ${ERR_0766} ${ERR_SENTINEL}"
 
 mkdir tmp/dat
-r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(dem@GIMP.0715) | if(mask_GIC@Mouginot_2019) | if(vel_err_baseline@MEaSUREs.0478) | if(DEM_2020@DEM)" --o
+r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(mask_GIC@Mouginot_2019) | if(vel_err_baseline@MEaSUREs.0478) | if(DEM_2020@DEM)" --o
 parallel --bar "if [[ ! -e ./tmp/dat/{1}.bsv ]]; then (echo x\|y\|{1}; r.out.xyz input={1}) > ./tmp/dat/{1}.bsv; fi" ::: ${LIST}
 r.mask -r
 
@@ -2684,7 +2656,7 @@ echo "also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc."
 #+END_SRC
 
 #+RESULTS:
-: bed@BedMachine	day@GIMP.0715	DEM_1995@DEM	DEM_1996@DEM	DEM_1997@DEM	DEM_1998@DEM	DEM_1999@DEM	DEM_2000@DEM	DEM_2001@DEM	DEM_2002@DEM	DEM_2003@DEM	DEM_2004@DEM	DEM_2005@DEM	DEM_2006@DEM	DEM_2007@DEM	DEM_2008@DEM	DEM_2009@DEM	DEM_2010@DEM	DEM_2011@DEM	DEM_2012@DEM	DEM_2013@DEM	DEM_2014@DEM	DEM_2015@DEM	DEM_2016@DEM	DEM_2017@DEM	DEM_2018@DEM	DEM_2019@DEM	DEM_2020@DEM	DEM_2021@DEM	DEM_2022@DEM	dem@GIMP.0715	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_vel_buf	gates_x@gates_vel_buf	gates_y@gates_vel_buf	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
+: bed@BedMachine	DEM_1995@DEM	DEM_1996@DEM	DEM_1997@DEM	DEM_1998@DEM	DEM_1999@DEM	DEM_2000@DEM	DEM_2001@DEM	DEM_2002@DEM	DEM_2003@DEM	DEM_2004@DEM	DEM_2005@DEM	DEM_2006@DEM	DEM_2007@DEM	DEM_2008@DEM	DEM_2009@DEM	DEM_2010@DEM	DEM_2011@DEM	DEM_2012@DEM	DEM_2013@DEM	DEM_2014@DEM	DEM_2015@DEM	DEM_2016@DEM	DEM_2017@DEM	DEM_2018@DEM	DEM_2019@DEM	DEM_2020@DEM	DEM_2021@DEM	DEM_2022@DEM	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_vel_buf	gates_x@gates_vel_buf	gates_y@gates_vel_buf	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness@Bamber_2013	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
 
 #+NAME: load_data
 #+BEGIN_SRC jupyter-python :exports none :results none
@@ -3044,9 +3016,6 @@ D_th = pd.DataFrame(index=th.index,
 # + D_baseline_th_noadj :: Discharge with no thickness adjustment
 D_th['NoAdj'] = vel_baseline.apply(lambda c: c * (th['thick'].values * 200 * meta['err_2D'].values), axis=0) * 917 / 1E12
 
-# should match HeatMap
-D_th['NoMillan'] = vel_baseline.apply(lambda c: c * ((th['surface@BedMachine']-th['bed@BedMachine']).values * 200), axis=0) * 917 / 1E12
-
 # D_baseline_th_noadj_err ::
 D_th['NoAdj_err'] = vel_baseline.apply(lambda c: c * (th['err'].values * 200 * meta['err_2D'].values), axis=0) * 917 / 1E12
 
@@ -3071,7 +3040,6 @@ D_th.sum(axis=0)
 : 400_err       46.234386
 : fit          470.996240
 : fit_err       45.034132
-: NoMillan     463.309375
 : dtype: float64
 
 **** Map of where thickness adjustments occur
