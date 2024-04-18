@@ -7265,14 +7265,14 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass-core; do dp
 #+END_SRC
 
 #+RESULTS:
-| bash       | 4.4.18-2ubuntu1.3    |
-| gdal-bin   | 3.0.4+dfsg-1~bionic0 |
-| grass-core | 7.8.6-1~bionic1      |
-| nco        | 4.7.2-1              |
-| netcdf-bin | 1:4.6.0-2build1      |
-| parallel   | 20161222-1           |
-| proj-bin   | 7.0.0-1~bionic0      |
-| sed        | 4.4-2                |
+| bash       | 5.1-6ubuntu1.1      |
+| gdal-bin   | 3.8.4+dfsg-1~jammy0 |
+| grass-core | 8.3.2-1~jammy1      |
+| nco        | 5.0.6-1             |
+| netcdf-bin | 1:4.8.1-1           |
+| parallel   | 20210822+ds-2       |
+| proj-bin   | 9.3.1-1~jammy0      |
+| sed        | 4.8-1ubuntu2        |
 
 *** Org Mode
 #+BEGIN_SRC elisp :exports both :eval no-export
@@ -7280,7 +7280,7 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass-core; do dp
 #+END_SRC
 
 #+RESULTS:
-: Org mode version 9.5 (9.5-g0a86ad @ /home/tmb_operational/.emacs.d/elpa/org-9.5/)
+: Org mode version 9.7-pre (release_9.6.23-1335-gce5e8ec @ /home/kdm/local/src/org-mode/lisp/)
 
 *** Python
 
