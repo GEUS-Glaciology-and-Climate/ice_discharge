@@ -8,7 +8,7 @@
 #+PROPERTY: header-args:PSMAP :eval no
 #+PROPERTY: header-args:elisp :eval no :tangle no
 #+PROPERTY: header-args:bash :eval no :noweb yes :tangle-mode (identity #o544)
-#+PROPERTY: header-args:jupyter-python :eval no :noweb yes :kernel ice_discharge :tangle-mode (identity #o544)
+#+PROPERTY: header-args:jupyter-python :eval no-export :noweb yes :kernel ice_discharge :tangle-mode (identity #o544)
 #+PROPERTY: header-args: :session ice_discharge
 #+PROPERTY: header-args: :display plain
 
@@ -3268,24 +3268,12 @@ dem_ts[vel.columns.max()] = dem_ts[dem_ts.columns.max()]
 dem_ts = dem_ts.reindex(sorted(dem_ts.columns), axis='columns')
 # resample to daily.
 dem_ts = dem_ts.T.resample('1D').interpolate().T
+dem_ts = dem_ts[vel.columns] # resample back to observed times
 # Above gives us DEM time series at each gate pixel
 
 
-# convert to dhdt
-
-th_ts = pd.DataFrame(dtype=np.float64).reindex_like(dem_ts)
-th_ts['2020-08-01'] = dem_ts['202-08-01']
-for idx in th.index:
-    t0_pix = th.loc[idx]
-    # adjusted thickness at t0_pix['day']
-    t0_pix_th = t0_pix['fit'] + (th.loc[idx]['dem@GIMP.0715'] - th.loc[idx]['surface@BedMachine'])
-
-    # now using that thickness, put it in a time Series
-    dem_pix = dem_ts.loc[idx]
-    dem_pix = dem_pix - dem_pix.loc[t0_pix['day']]
-    th_ts.loc[idx] = t0_pix_th + dem_pix
-
-th_ts = th_ts[vel.columns]
+# subtract thickness from each pixel at each time
+th_ts = dem_ts.apply(lambda x: x - th['bed@BedMachine'])
 
 # Re-adjust th_ts where thickness < 20 m.
 bad = th_ts.min(axis=1) < 20 # Pixels with bad thickness somewhere in the time series
