@@ -2748,8 +2748,10 @@ meta['ones'] = 1
 
 R = pd.read_csv('./out/gate_meta.csv')
 meta['name'] = ''
-for g in meta['gates'].unique(): meta.loc[meta['gates'] == g, 'name'] = R[R['gate'] == g]['Mouginot_2019'].values[0]
-
+for g in meta['gates'].unique():
+    if R[R['gate'] == g].shape[0] == 0: continue
+    meta.loc[meta['gates'] == g, 'name'] = R[R['gate'] == g]['Mouginot_2019'].values[0]
+    
 ### https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/issues/28
 ### Gates span sectors and regions. Assign to their primary sector or region
 ### meta.groupby('gates').mean()['sectors'].values  
@@ -2793,6 +2795,7 @@ all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
 # 'velocity source' as in Sentinel, measures.X, measures.Y, etc.
 vel_sources = np.unique([_.split('@')[1] for _ in vel.columns])
 for vs in vel_sources:
+    print(vs)
     vs_vel = vel.drop(labels=vel.columns[~vel.columns.str.contains(vs)], axis='columns')
     vs_vel = vs_vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
                                                          int(c[13:15]),
@@ -2856,38 +2859,24 @@ err.sort_index(axis='columns', inplace=True)
 
 
 ###
+### DEM
+###
+dem = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('DEM' in c)))
+mv = {}
+for c in dem.columns: mv[c] = int(c.split('@')[0].split('_')[1])
+dem.rename(inplace=True, columns=mv)
+
+###
 ### Thickness
 ###
-th = pd.read_csv("./tmp/dat_100_5000.csv", usecols=["thickness@BedMachine",
-                                                    "surface@BedMachine",
+th = pd.read_csv("./tmp/dat_100_5000.csv", usecols=["surface@BedMachine",
                                                     "bed@BedMachine",
                                                     "errbed@BedMachine",
                                                     "gates_gateID@gates_vel_buf"])
-th.rename(inplace=True, columns={'thickness@BedMachine':'thick',
-                                 'errbed@BedMachine': 'err',
+th.rename(inplace=True, columns={'errbed@BedMachine': 'err',
                                  'gates_gateID@gates_vel_buf':'gates'})
-th_GIMP = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('@GIMP.0715' in c)))
-th_GIMP['day'] = [dt.datetime(2000,1,1) + dt.timedelta(days=int(_)) for _ in th_GIMP['day@GIMP.0715']]
-for _ in th_GIMP.columns: th[_] = th_GIMP[_]
-del(th_GIMP)
+th['thick'] = dem[2020] - th['bed@BedMachine']
 
-
-###
-### dh/dt
-###
-dhdt = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('dh' in c)))
-mv = {}
-for c in dhdt.columns: mv[c] = int(c.split('@')[0].split('_')[1])
-dhdt.rename(inplace=True, columns=mv)
-
-# assume trend continues from last measured value
-dhdt[2020] = dhdt[2019]
-dhdt[2021] = dhdt[2019]
-dhdt[2022] = dhdt[2019]
-dhdt[2023] = dhdt[2019]
-dhdt[2024] = dhdt[2019]
-for y in np.arange(1985,1994+1): dhdt[y] = dhdt.loc[:,1995:1997].mean(axis='columns')
-dhdt.sort_index(axis='columns', inplace=True)
 
 # what is the unadjusted discharge using BedMachine thickness?
 D = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=0) * 917 / 1E12
@@ -3261,41 +3250,40 @@ print(tmp[th['bad'] > 0]['vel'].describe())
 #+RESULTS:
 
 **** Temporal changes in thickness
-+ For each pixel, make daily time series of thickness changes from citet:khan_2016_geodetic
-+ Then set 0 to GIMP.0715 date for each pixel
-+ Then add them together
++ Each pixel has DEM at YYYY. Assume 08-01 (DOY ~213)
++ Assume DEM_2020 is baseline 
++ Linear interpolate between annual values
++ Take derivative to get dh/dt
 
 #+NAME: adjust_thickness_ts
 #+BEGIN_SRC jupyter-python :exports none :results raw drawer
-dhdt_ts = dhdt.copy(deep=True)
-# dhdt_ts[2016] = dhdt_ts[2015] # assume annual dh/dt continues at fixed rate
-# dhdt_ts[2017] = dhdt_ts[2015]
-# dhdt_ts[2018] = dhdt_ts[2015]
-# dhdt_ts[2016] = 0
-# dhdt_ts[2017] = 0
-# dhdt_ts[2018] = 0
-dhdt_ts[dhdt.columns.max()+1] = 0
-dhdt_ts = dhdt_ts.reindex(sorted(dhdt_ts.columns), axis='columns')
-dhdt_ts = dhdt_ts.cumsum(axis='columns')
-dhdt_ts.columns = dhdt_ts.columns.astype(str).astype('datetime64[ns]')
-dhdt_ts = dhdt_ts.T.resample('1D').interpolate().T
-# from above: daily accumulated change at each discharge pixel for SEC time series
+dem_ts = dem.copy(deep=True)
+dem_ts.columns = [str(y)+'-08-01' for y in dem_ts.columns]
+dem_ts.columns = dem_ts.columns.astype(str).astype('datetime64[ns]')
 
-# expand from SEC 1st time to velocity 1st time, assuming no changes in SEC
-dhdt_ts[dhdt_ts.columns.min()] = dhdt_ts[dhdt_ts.columns.min()]
-dhdt_ts[vel.columns.min()] = dhdt_ts[dhdt_ts.columns.min()]
-dhdt_ts = dhdt_ts.T.resample('1D').interpolate().T
+# extend to first and last velocity timestamp
+dem_ts[vel.columns.min()] = dem_ts[dem_ts.columns.min()]
+dem_ts[vel.columns.max()] = dem_ts[dem_ts.columns.max()]
+# re-sort so column are still in temporal order
+dem_ts = dem_ts.reindex(sorted(dem_ts.columns), axis='columns')
+# resample to daily.
+dem_ts = dem_ts.T.resample('1D').interpolate().T
+# Above gives us DEM time series at each gate pixel
 
-th_ts = pd.DataFrame(dtype=np.float64).reindex_like(dhdt_ts)
+
+# convert to dhdt
+
+th_ts = pd.DataFrame(dtype=np.float64).reindex_like(dem_ts)
+th_ts['2020-08-01'] = dem_ts['202-08-01']
 for idx in th.index:
     t0_pix = th.loc[idx]
     # adjusted thickness at t0_pix['day']
     t0_pix_th = t0_pix['fit'] + (th.loc[idx]['dem@GIMP.0715'] - th.loc[idx]['surface@BedMachine'])
 
     # now using that thickness, put it in a time Series
-    dhdt_pix = dhdt_ts.loc[idx]
-    dhdt_pix = dhdt_pix - dhdt_pix.loc[t0_pix['day']]
-    th_ts.loc[idx] = t0_pix_th + dhdt_pix
+    dem_pix = dem_ts.loc[idx]
+    dem_pix = dem_pix - dem_pix.loc[t0_pix['day']]
+    th_ts.loc[idx] = t0_pix_th + dem_pix
 
 th_ts = th_ts[vel.columns]
 
