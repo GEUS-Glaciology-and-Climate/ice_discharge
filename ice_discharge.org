@@ -1342,7 +1342,7 @@ g.region -d
 + [X] 0731 :: Monthly  ice sheet velocity 2015 through 2018
 + [X] 0766 :: S1 6-d16
 
-***** 0478.002 
+***** 0478.002
 + MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2
 + Winter velocity maps
 ****** Import
@@ -1613,45 +1613,35 @@ g.region raster=VX_${DATE} -pa
 #+END_SRC
 
 **** PROMICE IV 200m
-***** Data Intro                                                   :noexport:                                                                                                                               
-#+BEGIN_SRC bash :results verbatim :tangle no                                                                                                                                                               
-DIR=${DATADIR}/Promice200m/                                                                                                                                                                                 
-(cd ${DIR}; ls *.nc | head)                                                                                                                                                                                 
-(cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")                                                                                                                                                 
+***** Data Intro                                        :noexport:
+#+BEGIN_SRC bash :results verbatim :tangle no
+DIR=${DATADIR}/Promice200m/
+(cd ${DIR}; ls *.nc | head)
+(cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")
 #+END_SRC 
 
-***** Import data                                                  :noexport:                                                                                                                               
-+ Read in all the data                                                                                                                                                                                      
-+ Conversion from [m day-1] to [m year-1] is done in section Just one velocity cutoff & buffer distance                                                                                                     
-                                                                                                                                                                                                            
-#+NAME: promice_import                                                                                                                                                                                      
-#+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
-  MSG_OK "Promice 200m"                                                                                                                                                                                       
-  g.mapset -c promice                                                                                                                                                                                         
-  ROOT=${DATADIR}/Promice200m/                                                                                                                                                                                
-                                                                                                                                                                                                            
-  find ${ROOT} -name "*.nc"                                                                                                                                                                                   
-  # FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing                                                                                                                                                      
-                                                                                                                                                                                                            
-  FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG                                                                                                                                                        
-  for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do                                                                                                                                                
-    T=$(ncdump -t -v time ${FILE} | tail -n2 | tr -dc '[0-9\-]' | tr '-' '_')                                                                                                                                                     
-    DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)                                                                                                                                              
-    DATE_STR=$(echo ${DATE} | sed s/-/_/g)                                                                                                                                                                    
-    echo $DATE                                                                                                                                                                                                
-                                                                                                                                                                                                            
-    # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)                                                                                                                                                   
-    # T0=$(echo ${TT} | cut -d, -f1)                                                                                                                                                                          
-    # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])                                                                                                                                                           
-    # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)                                                                                                                                                   
-    # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)                                                                                                                                                   
-                                                                                                                                                                                                            
-    r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}                                                                                                             
-    r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}                                                                                                            
-                                                                                                                                                                                                            
-    r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}                                                                                                         
-    r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}                                                                                                        
-  done                                                                                                                                                                                                        
+***** Import data                                       :noexport:
+
++ Read in all the data
++ Conversion from [m day-1] to [m year-1] is done in section Just one velocity cutoff & buffer distance
+
+#+NAME: promice_import
+#+BEGIN_SRC bash :results verbatim
+MSG_OK "Promice 200m"
+g.mapset -c promice
+ROOT=${DATADIR}/Promice200m/
+
+FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG 
+for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do
+  DATE_STR=$(ncdump -t -v time ${FILE} | tail -n2 | tr -dc '[0-9\-]' | tr '-' '_')
+  echo $DATE_STR
+                                                                                                                         
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}
+                                                                                 
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}
+  r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}
+done
 #+END_SRC
 
 
@@ -2278,7 +2268,7 @@ done
 
 #+END_SRC
 
-*** Just one velocity cutoff & buffer distance 
+*** Just one velocity cutoff & buffer distance
 :PROPERTIES:
 :ID:       20210102T152009.186822
 :END:
@@ -2345,17 +2335,17 @@ parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(E
 #+END_SRC
 
 
-#+NAME: promice_effective_velocity                                                                                                                                                                          
-#+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
-g.mapset promice                                                                                                                                                                                            
-g.region -d                                                                                                                                                                                                 
-                                                                                                                                                                                                            
-dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)                                                                                                                                          
-                                                                                                                                                                                                            
-parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}     
-                                                                                                                                                                                                            
-parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}     
-#+END_SRC                                                                                                                                                                                                   
+#+NAME: promice_effective_velocity
+#+BEGIN_SRC bash :results verbatim
+g.mapset promice
+g.region -d
+
+dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)
+
+parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}
+
+parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}
+#+END_SRC
 
 
 #+BEGIN_SRC bash :results verbatim
@@ -5428,7 +5418,7 @@ if __name__ == "__main__":
 
 MSG_OK "Updating Sentinel velocity files..."
 workingdir=$(pwd)
-cd ${DATADIR}/Sentinel1/Sentinel1_IV_maps/
+cd ${DATADIR}/Promice200m/
 
 if [[ -e urls.txt ]]; then cp urls.txt urls.txt.last; fi
 #curl https://dataverse.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/promice/data/sentinel1icevelocity/greenlandicesheet | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
@@ -6929,252 +6919,232 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 ***** File List
 
 #+BEGIN_SRC bash :results verbatim :eval no-export
-(cd ${DATADIR}/Sentinel1; find . -name "*.nc" | LC_ALL=C sort)
+(cd ${DATADIR}/Promice200m; find . -name "*.nc" | LC_ALL=C sort)
 #+END_SRC
 
 #+RESULTS:
 #+begin_example
-./Sentinel1_IV_maps/IV_20160105_20160128.nc
-./Sentinel1_IV_maps/IV_20160117_20160209.nc
-./Sentinel1_IV_maps/IV_20160128_20160221.nc
-./Sentinel1_IV_maps/IV_20160210_20160304.nc
-./Sentinel1_IV_maps/IV_20160222_20160316.nc
-./Sentinel1_IV_maps/IV_20160304_20160328.nc
-./Sentinel1_IV_maps/IV_20160317_20160409.nc
-./Sentinel1_IV_maps/IV_20160329_20160421.nc
-./Sentinel1_IV_maps/IV_20160410_20160503.nc
-./Sentinel1_IV_maps/IV_20160422_20160515.nc
-./Sentinel1_IV_maps/IV_20160504_20160527.nc
-./Sentinel1_IV_maps/IV_20160516_20160608.nc
-./Sentinel1_IV_maps/IV_20160528_20160614.nc
-./Sentinel1_IV_maps/IV_20160612_20160624.nc
-./Sentinel1_IV_maps/IV_20160624_20160713.nc
-./Sentinel1_IV_maps/IV_20160703_20160726.nc
-./Sentinel1_IV_maps/IV_20160716_20160807.nc
-./Sentinel1_IV_maps/IV_20160728_20160819.nc
-./Sentinel1_IV_maps/IV_20160808_20160831.nc
-./Sentinel1_IV_maps/IV_20160820_20160912.nc
-./Sentinel1_IV_maps/IV_20160901_20160924.nc
-./Sentinel1_IV_maps/IV_20160914_20161006.nc
-./Sentinel1_IV_maps/IV_20160925_20161018.nc
-./Sentinel1_IV_maps/IV_20161006_20161030.nc
-./Sentinel1_IV_maps/IV_20161018_20161111.nc
-./Sentinel1_IV_maps/IV_20161030_20161123.nc
-./Sentinel1_IV_maps/IV_20161111_20161205.nc
-./Sentinel1_IV_maps/IV_20161123_20161217.nc
-./Sentinel1_IV_maps/IV_20161205_20161229.nc
-./Sentinel1_IV_maps/IV_20161217_20170110.nc
-./Sentinel1_IV_maps/IV_20161229_20170111.nc
-./Sentinel1_IV_maps/IV_20170110_20170203.nc
-./Sentinel1_IV_maps/IV_20170112_20170215.nc
-./Sentinel1_IV_maps/IV_20170122_20170227.nc
-./Sentinel1_IV_maps/IV_20170215_20170311.nc
-./Sentinel1_IV_maps/IV_20170227_20170323.nc
-./Sentinel1_IV_maps/IV_20170311_20170404.nc
-./Sentinel1_IV_maps/IV_20170323_20170416.nc
-./Sentinel1_IV_maps/IV_20170404_20170428.nc
-./Sentinel1_IV_maps/IV_20170416_20170509.nc
-./Sentinel1_IV_maps/IV_20170428_20170522.nc
-./Sentinel1_IV_maps/IV_20170510_20170603.nc
-./Sentinel1_IV_maps/IV_20170522_20170615.nc
-./Sentinel1_IV_maps/IV_20170603_20170627.nc
-./Sentinel1_IV_maps/IV_20170615_20170709.nc
-./Sentinel1_IV_maps/IV_20170627_20170721.nc
-./Sentinel1_IV_maps/IV_20170709_20170802.nc
-./Sentinel1_IV_maps/IV_20170721_20170814.nc
-./Sentinel1_IV_maps/IV_20170802_20170826.nc
-./Sentinel1_IV_maps/IV_20170814_20170907.nc
-./Sentinel1_IV_maps/IV_20170826_20170919.nc
-./Sentinel1_IV_maps/IV_20170907_20171001.nc
-./Sentinel1_IV_maps/IV_20170919_20171013.nc
-./Sentinel1_IV_maps/IV_20171001_20171025.nc
-./Sentinel1_IV_maps/IV_20171013_20171106.nc
-./Sentinel1_IV_maps/IV_20171025_20171118.nc
-./Sentinel1_IV_maps/IV_20171106_20171130.nc
-./Sentinel1_IV_maps/IV_20171118_20171212.nc
-./Sentinel1_IV_maps/IV_20171130_20171224.nc
-./Sentinel1_IV_maps/IV_20171212_20180105.nc
-./Sentinel1_IV_maps/IV_20171224_20180117.nc
-./Sentinel1_IV_maps/IV_20180105_20180129.nc
-./Sentinel1_IV_maps/IV_20180117_20180210.nc
-./Sentinel1_IV_maps/IV_20180129_20180222.nc
-./Sentinel1_IV_maps/IV_20180210_20180306.nc
-./Sentinel1_IV_maps/IV_20180222_20180318.nc
-./Sentinel1_IV_maps/IV_20180306_20180330.nc
-./Sentinel1_IV_maps/IV_20180318_20180411.nc
-./Sentinel1_IV_maps/IV_20180330_20180423.nc
-./Sentinel1_IV_maps/IV_20180411_20180505.nc
-./Sentinel1_IV_maps/IV_20180423_20180517.nc
-./Sentinel1_IV_maps/IV_20180505_20180529.nc
-./Sentinel1_IV_maps/IV_20180517_20180610.nc
-./Sentinel1_IV_maps/IV_20180529_20180622.nc
-./Sentinel1_IV_maps/IV_20180610_20180704.nc
-./Sentinel1_IV_maps/IV_20180622_20180716.nc
-./Sentinel1_IV_maps/IV_20180704_20180728.nc
-./Sentinel1_IV_maps/IV_20180716_20180809.nc
-./Sentinel1_IV_maps/IV_20180728_20180821.nc
-./Sentinel1_IV_maps/IV_20180809_20180902.nc
-./Sentinel1_IV_maps/IV_20180821_20180914.nc
-./Sentinel1_IV_maps/IV_20180902_20180926.nc
-./Sentinel1_IV_maps/IV_20180914_20181008.nc
-./Sentinel1_IV_maps/IV_20180926_20181020.nc
-./Sentinel1_IV_maps/IV_20181008_20181101.nc
-./Sentinel1_IV_maps/IV_20181020_20181113.nc
-./Sentinel1_IV_maps/IV_20181101_20181125.nc
-./Sentinel1_IV_maps/IV_20181113_20181207.nc
-./Sentinel1_IV_maps/IV_20181126_20181219.nc
-./Sentinel1_IV_maps/IV_20181207_20181231.nc
-./Sentinel1_IV_maps/IV_20181219_20190112.nc
-./Sentinel1_IV_maps/IV_20181231_20190124.nc
-./Sentinel1_IV_maps/IV_20190112_20190205.nc
-./Sentinel1_IV_maps/IV_20190124_20190217.nc
-./Sentinel1_IV_maps/IV_20190205_20190301.nc
-./Sentinel1_IV_maps/IV_20190217_20190313.nc
-./Sentinel1_IV_maps/IV_20190301_20190325.nc
-./Sentinel1_IV_maps/IV_20190313_20190406.nc
-./Sentinel1_IV_maps/IV_20190325_20190417.nc
-./Sentinel1_IV_maps/IV_20190406_20190430.nc
-./Sentinel1_IV_maps/IV_20190418_20190512.nc
-./Sentinel1_IV_maps/IV_20190430_20190524.nc
-./Sentinel1_IV_maps/IV_20190512_20190605.nc
-./Sentinel1_IV_maps/IV_20190524_20190617.nc
-./Sentinel1_IV_maps/IV_20190605_20190629.nc
-./Sentinel1_IV_maps/IV_20190617_20190711.nc
-./Sentinel1_IV_maps/IV_20190629_20190723.nc
-./Sentinel1_IV_maps/IV_20190711_20190804.nc
-./Sentinel1_IV_maps/IV_20190723_20190816.nc
-./Sentinel1_IV_maps/IV_20190804_20190828.nc
-./Sentinel1_IV_maps/IV_20190816_20190909.nc
-./Sentinel1_IV_maps/IV_20190828_20190921.nc
-./Sentinel1_IV_maps/IV_20190909_20191003.nc
-./Sentinel1_IV_maps/IV_20190921_20191015.nc
-./Sentinel1_IV_maps/IV_20191003_20191027.nc
-./Sentinel1_IV_maps/IV_20191015_20191108.nc
-./Sentinel1_IV_maps/IV_20191027_20191120.nc
-./Sentinel1_IV_maps/IV_20191108_20191202.nc
-./Sentinel1_IV_maps/IV_20191120_20191214.nc
-./Sentinel1_IV_maps/IV_20191202_20191226.nc
-./Sentinel1_IV_maps/IV_20191214_20200107.nc
-./Sentinel1_IV_maps/IV_20191226_20200119.nc
-./Sentinel1_IV_maps/IV_20200107_20200131.nc
-./Sentinel1_IV_maps/IV_20200119_20200212.nc
-./Sentinel1_IV_maps/IV_20200131_20200224.nc
-./Sentinel1_IV_maps/IV_20200212_20200307.nc
-./Sentinel1_IV_maps/IV_20200224_20200319.nc
-./Sentinel1_IV_maps/IV_20200307_20200331.nc
-./Sentinel1_IV_maps/IV_20200319_20200412.nc
-./Sentinel1_IV_maps/IV_20200331_20200424.nc
-./Sentinel1_IV_maps/IV_20200412_20200506.nc
-./Sentinel1_IV_maps/IV_20200424_20200518.nc
-./Sentinel1_IV_maps/IV_20200506_20200530.nc
-./Sentinel1_IV_maps/IV_20200518_20200611.nc
-./Sentinel1_IV_maps/IV_20200530_20200623.nc
-./Sentinel1_IV_maps/IV_20200611_20200705.nc
-./Sentinel1_IV_maps/IV_20200623_20200717.nc
-./Sentinel1_IV_maps/IV_20200705_20200729.nc
-./Sentinel1_IV_maps/IV_20200717_20200810.nc
-./Sentinel1_IV_maps/IV_20200729_20200822.nc
-./Sentinel1_IV_maps/IV_20200810_20200903.nc
-./Sentinel1_IV_maps/IV_20200822_20200915.nc
-./Sentinel1_IV_maps/IV_20200903_20200927.nc
-./Sentinel1_IV_maps/IV_20200915_20201009.nc
-./Sentinel1_IV_maps/IV_20200927_20201021.nc
-./Sentinel1_IV_maps/IV_20201009_20201102.nc
-./Sentinel1_IV_maps/IV_20201021_20201114.nc
-./Sentinel1_IV_maps/IV_20201102_20201126.nc
-./Sentinel1_IV_maps/IV_20201114_20201208.nc
-./Sentinel1_IV_maps/IV_20201126_20201220.nc
-./Sentinel1_IV_maps/IV_20201208_20210101.nc
-./Sentinel1_IV_maps/IV_20201220_20210113.nc
-./Sentinel1_IV_maps/IV_20210101_20210125.nc
-./Sentinel1_IV_maps/IV_20210113_20210206.nc
-./Sentinel1_IV_maps/IV_20210125_20210218.nc
-./Sentinel1_IV_maps/IV_20210206_20210302.nc
-./Sentinel1_IV_maps/IV_20210218_20210314.nc
-./Sentinel1_IV_maps/IV_20210302_20210326.nc
-./Sentinel1_IV_maps/IV_20210314_20210407.nc
-./Sentinel1_IV_maps/IV_20210326_20210419.nc
-./Sentinel1_IV_maps/IV_20210407_20210427.nc
-./Sentinel1_IV_maps/IV_20210407_20210501.nc
-./Sentinel1_IV_maps/IV_20210419_20210512.nc
-./Sentinel1_IV_maps/IV_20210419_20210513.nc
-./Sentinel1_IV_maps/IV_20210506_20210525.nc
-./Sentinel1_IV_maps/IV_20210513_20210606.nc
-./Sentinel1_IV_maps/IV_20210525_20210618.nc
-./Sentinel1_IV_maps/IV_20210606_20210630.nc
-./Sentinel1_IV_maps/IV_20210618_20210712.nc
-./Sentinel1_IV_maps/IV_20210630_20210724.nc
-./Sentinel1_IV_maps/IV_20210712_20210805.nc
-./Sentinel1_IV_maps/IV_20210724_20210817.nc
-./Sentinel1_IV_maps/IV_20210805_20210829.nc
-./Sentinel1_IV_maps/IV_20210817_20210910.nc
-./Sentinel1_IV_maps/IV_20210829_20210922.nc
-./Sentinel1_IV_maps/IV_20210910_20211004.nc
-./Sentinel1_IV_maps/IV_20210922_20211016.nc
-./Sentinel1_IV_maps/IV_20211004_20211028.nc
-./Sentinel1_IV_maps/IV_20211016_20211109.nc
-./Sentinel1_IV_maps/IV_20211028_20211121.nc
-./Sentinel1_IV_maps/IV_20211109_20211203.nc
-./Sentinel1_IV_maps/IV_20211121_20211215.nc
-./Sentinel1_IV_maps/IV_20211203_20211227.nc
-./Sentinel1_IV_maps/IV_20211215_20220108.nc
-./Sentinel1_IV_maps/IV_20211228_20220120.nc
-./Sentinel1_IV_maps/IV_20220109_20220201.nc
-./Sentinel1_IV_maps/IV_20220121_20220213.nc
-./Sentinel1_IV_maps/IV_20220201_20220225.nc
-./Sentinel1_IV_maps/IV_20220213_20220309.nc
-./Sentinel1_IV_maps/IV_20220225_20220321.nc
-./Sentinel1_IV_maps/IV_20220309_20220402.nc
-./Sentinel1_IV_maps/IV_20220322_20220414.nc
-./Sentinel1_IV_maps/IV_20220403_20220426.nc
-./Sentinel1_IV_maps/IV_20220415_20220508.nc
-./Sentinel1_IV_maps/IV_20220427_20220520.nc
-./Sentinel1_IV_maps/IV_20220509_20220601.nc
-./Sentinel1_IV_maps/IV_20220521_20220613.nc
-./Sentinel1_IV_maps/IV_20220602_20220625.nc
-./Sentinel1_IV_maps/IV_20220614_20220707.nc
-./Sentinel1_IV_maps/IV_20220626_20220719.nc
-./Sentinel1_IV_maps/IV_20220708_20220731.nc
-./Sentinel1_IV_maps/IV_20220720_20220812.nc
-./Sentinel1_IV_maps/IV_20220801_20220824.nc
-./Sentinel1_IV_maps/IV_20220813_20220905.nc
-./Sentinel1_IV_maps/IV_20220825_20220917.nc
-./Sentinel1_IV_maps/IV_20220906_20220929.nc
-./Sentinel1_IV_maps/IV_20220918_20221011.nc
-./Sentinel1_IV_maps/IV_20220930_20221023.nc
-./Sentinel1_IV_maps/IV_20221012_20221104.nc
-./Sentinel1_IV_maps/IV_20221024_20221116.nc
-./Sentinel1_IV_maps/IV_20221105_20221128.nc
-./Sentinel1_IV_maps/IV_20221117_20221210.nc
-./Sentinel1_IV_maps/IV_20221129_20221222.nc
-./Sentinel1_IV_maps/IV_20221211_20230103.nc
-./Sentinel1_IV_maps/IV_20221223_20230115.nc
-./Sentinel1_IV_maps/IV_20230104_20230127.nc
-./Sentinel1_IV_maps/IV_20230115_20230208.nc
-./Sentinel1_IV_maps/IV_20230128_20230220.nc
-./Sentinel1_IV_maps/IV_20230208_20230304.nc
-./Sentinel1_IV_maps/IV_20230220_20230316.nc
-./Sentinel1_IV_maps/IV_20230304_20230328.nc
-./Sentinel1_IV_maps/IV_20230318_20230409.nc
-./Sentinel1_IV_maps/IV_20230330_20230421.nc
-./Sentinel1_IV_maps/IV_20230410_20230503.nc
-./Sentinel1_IV_maps/IV_20230422_20230515.nc
-./Sentinel1_IV_maps/IV_20230504_20230527.nc
-./Sentinel1_IV_maps/IV_20230516_20230608.nc
-./Sentinel1_IV_maps/IV_20230528_20230620.nc
-./Sentinel1_IV_maps/IV_20230609_20230702.nc
-./Sentinel1_IV_maps/IV_20230621_20230714.nc
-./Sentinel1_IV_maps/IV_20230703_20230726.nc
-./Sentinel1_IV_maps/IV_20230715_20230807.nc
-./Sentinel1_IV_maps/IV_20230727_20230819.nc
-./Sentinel1_IV_maps/IV_20230808_20230831.nc
+./IV_ROTR_20160105_20160128.nc
+./IV_ROTR_20160117_20160209.nc
+./IV_ROTR_20160128_20160221.nc
+./IV_ROTR_20160210_20160304.nc
+./IV_ROTR_20160222_20160316.nc
+./IV_ROTR_20160304_20160328.nc
+./IV_ROTR_20160317_20160409.nc
+./IV_ROTR_20160329_20160421.nc
+./IV_ROTR_20160410_20160503.nc
+./IV_ROTR_20160422_20160515.nc
+./IV_ROTR_20160504_20160527.nc
+./IV_ROTR_20160516_20160608.nc
+./IV_ROTR_20160528_20160614.nc
+./IV_ROTR_20160624_20160713.nc
+./IV_ROTR_20160703_20160726.nc
+./IV_ROTR_20160716_20160807.nc
+./IV_ROTR_20160728_20160819.nc
+./IV_ROTR_20160808_20160831.nc
+./IV_ROTR_20160820_20160912.nc
+./IV_ROTR_20160901_20160924.nc
+./IV_ROTR_20160913_20161006.nc
+./IV_ROTR_20160925_20161018.nc
+./IV_ROTR_20161006_20161030.nc
+./IV_ROTR_20161018_20161111.nc
+./IV_ROTR_20161030_20161123.nc
+./IV_ROTR_20161111_20161205.nc
+./IV_ROTR_20161123_20161217.nc
+./IV_ROTR_20161205_20161229.nc
+./IV_ROTR_20161217_20170110.nc
+./IV_ROTR_20161229_20170111.nc
+./IV_ROTR_20170110_20170203.nc
+./IV_ROTR_20170112_20170215.nc
+./IV_ROTR_20170122_20170227.nc
+./IV_ROTR_20170215_20170311.nc
+./IV_ROTR_20170227_20170323.nc
+./IV_ROTR_20170311_20170404.nc
+./IV_ROTR_20170323_20170416.nc
+./IV_ROTR_20170404_20170428.nc
+./IV_ROTR_20170416_20170509.nc
+./IV_ROTR_20170428_20170522.nc
+./IV_ROTR_20170510_20170603.nc
+./IV_ROTR_20170522_20170615.nc
+./IV_ROTR_20170603_20170627.nc
+./IV_ROTR_20170615_20170709.nc
+./IV_ROTR_20170627_20170721.nc
+./IV_ROTR_20170709_20170802.nc
+./IV_ROTR_20170721_20170814.nc
+./IV_ROTR_20170802_20170826.nc
+./IV_ROTR_20170814_20170907.nc
+./IV_ROTR_20170828_20170919.nc
+./IV_ROTR_20170907_20171001.nc
+./IV_ROTR_20170919_20171013.nc
+./IV_ROTR_20171001_20171025.nc
+./IV_ROTR_20171013_20171106.nc
+./IV_ROTR_20171025_20171118.nc
+./IV_ROTR_20171106_20171130.nc
+./IV_ROTR_20171118_20171212.nc
+./IV_ROTR_20181231_20190124.nc
+./IV_ROTR_20190112_20190205.nc
+./IV_ROTR_20190124_20190217.nc
+./IV_ROTR_20190205_20190301.nc
+./IV_ROTR_20190217_20190313.nc
+./IV_ROTR_20190301_20190325.nc
+./IV_ROTR_20190313_20190406.nc
+./IV_ROTR_20190325_20190417.nc
+./IV_ROTR_20190406_20190430.nc
+./IV_ROTR_20190418_20190512.nc
+./IV_ROTR_20190430_20190524.nc
+./IV_ROTR_20190512_20190605.nc
+./IV_ROTR_20190524_20190617.nc
+./IV_ROTR_20190605_20190629.nc
+./IV_ROTR_20190617_20190711.nc
+./IV_ROTR_20190629_20190723.nc
+./IV_ROTR_20190711_20190804.nc
+./IV_ROTR_20190723_20190816.nc
+./IV_ROTR_20190804_20190828.nc
+./IV_ROTR_20190816_20190909.nc
+./IV_ROTR_20190828_20190921.nc
+./IV_ROTR_20190909_20191003.nc
+./IV_ROTR_20190921_20191015.nc
+./IV_ROTR_20191003_20191027.nc
+./IV_ROTR_20191015_20191108.nc
+./IV_ROTR_20191027_20191120.nc
+./IV_ROTR_20191108_20191202.nc
+./IV_ROTR_20191120_20191214.nc
+./IV_ROTR_20191202_20191226.nc
+./IV_ROTR_20191214_20200107.nc
+./IV_ROTR_20191226_20200119.nc
+./IV_ROTR_20200107_20200131.nc
+./IV_ROTR_20200119_20200212.nc
+./IV_ROTR_20200131_20200224.nc
+./IV_ROTR_20200212_20200307.nc
+./IV_ROTR_20200224_20200319.nc
+./IV_ROTR_20200307_20200331.nc
+./IV_ROTR_20200319_20200412.nc
+./IV_ROTR_20200331_20200424.nc
+./IV_ROTR_20200412_20200506.nc
+./IV_ROTR_20200424_20200518.nc
+./IV_ROTR_20200506_20200530.nc
+./IV_ROTR_20200518_20200611.nc
+./IV_ROTR_20200530_20200623.nc
+./IV_ROTR_20200611_20200705.nc
+./IV_ROTR_20200623_20200717.nc
+./IV_ROTR_20200705_20200729.nc
+./IV_ROTR_20200717_20200810.nc
+./IV_ROTR_20200729_20200822.nc
+./IV_ROTR_20200810_20200903.nc
+./IV_ROTR_20200822_20200915.nc
+./IV_ROTR_20200903_20200927.nc
+./IV_ROTR_20200915_20201009.nc
+./IV_ROTR_20200927_20201021.nc
+./IV_ROTR_20201009_20201102.nc
+./IV_ROTR_20201021_20201114.nc
+./IV_ROTR_20201102_20201126.nc
+./IV_ROTR_20201114_20201208.nc
+./IV_ROTR_20201126_20201220.nc
+./IV_ROTR_20201208_20210101.nc
+./IV_ROTR_20201220_20210113.nc
+./IV_ROTR_20210101_20210125.nc
+./IV_ROTR_20210113_20210206.nc
+./IV_ROTR_20210125_20210218.nc
+./IV_ROTR_20210206_20210302.nc
+./IV_ROTR_20210218_20210314.nc
+./IV_ROTR_20210302_20210326.nc
+./IV_ROTR_20210314_20210407.nc
+./IV_ROTR_20210326_20210419.nc
+./IV_ROTR_20210407_20210427.nc
+./IV_ROTR_20210419_20210513.nc
+./IV_ROTR_20210506_20210525.nc
+./IV_ROTR_20210513_20210606.nc
+./IV_ROTR_20210525_20210618.nc
+./IV_ROTR_20210606_20210630.nc
+./IV_ROTR_20210618_20210712.nc
+./IV_ROTR_20210630_20210724.nc
+./IV_ROTR_20210712_20210805.nc
+./IV_ROTR_20210724_20210817.nc
+./IV_ROTR_20210805_20210829.nc
+./IV_ROTR_20210817_20210910.nc
+./IV_ROTR_20210829_20210922.nc
+./IV_ROTR_20210910_20211004.nc
+./IV_ROTR_20210922_20211016.nc
+./IV_ROTR_20211004_20211028.nc
+./IV_ROTR_20211016_20211109.nc
+./IV_ROTR_20211028_20211121.nc
+./IV_ROTR_20211109_20211203.nc
+./IV_ROTR_20211121_20211215.nc
+./IV_ROTR_20211203_20211227.nc
+./IV_ROTR_20211215_20220108.nc
+./IV_ROTR_20211228_20220120.nc
+./IV_ROTR_20220109_20220201.nc
+./IV_ROTR_20220121_20220213.nc
+./IV_ROTR_20220201_20220225.nc
+./IV_ROTR_20220213_20220309.nc
+./IV_ROTR_20220225_20220321.nc
+./IV_ROTR_20220309_20220402.nc
+./IV_ROTR_20220322_20220414.nc
+./IV_ROTR_20220403_20220426.nc
+./IV_ROTR_20220415_20220508.nc
+./IV_ROTR_20220427_20220520.nc
+./IV_ROTR_20220509_20220601.nc
+./IV_ROTR_20220521_20220613.nc
+./IV_ROTR_20220602_20220625.nc
+./IV_ROTR_20220614_20220707.nc
+./IV_ROTR_20220626_20220719.nc
+./IV_ROTR_20220708_20220731.nc
+./IV_ROTR_20220720_20220812.nc
+./IV_ROTR_20220801_20220824.nc
+./IV_ROTR_20220813_20220905.nc
+./IV_ROTR_20220825_20220917.nc
+./IV_ROTR_20220906_20220929.nc
+./IV_ROTR_20220918_20221011.nc
+./IV_ROTR_20220930_20221023.nc
+./IV_ROTR_20221012_20221104.nc
+./IV_ROTR_20221024_20221116.nc
+./IV_ROTR_20221105_20221128.nc
+./IV_ROTR_20221117_20221210.nc
+./IV_ROTR_20221129_20221222.nc
+./IV_ROTR_20221211_20230103.nc
+./IV_ROTR_20221223_20230115.nc
+./IV_ROTR_20230104_20230127.nc
+./IV_ROTR_20230115_20230208.nc
+./IV_ROTR_20230128_20230220.nc
+./IV_ROTR_20230208_20230304.nc
+./IV_ROTR_20230220_20230316.nc
+./IV_ROTR_20230304_20230328.nc
+./IV_ROTR_20230318_20230409.nc
+./IV_ROTR_20230330_20230421.nc
+./IV_ROTR_20230410_20230503.nc
+./IV_ROTR_20230422_20230515.nc
+./IV_ROTR_20230504_20230527.nc
+./IV_ROTR_20230516_20230608.nc
+./IV_ROTR_20230528_20230620.nc
+./IV_ROTR_20230609_20230702.nc
+./IV_ROTR_20230621_20230714.nc
+./IV_ROTR_20230703_20230726.nc
+./IV_ROTR_20230715_20230807.nc
+./IV_ROTR_20230727_20230819.nc
+./IV_ROTR_20230808_20230831.nc
+./IV_ROTR_20230820_20230912.nc
+./IV_ROTR_20230901_20230924.nc
+./IV_ROTR_20230913_20231006.nc
+./IV_ROTR_20231112_20231205.nc
+./IV_ROTR_20231124_20231217.nc
+./IV_ROTR_20231206_20231229.nc
+./IV_ROTR_20231219_20240110.nc
+./IV_ROTR_20231231_20240122.nc
+./IV_ROTR_20240110_20240203.nc
+./IV_ROTR_20240122_20240215.nc
+./IV_ROTR_20240203_20240227.nc
+./IV_ROTR_20240216_20240310.nc
+./IV_ROTR_20240227_20240322.nc
+./IV_ROTR_20240312_20240403.nc
+./IV_ROTR_20240323_20240415.nc
+./IV_ROTR_20240404_20240427.nc
 #+end_example
 
 ***** File Metadata
 
 #+NAME: QC_ncdump_Sentinel1
 #+BEGIN_SRC bash :results verbatim :eval no-export
-somefile=$(find ${DATADIR}/Sentinel1 -name "*.nc" | LC_ALL=C sort | head -n1)
+somefile=$(find ${DATADIR}/Promice200m/ -name "*.nc" | LC_ALL=C sort | head -n1)
 # md5sum ${somefile}
 echo ""
 ncdump -chs ${somefile}
@@ -7183,10 +7153,10 @@ ncdump -chs ${somefile}
 #+RESULTS: QC_ncdump_Sentinel1
 #+begin_example
 
-netcdf IV_20160105_20160128 {
+netcdf IV_ROTR_20160105_20160128 {
 dimensions:
-	y = 5400 ;
-	x = 3000 ;
+	y = 13500 ;
+	x = 7500 ;
 	time = UNLIMITED ; // (1 currently)
 	bnds = 2 ;
 variables:
@@ -7217,9 +7187,9 @@ variables:
 		x:_Endianness = "little" ;
 	double time(time) ;
 		time:standard_name = "time" ;
+		time:units = "days since 1990-1-1 0:0:0" ;
 		time:long_name = "Midpoint time of acquisitons used" ;
 		time:bounds = "time_bnds" ;
-		time:units = "days since 1990-1-1 0:0:0" ;
 		time:calendar = "standard" ;
 		time:_Storage = "chunked" ;
 		time:_ChunkSizes = 512 ;
@@ -7237,12 +7207,12 @@ variables:
 		land_ice_surface_easting_velocity:coordinates = "time y x" ;
 		land_ice_surface_easting_velocity:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
 		land_ice_surface_easting_velocity:missing_value = 1.e+20f ;
-		land_ice_surface_easting_velocity:standard_name = "land_ice_surface_x_velocity" ;
 		land_ice_surface_easting_velocity:long_name = "easting ice velocity" ;
+		land_ice_surface_easting_velocity:standard_name = "land_ice_surface_x_velocity" ;
 		land_ice_surface_easting_velocity:_Storage = "chunked" ;
 		land_ice_surface_easting_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_easting_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_easting_velocity:_Shuffle = "true" ;
+		land_ice_surface_easting_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_easting_velocity:_Endianness = "little" ;
 	float land_ice_surface_northing_velocity(time, y, x) ;
 		land_ice_surface_northing_velocity:_FillValue = 1.e+20f ;
@@ -7252,16 +7222,17 @@ variables:
 		land_ice_surface_northing_velocity:coordinates = "time y x" ;
 		land_ice_surface_northing_velocity:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
 		land_ice_surface_northing_velocity:missing_value = 1.e+20f ;
-		land_ice_surface_northing_velocity:standard_name = "land_ice_surface_y_velocity" ;
 		land_ice_surface_northing_velocity:long_name = "northing ice velocity" ;
+		land_ice_surface_northing_velocity:standard_name = "land_ice_surface_y_velocity" ;
 		land_ice_surface_northing_velocity:_Storage = "chunked" ;
 		land_ice_surface_northing_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_northing_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_northing_velocity:_Shuffle = "true" ;
+		land_ice_surface_northing_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_northing_velocity:_Endianness = "little" ;
 	float land_ice_surface_vertical_velocity(time, y, x) ;
 		land_ice_surface_vertical_velocity:_FillValue = 1.e+20f ;
 		land_ice_surface_vertical_velocity:units = "m/day" ;
+		land_ice_surface_vertical_velocity:standard_name = "land_ice_surface_vertical_velocity" ;
 		land_ice_surface_vertical_velocity:grid_mapping = "crs" ;
 		land_ice_surface_vertical_velocity:coordinates = "time y x" ;
 		land_ice_surface_vertical_velocity:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
@@ -7270,13 +7241,14 @@ variables:
 		land_ice_surface_vertical_velocity:long_name = "vertical velocity derived assuming surface parallel flow" ;
 		land_ice_surface_vertical_velocity:_Storage = "chunked" ;
 		land_ice_surface_vertical_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_vertical_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_vertical_velocity:_Shuffle = "true" ;
+		land_ice_surface_vertical_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_vertical_velocity:_Endianness = "little" ;
 	float land_ice_surface_velocity_magnitude(time, y, x) ;
 		land_ice_surface_velocity_magnitude:_FillValue = 1.e+20f ;
 		land_ice_surface_velocity_magnitude:units = "m/day" ;
 		land_ice_surface_velocity_magnitude:description = "magnitude of horizontal ice velocity" ;
+		land_ice_surface_velocity_magnitude:standard_name = "land_ice_surface_velocity_magnitude" ;
 		land_ice_surface_velocity_magnitude:grid_mapping = "crs" ;
 		land_ice_surface_velocity_magnitude:coordinates = "time y x" ;
 		land_ice_surface_velocity_magnitude:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
@@ -7284,8 +7256,8 @@ variables:
 		land_ice_surface_velocity_magnitude:long_name = "magnitude of horizontal ice velocity" ;
 		land_ice_surface_velocity_magnitude:_Storage = "chunked" ;
 		land_ice_surface_velocity_magnitude:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_velocity_magnitude:_DeflateLevel = 4 ;
 		land_ice_surface_velocity_magnitude:_Shuffle = "true" ;
+		land_ice_surface_velocity_magnitude:_DeflateLevel = 4 ;
 		land_ice_surface_velocity_magnitude:_Endianness = "little" ;
 	float land_ice_surface_easting_velocity_std(time, y, x) ;
 		land_ice_surface_easting_velocity_std:_FillValue = 1.e+20f ;
@@ -7295,12 +7267,12 @@ variables:
 		land_ice_surface_easting_velocity_std:coordinates = "time y x" ;
 		land_ice_surface_easting_velocity_std:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
 		land_ice_surface_easting_velocity_std:missing_value = 1.e+20f ;
-		land_ice_surface_easting_velocity_std:standard_name = "land_ice_surface_x_velocity standard_error" ;
 		land_ice_surface_easting_velocity_std:long_name = "easting ice velocity error estimate " ;
+		land_ice_surface_easting_velocity_std:standard_name = "land_ice_surface_x_velocity standard_error" ;
 		land_ice_surface_easting_velocity_std:_Storage = "chunked" ;
 		land_ice_surface_easting_velocity_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_easting_velocity_std:_DeflateLevel = 4 ;
 		land_ice_surface_easting_velocity_std:_Shuffle = "true" ;
+		land_ice_surface_easting_velocity_std:_DeflateLevel = 4 ;
 		land_ice_surface_easting_velocity_std:_Endianness = "little" ;
 	float land_ice_surface_northing_velocity_std(time, y, x) ;
 		land_ice_surface_northing_velocity_std:_FillValue = 1.e+20f ;
@@ -7310,17 +7282,18 @@ variables:
 		land_ice_surface_northing_velocity_std:coordinates = "time y x" ;
 		land_ice_surface_northing_velocity_std:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
 		land_ice_surface_northing_velocity_std:missing_value = 1.e+20f ;
-		land_ice_surface_northing_velocity_std:standard_name = "land_ice_surface_y_velocity standard_error" ;
 		land_ice_surface_northing_velocity_std:long_name = "northing ice velocity error estimate" ;
+		land_ice_surface_northing_velocity_std:standard_name = "land_ice_surface_y_velocity standard_error" ;
 		land_ice_surface_northing_velocity_std:_Storage = "chunked" ;
 		land_ice_surface_northing_velocity_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_northing_velocity_std:_DeflateLevel = 4 ;
 		land_ice_surface_northing_velocity_std:_Shuffle = "true" ;
+		land_ice_surface_northing_velocity_std:_DeflateLevel = 4 ;
 		land_ice_surface_northing_velocity_std:_Endianness = "little" ;
 	float land_ice_surface_velocity_magnitude_std(time, y, x) ;
 		land_ice_surface_velocity_magnitude_std:_FillValue = 1.e+20f ;
 		land_ice_surface_velocity_magnitude_std:units = "m/day" ;
 		land_ice_surface_velocity_magnitude_std:description = "horizontal ice velocity error magnitude estimate" ;
+		land_ice_surface_velocity_magnitude_std:standard_name = "land_ice_surface_velocity_magnitude_std" ;
 		land_ice_surface_velocity_magnitude_std:grid_mapping = "crs" ;
 		land_ice_surface_velocity_magnitude_std:coordinates = "time y x" ;
 		land_ice_surface_velocity_magnitude_std:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
@@ -7328,25 +7301,21 @@ variables:
 		land_ice_surface_velocity_magnitude_std:long_name = "horizontal ice velocity error magnitude estimate" ;
 		land_ice_surface_velocity_magnitude_std:_Storage = "chunked" ;
 		land_ice_surface_velocity_magnitude_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_velocity_magnitude_std:_DeflateLevel = 4 ;
 		land_ice_surface_velocity_magnitude_std:_Shuffle = "true" ;
+		land_ice_surface_velocity_magnitude_std:_DeflateLevel = 4 ;
 		land_ice_surface_velocity_magnitude_std:_Endianness = "little" ;
 
 // global attributes:
-		:date_created = "2022-11-17" ;
-		:project = "PROMICE" ;
-		:tracking_id = "b72e9edf-ffc4-47f9-9ec7-d57c35f3f46f" ;
+		:Conventions = "CF-1.5" ;
 		:time_coverage_start = "2016-01-05" ;
 		:time_coverage_end = "2016-01-28" ;
 		:sensors_used = "Sentinel-1A" ;
-		:velocity_projection_method = "Surface Parallel Flow" ;
-		:Conventions = "CF-1.5" ;
-		:product_version = "1.0" ;
-		:title = "Greenland Ice Velocity from 2016-01-05 to 2016-01-28" ;
 		:institution = "GEUS" ;
-		:summary = "Greenland Ice Velocity from Sentinel-1 offset tracking for the period 2016-01-05 to 2016-01-28" ;
 		:methods_used = "Offset-tracking" ;
 		:calibration_method = "None" ;
+		:title = "Greenland Ice Velocity from 2016-01-05 to 2016-01-28" ;
+		:summary = "Greenland Ice Velocity from Sentinel-1 offset tracking for the period 2016-01-05 to 2016-01-28" ;
+		:product_version = "1.0" ;
 		:_NCProperties = "version=2,netcdf=4.7.3,hdf5=1.10.4" ;
 		:_SuperblockVersion = 0 ;
 		:_IsNetcdf4 = 1 ;
@@ -7359,29 +7328,29 @@ variables:
 
 #+NAME: QC_md5sum_Sentinel1
 #+BEGIN_SRC bash :results table :eval no-export
-cd ${DATADIR}/Sentinel1
+cd ${DATADIR}/Promice200m/
 # awk 'NR % 5 == 0' input > output # print every 5th line
 # head -n2 # top two files
 find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order "md5sum {}"
 #+END_SRC
 
 #+RESULTS: QC_md5sum_Sentinel1
-| 145190eb640123335d0e364b60938a51 | ./Sentinel1_IV_maps/IV_20230208_20230304.nc |
-| d1b5003cfdbba0015b8b9c86b22496ec | ./Sentinel1_IV_maps/IV_20230220_20230316.nc |
-| 48c4ab1f41e8ba543d4213f40d1f2a3f | ./Sentinel1_IV_maps/IV_20230304_20230328.nc |
-| 710ac19f957d661c1cc99ffa68d72f0a | ./Sentinel1_IV_maps/IV_20230318_20230409.nc |
-| ef87a5721cc4071f01cecad1033dca7f | ./Sentinel1_IV_maps/IV_20230330_20230421.nc |
-| eb73aa3168b5ea4b1b031eb4fd1b102e | ./Sentinel1_IV_maps/IV_20230410_20230503.nc |
-| fc623759fd1d04e0c1c99845fdfcbbae | ./Sentinel1_IV_maps/IV_20230422_20230515.nc |
-| ec6ea1ea1089497f3a35bacd65bc05ab | ./Sentinel1_IV_maps/IV_20230504_20230527.nc |
-| 5e42a12ba2e30e1294474f806f206f38 | ./Sentinel1_IV_maps/IV_20230516_20230608.nc |
-| 23e364de5fac5667b076ab79e9e09cef | ./Sentinel1_IV_maps/IV_20230528_20230620.nc |
-| 2ee1f199a75c9f5d13144dd2508a0777 | ./Sentinel1_IV_maps/IV_20230609_20230702.nc |
-| 101f51af2ca9dc0a40af823d3b88f439 | ./Sentinel1_IV_maps/IV_20230621_20230714.nc |
-| fff4bf73791d0af2f99d593b0b76a780 | ./Sentinel1_IV_maps/IV_20230703_20230726.nc |
-| e96c459bb9d23a4647b5a965b8af6baf | ./Sentinel1_IV_maps/IV_20230715_20230807.nc |
-| 81ff75b5cdbfc78934901143fb802d3e | ./Sentinel1_IV_maps/IV_20230727_20230819.nc |
-| 7b6d336643ff5d8c35cc1154d9d386a5 | ./Sentinel1_IV_maps/IV_20230808_20230831.nc |
+| 1d1820690bdb6b371d6122c1745ee9ec | ./IV_ROTR_20230820_20230912.nc |
+| 9ec88464222f9eeb58e59ea96d986f08 | ./IV_ROTR_20230901_20230924.nc |
+| 975d0f6e26307f3745fe25fbcd410abf | ./IV_ROTR_20230913_20231006.nc |
+| 0d46ad29011aab6ce6139a280d61c8c7 | ./IV_ROTR_20231112_20231205.nc |
+| 08c8ebb7577cd620cce69a2a1ada68a4 | ./IV_ROTR_20231124_20231217.nc |
+| e585ab8fc1c4b91818e154409d3b1462 | ./IV_ROTR_20231206_20231229.nc |
+| b782880c44727ff016634443466dcc1c | ./IV_ROTR_20231219_20240110.nc |
+| 04c9db07f804e7854ebe8192d3218916 | ./IV_ROTR_20231231_20240122.nc |
+| 391143d180be9f75707be545215a8b0e | ./IV_ROTR_20240110_20240203.nc |
+| 96476272ad489da1b308c77385f16a14 | ./IV_ROTR_20240122_20240215.nc |
+| 7ab22147d23e1475fe81cf799b8f8c79 | ./IV_ROTR_20240203_20240227.nc |
+| 2edf695e9cf100abe8509107eee56174 | ./IV_ROTR_20240216_20240310.nc |
+| 134968c7e1946c42270af6eab46f3c14 | ./IV_ROTR_20240227_20240322.nc |
+| db4d3ce7a49a410200efc6d3d9e545da | ./IV_ROTR_20240312_20240403.nc |
+| 08ef95e7312dc20b137f4f5d13b0ff0d | ./IV_ROTR_20240323_20240415.nc |
+| 9a9f2ff68ef0d6db242b813a19af3f99 | ./IV_ROTR_20240404_20240427.nc |
 
 ** Results
 *** GIS
