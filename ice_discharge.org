@@ -1624,34 +1624,36 @@ DIR=${DATADIR}/Promice200m/
 + Read in all the data                                                                                                                                                                                      
 + Conversion from [m day-1] to [m year-1] is done in section Just one velocity cutoff & buffer distance                                                                                                     
                                                                                                                                                                                                             
-#+NAME: promice_import                                                                                                                                                                                      
-#+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
-  MSG_OK "Promice 200m"                                                                                                                                                                                       
-  g.mapset -c promice                                                                                                                                                                                         
-  ROOT=${DATADIR}/Promice200m/                                                                                                                                                                                
-                                                                                                                                                                                                            
-  find ${ROOT} -name "*.nc"                                                                                                                                                                                   
-  # FILE=$(find ${ROOT} -name "*.nc"|head -n1) # testing                                                                                                                                                      
-                                                                                                                                                                                                            
-  FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG                                                                                                                                                        
-  for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do                                                                                                                                                
-    T=$(ncdump -t -v time ${FILE} | tail -n2 | tr -dc '[0-9\-]' | tr '-' '_')                                                                                                                                                     
-    DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)                                                                                                                                              
-    DATE_STR=$(echo ${DATE} | sed s/-/_/g)                                                                                                                                                                    
-    echo $DATE                                                                                                                                                                                                
-                                                                                                                                                                                                            
-    # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)                                                                                                                                                   
-    # T0=$(echo ${TT} | cut -d, -f1)                                                                                                                                                                          
-    # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])                                                                                                                                                           
-    # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)                                                                                                                                                   
-    # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)                                                                                                                                                   
-                                                                                                                                                                                                            
-    r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}                                                                                                             
-    r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}                                                                                                            
-                                                                                                                                                                                                            
-    r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}                                                                                                         
-    r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}                                                                                                        
-  done                                                                                                                                                                                                        
+#+NAME: promice_import 
+#+BEGIN_SRC bash :results verbatim
+MSG_OK "Promice 200m"
+g.mapset -c promice ROOT=${DATADIR}/Promice200m/                                                                                                                                                                                
+find ${ROOT} -name "*.nc"
+# FILE=$(find ${ROOT} -name "*.nc"|head -n1) #testing
+FILE=$(find ${ROOT} -name "*.nc" | head -n1) #DEBUG
+
+for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do
+    T=$(ncdump -t -v time ${FILE} | tail -n2 | tr -dc '[0-9\-]' | tr '-' '_' ))
+    T_cor=$(echo $T | sed 's/_/-/g')
+    DATE=$(date --utc --date="${T_cor}" --iso-8601)
+    DATE_STR=$(echo ${DATE} | sed s/-/_/g)
+    echo $DATE 
+    #T=$(ncdump -t -v time ${FILE} | tail -n2 | tr -dc '[0-9\-]' | tr '-' '_')
+    #DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)
+    #DATE_STR=$(echo ${DATE} | sed s/-/_/g)
+    #echo $DATE
+    
+    # TT=$(ncdump -v time_bnds $FILE | tail -n2 | head -n1)
+    # T0=$(echo ${TT} | cut -d, -f1)
+    # T1=$(echo ${TT} | cut -d, -f2 | tr -dc [0-9])
+    # D0=$(date --date="1990-01-01 +${T0} days" --iso-8601)
+    # D1=$(date --date="1990-01-01 +${T1} days" --iso-8601)
+    r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}
+    r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}
+    r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity_std" output=ex_${DATE_STR}
+    r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity_std" output=ey_${DATE_STR}
+done
+    
 #+END_SRC
 
 
@@ -2345,16 +2347,14 @@ parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(E
 #+END_SRC
 
 
-#+NAME: promice_effective_velocity                                                                                                                                                                          
-#+BEGIN_SRC bash :results verbatim                                                                                                                                                                          
-g.mapset promice                                                                                                                                                                                            
-g.region -d                                                                                                                                                                                                 
-                                                                                                                                                                                                            
-dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)                                                                                                                                          
-                                                                                                                                                                                                            
-parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}     
-                                                                                                                                                                                                            
-parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}     
+#+NAME: promice_effective_velocity
+#+BEGIN_SRC bash :results verbatim
+g.mapset promice
+g.region -d
+                                                                                                                                                                                                          
+dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-) 
+parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates} 
+parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}  
 #+END_SRC                                                                                                                                                                                                   
 
 
