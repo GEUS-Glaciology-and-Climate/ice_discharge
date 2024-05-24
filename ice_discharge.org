@@ -243,37 +243,6 @@ done
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-times  all:  3230
-times 19XX:  108
-times 20XX:  3122
-times 2000:  12
-times 2001:  9
-times 2002:  10
-times 2003:  9
-times 2004:  8
-times 2005:  9
-times 2006:  10
-times 2007:  9
-times 2008:  16
-times 2009:  118
-times 2010:  103
-times 2011:  116
-times 2012:  171
-times 2013:  189
-times 2014:  200
-times 2015:  256
-times 2016:  292
-times 2017:  290
-times 2018:  257
-times 2019:  254
-times 2020:  254
-times 2021:  244
-times 2022:  230
-times 2023:  56
-times 2024:  0
-times 2025:  0
-#+end_example
 
 This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3230=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
@@ -389,10 +358,6 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 #+END_SRC
 
 #+RESULTS:
-: pixels:  5865
-: gates:  267
-: sectors:  173
-: times:  3230
 
 Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5865=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
@@ -429,152 +394,6 @@ t[t.index.year > 2005]
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-#+begin_example
-Initial:
- D      451.333571
-err     42.192857
-Name: 1986-01-01 00:00:00, dtype: float64
-
-Minimum
- D      427.602500
-err     39.111375
-Name: 1995-01-01 00:00:00, dtype: float64
-
-Y2K
- D      436.74975
-err     39.26875
-Name: 2000-01-01 00:00:00, dtype: float64
-
-2005
- D      481.440667
-err     43.364889
-Name: 2005-01-01 00:00:00, dtype: float64
-#+end_example
-#+begin_export html
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>D</th>
-      <th>err</th>
-    </tr>
-    <tr>
-      <th>Date</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>2006-01-01</th>
-      <td>473.318000</td>
-      <td>42.879000</td>
-    </tr>
-    <tr>
-      <th>2007-01-01</th>
-      <td>467.606000</td>
-      <td>42.603667</td>
-    </tr>
-    <tr>
-      <th>2008-01-01</th>
-      <td>474.021800</td>
-      <td>43.371133</td>
-    </tr>
-    <tr>
-      <th>2009-01-01</th>
-      <td>477.455140</td>
-      <td>44.100123</td>
-    </tr>
-    <tr>
-      <th>2010-01-01</th>
-      <td>481.589118</td>
-      <td>44.351225</td>
-    </tr>
-    <tr>
-      <th>2011-01-01</th>
-      <td>487.247062</td>
-      <td>45.082894</td>
-    </tr>
-    <tr>
-      <th>2012-01-01</th>
-      <td>484.692217</td>
-      <td>45.045319</td>
-    </tr>
-    <tr>
-      <th>2013-01-01</th>
-      <td>493.267596</td>
-      <td>45.942585</td>
-    </tr>
-    <tr>
-      <th>2014-01-01</th>
-      <td>492.537368</td>
-      <td>46.075218</td>
-    </tr>
-    <tr>
-      <th>2015-01-01</th>
-      <td>494.864302</td>
-      <td>46.241978</td>
-    </tr>
-    <tr>
-      <th>2016-01-01</th>
-      <td>485.886684</td>
-      <td>45.526039</td>
-    </tr>
-    <tr>
-      <th>2017-01-01</th>
-      <td>497.332472</td>
-      <td>46.631374</td>
-    </tr>
-    <tr>
-      <th>2018-01-01</th>
-      <td>496.769102</td>
-      <td>46.685527</td>
-    </tr>
-    <tr>
-      <th>2019-01-01</th>
-      <td>502.399554</td>
-      <td>47.236974</td>
-    </tr>
-    <tr>
-      <th>2020-01-01</th>
-      <td>514.965330</td>
-      <td>48.298712</td>
-    </tr>
-    <tr>
-      <th>2021-01-01</th>
-      <td>518.639242</td>
-      <td>48.624907</td>
-    </tr>
-    <tr>
-      <th>2022-01-01</th>
-      <td>515.802703</td>
-      <td>48.269588</td>
-    </tr>
-    <tr>
-      <th>2023-01-01</th>
-      <td>502.132722</td>
-      <td>46.819222</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-#+end_export
-:END:
 
 
 Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 450 \(\pm\) 43 Gt in 1986, has a minimum of 419 \(\pm\) 39 Gt in 1996, and increases to 433 \(\pm\) 40 in 2000 and further to 488 \(\pm\) 45 Gt/yr in 2005, after which annual discharge remains approximately steady at 472 to 491 \(\pm\) ~45 Gt/yr during the 2005 through 2020 period.
@@ -600,51 +419,6 @@ print("\nSE max and last:", r['SE'].max(), '\n', r['SE'].iloc[-10:].describe())
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-SE range:  124.73322672211614 152.16356746480093 12.741238095760728 16.575369162978905
-SE %:  29.649568914720653
-NE,NO,NW %: 32.62058436148845
-
-NW increase
-: Date
-1999-01-01     91.620024
-2000-01-01     91.793270
-2001-01-01     90.213475
-2002-01-01     91.736174
-2003-01-01     94.356057
-2004-01-01     98.025738
-2005-01-01     98.776836
-2006-01-01     96.801529
-2007-01-01     96.880708
-2008-01-01     99.331709
-2009-01-01    101.805364
-2010-01-01    102.702630
-2011-01-01    106.417633
-2012-01-01    105.129677
-2013-01-01    109.163402
-2014-01-01    111.407470
-2015-01-01    111.005718
-2016-01-01    113.303207
-2017-01-01    116.022516
-2018-01-01    116.360810
-2019-01-01    111.306665
-2020-01-01    111.425655
-2021-01-01    113.225821
-2022-01-01    116.448423
-2023-01-01    115.689001
-Freq: AS-JAN, Name: NW, dtype: float64
-
-SE max and last: 152.16356746480093 
- count     10.000000
-mean     144.739725
-std        5.988034
-min      134.857358
-25%      141.057452
-50%      144.069866
-75%      150.266705
-max      152.163567
-Name: SE, dtype: float64
-#+end_example
 
 At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are responsible for 128 to 154 (\(\pm\) 13 %) Gt yr^{-1} of discharge (approximately one-third of ice-sheet-wide discharge) over the 1986 through 2019 period. By comparison, the predominantly land-terminating NO, NE, and SW together were also responsible for about one-third of total ice sheet discharge during this time (Fig. [[fig:discharge_ts_regions]]). The discharge from most regions has been approximately steady for the past decade. The NW region exhibited a persistent long-term increase in discharge -- from ~90 to 114 Gt yr^{-1} (27 % increase) over the 1999 through 2017 period, but has become more variable with declines and increases from 2017 through 2021. Increased variability also appears in the CW and CE regions beginning in 2016.
 
@@ -670,25 +444,6 @@ print(s.loc['2013-01-01':, 'JAKOBSHAVN_ISBRAE'])
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-2013-01-01 00:00:00
-52.287053607327515 4.8754132696099335
-2018-01-01 00:00:00
-36.2345921605291 4.8754132696099335
-Date
-2013-01-01    52.287054
-2014-01-01    50.616675
-2015-01-01    49.729753
-2016-01-01    46.700591
-2017-01-01    39.330943
-2018-01-01    36.234592
-2019-01-01    39.313432
-2020-01-01    42.554549
-2021-01-01    48.253045
-2022-01-01    42.241685
-2023-01-01    40.120191
-Freq: AS-JAN, Name: JAKOBSHAVN_ISBRAE, dtype: float64
-#+end_example
 
 Focusing on eight major contributors at the individual sector or glacier scale (Fig. [[fig:discharge_ts_topfew]]), Sermeq Kujalleq (Jakobshavn Isbræ) has slowed down from an annual average high of ~50 Gt yr^{-1} in 2013 to ~30 Gt yr^{-1} in 2018, likely due to ocean cooling citep:khazendar_2019_interruption, but in 2021 returned briefly to nearly 50 Gt yr^{-1}. The Sermeq Kujalleq increasing trend and regular annual cycle has become disrupted in ~2015 with large decreases and shifting of the normal summer velocity maximum. Helheim briefly contributed more to sea level rise than Jakobshavn Isbræ in 2019, but has returned to 2nd place in 2020 and 2021 as Jakobshavn Isbræ speeds back up (Fig. [[fig:discharge_ts_topfew]]). We exclude Ikertivaq from the top eight because that gate spans multiple sectors and outlets, while the other top dischargers are each a single outlet. 
 
@@ -885,14 +640,6 @@ for i in [1,2,10,18,100,176,267,5829]:
 #+END_SRC
 
 #+RESULTS:
-: 1 1.0 1.0 100.0
-: 2 2.0 1.4142135623730951 70.71
-: 10 10.0 3.1622776601683795 31.62
-: 18 18.0 4.242640687119285 23.57
-: 100 100.0 10.0 10.0
-: 176 176.0 13.2664991614216 7.54
-: 267 267.0 16.34013463836819 6.12
-: 5829 5829.0 76.34788798650555 1.31
 
 This reduction is unlikely to be physically meaningful. Our 173 sectors, 267 gates, and 5829 pixels means that, even if errors were 100 % for each, we could reduce it to 7.5, 6.1, or 1.3 % respectively. We note that the area error introduced by the common EPSG:3413 map projection is -5 % in the north and +8 % in the south. While this error is mentioned in some other works (e.g., citet:joughin_2018_greenland) it is often not explicitly mentioned.
 
@@ -925,7 +672,6 @@ df.round(0).astype(int)
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab:thick_adjust}.
 #+RESULTS: tab:thick_adjust
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 src_jupyter-python{vel.shape[0]} {{{results(=5863=)}}}
 src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5301=)}}}
@@ -979,53 +725,6 @@ df
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Effect of different thickness adjustments on baseline discharge\label{tab:thick_treatments}
 #+RESULTS: tab:thick_treatments
-#+begin_export html
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Discharge (Gt)</th>
-    </tr>
-    <tr>
-      <th>Treatment</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>NoAdj</th>
-      <td>463 \pm 41</td>
-    </tr>
-    <tr>
-      <th>300</th>
-      <td>467 \pm 43</td>
-    </tr>
-    <tr>
-      <th>400</th>
-      <td>473 \pm 46</td>
-    </tr>
-    <tr>
-      <th>Fit</th>
-      <td>470 \pm 45</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-#+end_export
 
 
 Finally, Figure [[fig:gate_map]] shows the geospatial locations, concentration, and speed of gates with and without bad pixels.
@@ -2527,7 +2226,6 @@ df_out
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 *** Results (Mouginot 2019 Sector)
 #+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
@@ -2565,7 +2263,6 @@ err_sector
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 *** Results (Mouginot 2019 Region)
 
@@ -2603,7 +2300,6 @@ err_region
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 *** Results (Gate)                                                 :noexport:
 #+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
@@ -2646,7 +2342,6 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 ** Raw data to discharge product
@@ -2664,7 +2359,6 @@ echo "also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc."
 #+END_SRC
 
 #+RESULTS:
-: bed@BedMachine	DEM_1995@DEM	DEM_1996@DEM	DEM_1997@DEM	DEM_1998@DEM	DEM_1999@DEM	DEM_2000@DEM	DEM_2001@DEM	DEM_2002@DEM	DEM_2003@DEM	DEM_2004@DEM	DEM_2005@DEM	DEM_2006@DEM	DEM_2007@DEM	DEM_2008@DEM	DEM_2009@DEM	DEM_2010@DEM	DEM_2011@DEM	DEM_2012@DEM	DEM_2013@DEM	DEM_2014@DEM	DEM_2015@DEM	DEM_2016@DEM	DEM_2017@DEM	DEM_2018@DEM	DEM_2019@DEM	DEM_2020@DEM	DEM_2021@DEM	DEM_2022@DEM	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_vel_buf	gates_x@gates_vel_buf	gates_y@gates_vel_buf	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness@Bamber_2013	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
 
 #+NAME: load_data
 #+BEGIN_SRC jupyter-python :exports none :results none
@@ -2874,7 +2568,6 @@ th.describe().T
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 #+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge :eval no-export
 D0 = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=0) * 917 / 1E12
@@ -2885,7 +2578,6 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Adjust thickness w thickness v. velocity fit.
@@ -2952,48 +2644,6 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 #+END_SRC
 
 #+RESULTS: adjust_thickness_fit
-#+begin_example
-                   300         fit      diff
-1985-12-31  393.810537  397.448020  3.637483
-1986-12-31  403.621790  407.143284  3.521494
-1987-12-31  404.365408  407.540752  3.175344
-1988-12-31  395.613192  398.371912  2.758720
-1989-12-31  399.864935  402.658843  2.793908
-1990-12-31  401.664134  405.084540  3.420406
-1991-12-31  400.462215  403.736095  3.273880
-1992-12-31  402.519731  405.770122  3.250392
-1993-12-31  403.423903  406.542109  3.118206
-1994-12-31  399.933315  402.914126  2.980811
-1995-12-31  389.067728  391.995398  2.927670
-1996-12-31  392.167165  395.031045  2.863880
-1997-12-31  391.297053  394.007069  2.710016
-1998-12-31  393.170860  395.913105  2.742245
-1999-12-31  398.630186  401.359739  2.729553
-2000-12-31  401.634050  404.374435  2.740385
-2001-12-31  397.664092  400.359660  2.695569
-2002-12-31  411.781589  414.561559  2.779970
-2003-12-31  426.282367  429.163926  2.881559
-2004-12-31  439.521487  442.449812  2.928325
-2005-12-31  451.184821  454.168586  2.983765
-2006-12-31  447.452914  450.423805  2.970891
-2007-12-31  442.788037  445.753816  2.965779
-2008-12-31  449.601460  452.588288  2.986828
-2009-12-31  455.659977  458.697265  3.037288
-2010-12-31  461.181847  464.301524  3.119676
-2011-12-31  468.530811  471.659178  3.128366
-2012-12-31  467.967179  471.201219  3.234040
-2013-12-31  477.413165  480.623358  3.210193
-2014-12-31  477.917362  481.074540  3.157178
-2015-12-31  481.916935  485.012330  3.095395
-2016-12-31  473.822767  476.881356  3.058589
-2017-12-31  485.067498  488.212923  3.145424
-2018-12-31  485.992336  489.154601  3.162265
-2019-12-31  493.257814  496.544119  3.286305
-2020-12-31  505.170590  508.516843  3.346252
-2021-12-31  510.813279  514.069424  3.256144
-2022-12-31  508.353288  511.518189  3.164901
-2023-12-31  495.140473  498.106154  2.965681
-#+end_example
 
 **** Table of thickness adjustments
 :PROPERTIES:
@@ -3005,7 +2655,6 @@ th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Baseline discharge values for various thickness adjustments
@@ -3040,15 +2689,6 @@ D_th.sum(axis=0)
 #+END_SRC
 
 #+RESULTS: discharge_th
-: NoAdj        462.883690
-: NoAdj_err     41.680738
-: 300          467.881433
-: 300_err       43.985599
-: 400          473.705747
-: 400_err       46.234386
-: fit          470.996240
-: fit_err       45.034132
-: dtype: float64
 
 **** Map of where thickness adjustments occur
 
@@ -3999,7 +3639,6 @@ out
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 **** Prep data
 
@@ -4377,51 +4016,6 @@ disp
 #+END_SRC
 
 #+RESULTS: fig:discharge_ts
-:RESULTS:
-#+begin_example
-               D        err
-Year                       
-1986         NaN        NaN
-1987  447.571965  40.731675
-1988  438.272793  39.562075
-1989         NaN        NaN
-1990  448.391882  41.448095
-1991         NaN        NaN
-1992         NaN        NaN
-1993         NaN        NaN
-1994  439.233822  40.221859
-1995         NaN        NaN
-1996         NaN        NaN
-1997         NaN        NaN
-1998  426.078395  38.710171
-1999         NaN        NaN
-2000  436.422819  39.234398
-2001  431.464416  38.624944
-2002  444.747109  39.908560
-2003  457.373584  41.151188
-2004  469.996108  42.460564
-2005  480.294016  43.264098
-2006  473.831618  42.907318
-2007  467.318725  42.565083
-2008  472.535644  43.198605
-2009  476.667893  44.003825
-2010  481.050419  44.338760
-2011  486.817935  45.086304
-2012  483.717250  44.916699
-2013  492.594149  45.866201
-2014  491.289392  45.932832
-2015  494.338556  46.210351
-2016  485.145596  45.459783
-2017  496.170200  46.518489
-2018  496.307744  46.639915
-2019  503.011919  47.335262
-2020  513.825813  48.205240
-2021  517.570056  48.528812
-2022  514.252681  48.109528
-2023  500.465456  46.675900
-#+end_example
-: <Figure size 648x360 with 2 Axes>
-:END:
 
 
 
@@ -4556,90 +4150,6 @@ tbl
 #+END_SRC
 
 #+RESULTS: fig:discharge_ts_regions
-:RESULTS:
-#+begin_example
-     CE (Err %) CW (Err %) NE (Err %) NO (Err %) NW (Err %) SE (Err %)  \
-1986     70 (9)     74 (8)     23 (8)    0 (NaN)    0 (NaN)    0 (NaN)   
-1987     70 (9)     71 (8)     23 (8)     24 (7)     95 (9)    0 (NaN)   
-1988     70 (9)     70 (8)     22 (8)     24 (7)    0 (NaN)    0 (NaN)   
-1989     73 (9)     71 (8)     22 (8)     24 (7)    0 (NaN)    0 (NaN)   
-1990    76 (10)     68 (8)     22 (8)     23 (7)    0 (NaN)    0 (NaN)   
-1991    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-1992    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-1993    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-1994    72 (10)     68 (8)     24 (9)     25 (7)     96 (8)    0 (NaN)   
-1995    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-1996    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-1997    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-1998     70 (9)     74 (8)     22 (8)     22 (7)     92 (9)   128 (10)   
-1999     70 (9)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)    0 (NaN)   
-2000     69 (9)     79 (8)     23 (8)    0 (NaN)     92 (9)   130 (10)   
-2001     70 (9)     80 (8)    0 (NaN)    0 (NaN)     91 (8)   125 (10)   
-2002     72 (9)     81 (8)    0 (NaN)    0 (NaN)     92 (9)   132 (10)   
-2003     75 (9)     83 (8)    0 (NaN)    0 (NaN)     94 (9)   138 (10)   
-2004     79 (9)     83 (8)    0 (NaN)    0 (NaN)     98 (9)   144 (10)   
-2005     85 (9)     83 (8)    0 (NaN)    0 (NaN)     99 (9)   145 (10)   
-2006     85 (9)     85 (8)     25 (8)    0 (NaN)     97 (9)   138 (10)   
-2007     81 (9)     85 (8)    0 (NaN)     26 (7)     97 (9)   135 (10)   
-2008     79 (9)     87 (8)    0 (NaN)    0 (NaN)     98 (9)   139 (10)   
-2009     78 (9)     89 (8)     24 (8)    0 (NaN)    101 (9)   142 (10)   
-2010     77 (9)     89 (8)    0 (NaN)    0 (NaN)    103 (9)   142 (10)   
-2011     79 (9)     89 (8)    0 (NaN)    0 (NaN)    106 (9)   142 (10)   
-2012     79 (9)     93 (9)     26 (8)     25 (7)    105 (9)   138 (10)   
-2013     79 (9)     95 (9)     26 (8)     25 (7)    109 (9)   140 (11)   
-2014     76 (9)     94 (9)     28 (8)     26 (7)    111 (9)   138 (11)   
-2015     76 (9)     93 (9)     28 (8)     26 (7)    111 (9)   140 (11)   
-2016     74 (9)     90 (8)     28 (8)     27 (7)    113 (9)   135 (11)   
-2017     79 (9)     82 (8)     29 (8)     27 (7)    116 (9)   144 (11)   
-2018     82 (9)     79 (8)     30 (9)     28 (8)    116 (9)   144 (11)   
-2019     83 (9)     80 (8)     30 (9)     28 (8)    112 (9)   150 (11)   
-2020     88 (9)     85 (8)     30 (9)     27 (8)    111 (9)   152 (11)   
-2021     86 (9)     90 (8)     31 (9)     27 (8)    113 (9)   151 (11)   
-2022     88 (9)     84 (9)     31 (9)     27 (7)    116 (9)   150 (11)   
-2023     85 (9)     82 (9)     30 (9)     27 (7)    115 (9)   142 (11)   
-
-     SW (Err %)  
-1986    0 (NaN)  
-1987    0 (NaN)  
-1988    0 (NaN)  
-1989    0 (NaN)  
-1990    0 (NaN)  
-1991    0 (NaN)  
-1992    0 (NaN)  
-1993    19 (10)  
-1994    0 (NaN)  
-1995    0 (NaN)  
-1996    0 (NaN)  
-1997    0 (NaN)  
-1998    0 (NaN)  
-1999    0 (NaN)  
-2000    19 (10)  
-2001    19 (10)  
-2002    19 (10)  
-2003    0 (NaN)  
-2004    0 (NaN)  
-2005    20 (10)  
-2006    20 (10)  
-2007    19 (10)  
-2008    18 (10)  
-2009    18 (10)  
-2010    17 (10)  
-2011    19 (10)  
-2012    19 (10)  
-2013    19 (10)  
-2014    19 (10)  
-2015    19 (10)  
-2016    18 (10)  
-2017    19 (10)  
-2018    18 (10)  
-2019    19 (10)  
-2020    19 (10)  
-2021    20 (10)  
-2022    19 (10)  
-2023    19 (10)  
-#+end_example
-: <Figure size 648x504 with 2 Axes>
-:END:
 
 *** Region & Catchment Contributions
 :PROPERTIES:
@@ -4670,8 +4180,6 @@ print(err.values)
 #+END_SRC
 
 #+RESULTS:
-: [481.82975469]
-: [44.45386272]
 
 
 
@@ -4694,13 +4202,6 @@ df
 #+END_SRC
 
 #+RESULTS:
-: Min:  D      427.319029
-: err     39.061874
-: Name: 1995-12-31 00:00:00, dtype: float64
-: Max:  D      427.319029
-: err     39.061874
-: Name: 1995-12-31 00:00:00, dtype: float64
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Contribution from SE
@@ -4721,29 +4222,6 @@ df
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-D SE described:
- count     38.000000
-mean     138.291279
-std        6.892419
-min      124.989006
-25%      132.422066
-50%      138.057842
-75%      143.363096
-max      152.195128
-Name: SE, dtype: float64
-
-D SE err percent: count    38.000000
-mean     10.397273
-std       0.243655
-min       9.990886
-25%      10.202179
-50%      10.329802
-75%      10.526437
-max      10.886265
-Name: SE, dtype: float64
-Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
-#+end_example
 
 **** Contribution from SE relative to the total
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
@@ -4763,58 +4241,6 @@ print(D_SE/D_rest*100)
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-count    38.000000
-mean     29.713065
-std       1.099440
-min      27.808566
-25%      29.031697
-50%      29.640930
-75%      30.371081
-max      32.596791
-dtype: float64
-
-Date
-1986-12-31    32.040417
-1987-12-31    32.596791
-1988-12-31    30.885145
-1989-12-31    29.090778
-1990-12-31    28.958664
-1991-12-31    29.502650
-1992-12-31    29.717096
-1993-12-31    29.794237
-1994-12-31    30.890164
-1995-12-31    31.683188
-1996-12-31    31.350933
-1997-12-31    31.073897
-1998-12-31    30.408797
-1999-12-31    30.458090
-2000-12-31    29.694343
-2001-12-31    29.012003
-2002-12-31    29.661837
-2003-12-31    30.102408
-2004-12-31    30.544283
-2005-12-31    30.257933
-2006-12-31    29.194009
-2007-12-31    28.983158
-2008-12-31    29.384475
-2009-12-31    29.753981
-2010-12-31    29.668176
-2011-12-31    29.161677
-2012-12-31    28.536150
-2013-12-31    28.330343
-2014-12-31    28.010865
-2015-12-31    28.382860
-2016-12-31    27.808566
-2017-12-31    29.108359
-2018-12-31    28.934484
-2019-12-31    29.819273
-2020-12-31    29.620024
-2021-12-31    29.107293
-2022-12-31    29.134331
-2023-12-31    28.434808
-Freq: A-DEC, dtype: float64
-#+end_example
 
 
 **** Contribution from others relative to the total
@@ -4843,56 +4269,6 @@ print("\nNW increase:", D['NW'])
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-
-NO+NE+NW: min    136.428939
-max    174.103273
-dtype: float64
-
-NO+NE+NW%: mean    32.58172
-dtype: float64
-
-NW increase: Date
-1986-12-31     96.645465
-1987-12-31     92.974927
-1988-12-31     95.109558
-1989-12-31    101.858613
-1990-12-31    104.692036
-1991-12-31    100.315951
-1992-12-31     98.081768
-1993-12-31     98.754362
-1994-12-31     96.692112
-1995-12-31     93.941137
-1996-12-31     92.816277
-1997-12-31     92.313659
-1998-12-31     92.488797
-1999-12-31     91.119894
-2000-12-31     91.680503
-2001-12-31     90.120946
-2002-12-31     91.902165
-2003-12-31     94.317583
-2004-12-31     97.661136
-2005-12-31     98.691659
-2006-12-31     96.866300
-2007-12-31     96.577331
-2008-12-31     98.545629
-2009-12-31    101.659798
-2010-12-31    102.365247
-2011-12-31    106.259923
-2012-12-31    105.166248
-2013-12-31    108.893707
-2014-12-31    111.026920
-2015-12-31    111.183305
-2016-12-31    113.011913
-2017-12-31    115.667132
-2018-12-31    116.099060
-2019-12-31    112.183245
-2020-12-31    111.312978
-2021-12-31    113.320830
-2022-12-31    116.252923
-2023-12-31    115.191811
-Freq: A-DEC, Name: NW, dtype: float64
-#+end_example
 
 **** Sermeq Kujalleq (Jakobshavn Isbræ)
 #+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
@@ -4912,19 +4288,6 @@ df
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-Jakobshavn described:
- count    38.000000
-mean     37.746250
-std       8.683167
-min      22.791587
-25%      28.544254
-50%      39.219407
-75%      44.484836
-max      52.157311
-Name: JAKOBSHAVN_ISBRAE, dtype: float64
-Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
-#+end_example
 
 *** Discharge Time Series - Sectors
 #+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export
@@ -5096,130 +4459,6 @@ tbl
 #+END_SRC
 
 #+RESULTS:
-:RESULTS:
-#+begin_example
-     JAKOBSHAVN_ISBRAE (%) HELHEIMGLETSCHER (%) KANGERLUSSUAQ (%)  \
-1986                 0 (0)               32 (6)            18 (5)   
-1987                 0 (0)               32 (6)            19 (5)   
-1988               27 (10)               29 (6)            19 (5)   
-1989               29 (10)               27 (6)            22 (4)   
-1990               27 (10)               27 (6)            22 (5)   
-1991                 0 (0)                0 (0)             0 (0)   
-1992                 0 (0)                0 (0)             0 (0)   
-1993                 0 (0)                0 (0)             0 (0)   
-1994                27 (9)                0 (0)            19 (5)   
-1995                 0 (0)                0 (0)             0 (0)   
-1996                 0 (0)                0 (0)             0 (0)   
-1997                 0 (0)                0 (0)             0 (0)   
-1998                32 (9)               23 (8)            21 (5)   
-1999                 0 (0)                0 (0)             0 (0)   
-2000                36 (9)               23 (8)            21 (5)   
-2001                38 (9)               23 (8)            22 (5)   
-2002                39 (9)               26 (8)            24 (5)   
-2003                41 (9)               28 (8)            26 (5)   
-2004                42 (9)               29 (8)            29 (5)   
-2005                43 (9)                0 (0)            35 (5)   
-2006                44 (9)               28 (8)            35 (5)   
-2007                44 (9)               27 (8)            31 (5)   
-2008                45 (9)               27 (8)            29 (5)   
-2009                46 (9)               28 (8)            27 (5)   
-2010                47 (9)               28 (8)            26 (5)   
-2011                47 (9)               27 (8)            28 (5)   
-2012                52 (9)               26 (8)            28 (5)   
-2013                52 (9)               26 (8)            28 (5)   
-2014                50 (9)               25 (8)            26 (5)   
-2015                49 (9)               28 (8)            25 (5)   
-2016                46 (9)               27 (8)            24 (5)   
-2017                39 (9)               31 (8)            26 (5)   
-2018                36 (9)               29 (8)            28 (5)   
-2019                39 (9)               32 (8)            28 (5)   
-2020                42 (9)               30 (8)            28 (5)   
-2021                48 (9)               30 (8)            27 (5)   
-2022                42 (9)               31 (8)            29 (5)   
-2023                40 (9)               30 (8)            27 (5)   
-
-     KOGE_BUGT_C (%) ZACHARIAE_ISSTROM (%) RINK_ISBRAE (%)  \
-1986          16 (6)                 0 (0)          13 (7)   
-1987          16 (6)                 9 (9)          12 (7)   
-1988           0 (0)                 9 (9)          12 (7)   
-1989           0 (0)                10 (9)          13 (7)   
-1990           0 (0)                10 (9)          12 (7)   
-1991           0 (0)                 0 (0)           0 (0)   
-1992           0 (0)                 0 (0)           0 (0)   
-1993           0 (0)                 0 (0)           0 (0)   
-1994           0 (0)                10 (9)           0 (0)   
-1995           0 (0)                 0 (0)           0 (0)   
-1996           0 (0)                 0 (0)           0 (0)   
-1997           0 (0)                 0 (0)           0 (0)   
-1998           0 (0)                 9 (9)           0 (0)   
-1999           0 (0)                 9 (9)           0 (0)   
-2000          15 (6)                10 (9)          13 (7)   
-2001          15 (6)                 0 (0)          13 (7)   
-2002           0 (0)                 0 (0)          13 (7)   
-2003           0 (0)                 0 (0)           0 (0)   
-2004          16 (6)                 0 (0)          13 (7)   
-2005          16 (6)                 0 (0)          13 (7)   
-2006          16 (6)                 0 (0)          13 (7)   
-2007          15 (6)                11 (9)          13 (7)   
-2008          17 (6)                 0 (0)          13 (7)   
-2009          18 (6)                12 (9)          13 (7)   
-2010          18 (6)                 0 (0)          13 (7)   
-2011          17 (6)                12 (9)          13 (7)   
-2012          17 (6)                13 (9)          13 (7)   
-2013          16 (6)                13 (9)          12 (7)   
-2014          17 (6)                14 (9)          12 (7)   
-2015          17 (6)                14 (9)          13 (7)   
-2016          14 (6)                15 (9)          13 (7)   
-2017          16 (6)                15 (9)          13 (7)   
-2018          17 (6)                16 (9)          12 (7)   
-2019          16 (6)                16 (9)          12 (7)   
-2020          17 (6)                16 (9)          12 (7)   
-2021          17 (6)                16 (9)          12 (7)   
-2022          16 (6)                17 (9)          12 (7)   
-2023          13 (6)                16 (9)          12 (7)   
-
-     NIOGHALVFJERDSFJORDEN (%) PETERMANN_GLETSCHER (%)  
-1986                    12 (6)                   0 (0)  
-1987                    12 (6)                  12 (4)  
-1988                    12 (6)                  11 (4)  
-1989                    11 (6)                  11 (4)  
-1990                    12 (6)                  11 (4)  
-1991                     0 (0)                   0 (0)  
-1992                     0 (0)                   0 (0)  
-1993                     0 (0)                   0 (0)  
-1994                     0 (0)                  12 (4)  
-1995                     0 (0)                   0 (0)  
-1996                     0 (0)                   0 (0)  
-1997                     0 (0)                   0 (0)  
-1998                    11 (6)                  11 (4)  
-1999                     0 (0)                   0 (0)  
-2000                    12 (6)                  12 (4)  
-2001                     0 (0)                   0 (0)  
-2002                     0 (0)                   0 (0)  
-2003                     0 (0)                   0 (0)  
-2004                     0 (0)                   0 (0)  
-2005                     0 (0)                   0 (0)  
-2006                    12 (6)                   0 (0)  
-2007                     0 (0)                  12 (4)  
-2008                     0 (0)                   0 (0)  
-2009                    12 (6)                   0 (0)  
-2010                     0 (0)                  14 (4)  
-2011                    12 (6)                   0 (0)  
-2012                    12 (6)                  12 (4)  
-2013                    12 (6)                  12 (4)  
-2014                    13 (6)                  12 (4)  
-2015                    13 (6)                  12 (4)  
-2016                    13 (6)                  12 (4)  
-2017                    13 (6)                  12 (4)  
-2018                    13 (6)                  12 (4)  
-2019                    14 (6)                  12 (4)  
-2020                    13 (6)                  12 (4)  
-2021                    13 (6)                  12 (4)  
-2022                    13 (6)                  12 (4)  
-2023                    13 (6)                  12 (4)  
-#+end_example
-: <Figure size 648x360 with 2 Axes>
-:END:
 
 :END:
 :END:
@@ -5648,7 +4887,6 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 **** Top by Error [Gt]
 #+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
@@ -5668,7 +4906,6 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 **** Top by Error [%]
@@ -5689,7 +4926,6 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 **** Bottom by Error [%]
 #+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
@@ -5709,7 +4945,6 @@ err_gate
 #+END_SRC
 
 #+RESULTS:
-: Warning (jupyter): :execute-result did not return requested mimetype(s): (:text/org)
 
 
 ** Annual averages from observations or linear interpolation
@@ -5787,192 +5022,6 @@ find ${DATADIR}/MEaSUREs/NSIDC-0478.002 | sed "s:^${DATADIR}::" | LC_ALL=C sort
 #+END_SRC
 
 #+RESULTS: QC_filelist_NSIDC_0478
-#+begin_example
-/MEaSUREs/NSIDC-0478.002
-/MEaSUREs/NSIDC-0478.002/2000.09.03
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic500_2000_2001_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic500_2000_2001_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic500_2000_2001_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic500_2000_2001_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic500_2000_2001_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic500_2000_2001_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic500_2000_2001_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2000.09.03/index.html
-/MEaSUREs/NSIDC-0478.002/2005.12.13
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic500_2005_2006_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic500_2005_2006_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic500_2005_2006_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic500_2005_2006_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic500_2005_2006_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic500_2005_2006_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic500_2005_2006_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2005.12.13/index.html
-/MEaSUREs/NSIDC-0478.002/2006.12.18
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic500_2006_2007_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic500_2006_2007_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic500_2006_2007_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic500_2006_2007_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic500_2006_2007_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic500_2006_2007_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic500_2006_2007_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2006.12.18/index.html
-/MEaSUREs/NSIDC-0478.002/2007.09.07
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic500_2007_2008_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic500_2007_2008_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic500_2007_2008_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic500_2007_2008_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic500_2007_2008_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic500_2007_2008_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic500_2007_2008_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2007.09.07/index.html
-/MEaSUREs/NSIDC-0478.002/2008.09.15
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic500_2008_2009_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic500_2008_2009_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic500_2008_2009_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic500_2008_2009_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic500_2008_2009_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic500_2008_2009_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic500_2008_2009_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2008.09.15/index.html
-/MEaSUREs/NSIDC-0478.002/2009.09.02
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic500_2009_2010_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic500_2009_2010_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic500_2009_2010_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic500_2009_2010_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic500_2009_2010_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic500_2009_2010_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic500_2009_2010_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2009.09.02/index.html
-/MEaSUREs/NSIDC-0478.002/2012.11.10
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic500_2012_2013_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic500_2012_2013_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic500_2012_2013_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic500_2012_2013_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic500_2012_2013_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic500_2012_2013_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic500_2012_2013_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2012.11.10/index.html
-/MEaSUREs/NSIDC-0478.002/2014.09.01
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic500_2014_2015_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic500_2014_2015_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic500_2014_2015_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic500_2014_2015_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic500_2014_2015_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic500_2014_2015_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic500_2014_2015_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2014.09.01/index.html
-/MEaSUREs/NSIDC-0478.002/2015.09.01
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic200_2015_2016_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic200_2015_2016_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic200_2015_2016_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic200_2015_2016_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic200_2015_2016_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic200_2015_2016_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic200_2015_2016_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic500_2015_2016_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic500_2015_2016_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic500_2015_2016_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic500_2015_2016_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic500_2015_2016_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic500_2015_2016_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic500_2015_2016_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2015.09.01/index.html
-/MEaSUREs/NSIDC-0478.002/2016.09.01
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic200_2016_2017_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic200_2016_2017_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic200_2016_2017_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic200_2016_2017_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic200_2016_2017_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic200_2016_2017_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic200_2016_2017_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic500_2016_2017_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic500_2016_2017_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic500_2016_2017_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic500_2016_2017_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic500_2016_2017_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic500_2016_2017_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic500_2016_2017_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2016.09.01/index.html
-/MEaSUREs/NSIDC-0478.002/2017.09.01
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic200_2017_2018_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic200_2017_2018_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic200_2017_2018_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic200_2017_2018_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic200_2017_2018_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic200_2017_2018_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic200_2017_2018_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic500_2017_2018_browse_v02.1.jpg
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic500_2017_2018_ex_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic500_2017_2018_ey_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic500_2017_2018_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic500_2017_2018_vv_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic500_2017_2018_vx_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic500_2017_2018_vy_v02.1.tif
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.dbf
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.prj
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.shp
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.shx
-/MEaSUREs/NSIDC-0478.002/2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.xml
-/MEaSUREs/NSIDC-0478.002/2017.09.01/index.html
-/MEaSUREs/NSIDC-0478.002/index.html
-#+end_example
 
 
 ***** File Metadata
@@ -5986,66 +5035,6 @@ gdalinfo -mm ${somefile}
 #+END_SRC
 
 #+RESULTS: QC_gdalinfo_NSIDC_0478
-#+begin_example
-9bf8fcf0c4add78ed54c4a35b444bdc3  /mnt/data/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
-
-Driver: GTiff/GeoTIFF
-Files: /mnt/data/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
-Size is 7585, 13700
-Coordinate System is:
-PROJCRS["unnamed",
-    BASEGEOGCRS["WGS 84",
-        DATUM["World Geodetic System 1984",
-            ELLIPSOID["WGS 84",6378137,298.257223563,
-                LENGTHUNIT["metre",1]]],
-        PRIMEM["Greenwich",0,
-            ANGLEUNIT["degree",0.0174532925199433]],
-        ID["EPSG",4326]],
-    CONVERSION["Polar Stereographic (variant B)",
-        METHOD["Polar Stereographic (variant B)",
-            ID["EPSG",9829]],
-        PARAMETER["Latitude of standard parallel",70,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8832]],
-        PARAMETER["Longitude of origin",-45,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8833]],
-        PARAMETER["False easting",0,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8806]],
-        PARAMETER["False northing",0,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8807]]],
-    CS[Cartesian,2],
-        AXIS["(E)",south,
-            MERIDIAN[90,
-                ANGLEUNIT["degree",0.0174532925199433,
-                    ID["EPSG",9122]]],
-            ORDER[1],
-            LENGTHUNIT["metre",1]],
-        AXIS["(N)",south,
-            MERIDIAN[180,
-                ANGLEUNIT["degree",0.0174532925199433,
-                    ID["EPSG",9122]]],
-            ORDER[2],
-            LENGTHUNIT["metre",1]]]
-Data axis to CRS axis mapping: 1,2
-Origin = (-659100.000000000000000,-639100.000000000000000)
-Pixel Size = (200.000000000000000,-200.000000000000000)
-Metadata:
-  AREA_OR_POINT=Area
-Image Structure Metadata:
-  INTERLEAVE=BAND
-Corner Coordinates:
-Upper Left  ( -659100.000, -639100.000) ( 90d52'57.45"W, 81d32'23.19"N)
-Lower Left  ( -659100.000,-3379100.000) ( 56d 2'13.47"W, 58d58'10.19"N)
-Upper Right (  857900.000, -639100.000) (  8d18'55.49"E, 80d 8'52.35"N)
-Lower Right (  857900.000,-3379100.000) ( 30d45'16.18"W, 58d35'44.75"N)
-Center      (   99400.000,-2009100.000) ( 42d10' 3.39"W, 71d35' 4.30"N)
-Band 1 Block=7585x1 Type=Float32, ColorInterp=Gray
-    Computed Min/Max=0.002,18831.568
-  NoData Value=-1
-#+end_example
 
 
 ***** md5sum hashes of all data
@@ -6059,178 +5048,6 @@ find . -type f | LC_ALL=C sort | parallel --keep-order "md5sum {}"
 #+END_SRC
 
 #+RESULTS: QC_md5sum_NSIDC_0478
-| e6867a11fe4f5512b3bbc2c98e898b68 | ./2000.09.03/greenland_vel_mosaic500_2000_2001_browse_v02.1.jpg |
-| 5ea53ca6a21c442579c306ad7238de17 | ./2000.09.03/greenland_vel_mosaic500_2000_2001_ex_v02.1.tif     |
-| ff11d930cd3f0756bb824921842e6cca | ./2000.09.03/greenland_vel_mosaic500_2000_2001_ey_v02.1.tif     |
-| 73a9d1b70b038157693715f3a523e35d | ./2000.09.03/greenland_vel_mosaic500_2000_2001_v02.1.xml        |
-| ca9145a87fa424fe8abeb32052267e33 | ./2000.09.03/greenland_vel_mosaic500_2000_2001_vv_v02.1.tif     |
-| dc4e91af90f43097f6a4f4ba9597910c | ./2000.09.03/greenland_vel_mosaic500_2000_2001_vx_v02.1.tif     |
-| 1d6954709642cec561dc91b90ac7f60f | ./2000.09.03/greenland_vel_mosaic500_2000_2001_vy_v02.1.tif     |
-| c84107bba5052e9df4d7ec8701118307 | ./2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.prj           |
-| 8e6039ab0f15c9126516065fc287f607 | ./2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.shp           |
-| 640c87cc6ce1af1dacb7f66419ecf197 | ./2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.shx           |
-| 7b2371d700693f5b3ae689fcfe730cdd | ./2000.09.03/greenland_vel_mosaic_2000_2001_v02.1.xml           |
-| 6c490801f24c473c70106891689aeb7c | ./2000.09.03/index.html                                         |
-| 64d246573c12172be2219930ac1e7eda | ./2005.12.13/greenland_vel_mosaic500_2005_2006_browse_v02.1.jpg |
-| bb97aa565833a16397581e8de241a812 | ./2005.12.13/greenland_vel_mosaic500_2005_2006_ex_v02.1.tif     |
-| 8caba334c0b82f1266bc51370909b4f6 | ./2005.12.13/greenland_vel_mosaic500_2005_2006_ey_v02.1.tif     |
-| e2e99719ddb1f48213942b5cbcc41925 | ./2005.12.13/greenland_vel_mosaic500_2005_2006_v02.1.xml        |
-| 259b6cf64eb6c0c04bcbc06ba325f3d8 | ./2005.12.13/greenland_vel_mosaic500_2005_2006_vv_v02.1.tif     |
-| 03ad1862e1ed6ec439130d9a92817560 | ./2005.12.13/greenland_vel_mosaic500_2005_2006_vx_v02.1.tif     |
-| 92135c8aa6ce1ce3cc56d63d008358fa | ./2005.12.13/greenland_vel_mosaic500_2005_2006_vy_v02.1.tif     |
-| 47cd89de9cfa4778653c0c83719c6105 | ./2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.prj           |
-| 53c6479e54c23fe0e2d1957f9fafeb4f | ./2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.shp           |
-| d6e80a79eaa6535ebf68803e951a7f50 | ./2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.shx           |
-| 35791a242f3cdf1b6142cbbcaa33fee6 | ./2005.12.13/greenland_vel_mosaic_2005_2006_v02.1.xml           |
-| bc591589f36039d9f12559a2e7ae4478 | ./2005.12.13/index.html                                         |
-| 7d22aa4b7e7bb2222b32d9dff4b6e983 | ./2006.12.18/greenland_vel_mosaic500_2006_2007_browse_v02.1.jpg |
-| 5284edf84ebbf582dd3e1fdb8c0a75a2 | ./2006.12.18/greenland_vel_mosaic500_2006_2007_ex_v02.1.tif     |
-| 72018561e3234b6e7327ee99f6165fc4 | ./2006.12.18/greenland_vel_mosaic500_2006_2007_ey_v02.1.tif     |
-| 8216f1e6e5cd3347308a6dc33b576aac | ./2006.12.18/greenland_vel_mosaic500_2006_2007_v02.1.xml        |
-| 7c6ea53e512f5ad44f8e847b29cc5ed6 | ./2006.12.18/greenland_vel_mosaic500_2006_2007_vv_v02.1.tif     |
-| b7eb89b5ebd1a9a964aadead2d785460 | ./2006.12.18/greenland_vel_mosaic500_2006_2007_vx_v02.1.tif     |
-| ccc099a8bd54b18ca42274fa3b579404 | ./2006.12.18/greenland_vel_mosaic500_2006_2007_vy_v02.1.tif     |
-| 36cfad6bdd621148c9f35c3dbd6591ae | ./2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.prj           |
-| a92b357d325733c3aaf5311190b7c314 | ./2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.shp           |
-| 735fbcc0fcf628874d88b1b6eb1b7676 | ./2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.shx           |
-| 26437e169a4c192a6c4b2d5bac3b5cf0 | ./2006.12.18/greenland_vel_mosaic_2006_2007_v02.1.xml           |
-| 180c52fe59cd8182f7c447a00549cbb0 | ./2006.12.18/index.html                                         |
-| 9bb4a95fec1ffcfe9a0cd78be3787c2d | ./2007.09.07/greenland_vel_mosaic500_2007_2008_browse_v02.1.jpg |
-| c44c35a30e1005bc80100377d92c5e0f | ./2007.09.07/greenland_vel_mosaic500_2007_2008_ex_v02.1.tif     |
-| 7ebe65a72c1ec39f2e4cacf0a1974a06 | ./2007.09.07/greenland_vel_mosaic500_2007_2008_ey_v02.1.tif     |
-| 87c00a4679d0101301155970220c5258 | ./2007.09.07/greenland_vel_mosaic500_2007_2008_v02.1.xml        |
-| ba1f857fa37d4283900da6c8765872d2 | ./2007.09.07/greenland_vel_mosaic500_2007_2008_vv_v02.1.tif     |
-| b54034263d8097659d47a923cacf42c1 | ./2007.09.07/greenland_vel_mosaic500_2007_2008_vx_v02.1.tif     |
-| 68e11a41d9812827fa3f24a94542d0fd | ./2007.09.07/greenland_vel_mosaic500_2007_2008_vy_v02.1.tif     |
-| 9a1ec4e17ef3e1f9f47d14c7a5fd5e86 | ./2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.prj           |
-| 3aca53c07b1e34aaae7db97ea312c505 | ./2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.shp           |
-| f96c1c94232309994639fd42b78a7339 | ./2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.shx           |
-| 676dec0bddf08e07f7a1f01e1c5c94ba | ./2007.09.07/greenland_vel_mosaic_2007_2008_v02.1.xml           |
-| b830d806fe5b6363d66d3f0b959672e4 | ./2007.09.07/index.html                                         |
-| 36a762e907dbda8829f6869112a1a9d5 | ./2008.09.15/greenland_vel_mosaic500_2008_2009_browse_v02.1.jpg |
-| 0a01a2050ca4c0792129755ceca795aa | ./2008.09.15/greenland_vel_mosaic500_2008_2009_ex_v02.1.tif     |
-| 94ea8fbabb89f1dfc1fcbaa88ad39796 | ./2008.09.15/greenland_vel_mosaic500_2008_2009_ey_v02.1.tif     |
-| c43daa03a92e971e4bd7f7587011ab7f | ./2008.09.15/greenland_vel_mosaic500_2008_2009_v02.1.xml        |
-| 018d7bcef3cff89e039484b8a35458eb | ./2008.09.15/greenland_vel_mosaic500_2008_2009_vv_v02.1.tif     |
-| 166c6c1f647214ca1e7fc49fe90757a9 | ./2008.09.15/greenland_vel_mosaic500_2008_2009_vx_v02.1.tif     |
-| 504b14bde498b6363c408442772a50be | ./2008.09.15/greenland_vel_mosaic500_2008_2009_vy_v02.1.tif     |
-| bd3c23e4319c726575e0812067e968c3 | ./2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.prj           |
-| fe32ee188b6eebde9e326724ae482152 | ./2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.shp           |
-| 8bbdc422f66c7f84b4962b2724927d8d | ./2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.shx           |
-| 9c4aca08efd481d81e9131f2f40b1755 | ./2008.09.15/greenland_vel_mosaic_2008_2009_v02.1.xml           |
-| 90c9a7175ffe4538f2c56d589ad7867a | ./2008.09.15/index.html                                         |
-| ac9d007f4c045d34d305fa7fed5517d6 | ./2009.09.02/greenland_vel_mosaic500_2009_2010_browse_v02.1.jpg |
-| 6f467702bf41bdc8055c19b04d87f873 | ./2009.09.02/greenland_vel_mosaic500_2009_2010_ex_v02.1.tif     |
-| 42888c41f7207c0654f8e80453e82c6a | ./2009.09.02/greenland_vel_mosaic500_2009_2010_ey_v02.1.tif     |
-| 4fee3d32a4558553040da6075e1a93bb | ./2009.09.02/greenland_vel_mosaic500_2009_2010_v02.1.xml        |
-| 743829d41ea07969345b6c768303b0e6 | ./2009.09.02/greenland_vel_mosaic500_2009_2010_vv_v02.1.tif     |
-| af0583eb16c6d31cb8ceaeb64a3d6acd | ./2009.09.02/greenland_vel_mosaic500_2009_2010_vx_v02.1.tif     |
-| 5abb91da20cbbdfe196e4a8bb5cc3e90 | ./2009.09.02/greenland_vel_mosaic500_2009_2010_vy_v02.1.tif     |
-| a317e41c220f2f56216750d5b1d9a9c6 | ./2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.prj           |
-| 4c73eb0870a52aa74a395eb1ae650b9c | ./2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.shp           |
-| 35568d07793ddcc4e93e5089ab4af9df | ./2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.shx           |
-| fe7f6ecba95baf148130a0d191898237 | ./2009.09.02/greenland_vel_mosaic_2009_2010_v02.1.xml           |
-| a2f6fff835f44a5b40dca3c0c8a02c84 | ./2009.09.02/index.html                                         |
-| cc34a28ba7a906fdbba4b003d3540a83 | ./2012.11.10/greenland_vel_mosaic500_2012_2013_browse_v02.1.jpg |
-| 1e08376f4b552e82cb275b225d9a1e5b | ./2012.11.10/greenland_vel_mosaic500_2012_2013_ex_v02.1.tif     |
-| 996d97a3ee004397d2185d37ddd5ebfe | ./2012.11.10/greenland_vel_mosaic500_2012_2013_ey_v02.1.tif     |
-| fd82349e7193e754b21968bfd0846353 | ./2012.11.10/greenland_vel_mosaic500_2012_2013_v02.1.xml        |
-| ca4fc877f5763218db73a19cd6c95a6a | ./2012.11.10/greenland_vel_mosaic500_2012_2013_vv_v02.1.tif     |
-| ef668984eea41219fc3128ab83c2db32 | ./2012.11.10/greenland_vel_mosaic500_2012_2013_vx_v02.1.tif     |
-| 0905c136d52a61e48fef38a6bafb72f0 | ./2012.11.10/greenland_vel_mosaic500_2012_2013_vy_v02.1.tif     |
-| 095b0fc251b7ea2c6c15c28d2b9119a6 | ./2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.prj           |
-| ce934db526d861877d2d81ed15192332 | ./2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.shp           |
-| f0400a26b83b90f241f62fcb362d1ac9 | ./2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.shx           |
-| 4a93e5ec8f254ea59da65ffd43c360a6 | ./2012.11.10/greenland_vel_mosaic_2012_2013_v02.1.xml           |
-| d2895fc6da45cfe32ee9aaf97d58d651 | ./2012.11.10/index.html                                         |
-| 6d7f97224c4f318f984d8b0012be194b | ./2014.09.01/greenland_vel_mosaic200_2014_2015_browse_v02.1.jpg |
-| 8529ea4957a4d98c15c6459985cbbac1 | ./2014.09.01/greenland_vel_mosaic200_2014_2015_ex_v02.1.tif     |
-| dfcd41f9be8618d272562a0228183c0f | ./2014.09.01/greenland_vel_mosaic200_2014_2015_ey_v02.1.tif     |
-| 065db101e178e62ac4589ec7a18f3b8f | ./2014.09.01/greenland_vel_mosaic200_2014_2015_v02.1.xml        |
-| 9bf8fcf0c4add78ed54c4a35b444bdc3 | ./2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif     |
-| b39158d4fa66121a23543b1cf84eb967 | ./2014.09.01/greenland_vel_mosaic200_2014_2015_vx_v02.1.tif     |
-| aadfd0763da9acb5604caa1e3e2a4906 | ./2014.09.01/greenland_vel_mosaic200_2014_2015_vy_v02.1.tif     |
-| 48058d4bfba2526b66f74d9e093eaf6b | ./2014.09.01/greenland_vel_mosaic500_2014_2015_browse_v02.1.jpg |
-| fa297f954f247cb5e8104c63ddb80def | ./2014.09.01/greenland_vel_mosaic500_2014_2015_ex_v02.1.tif     |
-| 5beaf898560f0b53b06e02c00c570680 | ./2014.09.01/greenland_vel_mosaic500_2014_2015_ey_v02.1.tif     |
-| c5f0562045c4c30cda5bfaba55269a37 | ./2014.09.01/greenland_vel_mosaic500_2014_2015_v02.1.xml        |
-| 0a32de5018bc8779441678b78c0050a8 | ./2014.09.01/greenland_vel_mosaic500_2014_2015_vv_v02.1.tif     |
-| 5d9fa64901b201e485b87dd421be0d6b | ./2014.09.01/greenland_vel_mosaic500_2014_2015_vx_v02.1.tif     |
-| 1059e370d6b42df96fd096c047d598b7 | ./2014.09.01/greenland_vel_mosaic500_2014_2015_vy_v02.1.tif     |
-| 8bed0f9b98bf18e6b230f1763d2d0a85 | ./2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.prj           |
-| e3e424bcf9662294c816f097176795e6 | ./2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.shp           |
-| 9b736f353dc7dd85fa41404595cdc070 | ./2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.shx           |
-| 2b8cc13c69f6e36f7d47d99d9224d1d1 | ./2014.09.01/greenland_vel_mosaic_2014_2015_v02.1.xml           |
-| 8a7598d0456c497da68d43d0bb5abf27 | ./2014.09.01/index.html                                         |
-| 2cbe77ad0dc94962dd40d91b9d7bc1b9 | ./2015.09.01/greenland_vel_mosaic200_2015_2016_browse_v02.1.jpg |
-| e9e3d01d630533d870d552da023a66ba | ./2015.09.01/greenland_vel_mosaic200_2015_2016_ex_v02.1.tif     |
-| 1d1b5b0efcdf24218e9f7d75b6750a3d | ./2015.09.01/greenland_vel_mosaic200_2015_2016_ey_v02.1.tif     |
-| 6fcbded660bff6d6663fba9f1c9753d3 | ./2015.09.01/greenland_vel_mosaic200_2015_2016_v02.1.xml        |
-| c4e31ad76bf8c774d2d2717ee1298a36 | ./2015.09.01/greenland_vel_mosaic200_2015_2016_vv_v02.1.tif     |
-| 48bfa5266b6ecf5d4939c306f665ce47 | ./2015.09.01/greenland_vel_mosaic200_2015_2016_vx_v02.1.tif     |
-| f68a5bbc76bcbb11b3cfe7a979d64651 | ./2015.09.01/greenland_vel_mosaic200_2015_2016_vy_v02.1.tif     |
-| 476cac9fe27f28218ad3bd40a06a8278 | ./2015.09.01/greenland_vel_mosaic500_2015_2016_browse_v02.1.jpg |
-| e88ca627886afdb8435205a7b1c3f483 | ./2015.09.01/greenland_vel_mosaic500_2015_2016_ex_v02.1.tif     |
-| b91a3cdede19b30f8268c56af97a1401 | ./2015.09.01/greenland_vel_mosaic500_2015_2016_ey_v02.1.tif     |
-| 29814600e8360652bad1a92dbb5c12b1 | ./2015.09.01/greenland_vel_mosaic500_2015_2016_v02.1.xml        |
-| b56ca5d8e3fabe640802ef10cac98c05 | ./2015.09.01/greenland_vel_mosaic500_2015_2016_vv_v02.1.tif     |
-| 94fac5a60e8d74d5daef331437725a2a | ./2015.09.01/greenland_vel_mosaic500_2015_2016_vx_v02.1.tif     |
-| 7e62f18ca9a76646329a5c9de0774c70 | ./2015.09.01/greenland_vel_mosaic500_2015_2016_vy_v02.1.tif     |
-| c56deac0f504fb790a0d41580ed3b93f | ./2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.prj           |
-| 7dbe778bdcfa579fc06c38aaea44ca0b | ./2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.shp           |
-| 8c46c7d794b1b41a61c8a768000ddb92 | ./2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.shx           |
-| 017ceccd7054a6a5ac467573ec89717b | ./2015.09.01/greenland_vel_mosaic_2015_2016_v02.1.xml           |
-| 79a3fcebe989537046a415346ffdde20 | ./2015.09.01/index.html                                         |
-| 0aef551d3da1ba45837130be98bf9ee7 | ./2016.09.01/greenland_vel_mosaic200_2016_2017_browse_v02.1.jpg |
-| 8cecafd27346f730c02d0c887d608d39 | ./2016.09.01/greenland_vel_mosaic200_2016_2017_ex_v02.1.tif     |
-| 56355df21064d121305ead513682222d | ./2016.09.01/greenland_vel_mosaic200_2016_2017_ey_v02.1.tif     |
-| ace1b23a7a5c74ba25e1457c830b410f | ./2016.09.01/greenland_vel_mosaic200_2016_2017_v02.1.xml        |
-| 0532b20cddc74867a770c5b306c442ec | ./2016.09.01/greenland_vel_mosaic200_2016_2017_vv_v02.1.tif     |
-| 522dd0173fad38c99f0a6c896be48914 | ./2016.09.01/greenland_vel_mosaic200_2016_2017_vx_v02.1.tif     |
-| 7964dca90e3d5b48fb8e39f0160aa705 | ./2016.09.01/greenland_vel_mosaic200_2016_2017_vy_v02.1.tif     |
-| 1d5721a981065aa92b3f1a9b02691f40 | ./2016.09.01/greenland_vel_mosaic500_2016_2017_browse_v02.1.jpg |
-| 9bf87cf955a0ef2e1fedab5bbb5e49c0 | ./2016.09.01/greenland_vel_mosaic500_2016_2017_ex_v02.1.tif     |
-| f5ba497d91161e2c92e5c6c6333e9dd9 | ./2016.09.01/greenland_vel_mosaic500_2016_2017_ey_v02.1.tif     |
-| 3d613e5b8cddfaad13a0bd4226185afc | ./2016.09.01/greenland_vel_mosaic500_2016_2017_v02.1.xml        |
-| 7dbfed1d27cb7f53425042170e9f612b | ./2016.09.01/greenland_vel_mosaic500_2016_2017_vv_v02.1.tif     |
-| 9e66bb5b796781e50c63ac084268c07f | ./2016.09.01/greenland_vel_mosaic500_2016_2017_vx_v02.1.tif     |
-| d13679a8fedfdb88e6ea2bfb1c79c523 | ./2016.09.01/greenland_vel_mosaic500_2016_2017_vy_v02.1.tif     |
-| 16acfc18fc991cc3627426695ab78d32 | ./2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.prj           |
-| 0314c3b53b2f894bc049468080da81df | ./2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.shp           |
-| 0ffbae03976b6d3832b183521c7197ab | ./2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.shx           |
-| 4bb7af95ad3aa0a51d36ed87a0f6b894 | ./2016.09.01/greenland_vel_mosaic_2016_2017_v02.1.xml           |
-| 0bad82ec7e07e857f60585d6a2142942 | ./2016.09.01/index.html                                         |
-| ab274d74bd6a7cbd39d41989b91b2bcf | ./2017.09.01/greenland_vel_mosaic200_2017_2018_browse_v02.1.jpg |
-| fdf36e5a01118dd4e54996665d13c170 | ./2017.09.01/greenland_vel_mosaic200_2017_2018_ex_v02.1.tif     |
-| 1b1c7ffae2ea5e2d0b28f0428549c1e2 | ./2017.09.01/greenland_vel_mosaic200_2017_2018_ey_v02.1.tif     |
-| 598d5f3645bb378f89e53e2c216ce35d | ./2017.09.01/greenland_vel_mosaic200_2017_2018_v02.1.xml        |
-| 00651d98489def32128f3175e6ce67a1 | ./2017.09.01/greenland_vel_mosaic200_2017_2018_vv_v02.1.tif     |
-| 6cdb1a1651c843ca9a8d06e069a0cf34 | ./2017.09.01/greenland_vel_mosaic200_2017_2018_vx_v02.1.tif     |
-| 1facbb34e2e58b657b8b7f2a4188dde2 | ./2017.09.01/greenland_vel_mosaic200_2017_2018_vy_v02.1.tif     |
-| cdf3f2674515176a734df5a7b6f0f297 | ./2017.09.01/greenland_vel_mosaic500_2017_2018_browse_v02.1.jpg |
-| 9837baeee2a7e7a12b4c49ac88198d47 | ./2017.09.01/greenland_vel_mosaic500_2017_2018_ex_v02.1.tif     |
-| e825dc3f37c4bb36833b073195885a06 | ./2017.09.01/greenland_vel_mosaic500_2017_2018_ey_v02.1.tif     |
-| 1c621f7082212eef4c0d189fc9af841a | ./2017.09.01/greenland_vel_mosaic500_2017_2018_v02.1.xml        |
-| 59ffa5696a35920d3b8242d81a47421a | ./2017.09.01/greenland_vel_mosaic500_2017_2018_vv_v02.1.tif     |
-| 56be38d07feb7a57fe44e1aa4c864a21 | ./2017.09.01/greenland_vel_mosaic500_2017_2018_vx_v02.1.tif     |
-| 4027678341666a9cefde6752dfe2d3c1 | ./2017.09.01/greenland_vel_mosaic500_2017_2018_vy_v02.1.tif     |
-| e95ef0a9bb8affd130037299b82bbda5 | ./2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.dbf           |
-| 46b30532526b6ff959b307123a6d5e71 | ./2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.prj           |
-| 952ff8d38c6a7104d15085f665026779 | ./2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.shp           |
-| 40bb5405e925c999e34e7b07c78058f5 | ./2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.shx           |
-| b4bc3cacacbba2428e706734b8a96b09 | ./2017.09.01/greenland_vel_mosaic_2017_2018_v02.1.xml           |
-| 3cd2b258aff255cef29d328239ac278f | ./2017.09.01/index.html                                         |
-| 729a44ed155a753fdf9d25631ca81df6 | ./index.html                                                    |
 
 
 **** 0646
@@ -6242,326 +5059,6 @@ find ${DATADIR}/MEaSUREs/NSIDC-0646.003/ -type f -name "*vx_v03.0.tif" | rev | c
 #+END_SRC
 
 #+RESULTS: QC_times_NSIDC_0646
-| 27 | 1985-03 |
-| 36 | 1985-04 |
-| 41 | 1985-05 |
-| 44 | 1985-06 |
-| 45 | 1985-07 |
-| 49 | 1985-08 |
-| 45 | 1985-09 |
-| 35 | 1986-04 |
-| 39 | 1986-05 |
-| 37 | 1986-06 |
-| 39 | 1986-07 |
-| 43 | 1986-08 |
-| 37 | 1986-09 |
-|  9 | 1986-10 |
-|  4 | 1987-03 |
-| 43 | 1987-04 |
-| 47 | 1987-05 |
-| 44 | 1987-06 |
-| 49 | 1987-07 |
-| 46 | 1987-08 |
-| 43 | 1987-09 |
-| 21 | 1987-10 |
-|  6 | 1988-03 |
-| 42 | 1988-04 |
-| 47 | 1988-05 |
-| 41 | 1988-06 |
-| 42 | 1988-07 |
-| 42 | 1988-08 |
-| 39 | 1988-09 |
-| 16 | 1988-10 |
-| 26 | 1989-03 |
-| 48 | 1989-04 |
-| 43 | 1989-05 |
-| 42 | 1989-06 |
-| 38 | 1989-07 |
-| 41 | 1989-08 |
-| 40 | 1989-09 |
-|  6 | 1989-10 |
-| 31 | 1990-03 |
-| 49 | 1990-04 |
-| 45 | 1990-05 |
-| 43 | 1990-06 |
-| 38 | 1990-07 |
-| 38 | 1990-08 |
-| 33 | 1990-09 |
-| 21 | 1990-10 |
-|  3 | 1991-06 |
-|  2 | 1992-06 |
-| 12 | 1992-07 |
-| 11 | 1992-08 |
-|  5 | 1992-09 |
-|  4 | 1992-10 |
-|  2 | 1993-03 |
-| 12 | 1993-04 |
-|  7 | 1993-05 |
-|  5 | 1993-06 |
-|  2 | 1993-07 |
-|  6 | 1993-08 |
-|  1 | 1993-09 |
-| 42 | 1994-05 |
-| 48 | 1994-06 |
-| 42 | 1994-07 |
-| 46 | 1994-08 |
-| 41 | 1994-09 |
-|  3 | 1995-04 |
-|  1 | 1995-05 |
-|  1 | 1995-06 |
-| 10 | 1995-07 |
-|  2 | 1995-08 |
-|  1 | 1995-09 |
-|  1 | 1995-10 |
-|  6 | 1996-04 |
-|  6 | 1996-05 |
-| 12 | 1996-06 |
-|  9 | 1996-07 |
-|  4 | 1996-08 |
-|  3 | 1996-09 |
-|  1 | 1996-10 |
-|  1 | 1997-03 |
-|  5 | 1997-04 |
-|  3 | 1997-05 |
-|  6 | 1997-06 |
-|  2 | 1997-07 |
-| 11 | 1997-09 |
-| 23 | 1997-10 |
-| 30 | 1998-03 |
-| 54 | 1998-04 |
-| 52 | 1998-05 |
-| 44 | 1998-06 |
-| 45 | 1998-07 |
-| 51 | 1998-08 |
-| 47 | 1998-09 |
-| 16 | 1998-10 |
-| 42 | 1999-07 |
-| 55 | 1999-08 |
-| 56 | 1999-09 |
-| 42 | 1999-10 |
-|  8 | 1999-11 |
-|  2 | 1999-12 |
-| 22 | 2000-02 |
-| 55 | 2000-03 |
-| 54 | 2000-04 |
-| 56 | 2000-05 |
-| 71 | 2000-06 |
-| 61 | 2000-07 |
-| 65 | 2000-08 |
-| 56 | 2000-09 |
-| 27 | 2000-10 |
-|  1 | 2000-11 |
-| 49 | 2001-03 |
-| 64 | 2001-04 |
-| 60 | 2001-05 |
-| 63 | 2001-06 |
-| 64 | 2001-07 |
-| 53 | 2001-08 |
-| 50 | 2001-09 |
-| 43 | 2001-10 |
-|  5 | 2001-11 |
-|  3 | 2002-01 |
-|  5 | 2002-02 |
-| 54 | 2002-03 |
-| 62 | 2002-04 |
-| 56 | 2002-05 |
-| 66 | 2002-06 |
-| 64 | 2002-07 |
-| 55 | 2002-08 |
-| 33 | 2002-09 |
-| 12 | 2002-10 |
-|  6 | 2003-02 |
-| 34 | 2003-03 |
-| 62 | 2003-04 |
-| 61 | 2003-05 |
-| 57 | 2003-06 |
-| 48 | 2003-07 |
-| 52 | 2003-08 |
-| 44 | 2003-09 |
-|  2 | 2003-10 |
-| 26 | 2004-03 |
-| 55 | 2004-04 |
-| 59 | 2004-05 |
-| 71 | 2004-06 |
-| 71 | 2004-07 |
-| 66 | 2004-08 |
-| 56 | 2004-09 |
-| 10 | 2004-10 |
-| 19 | 2005-03 |
-| 59 | 2005-04 |
-| 54 | 2005-05 |
-| 65 | 2005-06 |
-| 62 | 2005-07 |
-| 56 | 2005-08 |
-| 56 | 2005-09 |
-| 21 | 2005-10 |
-| 39 | 2006-03 |
-| 59 | 2006-04 |
-| 56 | 2006-05 |
-| 73 | 2006-06 |
-| 73 | 2006-07 |
-| 65 | 2006-08 |
-| 56 | 2006-09 |
-| 20 | 2006-10 |
-|  2 | 2006-11 |
-| 65 | 2007-03 |
-| 68 | 2007-04 |
-| 67 | 2007-05 |
-| 72 | 2007-06 |
-| 70 | 2007-07 |
-| 66 | 2007-08 |
-| 66 | 2007-09 |
-| 19 | 2007-10 |
-| 14 | 2008-03 |
-| 60 | 2008-04 |
-| 56 | 2008-05 |
-| 68 | 2008-06 |
-| 72 | 2008-07 |
-| 59 | 2008-08 |
-| 50 | 2008-09 |
-| 15 | 2008-10 |
-|  1 | 2008-11 |
-|  2 | 2009-01 |
-|  1 | 2009-02 |
-| 35 | 2009-03 |
-| 51 | 2009-04 |
-| 59 | 2009-05 |
-| 69 | 2009-06 |
-| 72 | 2009-07 |
-| 69 | 2009-08 |
-| 57 | 2009-09 |
-| 12 | 2009-10 |
-| 26 | 2010-03 |
-| 58 | 2010-04 |
-| 62 | 2010-05 |
-| 69 | 2010-06 |
-| 72 | 2010-07 |
-| 65 | 2010-08 |
-| 51 | 2010-09 |
-| 15 | 2010-10 |
-| 31 | 2011-03 |
-| 49 | 2011-04 |
-| 58 | 2011-05 |
-| 67 | 2011-06 |
-| 70 | 2011-07 |
-| 70 | 2011-08 |
-| 55 | 2011-09 |
-| 19 | 2011-10 |
-|  2 | 2012-01 |
-| 19 | 2012-03 |
-| 53 | 2012-04 |
-| 64 | 2012-05 |
-| 73 | 2012-06 |
-| 73 | 2012-07 |
-| 73 | 2012-08 |
-| 58 | 2012-09 |
-| 20 | 2012-10 |
-|  4 | 2013-02 |
-| 62 | 2013-03 |
-| 72 | 2013-04 |
-| 72 | 2013-05 |
-| 73 | 2013-06 |
-| 71 | 2013-07 |
-| 71 | 2013-08 |
-| 72 | 2013-09 |
-| 47 | 2013-10 |
-| 23 | 2013-11 |
-| 11 | 2013-12 |
-| 13 | 2014-01 |
-| 42 | 2014-02 |
-| 65 | 2014-03 |
-| 67 | 2014-04 |
-| 70 | 2014-05 |
-| 73 | 2014-06 |
-| 73 | 2014-07 |
-| 73 | 2014-08 |
-| 73 | 2014-09 |
-| 48 | 2014-10 |
-| 26 | 2014-11 |
-| 14 | 2014-12 |
-| 15 | 2015-01 |
-| 50 | 2015-02 |
-| 71 | 2015-03 |
-| 70 | 2015-04 |
-| 73 | 2015-05 |
-| 73 | 2015-06 |
-| 73 | 2015-07 |
-| 73 | 2015-08 |
-| 73 | 2015-09 |
-| 68 | 2015-10 |
-| 25 | 2015-11 |
-|  9 | 2015-12 |
-|  5 | 2016-01 |
-| 53 | 2016-02 |
-| 73 | 2016-03 |
-| 74 | 2016-04 |
-| 74 | 2016-05 |
-| 74 | 2016-06 |
-| 74 | 2016-07 |
-| 74 | 2016-08 |
-| 72 | 2016-09 |
-| 61 | 2016-10 |
-| 25 | 2016-11 |
-| 12 | 2016-12 |
-| 17 | 2017-01 |
-| 50 | 2017-02 |
-| 70 | 2017-03 |
-| 71 | 2017-04 |
-| 69 | 2017-05 |
-| 69 | 2017-06 |
-| 69 | 2017-07 |
-| 71 | 2017-08 |
-| 69 | 2017-09 |
-| 64 | 2017-10 |
-| 32 | 2017-11 |
-| 11 | 2017-12 |
-| 21 | 2018-01 |
-| 52 | 2018-02 |
-| 69 | 2018-03 |
-| 69 | 2018-04 |
-| 69 | 2018-05 |
-| 63 | 2018-06 |
-| 66 | 2018-07 |
-| 67 | 2018-08 |
-| 65 | 2018-09 |
-| 64 | 2018-10 |
-| 24 | 2018-11 |
-|  6 | 2018-12 |
-| 14 | 2019-01 |
-| 59 | 2019-02 |
-| 69 | 2019-03 |
-| 66 | 2019-04 |
-| 64 | 2019-05 |
-| 69 | 2019-06 |
-| 69 | 2019-07 |
-| 69 | 2019-08 |
-| 69 | 2019-09 |
-| 65 | 2019-10 |
-| 36 | 2019-11 |
-|  4 | 2019-12 |
-| 16 | 2020-01 |
-| 57 | 2020-02 |
-| 71 | 2020-03 |
-| 70 | 2020-04 |
-| 66 | 2020-05 |
-| 65 | 2020-06 |
-| 66 | 2020-07 |
-| 67 | 2020-08 |
-| 70 | 2020-09 |
-| 62 | 2020-10 |
-| 17 | 2020-11 |
-|  8 | 2020-12 |
-| 17 | 2021-01 |
-| 46 | 2021-02 |
-| 71 | 2021-03 |
-| 71 | 2021-04 |
-| 70 | 2021-05 |
-| 70 | 2021-06 |
-| 67 | 2021-07 |
-| 70 | 2021-08 |
-| 70 | 2021-09 |
-| 64 | 2021-10 |
-| 28 | 2021-11 |
 
 **** 0731
 ***** File List
@@ -6572,104 +5069,6 @@ Subset to vx
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-./2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
-./2015.01.01/GL_vel_mosaic_Monthly_01Jan15_31Jan15_vx_v05.0.tif
-./2015.02.01/GL_vel_mosaic_Monthly_01Feb15_28Feb15_vx_v05.0.tif
-./2015.03.01/GL_vel_mosaic_Monthly_01Mar15_31Mar15_vx_v05.0.tif
-./2015.04.01/GL_vel_mosaic_Monthly_01Apr15_30Apr15_vx_v05.0.tif
-./2015.05.01/GL_vel_mosaic_Monthly_01May15_31May15_vx_v05.0.tif
-./2015.06.01/GL_vel_mosaic_Monthly_01Jun15_30Jun15_vx_v05.0.tif
-./2015.07.01/GL_vel_mosaic_Monthly_01Jul15_31Jul15_vx_v05.0.tif
-./2015.08.01/GL_vel_mosaic_Monthly_01Aug15_31Aug15_vx_v05.0.tif
-./2015.09.01/GL_vel_mosaic_Monthly_01Sep15_30Sep15_vx_v05.0.tif
-./2015.10.01/GL_vel_mosaic_Monthly_01Oct15_31Oct15_vx_v05.0.tif
-./2015.11.01/GL_vel_mosaic_Monthly_01Nov15_30Nov15_vx_v05.0.tif
-./2015.12.01/GL_vel_mosaic_Monthly_01Dec15_31Dec15_vx_v05.0.tif
-./2016.01.01/GL_vel_mosaic_Monthly_01Jan16_31Jan16_vx_v05.0.tif
-./2016.02.01/GL_vel_mosaic_Monthly_01Feb16_29Feb16_vx_v05.0.tif
-./2016.03.01/GL_vel_mosaic_Monthly_01Mar16_31Mar16_vx_v05.0.tif
-./2016.04.01/GL_vel_mosaic_Monthly_01Apr16_30Apr16_vx_v05.0.tif
-./2016.05.01/GL_vel_mosaic_Monthly_01May16_31May16_vx_v05.0.tif
-./2016.06.01/GL_vel_mosaic_Monthly_01Jun16_30Jun16_vx_v05.0.tif
-./2016.07.01/GL_vel_mosaic_Monthly_01Jul16_31Jul16_vx_v05.0.tif
-./2016.08.01/GL_vel_mosaic_Monthly_01Aug16_31Aug16_vx_v05.0.tif
-./2016.09.01/GL_vel_mosaic_Monthly_01Sep16_30Sep16_vx_v05.0.tif
-./2016.10.01/GL_vel_mosaic_Monthly_01Oct16_31Oct16_vx_v05.0.tif
-./2016.11.01/GL_vel_mosaic_Monthly_01Nov16_30Nov16_vx_v05.0.tif
-./2016.12.01/GL_vel_mosaic_Monthly_01Dec16_31Dec16_vx_v05.0.tif
-./2017.01.01/GL_vel_mosaic_Monthly_01Jan17_31Jan17_vx_v05.0.tif
-./2017.02.01/GL_vel_mosaic_Monthly_01Feb17_28Feb17_vx_v05.0.tif
-./2017.03.01/GL_vel_mosaic_Monthly_01Mar17_31Mar17_vx_v05.0.tif
-./2017.04.01/GL_vel_mosaic_Monthly_01Apr17_30Apr17_vx_v05.0.tif
-./2017.05.01/GL_vel_mosaic_Monthly_01May17_31May17_vx_v05.0.tif
-./2017.06.01/GL_vel_mosaic_Monthly_01Jun17_30Jun17_vx_v05.0.tif
-./2017.07.01/GL_vel_mosaic_Monthly_01Jul17_31Jul17_vx_v05.0.tif
-./2017.08.01/GL_vel_mosaic_Monthly_01Aug17_31Aug17_vx_v05.0.tif
-./2017.09.01/GL_vel_mosaic_Monthly_01Sep17_30Sep17_vx_v05.0.tif
-./2017.10.01/GL_vel_mosaic_Monthly_01Oct17_31Oct17_vx_v05.0.tif
-./2017.11.01/GL_vel_mosaic_Monthly_01Nov17_30Nov17_vx_v05.0.tif
-./2017.12.01/GL_vel_mosaic_Monthly_01Dec17_31Dec17_vx_v05.0.tif
-./2018.01.01/GL_vel_mosaic_Monthly_01Jan18_31Jan18_vx_v05.0.tif
-./2018.02.01/GL_vel_mosaic_Monthly_01Feb18_28Feb18_vx_v05.0.tif
-./2018.03.01/GL_vel_mosaic_Monthly_01Mar18_31Mar18_vx_v05.0.tif
-./2018.04.01/GL_vel_mosaic_Monthly_01Apr18_30Apr18_vx_v05.0.tif
-./2018.05.01/GL_vel_mosaic_Monthly_01May18_31May18_vx_v05.0.tif
-./2018.06.01/GL_vel_mosaic_Monthly_01Jun18_30Jun18_vx_v05.0.tif
-./2018.07.01/GL_vel_mosaic_Monthly_01Jul18_31Jul18_vx_v05.0.tif
-./2018.08.01/GL_vel_mosaic_Monthly_01Aug18_31Aug18_vx_v05.0.tif
-./2018.09.01/GL_vel_mosaic_Monthly_01Sep18_30Sep18_vx_v05.0.tif
-./2018.10.01/GL_vel_mosaic_Monthly_01Oct18_31Oct18_vx_v05.0.tif
-./2018.11.01/GL_vel_mosaic_Monthly_01Nov18_30Nov18_vx_v05.0.tif
-./2018.12.01/GL_vel_mosaic_Monthly_01Dec18_31Dec18_vx_v05.0.tif
-./2019.01.01/GL_vel_mosaic_Monthly_01Jan19_31Jan19_vx_v05.0.tif
-./2019.02.01/GL_vel_mosaic_Monthly_01Feb19_28Feb19_vx_v05.0.tif
-./2019.03.01/GL_vel_mosaic_Monthly_01Mar19_31Mar19_vx_v05.0.tif
-./2019.04.01/GL_vel_mosaic_Monthly_01Apr19_30Apr19_vx_v05.0.tif
-./2019.05.01/GL_vel_mosaic_Monthly_01May19_31May19_vx_v05.0.tif
-./2019.06.01/GL_vel_mosaic_Monthly_01Jun19_30Jun19_vx_v05.0.tif
-./2019.07.01/GL_vel_mosaic_Monthly_01Jul19_31Jul19_vx_v05.0.tif
-./2019.08.01/GL_vel_mosaic_Monthly_01Aug19_31Aug19_vx_v05.0.tif
-./2019.09.01/GL_vel_mosaic_Monthly_01Sep19_30Sep19_vx_v05.0.tif
-./2019.10.01/GL_vel_mosaic_Monthly_01Oct19_31Oct19_vx_v05.0.tif
-./2019.11.01/GL_vel_mosaic_Monthly_01Nov19_30Nov19_vx_v05.0.tif
-./2019.12.01/GL_vel_mosaic_Monthly_01Dec19_31Dec19_vx_v05.0.tif
-./2020.01.01/GL_vel_mosaic_Monthly_01Jan20_31Jan20_vx_v05.0.tif
-./2020.02.01/GL_vel_mosaic_Monthly_01Feb20_29Feb20_vx_v05.0.tif
-./2020.03.01/GL_vel_mosaic_Monthly_01Mar20_31Mar20_vx_v05.0.tif
-./2020.04.01/GL_vel_mosaic_Monthly_01Apr20_30Apr20_vx_v05.0.tif
-./2020.05.01/GL_vel_mosaic_Monthly_01May20_31May20_vx_v05.0.tif
-./2020.06.01/GL_vel_mosaic_Monthly_01Jun20_30Jun20_vx_v05.0.tif
-./2020.07.01/GL_vel_mosaic_Monthly_01Jul20_31Jul20_vx_v05.0.tif
-./2020.08.01/GL_vel_mosaic_Monthly_01Aug20_31Aug20_vx_v05.0.tif
-./2020.09.01/GL_vel_mosaic_Monthly_01Sep20_30Sep20_vx_v05.0.tif
-./2020.10.01/GL_vel_mosaic_Monthly_01Oct20_31Oct20_vx_v05.0.tif
-./2020.11.01/GL_vel_mosaic_Monthly_01Nov20_30Nov20_vx_v05.0.tif
-./2020.12.01/GL_vel_mosaic_Monthly_01Dec20_31Dec20_vx_v05.0.tif
-./2021.01.01/GL_vel_mosaic_Monthly_01Jan21_31Jan21_vx_v05.0.tif
-./2021.02.01/GL_vel_mosaic_Monthly_01Feb21_28Feb21_vx_v05.0.tif
-./2021.03.01/GL_vel_mosaic_Monthly_01Mar21_31Mar21_vx_v05.0.tif
-./2021.04.01/GL_vel_mosaic_Monthly_01Apr21_30Apr21_vx_v05.0.tif
-./2021.05.01/GL_vel_mosaic_Monthly_01May21_31May21_vx_v05.0.tif
-./2021.06.01/GL_vel_mosaic_Monthly_01Jun21_30Jun21_vx_v05.0.tif
-./2021.07.01/GL_vel_mosaic_Monthly_01Jul21_31Jul21_vx_v05.0.tif
-./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v05.0.tif
-./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v05.0.tif
-./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v05.0.tif
-./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v05.0.tif
-./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v05.0.tif
-./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v05.0.tif
-./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v05.0.tif
-./2022.03.01/GL_vel_mosaic_Monthly_01Mar22_31Mar22_vx_v05.0.tif
-./2022.04.01/GL_vel_mosaic_Monthly_01Apr22_30Apr22_vx_v05.0.tif
-./2022.05.01/GL_vel_mosaic_Monthly_01May22_31May22_vx_v05.0.tif
-./2022.06.01/GL_vel_mosaic_Monthly_01Jun22_30Jun22_vx_v05.0.tif
-./2022.07.01/GL_vel_mosaic_Monthly_01Jul22_31Jul22_vx_v05.0.tif
-./2022.08.01/GL_vel_mosaic_Monthly_01Aug22_31Aug22_vx_v05.0.tif
-./2022.09.01/GL_vel_mosaic_Monthly_01Sep22_30Sep22_vx_v05.0.tif
-./2022.10.01/GL_vel_mosaic_Monthly_01Oct22_31Oct22_vx_v05.0.tif
-./2022.11.01/GL_vel_mosaic_Monthly_01Nov22_30Nov22_vx_v05.0.tif
-#+end_example
 
 ***** File Metadata
 
@@ -6682,78 +5081,6 @@ gdalinfo -mm ${somefile}
 #+END_SRC
 
 #+RESULTS: QC_gdalinfo_NSIDC_0731
-#+begin_example
-33e6afb888f11a8fc61f2e59c89ea657  /mnt/data/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
-
-Driver: GTiff/GeoTIFF
-Files: /mnt/data/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
-Size is 7585, 13700
-Coordinate System is:
-PROJCRS["WGS 84 / NSIDC Sea Ice Polar Stereographic North",
-    BASEGEOGCRS["WGS 84",
-        DATUM["World Geodetic System 1984",
-            ELLIPSOID["WGS 84",6378137,298.257223563,
-                LENGTHUNIT["metre",1]]],
-        PRIMEM["Greenwich",0,
-            ANGLEUNIT["degree",0.0174532925199433]],
-        ID["EPSG",4326]],
-    CONVERSION["US NSIDC Sea Ice polar stereographic north",
-        METHOD["Polar Stereographic (variant B)",
-            ID["EPSG",9829]],
-        PARAMETER["Latitude of standard parallel",70,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8832]],
-        PARAMETER["Longitude of origin",-45,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8833]],
-        PARAMETER["False easting",0,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8806]],
-        PARAMETER["False northing",0,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8807]]],
-    CS[Cartesian,2],
-        AXIS["easting (X)",south,
-            MERIDIAN[45,
-                ANGLEUNIT["degree",0.0174532925199433]],
-            ORDER[1],
-            LENGTHUNIT["metre",1]],
-        AXIS["northing (Y)",south,
-            MERIDIAN[135,
-                ANGLEUNIT["degree",0.0174532925199433]],
-            ORDER[2],
-            LENGTHUNIT["metre",1]],
-    USAGE[
-        SCOPE["unknown"],
-        AREA["World - N hemisphere - north of 60°N"],
-        BBOX[60,-180,90,180]],
-    ID["EPSG",3413]]
-Data axis to CRS axis mapping: 1,2
-Origin = (-659100.000000000000000,-639100.000000000000000)
-Pixel Size = (200.000000000000000,-200.000000000000000)
-Metadata:
-  AREA_OR_POINT=Area
-Image Structure Metadata:
-  COMPRESSION=DEFLATE
-  INTERLEAVE=BAND
-Corner Coordinates:
-Upper Left  ( -659100.000, -639100.000) ( 90d52'57.45"W, 81d32'23.19"N)
-Lower Left  ( -659100.000,-3379100.000) ( 56d 2'13.47"W, 58d58'10.19"N)
-Upper Right (  857900.000, -639100.000) (  8d18'55.49"E, 80d 8'52.35"N)
-Lower Right (  857900.000,-3379100.000) ( 30d45'16.18"W, 58d35'44.75"N)
-Center      (   99400.000,-2009100.000) ( 42d10' 3.39"W, 71d35' 4.30"N)
-Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
-  Min=-17040.822 Max=8270.726   Computed Min/Max=-17040.822,8270.726
-  Minimum=-17040.822, Maximum=8270.726, Mean=-69.922, StdDev=332.203
-  NoData Value=-2000000000
-  Overviews: 3792x6850, 1896x3425, 948x1712, 474x856, 237x428
-  Metadata:
-    STATISTICS_MAXIMUM=8270.7255859375
-    STATISTICS_MEAN=-69.922317558065
-    STATISTICS_MINIMUM=-17040.822265625
-    STATISTICS_STDDEV=332.20318780299
-    STATISTICS_VALID_PERCENT=3.612
-#+end_example
 
 ***** md5sum hashes of all data
 
@@ -6766,22 +5093,6 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 #+END_SRC
 
 #+RESULTS: QC_md5sum_NSIDC_0731
-| 13039c11df27ca9f337221fe88bd2394 | ./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v05.0.tif |
-| 55fc5cc6eeadd35b3e550ca99b10aa0b | ./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v05.0.tif |
-| 1a5c03d0c868aafa7b72ed85cc498dd1 | ./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v05.0.tif |
-| b024338814172429bf53d769b58f93b0 | ./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v05.0.tif |
-| 57fbeb606692bc436193862e757684c9 | ./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v05.0.tif |
-| 2059149ebf1434f506e0a63400c9161e | ./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v05.0.tif |
-| a16a0f0ca27201348dad60853361cd32 | ./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v05.0.tif |
-| 4ec84ba26bf9c50a5b7c06ffc6a8e916 | ./2022.03.01/GL_vel_mosaic_Monthly_01Mar22_31Mar22_vx_v05.0.tif |
-| 916f01f2946dc516adfd6c3efe009a95 | ./2022.04.01/GL_vel_mosaic_Monthly_01Apr22_30Apr22_vx_v05.0.tif |
-| b6cc0dcc40964bea458e7e0fa696aeb9 | ./2022.05.01/GL_vel_mosaic_Monthly_01May22_31May22_vx_v05.0.tif |
-| abe3dc0370f5f6f483128e722861980b | ./2022.06.01/GL_vel_mosaic_Monthly_01Jun22_30Jun22_vx_v05.0.tif |
-| 1d459b95bbbc9106d26a3d1caa5f16eb | ./2022.07.01/GL_vel_mosaic_Monthly_01Jul22_31Jul22_vx_v05.0.tif |
-| fc81cc7ac5bc8f48dc6495df316cc529 | ./2022.08.01/GL_vel_mosaic_Monthly_01Aug22_31Aug22_vx_v05.0.tif |
-| 3e82d61042b74a18d47ef88d1156d99f | ./2022.09.01/GL_vel_mosaic_Monthly_01Sep22_30Sep22_vx_v05.0.tif |
-| eb464f88c91336997da72319f44bfae5 | ./2022.10.01/GL_vel_mosaic_Monthly_01Oct22_31Oct22_vx_v05.0.tif |
-| 32c77418957e3a16badd0ef39baa0f3d | ./2022.11.01/GL_vel_mosaic_Monthly_01Nov22_30Nov22_vx_v05.0.tif |
 
 *** Sentinel 1
 ***** File List
@@ -6791,222 +5102,6 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-./IV_ROTR_20160105_20160128.nc
-./IV_ROTR_20160117_20160209.nc
-./IV_ROTR_20160128_20160221.nc
-./IV_ROTR_20160210_20160304.nc
-./IV_ROTR_20160222_20160316.nc
-./IV_ROTR_20160304_20160328.nc
-./IV_ROTR_20160317_20160409.nc
-./IV_ROTR_20160329_20160421.nc
-./IV_ROTR_20160410_20160503.nc
-./IV_ROTR_20160422_20160515.nc
-./IV_ROTR_20160504_20160527.nc
-./IV_ROTR_20160516_20160608.nc
-./IV_ROTR_20160528_20160614.nc
-./IV_ROTR_20160624_20160713.nc
-./IV_ROTR_20160703_20160726.nc
-./IV_ROTR_20160716_20160807.nc
-./IV_ROTR_20160728_20160819.nc
-./IV_ROTR_20160808_20160831.nc
-./IV_ROTR_20160820_20160912.nc
-./IV_ROTR_20160901_20160924.nc
-./IV_ROTR_20160913_20161006.nc
-./IV_ROTR_20160925_20161018.nc
-./IV_ROTR_20161006_20161030.nc
-./IV_ROTR_20161018_20161111.nc
-./IV_ROTR_20161030_20161123.nc
-./IV_ROTR_20161111_20161205.nc
-./IV_ROTR_20161123_20161217.nc
-./IV_ROTR_20161205_20161229.nc
-./IV_ROTR_20161217_20170110.nc
-./IV_ROTR_20161229_20170111.nc
-./IV_ROTR_20170110_20170203.nc
-./IV_ROTR_20170112_20170215.nc
-./IV_ROTR_20170122_20170227.nc
-./IV_ROTR_20170215_20170311.nc
-./IV_ROTR_20170227_20170323.nc
-./IV_ROTR_20170311_20170404.nc
-./IV_ROTR_20170323_20170416.nc
-./IV_ROTR_20170404_20170428.nc
-./IV_ROTR_20170416_20170509.nc
-./IV_ROTR_20170428_20170522.nc
-./IV_ROTR_20170510_20170603.nc
-./IV_ROTR_20170522_20170615.nc
-./IV_ROTR_20170603_20170627.nc
-./IV_ROTR_20170615_20170709.nc
-./IV_ROTR_20170627_20170721.nc
-./IV_ROTR_20170709_20170802.nc
-./IV_ROTR_20170721_20170814.nc
-./IV_ROTR_20170802_20170826.nc
-./IV_ROTR_20170814_20170907.nc
-./IV_ROTR_20170828_20170919.nc
-./IV_ROTR_20170907_20171001.nc
-./IV_ROTR_20170919_20171013.nc
-./IV_ROTR_20171001_20171025.nc
-./IV_ROTR_20171013_20171106.nc
-./IV_ROTR_20171025_20171118.nc
-./IV_ROTR_20171106_20171130.nc
-./IV_ROTR_20171118_20171212.nc
-./IV_ROTR_20181231_20190124.nc
-./IV_ROTR_20190112_20190205.nc
-./IV_ROTR_20190124_20190217.nc
-./IV_ROTR_20190205_20190301.nc
-./IV_ROTR_20190217_20190313.nc
-./IV_ROTR_20190301_20190325.nc
-./IV_ROTR_20190313_20190406.nc
-./IV_ROTR_20190325_20190417.nc
-./IV_ROTR_20190406_20190430.nc
-./IV_ROTR_20190418_20190512.nc
-./IV_ROTR_20190430_20190524.nc
-./IV_ROTR_20190512_20190605.nc
-./IV_ROTR_20190524_20190617.nc
-./IV_ROTR_20190605_20190629.nc
-./IV_ROTR_20190617_20190711.nc
-./IV_ROTR_20190629_20190723.nc
-./IV_ROTR_20190711_20190804.nc
-./IV_ROTR_20190723_20190816.nc
-./IV_ROTR_20190804_20190828.nc
-./IV_ROTR_20190816_20190909.nc
-./IV_ROTR_20190828_20190921.nc
-./IV_ROTR_20190909_20191003.nc
-./IV_ROTR_20190921_20191015.nc
-./IV_ROTR_20191003_20191027.nc
-./IV_ROTR_20191015_20191108.nc
-./IV_ROTR_20191027_20191120.nc
-./IV_ROTR_20191108_20191202.nc
-./IV_ROTR_20191120_20191214.nc
-./IV_ROTR_20191202_20191226.nc
-./IV_ROTR_20191214_20200107.nc
-./IV_ROTR_20191226_20200119.nc
-./IV_ROTR_20200107_20200131.nc
-./IV_ROTR_20200119_20200212.nc
-./IV_ROTR_20200131_20200224.nc
-./IV_ROTR_20200212_20200307.nc
-./IV_ROTR_20200224_20200319.nc
-./IV_ROTR_20200307_20200331.nc
-./IV_ROTR_20200319_20200412.nc
-./IV_ROTR_20200331_20200424.nc
-./IV_ROTR_20200412_20200506.nc
-./IV_ROTR_20200424_20200518.nc
-./IV_ROTR_20200506_20200530.nc
-./IV_ROTR_20200518_20200611.nc
-./IV_ROTR_20200530_20200623.nc
-./IV_ROTR_20200611_20200705.nc
-./IV_ROTR_20200623_20200717.nc
-./IV_ROTR_20200705_20200729.nc
-./IV_ROTR_20200717_20200810.nc
-./IV_ROTR_20200729_20200822.nc
-./IV_ROTR_20200810_20200903.nc
-./IV_ROTR_20200822_20200915.nc
-./IV_ROTR_20200903_20200927.nc
-./IV_ROTR_20200915_20201009.nc
-./IV_ROTR_20200927_20201021.nc
-./IV_ROTR_20201009_20201102.nc
-./IV_ROTR_20201021_20201114.nc
-./IV_ROTR_20201102_20201126.nc
-./IV_ROTR_20201114_20201208.nc
-./IV_ROTR_20201126_20201220.nc
-./IV_ROTR_20201208_20210101.nc
-./IV_ROTR_20201220_20210113.nc
-./IV_ROTR_20210101_20210125.nc
-./IV_ROTR_20210113_20210206.nc
-./IV_ROTR_20210125_20210218.nc
-./IV_ROTR_20210206_20210302.nc
-./IV_ROTR_20210218_20210314.nc
-./IV_ROTR_20210302_20210326.nc
-./IV_ROTR_20210314_20210407.nc
-./IV_ROTR_20210326_20210419.nc
-./IV_ROTR_20210407_20210427.nc
-./IV_ROTR_20210419_20210513.nc
-./IV_ROTR_20210506_20210525.nc
-./IV_ROTR_20210513_20210606.nc
-./IV_ROTR_20210525_20210618.nc
-./IV_ROTR_20210606_20210630.nc
-./IV_ROTR_20210618_20210712.nc
-./IV_ROTR_20210630_20210724.nc
-./IV_ROTR_20210712_20210805.nc
-./IV_ROTR_20210724_20210817.nc
-./IV_ROTR_20210805_20210829.nc
-./IV_ROTR_20210817_20210910.nc
-./IV_ROTR_20210829_20210922.nc
-./IV_ROTR_20210910_20211004.nc
-./IV_ROTR_20210922_20211016.nc
-./IV_ROTR_20211004_20211028.nc
-./IV_ROTR_20211016_20211109.nc
-./IV_ROTR_20211028_20211121.nc
-./IV_ROTR_20211109_20211203.nc
-./IV_ROTR_20211121_20211215.nc
-./IV_ROTR_20211203_20211227.nc
-./IV_ROTR_20211215_20220108.nc
-./IV_ROTR_20211228_20220120.nc
-./IV_ROTR_20220109_20220201.nc
-./IV_ROTR_20220121_20220213.nc
-./IV_ROTR_20220201_20220225.nc
-./IV_ROTR_20220213_20220309.nc
-./IV_ROTR_20220225_20220321.nc
-./IV_ROTR_20220309_20220402.nc
-./IV_ROTR_20220322_20220414.nc
-./IV_ROTR_20220403_20220426.nc
-./IV_ROTR_20220415_20220508.nc
-./IV_ROTR_20220427_20220520.nc
-./IV_ROTR_20220509_20220601.nc
-./IV_ROTR_20220521_20220613.nc
-./IV_ROTR_20220602_20220625.nc
-./IV_ROTR_20220614_20220707.nc
-./IV_ROTR_20220626_20220719.nc
-./IV_ROTR_20220708_20220731.nc
-./IV_ROTR_20220720_20220812.nc
-./IV_ROTR_20220801_20220824.nc
-./IV_ROTR_20220813_20220905.nc
-./IV_ROTR_20220825_20220917.nc
-./IV_ROTR_20220906_20220929.nc
-./IV_ROTR_20220918_20221011.nc
-./IV_ROTR_20220930_20221023.nc
-./IV_ROTR_20221012_20221104.nc
-./IV_ROTR_20221024_20221116.nc
-./IV_ROTR_20221105_20221128.nc
-./IV_ROTR_20221117_20221210.nc
-./IV_ROTR_20221129_20221222.nc
-./IV_ROTR_20221211_20230103.nc
-./IV_ROTR_20221223_20230115.nc
-./IV_ROTR_20230104_20230127.nc
-./IV_ROTR_20230115_20230208.nc
-./IV_ROTR_20230128_20230220.nc
-./IV_ROTR_20230208_20230304.nc
-./IV_ROTR_20230220_20230316.nc
-./IV_ROTR_20230304_20230328.nc
-./IV_ROTR_20230318_20230409.nc
-./IV_ROTR_20230330_20230421.nc
-./IV_ROTR_20230410_20230503.nc
-./IV_ROTR_20230422_20230515.nc
-./IV_ROTR_20230504_20230527.nc
-./IV_ROTR_20230516_20230608.nc
-./IV_ROTR_20230528_20230620.nc
-./IV_ROTR_20230609_20230702.nc
-./IV_ROTR_20230621_20230714.nc
-./IV_ROTR_20230703_20230726.nc
-./IV_ROTR_20230715_20230807.nc
-./IV_ROTR_20230727_20230819.nc
-./IV_ROTR_20230808_20230831.nc
-./IV_ROTR_20230820_20230912.nc
-./IV_ROTR_20230901_20230924.nc
-./IV_ROTR_20230913_20231006.nc
-./IV_ROTR_20231112_20231205.nc
-./IV_ROTR_20231124_20231217.nc
-./IV_ROTR_20231206_20231229.nc
-./IV_ROTR_20231219_20240110.nc
-./IV_ROTR_20231231_20240122.nc
-./IV_ROTR_20240110_20240203.nc
-./IV_ROTR_20240122_20240215.nc
-./IV_ROTR_20240203_20240227.nc
-./IV_ROTR_20240216_20240310.nc
-./IV_ROTR_20240227_20240322.nc
-./IV_ROTR_20240312_20240403.nc
-./IV_ROTR_20240323_20240415.nc
-./IV_ROTR_20240404_20240427.nc
-#+end_example
 
 ***** File Metadata
 
@@ -7019,177 +5114,6 @@ ncdump -chs ${somefile}
 #+END_SRC
 
 #+RESULTS: QC_ncdump_Sentinel1
-#+begin_example
-
-netcdf IV_ROTR_20160105_20160128 {
-dimensions:
-	y = 13500 ;
-	x = 7500 ;
-	time = UNLIMITED ; // (1 currently)
-	bnds = 2 ;
-variables:
-	char crs ;
-		crs:grid_mapping_name = "polar_stereographic" ;
-		crs:standard_parallel = 70. ;
-		crs:longitude_of_prime_meridian = 0. ;
-		crs:straight_vertical_longitude_from_pole = -45. ;
-		crs:semi_major_axis = 6378137. ;
-		crs:inverse_flattening = 298.257223563 ;
-		crs:latitude_of_projection_origin = 90. ;
-		crs:false_easting = 0. ;
-		crs:false_northing = 0. ;
-		crs:_Storage = "contiguous" ;
-	double y(y) ;
-		y:units = "m" ;
-		y:axis = "Y" ;
-		y:long_name = "y coordinate of projection" ;
-		y:standard_name = "projection_y_coordinate" ;
-		y:_Storage = "contiguous" ;
-		y:_Endianness = "little" ;
-	double x(x) ;
-		x:units = "m" ;
-		x:axis = "X" ;
-		x:long_name = "x coordinate of projection" ;
-		x:standard_name = "projection_x_coordinate" ;
-		x:_Storage = "contiguous" ;
-		x:_Endianness = "little" ;
-	double time(time) ;
-		time:standard_name = "time" ;
-		time:units = "days since 1990-1-1 0:0:0" ;
-		time:long_name = "Midpoint time of acquisitons used" ;
-		time:bounds = "time_bnds" ;
-		time:calendar = "standard" ;
-		time:_Storage = "chunked" ;
-		time:_ChunkSizes = 512 ;
-		time:_Endianness = "little" ;
-	double time_bnds(time, bnds) ;
-		time_bnds:units = "days since 1990-1-1 0:0:0" ;
-		time_bnds:_Storage = "chunked" ;
-		time_bnds:_ChunkSizes = 1, 2 ;
-		time_bnds:_Endianness = "little" ;
-	float land_ice_surface_easting_velocity(time, y, x) ;
-		land_ice_surface_easting_velocity:_FillValue = 1.e+20f ;
-		land_ice_surface_easting_velocity:units = "m/day" ;
-		land_ice_surface_easting_velocity:description = "easting ice velocity" ;
-		land_ice_surface_easting_velocity:grid_mapping = "crs" ;
-		land_ice_surface_easting_velocity:coordinates = "time y x" ;
-		land_ice_surface_easting_velocity:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
-		land_ice_surface_easting_velocity:missing_value = 1.e+20f ;
-		land_ice_surface_easting_velocity:long_name = "easting ice velocity" ;
-		land_ice_surface_easting_velocity:standard_name = "land_ice_surface_x_velocity" ;
-		land_ice_surface_easting_velocity:_Storage = "chunked" ;
-		land_ice_surface_easting_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_easting_velocity:_Shuffle = "true" ;
-		land_ice_surface_easting_velocity:_DeflateLevel = 4 ;
-		land_ice_surface_easting_velocity:_Endianness = "little" ;
-	float land_ice_surface_northing_velocity(time, y, x) ;
-		land_ice_surface_northing_velocity:_FillValue = 1.e+20f ;
-		land_ice_surface_northing_velocity:units = "m/day" ;
-		land_ice_surface_northing_velocity:description = "northing ice velocity" ;
-		land_ice_surface_northing_velocity:grid_mapping = "crs" ;
-		land_ice_surface_northing_velocity:coordinates = "time y x" ;
-		land_ice_surface_northing_velocity:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
-		land_ice_surface_northing_velocity:missing_value = 1.e+20f ;
-		land_ice_surface_northing_velocity:long_name = "northing ice velocity" ;
-		land_ice_surface_northing_velocity:standard_name = "land_ice_surface_y_velocity" ;
-		land_ice_surface_northing_velocity:_Storage = "chunked" ;
-		land_ice_surface_northing_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_northing_velocity:_Shuffle = "true" ;
-		land_ice_surface_northing_velocity:_DeflateLevel = 4 ;
-		land_ice_surface_northing_velocity:_Endianness = "little" ;
-	float land_ice_surface_vertical_velocity(time, y, x) ;
-		land_ice_surface_vertical_velocity:_FillValue = 1.e+20f ;
-		land_ice_surface_vertical_velocity:units = "m/day" ;
-		land_ice_surface_vertical_velocity:standard_name = "land_ice_surface_vertical_velocity" ;
-		land_ice_surface_vertical_velocity:grid_mapping = "crs" ;
-		land_ice_surface_vertical_velocity:coordinates = "time y x" ;
-		land_ice_surface_vertical_velocity:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
-		land_ice_surface_vertical_velocity:missing_value = 1.e+20f ;
-		land_ice_surface_vertical_velocity:description = "vertical velocity derived assuming surface parallel flow" ;
-		land_ice_surface_vertical_velocity:long_name = "vertical velocity derived assuming surface parallel flow" ;
-		land_ice_surface_vertical_velocity:_Storage = "chunked" ;
-		land_ice_surface_vertical_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_vertical_velocity:_Shuffle = "true" ;
-		land_ice_surface_vertical_velocity:_DeflateLevel = 4 ;
-		land_ice_surface_vertical_velocity:_Endianness = "little" ;
-	float land_ice_surface_velocity_magnitude(time, y, x) ;
-		land_ice_surface_velocity_magnitude:_FillValue = 1.e+20f ;
-		land_ice_surface_velocity_magnitude:units = "m/day" ;
-		land_ice_surface_velocity_magnitude:description = "magnitude of horizontal ice velocity" ;
-		land_ice_surface_velocity_magnitude:standard_name = "land_ice_surface_velocity_magnitude" ;
-		land_ice_surface_velocity_magnitude:grid_mapping = "crs" ;
-		land_ice_surface_velocity_magnitude:coordinates = "time y x" ;
-		land_ice_surface_velocity_magnitude:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
-		land_ice_surface_velocity_magnitude:missing_value = 1.e+20f ;
-		land_ice_surface_velocity_magnitude:long_name = "magnitude of horizontal ice velocity" ;
-		land_ice_surface_velocity_magnitude:_Storage = "chunked" ;
-		land_ice_surface_velocity_magnitude:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_velocity_magnitude:_Shuffle = "true" ;
-		land_ice_surface_velocity_magnitude:_DeflateLevel = 4 ;
-		land_ice_surface_velocity_magnitude:_Endianness = "little" ;
-	float land_ice_surface_easting_velocity_std(time, y, x) ;
-		land_ice_surface_easting_velocity_std:_FillValue = 1.e+20f ;
-		land_ice_surface_easting_velocity_std:units = "m/day" ;
-		land_ice_surface_easting_velocity_std:description = "easting ice velocity error estimate " ;
-		land_ice_surface_easting_velocity_std:grid_mapping = "crs" ;
-		land_ice_surface_easting_velocity_std:coordinates = "time y x" ;
-		land_ice_surface_easting_velocity_std:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
-		land_ice_surface_easting_velocity_std:missing_value = 1.e+20f ;
-		land_ice_surface_easting_velocity_std:long_name = "easting ice velocity error estimate " ;
-		land_ice_surface_easting_velocity_std:standard_name = "land_ice_surface_x_velocity standard_error" ;
-		land_ice_surface_easting_velocity_std:_Storage = "chunked" ;
-		land_ice_surface_easting_velocity_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_easting_velocity_std:_Shuffle = "true" ;
-		land_ice_surface_easting_velocity_std:_DeflateLevel = 4 ;
-		land_ice_surface_easting_velocity_std:_Endianness = "little" ;
-	float land_ice_surface_northing_velocity_std(time, y, x) ;
-		land_ice_surface_northing_velocity_std:_FillValue = 1.e+20f ;
-		land_ice_surface_northing_velocity_std:units = "m/day" ;
-		land_ice_surface_northing_velocity_std:description = "northing ice velocity error estimate" ;
-		land_ice_surface_northing_velocity_std:grid_mapping = "crs" ;
-		land_ice_surface_northing_velocity_std:coordinates = "time y x" ;
-		land_ice_surface_northing_velocity_std:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
-		land_ice_surface_northing_velocity_std:missing_value = 1.e+20f ;
-		land_ice_surface_northing_velocity_std:long_name = "northing ice velocity error estimate" ;
-		land_ice_surface_northing_velocity_std:standard_name = "land_ice_surface_y_velocity standard_error" ;
-		land_ice_surface_northing_velocity_std:_Storage = "chunked" ;
-		land_ice_surface_northing_velocity_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_northing_velocity_std:_Shuffle = "true" ;
-		land_ice_surface_northing_velocity_std:_DeflateLevel = 4 ;
-		land_ice_surface_northing_velocity_std:_Endianness = "little" ;
-	float land_ice_surface_velocity_magnitude_std(time, y, x) ;
-		land_ice_surface_velocity_magnitude_std:_FillValue = 1.e+20f ;
-		land_ice_surface_velocity_magnitude_std:units = "m/day" ;
-		land_ice_surface_velocity_magnitude_std:description = "horizontal ice velocity error magnitude estimate" ;
-		land_ice_surface_velocity_magnitude_std:standard_name = "land_ice_surface_velocity_magnitude_std" ;
-		land_ice_surface_velocity_magnitude_std:grid_mapping = "crs" ;
-		land_ice_surface_velocity_magnitude_std:coordinates = "time y x" ;
-		land_ice_surface_velocity_magnitude_std:cell_methods = "time: mean (weighted average (based on error estimates) over contributing acquisitons)" ;
-		land_ice_surface_velocity_magnitude_std:missing_value = 1.e+20f ;
-		land_ice_surface_velocity_magnitude_std:long_name = "horizontal ice velocity error magnitude estimate" ;
-		land_ice_surface_velocity_magnitude_std:_Storage = "chunked" ;
-		land_ice_surface_velocity_magnitude_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_velocity_magnitude_std:_Shuffle = "true" ;
-		land_ice_surface_velocity_magnitude_std:_DeflateLevel = 4 ;
-		land_ice_surface_velocity_magnitude_std:_Endianness = "little" ;
-
-// global attributes:
-		:Conventions = "CF-1.5" ;
-		:time_coverage_start = "2016-01-05" ;
-		:time_coverage_end = "2016-01-28" ;
-		:sensors_used = "Sentinel-1A" ;
-		:institution = "GEUS" ;
-		:methods_used = "Offset-tracking" ;
-		:calibration_method = "None" ;
-		:title = "Greenland Ice Velocity from 2016-01-05 to 2016-01-28" ;
-		:summary = "Greenland Ice Velocity from Sentinel-1 offset tracking for the period 2016-01-05 to 2016-01-28" ;
-		:product_version = "1.0" ;
-		:_NCProperties = "version=2,netcdf=4.7.3,hdf5=1.10.4" ;
-		:_SuperblockVersion = 0 ;
-		:_IsNetcdf4 = 1 ;
-		:_Format = "netCDF-4" ;
-}
-#+end_example
 
 
 ***** md5sum Hashes
@@ -7203,22 +5127,6 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 #+END_SRC
 
 #+RESULTS: QC_md5sum_Sentinel1
-| 1d1820690bdb6b371d6122c1745ee9ec | ./IV_ROTR_20230820_20230912.nc |
-| 9ec88464222f9eeb58e59ea96d986f08 | ./IV_ROTR_20230901_20230924.nc |
-| 975d0f6e26307f3745fe25fbcd410abf | ./IV_ROTR_20230913_20231006.nc |
-| 0d46ad29011aab6ce6139a280d61c8c7 | ./IV_ROTR_20231112_20231205.nc |
-| 08c8ebb7577cd620cce69a2a1ada68a4 | ./IV_ROTR_20231124_20231217.nc |
-| e585ab8fc1c4b91818e154409d3b1462 | ./IV_ROTR_20231206_20231229.nc |
-| b782880c44727ff016634443466dcc1c | ./IV_ROTR_20231219_20240110.nc |
-| 04c9db07f804e7854ebe8192d3218916 | ./IV_ROTR_20231231_20240122.nc |
-| 391143d180be9f75707be545215a8b0e | ./IV_ROTR_20240110_20240203.nc |
-| 96476272ad489da1b308c77385f16a14 | ./IV_ROTR_20240122_20240215.nc |
-| 7ab22147d23e1475fe81cf799b8f8c79 | ./IV_ROTR_20240203_20240227.nc |
-| 2edf695e9cf100abe8509107eee56174 | ./IV_ROTR_20240216_20240310.nc |
-| 134968c7e1946c42270af6eab46f3c14 | ./IV_ROTR_20240227_20240322.nc |
-| db4d3ce7a49a410200efc6d3d9e545da | ./IV_ROTR_20240312_20240403.nc |
-| 08ef95e7312dc20b137f4f5d13b0ff0d | ./IV_ROTR_20240323_20240415.nc |
-| 9a9f2ff68ef0d6db242b813a19af3f99 | ./IV_ROTR_20240404_20240427.nc |
 
 ** Results
 *** GIS
@@ -7273,14 +5181,6 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass-core; do dp
 #+END_SRC
 
 #+RESULTS:
-| bash       | 5.1-6ubuntu1.1      |
-| gdal-bin   | 3.8.4+dfsg-1~jammy0 |
-| grass-core | 8.3.2-1~jammy1      |
-| nco        | 5.0.6-1             |
-| netcdf-bin | 1:4.8.1-1           |
-| parallel   | 20210822+ds-2       |
-| proj-bin   | 9.3.1-1~jammy0      |
-| sed        | 4.8-1ubuntu2        |
 
 *** Org Mode
 #+BEGIN_SRC elisp :exports both :eval no-export
@@ -7288,7 +5188,6 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass-core; do dp
 #+END_SRC
 
 #+RESULTS:
-: Org mode version 9.7-pre (release_9.6.23-1335-gce5e8ec @ /home/kdm/local/src/org-mode/lisp/)
 
 *** Python
 
@@ -7303,190 +5202,6 @@ docker run mankoff/ice_discharge:conda conda env export --no-builds --name base
 #+END_SRC
 
 #+RESULTS:
-#+begin_example
-name: base
-channels:
-  - defaults
-dependencies:
-  - _libgcc_mutex=0.1
-  - _openmp_mutex=4.5
-  - argon2-cffi=21.3.0
-  - argon2-cffi-bindings=21.2.0
-  - asttokens=2.0.5
-  - attrs=21.4.0
-  - backcall=0.2.0
-  - beautifulsoup4=4.11.1
-  - blas=1.0
-  - bleach=4.1.0
-  - bottleneck=1.3.4
-  - brotli=1.0.9
-  - brotlipy=0.7.0
-  - c-ares=1.18.1
-  - ca-certificates=2022.4.26
-  - certifi=2022.6.15
-  - cffi=1.15.0
-  - charset-normalizer=2.0.4
-  - colorama=0.4.4
-  - conda=4.13.0
-  - conda-content-trust=0.1.1
-  - conda-package-handling=1.8.1
-  - cryptography=36.0.0
-  - curl=7.82.0
-  - cycler=0.11.0
-  - cython=0.29.28
-  - dbus=1.13.18
-  - debugpy=1.5.1
-  - decorator=5.1.1
-  - defusedxml=0.7.1
-  - entrypoints=0.4
-  - executing=0.8.3
-  - expat=2.4.4
-  - fontconfig=2.13.1
-  - fonttools=4.25.0
-  - freetype=2.11.0
-  - giflib=5.2.1
-  - glib=2.69.1
-  - gst-plugins-base=1.14.0
-  - gstreamer=1.14.0
-  - icu=58.2
-  - idna=3.3
-  - intel-openmp=2021.4.0
-  - ipykernel=6.9.1
-  - ipython=8.3.0
-  - ipython_genutils=0.2.0
-  - ipywidgets=7.6.5
-  - jedi=0.18.1
-  - jinja2=3.0.3
-  - jpeg=9e
-  - jsonschema=4.4.0
-  - jupyter=1.0.0
-  - jupyter_client=7.2.2
-  - jupyter_console=6.4.3
-  - jupyter_core=4.10.0
-  - jupyterlab_pygments=0.1.2
-  - jupyterlab_widgets=1.0.0
-  - kiwisolver=1.4.2
-  - krb5=1.19.2
-  - lcms2=2.12
-  - ld_impl_linux-64=2.35.1
-  - libcurl=7.82.0
-  - libedit=3.1.20210910
-  - libev=4.33
-  - libffi=3.3
-  - libgcc-ng=9.3.0
-  - libgfortran-ng=7.5.0
-  - libgfortran4=7.5.0
-  - libgomp=9.3.0
-  - libnghttp2=1.46.0
-  - libpng=1.6.37
-  - libsodium=1.0.18
-  - libssh2=1.10.0
-  - libstdcxx-ng=9.3.0
-  - libtiff=4.2.0
-  - libuuid=1.0.3
-  - libwebp=1.2.2
-  - libwebp-base=1.2.2
-  - libxcb=1.15
-  - libxml2=2.9.14
-  - lz4-c=1.9.3
-  - markupsafe=2.1.1
-  - matplotlib=3.5.1
-  - matplotlib-base=3.5.1
-  - matplotlib-inline=0.1.2
-  - mistune=0.8.4
-  - mkl=2021.4.0
-  - mkl-service=2.4.0
-  - mkl_fft=1.3.1
-  - mkl_random=1.2.2
-  - munkres=1.1.4
-  - nbclient=0.5.13
-  - nbconvert=6.4.4
-  - nbformat=5.3.0
-  - ncurses=6.3
-  - nest-asyncio=1.5.5
-  - notebook=6.4.11
-  - numexpr=2.8.1
-  - numpy=1.22.3
-  - numpy-base=1.22.3
-  - openssl=1.1.1o
-  - packaging=21.3
-  - pandas=1.4.2
-  - pandocfilters=1.5.0
-  - parso=0.8.3
-  - patsy=0.5.2
-  - pcre=8.45
-  - pexpect=4.8.0
-  - pickleshare=0.7.5
-  - pillow=9.0.1
-  - pip=21.2.4
-  - prometheus_client=0.13.1
-  - prompt-toolkit=3.0.20
-  - prompt_toolkit=3.0.20
-  - ptyprocess=0.7.0
-  - pure_eval=0.2.2
-  - pycosat=0.6.3
-  - pycparser=2.21
-  - pygments=2.11.2
-  - pyopenssl=22.0.0
-  - pyparsing=3.0.4
-  - pyqt=5.9.2
-  - pyrsistent=0.18.0
-  - pysocks=1.7.1
-  - python=3.9.12
-  - python-dateutil=2.8.2
-  - python-fastjsonschema=2.15.1
-  - pytz=2022.1
-  - pyzmq=22.3.0
-  - qt=5.9.7
-  - qtconsole=5.3.0
-  - qtpy=2.0.1
-  - readline=8.1.2
-  - requests=2.27.1
-  - ruamel_yaml=0.15.100
-  - scipy=1.7.3
-  - send2trash=1.8.0
-  - setuptools=61.2.0
-  - sip=4.19.13
-  - six=1.16.0
-  - soupsieve=2.3.1
-  - sqlite=3.38.2
-  - stack_data=0.2.0
-  - statsmodels=0.13.2
-  - tabulate=0.8.9
-  - terminado=0.13.1
-  - testpath=0.6.0
-  - tk=8.6.11
-  - tornado=6.1
-  - tqdm=4.63.0
-  - traitlets=5.1.1
-  - typing-extensions=4.1.1
-  - typing_extensions=4.1.1
-  - tzdata=2022a
-  - urllib3=1.26.8
-  - wcwidth=0.2.5
-  - webencodings=0.5.1
-  - wheel=0.37.1
-  - widgetsnbextension=3.5.2
-  - xarray=0.20.1
-  - xz=5.2.5
-  - yaml=0.2.5
-  - zeromq=4.3.4
-  - zlib=1.2.12
-  - zstd=1.5.2
-  - pip:
-    - cfchecker==4.1.0
-    - cftime==1.6.0
-    - cfunits==3.3.4
-    - future==0.18.2
-    - grass-session==0.5
-    - nc-time-axis==1.4.1
-    - netcdf4==1.5.8
-    - pydataverse==0.2.1
-    - pyshp==2.3.0
-    - semver==2.13.0
-    - uncertainties==3.1.7
-prefix: /opt/conda
-#+end_example
 
 * LaTeX Setup                                           :noexport:
 #+NAME: copernicus-latex-setup
