@@ -2701,6 +2701,28 @@ for g in meta['gates'].unique():
 vel_baseline = pd.read_csv("./tmp/dat_100_5000.csv", usecols=['vel_baseline@MEaSUREs.0478'])
 vel_baseline.rename(inplace=True, columns={'vel_baseline@MEaSUREs.0478':'vel'})
 
+
+###
+### Load all velocity
+###
+vel = pd.read_csv("./tmp/dat.csv", usecols=(lambda c: (('vel_eff' in c) & ('promice' in c))))
+
+# Convert column names to datetime
+def convert_to_datetime(col_name):
+    try:
+        year = int(col_name[8:12])
+        month = int(col_name[13:15])
+        day = int(col_name[16:18])
+        return pd.to_datetime(f"{year}-{month:02d}-{day:02d}")
+    except Exception as e:
+        print(f"Error converting column '{col_name}': {e}")
+        return col_name  # Return original column name if conversion fails
+
+vel.rename(columns=lambda c: convert_to_datetime(c), inplace=True)
+vel.replace(0, np.nan, inplace=True)
+vel.sort_index(axis='columns', inplace=True)
+fill = vel/vel #vel_fill; fill[fill > 1] = 1
+
 ####################
 # Filter Velocity: Rolling Windows
 ##################
@@ -2714,55 +2736,14 @@ def filter_bad_v(v):
     v[vel_outlier] = np.nan
     return v
 ####################
+# vel = filter_bad_v(vel)
+# vel = filter_bad_v(vel)
+# vel = filter_bad_v(vel)
 
 
-###
-### Load all velocity
-###
-vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
-
-
-all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
-                                                 int(c[13:15]),
-                                                 int(c[16:18]))).columns.unique()
-
-# 'velocity source' as in Sentinel, measures.X, measures.Y, etc.
-vel_sources = np.unique([_.split('@')[1] for _ in vel.columns])
-for vs in vel_sources:
-    print(vs)
-    vs_vel = vel.drop(labels=vel.columns[~vel.columns.str.contains(vs)], axis='columns')
-    vs_vel = vs_vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
-                                                         int(c[13:15]),
-                                                         int(c[16:18])))\
-                   .replace(0, np.nan)\
-                   .sort_index(axis='columns')\
-                   .reindex(all_t, axis='columns')
-
-    vs_vel = vs_vel.loc[:,vs_vel.columns.year >= 1985] # drop early years
-
-    # filter 3x
-    vs_vel = filter_bad_v(vs_vel); vs_vel = filter_bad_v(vs_vel); vs_vel = filter_bad_v(vs_vel)
-
-    vs_fill = vs_vel.copy() / vs_vel # 1 where data, nan where not
-    vs_vel = vs_vel.interpolate(method='time', axis='columns',
-                                limit_area='inside', limit_direction='both')\
-                   .replace(np.nan,0)
-
-    if vs == vel_sources[0]:
-        vel_sum = vs_vel.copy()
-        vel_navg = (vs_vel != 0).replace({True:1, False:0})
-        vel_fill = vs_fill.copy().replace(np.nan,0)
-    else:
-        vel_sum += vs_vel
-        vel_navg += (vs_vel.replace(np.nan,0) != 0).replace({True:1, False:0})
-        vel_fill += (vs_fill.replace(np.nan,0)) # != 0).replace({True:1, False:0})
-
-vel_final = vel_sum / vel_navg
-vel_final = vel_final.fillna(method='bfill', axis=1).fillna(method='ffill', axis=1)
-
-vel = vel_final
-fill = vel_fill; fill[fill > 1] = 1
-
+vel = vel.interpolate(method='time', axis=1, limit_area='inside')
+vel.fillna(method='ffill', axis=1, inplace=True)
+vel.fillna(method='bfill', axis=1, inplace=True)
 
 ###
 ### Load all velocity ERROR
