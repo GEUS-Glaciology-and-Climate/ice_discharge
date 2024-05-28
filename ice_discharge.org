@@ -81,7 +81,6 @@ We present a 1986 through last-month estimate of Greenland Ice Sheet ice dischar
 - [[#appendix][Appendix]]
   - [[#errors-and-uncertainties][Errors and uncertainties]]
   - [[#velocity-versus-thickness][Velocity versus thickness]]
-  - [[#sentinel-1-ice-velocity-maps][Sentinel-1 ice velocity maps]]
   - [[#software][Software]]
 - [[#code][Code]]
   - [[#misc-helper][Misc Helper]]
@@ -231,7 +230,7 @@ Ice velocity data are available with increasing spatial and temporal resolution 
 
 The discharge gates in this study are generated using only surface speed and an ice mask. We use the MEaSUREs Greenland Ice Sheet Velocity Map from InSAR Data, Version 2 citep:joughin_2010_greenland,NSIDC_0478, hereafter termed "MEaSUREs 0478" due to the National Snow and Ice Data Center (NSIDC) dateset ID number. We use the BedMachine v5 citep:morlighem_2017_bedmachine,NSIDC_BedMachine ice mask.
 
-For ice thickness estimates, we use bed elevations from BedMachine v5 and the annual PROMICE PRODEM surface elevation (citet:winstrup_2024,winstrup_2024_data) from 2019 through 2022 (or the latest available). Prior to 2019 we adjust with surface elevation change from citet:khan_2016_geodetic. Ice sector and region delineation is from citet:mouginot_2019_glacier. Ice velocity data are obtained from a variety of products including Sentinel-1A & 1B derived by PROMICE (see Appendix), MEaSUREs 0478, MEaSUREs 0646 citep:NSIDC_0646, citet:mouginot_2018_1972to1990, and citet:mouginot_2018_1991to2000. Official glacier names come from citet:bjork_2015_brief. Other glacier names come from citet:mouginot_2019_glacier. See Table [[tab:data]] for an overview of datasets used in this work.
+For ice thickness estimates, we use bed elevations from BedMachine v5 and the annual PROMICE PRODEM surface elevation (citet:winstrup_2024,winstrup_2024_data) from 2019 through 2022 (or the latest available). Prior to 2019 we adjust with surface elevation change from citet:khan_2016_geodetic. Ice sector and region delineation is from citet:mouginot_2019_glacier. Ice velocity data are obtained from a variety of products including Sentinel-1A & 1B derived by PROMICE citep:solgaard_2021, MEaSUREs 0478, MEaSUREs 0646 citep:NSIDC_0646, citet:mouginot_2018_1972to1990, and citet:mouginot_2018_1991to2000. Official glacier names come from citet:bjork_2015_brief. Other glacier names come from citet:mouginot_2019_glacier. See Table [[tab:data]] for an overview of datasets used in this work.
 
 #+BEGIN_SRC bash :results verbatim :eval no-export
 echo "times  all: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l)
@@ -256,7 +255,7 @@ This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n'
 | Surface elevation Change | PROMICE PRODEM 2019 -- recent          | citet:winstrup_2024,winstrup_2024_data                         |
 | Surface elevation Change | Surface elevation change prior to 2019 | citet:khan_2016_geodetic,GEUS_discharge_paper_elevation_change |
 | Baseline velocity        | MEaSUREs 0478                          | citet:NSIDC_0478                                               |
-| Velocity                 | Sentinel                               | Appendix                                                       |
+| Velocity                 | PROMICE Sentinel                       | citet:solgaard_2021,solgaard_2021_data updated to 200 m        |
 | Velocity                 | MEaSUREs 0646                          | citet:NSIDC_0646                                               |
 | Velocity                 | MEaSUREs 0731                          | citet:NSIDC_0731,joughin_2010_greenland,joughin_2018_greenland |
 | Velocity                 | pre-2000                               | citet:mouginot_2018_1972to1990,mouginot_2018_1991to2000        |
@@ -770,15 +769,6 @@ Our work takes place in a projected coordinate system (EPSG 3413) and therefore 
 #+ATTR_LATEX: :width \textwidth :placement [!h]
 #+CAPTION: Thickness versus ice speed histogram. Points limited to discharge pixels.
 [[./h_v_histogram.png]]
-
-
-** Sentinel-1 ice velocity maps
-:PROPERTIES:
-:CUSTOM_ID: sec:appendix:sentinel
-:clearpage: t
-:END:
-
-We use ESA Sentinel-1 synthetic aperture radar (SAR) data to derive ice velocity maps covering the Greenland Ice Sheet margin using offset tracking citep:strozzi_2002_glacier assuming surface parallel flow using the digital elevation model from the Greenland Ice Mapping Project (GIMP DEM, NSIDC 0645) by citet:howat_2014_greenland,NSIDC_0645. The operational interferometric postprocessing (IPP) chain citep:dall_2015_ice,kusk_2018_system, developed at the Technical University of Denmark (DTU) Space and upgraded with offset tracking for ESA’s Climate Change Initiative (CCI) Greenland project, was employed to derive the surface movement. The Sentinel-1 satellites have a repeat cycle of 12 days, and due to their constellation, each track has a twelve-day repeat cycle. We produce a Greenland-wide product that spans two repeat cycles of Sentinel-1A. The product is a mosaic of all the ice velocity maps based on 12 day pairs produced from all the tracks from Sentinel-1A and 1B covering Greenland during those two cycles. The product thus has a total time span of 24 days. Twelve-day pairs are also included in each mosaic from track 90, 112 and 142 covering the ice sheet margin in the south as well as other tracks on an irregular basis in order to increase the spatial resolution. citet:rathmann_2017_highly and citet:vijay_2019_resolving have exploited the high temporal resolution of the product to investigate dynamics of glaciers. The maps are available from 2016-09-13 and onward, are updated regularly, and are available from http://promice.org.
 
 
 ** Software
