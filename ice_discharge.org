@@ -2705,7 +2705,7 @@ vel_baseline.rename(inplace=True, columns={'vel_baseline@MEaSUREs.0478':'vel'})
 ###
 ### Load all velocity
 ###
-vel = pd.read_csv("./tmp/dat_1000_5000.csv", usecols=(lambda c: (('vel_eff' in c) & ('promice' in c))))
+vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: (('vel_eff' in c) & ('promice' in c))))
 
 # Convert column names to datetime
 def convert_to_datetime(col_name):
