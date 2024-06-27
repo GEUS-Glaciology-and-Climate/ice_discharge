@@ -4517,9 +4517,10 @@ MSG_OK "Updating Sentinel velocity files..."
 workingdir=$(pwd)
 cd ${DATADIR}/Promice200m/
 
+
 if [[ -e urls.txt ]]; then cp urls.txt urls.txt.last; fi
 #curl https://dataverse.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/promice/data/sentinel1icevelocity/greenlandicesheet | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
-curl https://dataverse.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/FK2/ZEGVXU | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
+curl https://dataverse.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/FK2/LFZLZN | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
 
 if cmp -s urls.txt urls.txt.last; then
   MSG_WARN "No new Sentinel1 files..."
@@ -4549,11 +4550,11 @@ fi
 #+BEGIN_SRC bash :tangle update_worker.sh
 <<MSGS_pretty_print>>
 <<GRASS_config>>
-<<sentinel1_import>>
+<<promice_import>>
 <<MEaSURES_0766_import>>
 
 MAPSET=gates_vel_buf
-<<sentinel1_effective_velocity>>
+<<promice_effective_velocity>>
 <<MEaSUREs_0766_effective_velocity>>
 #+END_SRC
 *** Upload
