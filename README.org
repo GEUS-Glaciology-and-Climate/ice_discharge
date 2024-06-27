@@ -27,7 +27,10 @@ This is the source for "Greenland Ice Sheet solid ice discharge from 1986 throug
 
 * https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/labels/WARNING
 
+#+BEGIN_QUOTE
+[!WARNING] 
 Before using the data you should check for any open/active issue tagged https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/labels/WARNING
+#+END_QUOTE
 
 * Related Work  
 
