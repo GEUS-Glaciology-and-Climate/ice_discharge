@@ -8,7 +8,7 @@
 #+PROPERTY: header-args:PSMAP :eval no
 #+PROPERTY: header-args:elisp :eval no :tangle no
 #+PROPERTY: header-args:bash :eval no :noweb yes :tangle-mode (identity #o544)
-#+PROPERTY: header-args:jupyter-python :eval no-export :noweb yes :kernel ice_discharge :tangle-mode (identity #o544)
+#+PROPERTY: header-args:python :eval no-export :noweb yes :kernel ice_discharge :tangle-mode (identity #o544)
 #+PROPERTY: header-args: :session ice_discharge
 #+PROPERTY: header-args: :display plain
 
@@ -197,11 +197,13 @@ where \(MB\) is the mass balance, and referred to as the "input--output" method 
 # Enderlin 2014: TMB (2005-2009) = 265 \pm 18 Gt yr-1 # text in Section 3
 # Kjeldsen 2015: TMB (2003-2010) = 186 \pm 18.9 Gt yr-1 # Table 1
 
-#+BEGIN_SRC jupyter-python :session tmp :exports none :results raw drawer
+#+BEGIN_SRC python :session tmp :exports none :results raw drawer
 from uncertainties import unumpy
 import numpy as np
 np.mean(unumpy.uarray([231,293,265,267], [40,39,39,38]))
 #+END_SRC
+
+#+RESULTS:
 
 # error %
 # Rignot: 19.5/264*100 = 7.38636363636
@@ -245,7 +247,7 @@ done
 
 #+RESULTS:
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3230=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3360=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -360,7 +362,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 
 #+RESULTS:
 
-Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5865=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
+Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5851=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
 The widest gate (~47 km) is Sermersuaq (Humboldt Gletsjer) and both Ikertivaq and Sermeq Kujalleq (Jakobshavn Isbræ) are ~34 km wide. A total of 14 glaciers have gate lengths longer than 10 km. The minimum gate width is 3 pixels (600 m) by definition in the algorithm. 
 
@@ -373,7 +375,7 @@ The average unadjusted thickness gates is 399 m with a standard deviation of 253
 :CUSTOM_ID: sec:results_flow_rate
 :END:
 
-#+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
+#+BEGIN_SRC python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
 t = pd.read_csv('./out/GIS_D.csv', index_col=0, parse_dates=True)\
@@ -399,7 +401,7 @@ t[t.index.year > 2005]
 
 Our ice discharge dataset (Fig. [[fig:discharge_ts]]) reports a total discharge of 450 \(\pm\) 43 Gt in 1986, has a minimum of 419 \(\pm\) 39 Gt in 1996, and increases to 433 \(\pm\) 40 in 2000 and further to 488 \(\pm\) 45 Gt/yr in 2005, after which annual discharge remains approximately steady at 472 to 491 \(\pm\) ~45 Gt/yr during the 2005 through 2020 period.
 
-#+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
+#+BEGIN_SRC python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
 r = pd.read_csv('./out/region_D.csv', index_col=0, parse_dates=True)\
@@ -427,7 +429,7 @@ At the region scale, the SE glaciers (see Fig. [[fig:overview]] for regions) are
 # (115-90+1)/(2017-1999+1) = 1.36842105263
 # (22/(2017-1999+1)) = 1.15789473684
 
-#+BEGIN_SRC jupyter-python :session D_val_text :exports none :results raw drawer :eval no-export
+#+BEGIN_SRC python :session D_val_text :exports none :results raw drawer :eval no-export
 import pandas as pd
 
 s = pd.read_csv('./out/sector_D.csv', index_col=0, parse_dates=True)\
@@ -528,7 +530,7 @@ This research has been supported by the Programme for Monitoring of the Greenlan
 
 ** Ice Thickness v. Velocity 2D Histogram: Color = count  :ignore:
 
-#+BEGIN_SRC jupyter-python :session histogram2D :exports none
+#+BEGIN_SRC python :session histogram2D :exports none
 import matplotlib
 import matplotlib as mpl
 
@@ -625,7 +627,7 @@ Traditional and mathematically valid uncertainty treatments divide errors into t
 
 The decision to have \(R\) random samples (where \(R\) is the number of regions, usually ~18 based on citet:zwally_2012_sectors) is also arbitrary. Mathematical treatment of random errors means that, even if the error is 50 % 18 measurements reduce it to only 11.79 %.
 
-#+BEGIN_SRC jupyter-python :session err_example :results output :exports none :eval no-export
+#+BEGIN_SRC python :session err_example :results output :exports none :eval no-export
 import numpy as np
 from uncertainties import unumpy
 val = 1 # arbitrary
@@ -648,12 +650,12 @@ We do not have a solution for the issues brought up here, except to discuss them
 
 *** Invalid thickness
 :PROPERTIES:
-:header-args:jupyter-python+: :session thick_adj
+:header-args:python+: :session thick_adj
 :END:
 
 #+header: :eval no-export
 #+NAME: tab:thick_adjust
-#+BEGIN_SRC jupyter-python :display text/org :exports results :results value :session thick_adj :noweb yes
+#+BEGIN_SRC python :display text/org :exports results :results value :session thick_adj :noweb yes
 
 <<load_data>>
 <<adjust_thickness>>
@@ -667,6 +669,7 @@ df.rename({"Min" : "Minimum", "Max" : "Maximum", "Std" : "SD"}, axis="rows", inp
 # print("#+LATEX_ATTR: :placement [!h]")
 # print("#+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the \"count\" row\label{tab:thick_adjust}.")
 df.round(0).astype(int)
+
 #+END_SRC
 
 #+NAME: tab:thick_adjust
@@ -674,21 +677,21 @@ df.round(0).astype(int)
 #+CAPTION: Statistics of pixels with and without valid thickness. Numbers represent speed (m yr^{-1}) except for the "count" row\label{tab:thick_adjust}.
 #+RESULTS: tab:thick_adjust
 
-src_jupyter-python{vel.shape[0]} {{{results(=5863=)}}}
-src_jupyter-python{(th['bad'] == False).sum()} {{{results(=5301=)}}}
-src_jupyter-python{th['bad'].sum()} {{{results(=562=)}}}
-src_jupyter-python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(int)} {{{results(=10=)}}}
+# src_python{vel.shape[0]} {{{results(=5863=)}}}
+# src_python{(th['bad'] == False).sum()} {{{results(=5301=)}}}
+# src_python{th['bad'].sum()} {{{results(=562=)}}}
+# src_python{np.round(th['bad'].sum()/vel.shape[0]*100).astype(int)} {{{results(=10=)}}}
 
 We assume ice thicknesses < 20 m are incorrect where ice speed is > 100 m yr^{-1}. Of 5863 pixels, 5301 have valid thickness, and 562 (11 %) have invalid thickness. However, the speed at the locations of the invalid thicknesses is generally much less (and therefore the assumed thickness is less), and the influence on discharge is less than an average pixel with valid thickness (Table [[tab:thick_adjust]]).
 
-src_jupyter-python{th['gates'].unique().size} {{{results(=267=)}}}
-src_jupyter-python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=181=)}}}
-src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=68=)}}}
-src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=86=)}}}
-src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=32=)}}}
-src_jupyter-python{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=61=)}}}
-src_jupyter-python{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=57=)}}}
-src_jupyter-python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=21=)}}}
+# src_python{th['gates'].unique().size} {{{results(=267=)}}}
+# src_python{(th.groupby('gates').mean()['bad'] == 0).sum()} {{{results(=181=)}}}
+# src_python{np.round((th.groupby('gates').mean()['bad'] == 0).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=68=)}}}
+# src_python{(th.groupby('gates').mean()['bad'] > 0).sum()} {{{results(=86=)}}}
+# src_python{np.round((th.groupby('gates').mean()['bad'] > 0).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=32=)}}}
+# src_python{(th.groupby('gates').mean()['bad'] > 0.5).sum()} {{{results(=61=)}}}
+# src_python{(th.groupby('gates').mean()['bad'] == 1).sum()} {{{results(=57=)}}}
+# src_python{np.round((th.groupby('gates').mean()['bad'] == 1).sum()/th['gates'].unique().size*100).astype(int)} {{{results(=21=)}}}
 
 When aggregating by gate, there are 267 gates. Of these, 181 (68 %) have no bad pixels and 86 (32 %) have some bad pixels, 61 have > 50 % bad pixels, and 57 (21 %) are all bad pixels.
 
@@ -703,7 +706,7 @@ Table [[tab:thick_treatments]] shows the estimated baseline discharge to these f
 
 #+header: :eval no-export
 #+NAME: tab:thick_treatments
-#+BEGIN_SRC jupyter-python :session thick_treat :exports results :results value
+#+BEGIN_SRC python :session thick_treat :exports results :results value
 <<load_data>>
 <<adjust_thickness>>
 <<adjust_thickness_fit>>
@@ -1861,7 +1864,7 @@ cat ./tmp/gate_test.dat | sort
 
 ***** Display
 
-#+BEGIN_SRC jupyter-python :session v_b_compare :exports results :results raw drawer :display text/org
+#+BEGIN_SRC python :session v_b_compare :exports results :results raw drawer :display text/org
 # %matplotlib qt5
 import numpy as np
 import pandas as pd
@@ -1914,6 +1917,8 @@ plt.savefig('./figs/heatmap_all.pdf', bbox_inches='tight')
 
 df.round()
 #+END_SRC
+
+#+RESULTS:
 
 ** Effective Velocity
 :PROPERTIES:
@@ -2102,13 +2107,13 @@ rm ./tmp/dat_100_5000_t.bsv
 
 ** Compute Errors
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle errors.py
+:header-args:python+: :tangle errors.py
 :END:
 
 *** Velocity v Thickness Errors
 + Is velocity uncertainty important relative to thickness uncertainty?
   + ANS: No, proportional velocity uncertainty is an order of magnitude less than thickness uncertainty.
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/plain :tangle no
+#+BEGIN_SRC python :results raw drawer :session discharge :display text/plain :tangle no
 import pandas as pd
 import numpy as np
 
@@ -2135,9 +2140,11 @@ print((vel_err/vel*100).describe())
 # plt.ylabel('Relative Velocity Error [Log_10]')
 #+END_SRC
 
+#+RESULTS:
+
 *** Do velocity errors scale w/ velocity?
 + ANS: Not really.
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/plain :tangle no
+#+BEGIN_SRC python :results raw drawer :session discharge :display text/plain :tangle no
 import pandas as pd
 import numpy as np
 import datetime
@@ -2174,8 +2181,10 @@ plt.xlabel("Velocity [m yr$^{-1}$]")
 plt.ylabel("Velocity Error [m yr$^{-1}$]")
 #+END_SRC
 
+#+RESULTS:
+
 *** Results (GIS)
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :tangle no :eval no-export
+#+BEGIN_SRC python :results raw drawer :session discharge :display text/org :tangle no :eval no-export
 from uncertainties import unumpy
 import pandas as pd
 import numpy as np
@@ -2220,7 +2229,7 @@ df_out
 #+RESULTS:
 
 *** Results (Mouginot 2019 Sector)
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
+#+BEGIN_SRC python :results raw drawer :session discharge :display text/org :eval no-export
 from uncertainties import unumpy
 import pandas as pd
 import numpy as np
@@ -2258,7 +2267,7 @@ err_sector
 
 *** Results (Mouginot 2019 Region)
 
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
+#+BEGIN_SRC python :results raw drawer :session discharge :display text/org :eval no-export
 from uncertainties import unumpy
 import pandas as pd
 import numpy as np
@@ -2294,7 +2303,7 @@ err_region
 #+RESULTS:
 
 *** Results (Gate)                                                 :noexport:
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
+#+BEGIN_SRC python :results raw drawer :session discharge :display text/org :eval no-export
 from uncertainties import unumpy
 import pandas as pd
 import numpy as np
@@ -2338,7 +2347,7 @@ err_gate
 
 ** Raw data to discharge product
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle raw2discharge.py :session discharge
+:header-args:python+: :tangle raw2discharge.py :session discharge
 :END:
 *** Load data
 
@@ -2353,7 +2362,7 @@ echo "also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc."
 #+RESULTS:
 
 #+NAME: load_data
-#+BEGIN_SRC jupyter-python :exports none :results none
+#+BEGIN_SRC python :exports none :results none
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -2531,7 +2540,7 @@ For testing, gate clumps 9 (all bad) and 546 (some bad)
 #+CALL: load_data[:results none]()
 
 #+NAME: adjust_thickness
-#+BEGIN_SRC jupyter-python :exports none :results none
+#+BEGIN_SRC python :exports none :results none
 th['bad'] = th['thick'] <= 20
 
 th['thick_adj_300'] = th['thick']
@@ -2552,7 +2561,7 @@ th['thick_adj_400_err'] = [400/2. if T[0] <= 50 else T[1] for T in zip(th['thick
 #+END_SRC
 
 
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge :tangle no :eval no-export
+#+BEGIN_SRC python :exports none :results raw drawer :display text/org :session discharge :tangle no :eval no-export
 <<load_data>>
 <<adjust_thickness>>
 
@@ -2561,7 +2570,7 @@ th.describe().T
 
 #+RESULTS:
 
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :session discharge :eval no-export
+#+BEGIN_SRC python :exports none :results raw drawer :display text/org :session discharge :eval no-export
 D0 = (vel).apply(lambda c: c * (200 * th['thick'] * meta['err_2D'].values), axis=0) * 917 / 1E12
 D1 = (vel).apply(lambda c: c * (200 * th['thick_adj_300'] * meta['err_2D'].values), axis=0) * 917 / 1E12
 D0 = D0.sum(axis='rows').resample('1D').mean().interpolate(method='time', limit_area='inside').resample('A').mean()
@@ -2575,7 +2584,7 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['BedMachine','300','diff'])
 **** Adjust thickness w thickness v. velocity fit.
 
 #+NAME: adjust_thickness_fit
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/plain :eval no-export
+#+BEGIN_SRC python :exports none :results raw drawer :display text/plain :eval no-export
 CUTOFF = 20
 df = vel_baseline.join(th['thick'])
 max_vel = df.loc[df['thick'] <= CUTOFF, 'vel'].max() # limit fit to velocities where data is missing
@@ -2642,7 +2651,7 @@ pd.concat([D0,D1, D1-D0], axis='columns', keys=['300','fit','diff'])
 :ID:       62f5d28c-c704-422d-9e9b-c0771d5b86ee
 :END:
 
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :display text/org :eval no-export
+#+BEGIN_SRC python :exports none :results raw drawer :display text/org :eval no-export
 th[['thick','thick_adj_300','thick_adj_400','fit']].describe()
 #+END_SRC
 
@@ -2658,7 +2667,7 @@ Here we calculate:
 + D_baseline :: The baseline discharge - picked from our favorite of the above. TBD
 
 #+NAME: discharge_th
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer :eval no-export
+#+BEGIN_SRC python :exports none :results raw drawer :eval no-export
 D_th = pd.DataFrame(index=th.index,
                     columns=['NoAdj','NoAdj_err','300','300_err','400','400_err','fit','fit_err'])
 
@@ -2684,7 +2693,7 @@ D_th.sum(axis=0)
 
 **** Map of where thickness adjustments occur
 
-#+BEGIN_SRC jupyter-python :session gate_map :exports none :results raw drawer :tangle no
+#+BEGIN_SRC python :session gate_map :exports none :results raw drawer :tangle no
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -2828,7 +2837,7 @@ print(tmp[th['bad'] > 0]['vel'].describe())
 + Take derivative to get dh/dt
 
 #+NAME: adjust_thickness_ts
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer
+#+BEGIN_SRC python :exports none :results raw drawer
 dem_ts = dem.copy(deep=True)
 dem_ts.columns = [str(y)+'-08-01' for y in dem_ts.columns]
 dem_ts.columns = dem_ts.columns.astype(str).astype('datetime64[ns]')
@@ -2853,6 +2862,8 @@ for px in bad[bad == True].index:
     th_ts.loc[px] = fits.predict(np.log10([1,vel_baseline.iloc[px].values[0]]))
 #+END_SRC
 
+#+RESULTS: adjust_thickness_ts
+
 *** Discharge
 
 And more importantly and long-term, we calculate the following time series discharge products, using our preferred method (fill w/ 300 m):
@@ -2869,7 +2880,7 @@ And more importantly and long-term, we calculate the following time series disch
 + D_all_err ::
 + D_all_fill ::
 
-#+BEGIN_SRC jupyter-python :display text/plain :session test :tangle no
+#+BEGIN_SRC python :display text/plain :session test :tangle no
 import pandas as pd
 import numpy as np
 filled_D = pd.DataFrame(index=['A','B'], columns=['t1','t3','t4'], data=[[8,9,7],[4,2,1]])
@@ -2884,8 +2895,10 @@ r = ((filled_D*fill)/filled_D.sum()).sum()
 r.round(2)                        
 #+END_SRC
 
+#+RESULTS:
+
 #+NAME: discharge
-#+BEGIN_SRC jupyter-python :exports none :results raw drawer
+#+BEGIN_SRC python :exports none :results raw drawer
 # D :: Discharge at pixel scale
 # D_err :: The discharge error at pixel scale
 # D_fill :: The fill percentage for each pixel at each point in time
@@ -2968,9 +2981,11 @@ for c in D.columns:
     D_all_fill_weight.loc[c] = (fill[c] * (D[c] / D[c].sum())).sum()
 #+END_SRC
 
+#+RESULTS: discharge
+
 *** SAVE & RESTORE STATE
 
-#+BEGIN_SRC jupyter-python :results raw drawer :tangle no
+#+BEGIN_SRC python :results raw drawer :tangle no
 %store D
 %store D_err
 %store fill
@@ -2989,7 +3004,9 @@ for c in D.columns:
 %store meta
 #+END_SRC
 
-#+BEGIN_SRC jupyter-python :results raw drawer :tangle no
+#+RESULTS:
+
+#+BEGIN_SRC python :results raw drawer :tangle no
 %store -r
 
 D = D.T['2000':].T
@@ -3009,10 +3026,12 @@ D_all_err = D_all_err.T['2000':].T
 D_all_fill_weight = D_all_fill_weight.T['2000':].T
 #+END_SRC
 
+#+RESULTS:
+
 
 *** Export Data
 **** Crop time series
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer
+#+BEGIN_SRC python :exports both :results raw drawer
 
 STARTDATE='1986'
 D_all = D_all.T[STARTDATE:].T
@@ -3032,6 +3051,8 @@ D_all_err = D_all_err.T[STARTDATE:].T
 D_all_fill_weight = D_all_fill_weight.T[STARTDATE:].T
 
 #+END_SRC
+
+#+RESULTS:
 
 **** README
 
@@ -3113,7 +3134,7 @@ See https://github.com/GEUS-PROMICE/ice_discharge
 
 **** Gates
 ***** D, err, coverage
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer
+#+BEGIN_SRC python :exports both :results raw drawer
 D_gatesT = D_gates.T
 D_gates_errT = D_gates_err.T
 D_gates_fill_weightT = D_gates_fill_weight.T
@@ -3127,8 +3148,10 @@ D_gates_errT.to_csv('./out/gate_err.csv')
 D_gates_fill_weightT.to_csv('./out/gate_coverage.csv')
 #+END_SRC
 
+#+RESULTS:
+
 **** Sectors
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org
 # meta_sector = pd.DataFrame(index=meta.groupby('sectors').first().index)
 # meta_sector['mean x'] = meta.groupby('sectors').mean()['x'].round().astype(int)
 # meta_sector['mean y'] = meta.groupby('sectors').mean()['y'].round().astype(int)
@@ -3151,8 +3174,10 @@ D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv')
 # meta_sector.head(10)
 #+END_SRC
 
+#+RESULTS:
+
 **** Regions
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org
 # meta_region = pd.DataFrame(index=meta.groupby('regions').first().index)
 # meta_region['n gates'] = meta.groupby('regions').count()['gates'].round().astype(int)
 
@@ -3171,9 +3196,11 @@ D_regions_fill_weightT.to_csv('./out/region_coverage.csv')
 # meta_region.head(10)
 #+END_SRC
 
+#+RESULTS:
+
 
 **** GIS
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer
+#+BEGIN_SRC python :exports both :results raw drawer
 D_all.index.name = "Date"
 D_all_err.index.name = "Date"
 D_all_fill_weight.index.name = "Date"
@@ -3182,6 +3209,8 @@ D_all.to_csv('./out/GIS_D.csv', float_format='%.3f', header=["Discharge [Gt yr-1
 D_all_err.to_csv('./out/GIS_err.csv', float_format='%.3f', header=["Discharge Error [Gt yr-1]"])
 D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.3f', header=["Coverage [unit]"])
 #+END_SRC
+
+#+RESULTS:
 
 **** Gates
 #+BEGIN_SRC bash :results verbatim :tangle gate_export.sh
@@ -3215,10 +3244,10 @@ cp ${DATADIR}/Khan_2016/dhdt_1995-2015_GrIS.txt /media/kdm/promicedata/ice_disch
 
 ** CSV to NetCDF
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle csv2nc.py :session discharge :eval no-export
+:header-args:python+: :tangle csv2nc.py :session discharge :eval no-export
 :END:
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 import pandas as pd
 import xarray as xr
 import numpy as np
@@ -3229,7 +3258,7 @@ import datetime
 #+RESULTS:
 
 *** GIS
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 csvfile = 'GIS'
 
 df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
@@ -3296,7 +3325,7 @@ ds.to_netcdf('./out/GIS.nc', mode='w')#, encoding=encoding)
 #+RESULTS:
 
 *** Region
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 csvfile = 'region'
 
@@ -3388,7 +3417,7 @@ ds.to_netcdf('./out/region.nc', mode='w', encoding=encoding)
 #+RESULTS:
 
 *** Sectors
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 csvfile = 'sector'
 
@@ -3481,7 +3510,7 @@ ds.to_netcdf('./out/sector.nc', mode='w', encoding=encoding)
 
 *** Gates
 
-#+BEGIN_SRC jupyter-python
+#+BEGIN_SRC python
 
 csvfile = 'gate'
 
@@ -3590,15 +3619,15 @@ ds.to_netcdf('./out/gate.nc', mode='w', encoding=encoding)
 
 ** Figures
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle figures.py
-:header-args:jupyter-python+: :session sob_figures
+:header-args:python+: :tangle figures.py
+:header-args:python+: :session sob_figures
 :END:
 *** Overview
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle no
+:header-args:python+: :tangle no
 :END:
 **** Top contributors
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org :eval no-export
 import pandas as pd
 
 # annual average
@@ -3902,7 +3931,7 @@ inkscape -z ./figs/overview.svg -e ./figs/overview.png
 
 *** Discharge Time Series - GIS
 #+NAME: fig:discharge_ts
-#+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export
+#+BEGIN_SRC python :results raw drawer :display text/plain :eval no-export
 import matplotlib.gridspec as gridspec
 import numpy as np
 import pandas as pd
@@ -4015,7 +4044,7 @@ disp
 
 *** Discharge Time Series - Regions
 #+NAME: fig:discharge_ts_regions
-#+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export
+#+BEGIN_SRC python :results raw drawer :display text/plain :eval no-export
 import matplotlib.gridspec as gridspec
 import numpy as np
 import pandas as pd
@@ -4145,13 +4174,13 @@ tbl
 
 *** Region & Catchment Contributions
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle no
+:header-args:python+: :tangle no
 :END:
 **** 2000 to present mean
 :PROPERTIES:
 :ID:       eca400fe-cffc-4e6b-8fc1-694945093adb
 :END:
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org :eval no-export
 D = pd.read_csv("./out/GIS_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/GIS_err.csv", index_col=0, parse_dates=True)
 
@@ -4177,7 +4206,7 @@ print(err.values)
 
 
 **** Discharge time series
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org :eval no-export
 D = pd.read_csv("./out/GIS_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/GIS_err.csv", index_col=0, parse_dates=True)
 
@@ -4197,7 +4226,7 @@ df
 
 
 **** Contribution from SE
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org :eval no-export
 D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
 
@@ -4216,7 +4245,7 @@ df
 #+RESULTS:
 
 **** Contribution from SE relative to the total
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org :eval no-export
 D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
 
@@ -4236,7 +4265,7 @@ print(D_SE/D_rest*100)
 
 
 **** Contribution from others relative to the total
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org :eval no-export
 D = pd.read_csv("./out/region_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/region_err.csv", index_col=0, parse_dates=True)
 
@@ -4263,7 +4292,7 @@ print("\nNW increase:", D['NW'])
 #+RESULTS:
 
 **** Sermeq Kujalleq (Jakobshavn Isbræ)
-#+BEGIN_SRC jupyter-python :exports both :results raw drawer :display text/org :eval no-export
+#+BEGIN_SRC python :exports both :results raw drawer :display text/org :eval no-export
 D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/sector_err.csv", index_col=0, parse_dates=True)
 
@@ -4282,7 +4311,7 @@ df
 #+RESULTS:
 
 *** Discharge Time Series - Sectors
-#+BEGIN_SRC jupyter-python :results raw drawer :display text/plain :eval no-export
+#+BEGIN_SRC python :results raw drawer :display text/plain :eval no-export
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
@@ -4511,25 +4540,27 @@ if __name__ == "__main__":
 
 ** Auto update
 
+
 *** Local
 #+BEGIN_SRC bash :tangle update.sh
 <<MSGS_pretty_print>>
 
 MSG_OK "Updating Sentinel velocity files..."
 workingdir=$(pwd)
+
+# Warn the user that we need to manually update MEaSURES for now
+MSG_WARN "MEaSUREs 0766.002 product needs to be manually updated if new data is available, see how in README.org in the datafolder"
+
+# Update PROMICE IV 
 cd ${DATADIR}/Promice200m/
-
-
 if [[ -e urls.txt ]]; then cp urls.txt urls.txt.last; fi
-#curl https://dataverse.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/promice/data/sentinel1icevelocity/greenlandicesheet | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
 curl https://dataverse.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/FK2/LFZLZN | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
-
+chmod 777 urls.txt
 if cmp -s urls.txt urls.txt.last; then
   MSG_WARN "No new Sentinel1 files..."
-  # exit 255
+  #exit 255
 fi
 
-# for PID in $(cat urls.txt); do
 for PID in $(cat urls.txt | tail -n5); do
   wget --content-disposition --continue "https://dataverse.geus.dk/api/access/datafile/:persistentId?persistentId=${PID}"
 done
@@ -4563,7 +4594,7 @@ MAPSET=gates_vel_buf
 
 # python -m pip install --upgrade git+https://github.com/aussda/pyDataverse.git@3b040ff23b665ec2650bebcf4bd5478de6881af0
 
-#+BEGIN_SRC jupyter-python :tangle upload.py
+#+BEGIN_SRC python :tangle upload.py
 from pyDataverse.api import NativeApi
 import os
 import json
@@ -4621,6 +4652,8 @@ for f in files:
 
 #resp = api.publish_dataset(identifier, "major")
 #+END_SRC
+
+#+RESULTS:
 
 
 ** Docker
@@ -4859,11 +4892,11 @@ docker run mankoff/ice_discharge:conda conda env export -n base
 
 * Supplementary Material                                :noexport:
 :PROPERTIES:
-:header-args:jupyter-python+: :tangle no
+:header-args:python+: :tangle no
 :END:
 ** Errors by gate sorted by total D, err, err %
 **** Top by Discharge
-#+BEGIN_SRC jupyter-python :results raw drawer :session discharge :display text/org :eval no-export
+#+BEGIN_SRC python :results raw drawer :session discharge :display text/org :eval no-export
 import pandas as pd
 import numpy as np
 
@@ -4882,7 +4915,7 @@ err_gate
 #+RESULTS:
 
 **** Top by Error [Gt]
-#+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
+#+BEGIN_SRC python :results value :session discharge :display text/org :eval no-export
 import pandas as pd
 err_gate = pd.read_csv('./tmp/err_gate.csv', index_col=0)
 err_gate.loc['GIS'] = np.nan
@@ -4902,7 +4935,7 @@ err_gate
 
 
 **** Top by Error [%]
-#+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
+#+BEGIN_SRC python :results value :session discharge :display text/org :eval no-export
 import pandas as pd
 err_gate = pd.read_csv('./tmp/err_gate.csv', index_col=0)
 err_gate.loc['GIS'] = np.nan
@@ -4921,7 +4954,7 @@ err_gate
 #+RESULTS:
 
 **** Bottom by Error [%]
-#+BEGIN_SRC jupyter-python :results value :session discharge :display text/org :eval no-export
+#+BEGIN_SRC python :results value :session discharge :display text/org :eval no-export
 import pandas as pd
 err_gate = pd.read_csv('./tmp/err_gate.csv', index_col=0)
 err_gate.loc['GIS'] = np.nan
@@ -4947,7 +4980,7 @@ Compute the annual average for all GIS and some other glaciers using two methods
 
 NOTE - do this with the "rawest" velocity product prior to any interpolation.
 
-#+BEGIN_SRC jupyter-python :session avgmethod :exports both :results raw drawer :display text/org
+#+BEGIN_SRC python :session avgmethod :exports both :results raw drawer :display text/org
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -4985,8 +5018,10 @@ print(ann.describe())
 ann
 #+END_SRC
 
+#+RESULTS:
+
 ** Køge Bugt Y2K
-#+BEGIN_SRC jupyter-python :session kb_y2k :exports both :results raw drawer :display text/org
+#+BEGIN_SRC python :session kb_y2k :exports both :results raw drawer :display text/org
 D = pd.read_csv("./out/sector_D.csv", index_col=0, parse_dates=True)
 err = pd.read_csv("./out/sector_err.csv", index_col=0, parse_dates=True)
 
@@ -5002,6 +5037,8 @@ df['KB'] = D
 df['err'] = err
 df
 #+END_SRC
+
+#+RESULTS:
 
 * QA / QC / tests                                       :noexport:
 ** Files used in this work                              :noexport:
