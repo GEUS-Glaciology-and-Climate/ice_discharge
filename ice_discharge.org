@@ -1533,7 +1533,7 @@ MSG_OK "DEM"
 g.mapset -c DEM
 
 g.region raster=DEM_2020@PRODEM -pa
-for y in {2019..2022}; do
+for y in {2019..2023}; do
   r.mapcalc "DEM_${y} = DEM_${y}@PRODEM"
 done
 
