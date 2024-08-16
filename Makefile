@@ -35,10 +35,10 @@ update: docker ## Update with latest Sentinel data
 
 upload: docker ## Upload to dataverse
 	cp ./out/* ~/data/Mankoff_2020/ice/latest
-	#make org
-	#/usr/bin/git pull
-	#/usr/bin/git commit ice_discharge.org -m "Auto update: `/bin/date +%Y-%m-%d\ %T`"
-        #/usr/bin/git push
+	make org
+	/usr/bin/git pull
+	/usr/bin/git commit ice_discharge.org -m "Auto update: `/bin/date +%Y-%m-%d\ %T`"
+        /usr/bin/git push
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./upload.py
 
 org: ## Update the Org document
