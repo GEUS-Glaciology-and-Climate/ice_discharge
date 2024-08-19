@@ -2426,7 +2426,7 @@ echo "also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc."
 #+END_SRC
 
 #+RESULTS:
-: bed@BedMachine	DEM_1995@DEM	DEM_1996@DEM	DEM_1997@DEM	DEM_1998@DEM	DEM_1999@DEM	DEM_2000@DEM	DEM_2001@DEM	DEM_2002@DEM	DEM_2003@DEM	DEM_2004@DEM	DEM_2005@DEM	DEM_2006@DEM	DEM_2007@DEM	DEM_2008@DEM	DEM_2009@DEM	DEM_2010@DEM	DEM_2011@DEM	DEM_2012@DEM	DEM_2013@DEM	DEM_2014@DEM	DEM_2015@DEM	DEM_2016@DEM	DEM_2017@DEM	DEM_2018@DEM	DEM_2019@DEM	DEM_2020@DEM	DEM_2021@DEM	DEM_2022@DEM	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_vel_buf	gates_x@gates_vel_buf	gates_y@gates_vel_buf	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
+: bed@BedMachine	DEM_1995@DEM	DEM_1996@DEM	DEM_1997@DEM	DEM_1998@DEM	DEM_1999@DEM	DEM_2000@DEM	DEM_2001@DEM	DEM_2002@DEM	DEM_2003@DEM	DEM_2004@DEM	DEM_2005@DEM	DEM_2006@DEM	DEM_2007@DEM	DEM_2008@DEM	DEM_2009@DEM	DEM_2010@DEM	DEM_2011@DEM	DEM_2012@DEM	DEM_2013@DEM	DEM_2014@DEM	DEM_2015@DEM	DEM_2016@DEM	DEM_2017@DEM	DEM_2018@DEM	DEM_2019@DEM	DEM_2020@DEM	DEM_2021@DEM	DEM_2022@DEM	DEM_2023@DEM	err_2D	errbed@BedMachine	ex_baseline@MEaSUREs.0478	ey_baseline@MEaSUREs.0478	gates_gateID@gates_vel_buf	gates_x@gates_vel_buf	gates_y@gates_vel_buf	lat	lon	regions@Mouginot_2019	sectors@Mouginot_2019	surface@BedMachine	thickness@BedMachine	vel_baseline@MEaSUREs.0478	vel_err_baseline@MEaSUREs.0478	vx_baseline@MEaSUREs.0478	vy_baseline@MEaSUREs.0478	x	y	also: dh_YYYY@elev, vel_eff_YYYY_MM_DD@various, etc.
 
 #+NAME: load_data
 #+BEGIN_SRC python :exports none :results none
