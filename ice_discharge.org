@@ -4758,7 +4758,7 @@ for f in files:
     file_id = d.json()['data']['files'][0]['dataFile']['id']
     d2 = api.update_datafile_metadata(file_id, json_str=json_str, is_filepid=False)
 
-#resp = api.publish_dataset(identifier, "major")
+resp = api.publish_dataset(identifier, "major")
 #+END_SRC
 
 #+RESULTS:
