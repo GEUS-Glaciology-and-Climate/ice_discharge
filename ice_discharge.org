@@ -249,9 +249,9 @@ done
 
 #+RESULTS:
 #+begin_example
-times  all:  3370
+times  all:  3372
 times 19XX:  108
-times 20XX:  3262
+times 20XX:  3264
 times 2000:  12
 times 2001:  9
 times 2002:  10
@@ -277,10 +277,10 @@ times 2021:  243
 times 2022:  230
 times 2023:  178
 times 2024:  33
-times 2025:  2
+times 2025:  4
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3370=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3372=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -397,7 +397,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : pixels:  5851
 : gates:  266
 : sectors:  173
-: times:  3370
+: times:  3372
 
 Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5851=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
@@ -686,6 +686,9 @@ for i in [1,2,10,18,100,176,267,5829]:
 #+END_SRC
 
 #+RESULTS:
+: Python 3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 15:12:24) [GCC 11.2.0] on linux
+: Type "help", "copyright", "credits" or "license" for more information.
+: >>>
 
 This reduction is unlikely to be physically meaningful. Our 173 sectors, 267 gates, and 5829 pixels means that, even if errors were 100 % for each, we could reduce it to 7.5, 6.1, or 1.3 % respectively. We note that the area error introduced by the common EPSG:3413 map projection is -5 % in the north and +8 % in the south. While this error is mentioned in some other works (e.g., citet:joughin_2018_greenland) it is often not explicitly mentioned.
 
@@ -6419,6 +6422,8 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 ./IV_ROTR_20241212_20250104.nc
 ./IV_ROTR_20241224_20250116.nc
 ./IV_ROTR_20250105_20250128.nc
+./IV_ROTR_20250117_20250209.nc
+./IV_ROTR_20250129_20250221.nc
 #+end_example
 
 ***** File Metadata
@@ -6615,8 +6620,6 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 #+END_SRC
 
 #+RESULTS: QC_md5sum_Sentinel1
-| 4180f461543c6b8b00f01bef2792b763 | ./IV_ROTR_20240416_20240509.nc |
-| b2be62fd5fca0a0e4682500bd1236ea9 | ./IV_ROTR_20240428_20240521.nc |
 | 003e4fec86786a647967325cd03e004e | ./IV_ROTR_20240510_20240602.nc |
 | 1e67f1ecc07727ce443d03937f5f648a | ./IV_ROTR_20240522_20240614.nc |
 | a09ded4159065d632900f84bbea3af87 | ./IV_ROTR_20240627_20240720.nc |
@@ -6631,6 +6634,8 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 | 09705982200bc6e4b566091f699cff7e | ./IV_ROTR_20241212_20250104.nc |
 | 4a0d4e24f042d19e41a4bfb615f13588 | ./IV_ROTR_20241224_20250116.nc |
 | 0861430ea82b7e5eb51e86a7b4a96c17 | ./IV_ROTR_20250105_20250128.nc |
+| 739912cdf45a5e4883def28b4bb7efea | ./IV_ROTR_20250117_20250209.nc |
+| 6dd51f9fcd5635a3ae91bdff787a3412 | ./IV_ROTR_20250129_20250221.nc |
 
 ** Results
 *** GIS
