@@ -205,6 +205,7 @@ np.mean(unumpy.uarray([231,293,265,267], [40,39,39,38]))
 
 #+RESULTS:
 :results:
+264+/-20
 :end:
 
 # error %
@@ -686,6 +687,14 @@ for i in [1,2,10,18,100,176,267,5829]:
 #+END_SRC
 
 #+RESULTS:
+: 1 1.0 1.0 100.0
+: 2 2.0 1.4142135623730951 70.71
+: 10 10.0 3.1622776601683795 31.62
+: 18 18.0 4.242640687119285 23.57
+: 100 100.0 10.0 10.0
+: 176 176.0 13.2664991614216 7.54
+: 267 267.0 16.34013463836819 6.12
+: 5829 5829.0 76.34788798650555 1.31
 
 This reduction is unlikely to be physically meaningful. Our 173 sectors, 267 gates, and 5829 pixels means that, even if errors were 100 % for each, we could reduce it to 7.5, 6.1, or 1.3 % respectively. We note that the area error introduced by the common EPSG:3413 map projection is -5 % in the north and +8 % in the south. While this error is mentioned in some other works (e.g., citet:joughin_2018_greenland) it is often not explicitly mentioned.
 
@@ -5366,10 +5375,10 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0478
 #+begin_example
-9bf8fcf0c4add78ed54c4a35b444bdc3  /mnt/data/kdm/data//MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
+9bf8fcf0c4add78ed54c4a35b444bdc3  /mnt/data/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
 
 Driver: GTiff/GeoTIFF
-Files: /mnt/data/kdm/data//MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
+Files: /mnt/data/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
 Size is 7585, 13700
 Coordinate System is:
 PROJCRS["unnamed",
@@ -6062,10 +6071,10 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0731
 #+begin_example
-33e6afb888f11a8fc61f2e59c89ea657  /mnt/data/kdm/data//MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
+33e6afb888f11a8fc61f2e59c89ea657  /mnt/data/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 
 Driver: GTiff/GeoTIFF
-Files: /mnt/data/kdm/data//MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
+Files: /mnt/data/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 Size is 7585, 13700
 Coordinate System is:
 PROJCRS["WGS 84 / NSIDC Sea Ice Polar Stereographic North",
