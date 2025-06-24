@@ -249,9 +249,9 @@ done
 
 #+RESULTS:
 #+begin_example
-times  all:  3379
+times  all:  3399
 times 19XX:  108
-times 20XX:  3271
+times 20XX:  3291
 times 2000:  12
 times 2001:  9
 times 2002:  10
@@ -276,11 +276,11 @@ times 2020:  254
 times 2021:  243
 times 2022:  230
 times 2023:  178
-times 2024:  33
+times 2024:  53
 times 2025:  11
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3379=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3399=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -397,7 +397,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : pixels:  5851
 : gates:  266
 : sectors:  173
-: times:  3379
+: times:  3399
 
 Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5851=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
@@ -6048,6 +6048,29 @@ Subset to vx
 ./2022.09.01/GL_vel_mosaic_Monthly_01Sep22_30Sep22_vx_v05.0.tif
 ./2022.10.01/GL_vel_mosaic_Monthly_01Oct22_31Oct22_vx_v05.0.tif
 ./2022.11.01/GL_vel_mosaic_Monthly_01Nov22_30Nov22_vx_v05.0.tif
+./2023.01.01/GL_vel_mosaic_Monthly_01Jan23_31Jan23_vx_v05.0.tif
+./2023.02.01/GL_vel_mosaic_Monthly_01Feb23_28Feb23_vx_v05.0.tif
+./2023.03.01/GL_vel_mosaic_Monthly_01Mar23_31Mar23_vx_v05.0.tif
+./2023.04.01/GL_vel_mosaic_Monthly_01Apr23_30Apr23_vx_v05.0.tif
+./2023.05.01/GL_vel_mosaic_Monthly_01May23_31May23_vx_v05.0.tif
+./2023.06.01/GL_vel_mosaic_Monthly_01Jun23_30Jun23_vx_v05.0.tif
+./2023.07.01/GL_vel_mosaic_Monthly_01Jul23_31Jul23_vx_v05.0.tif
+./2023.08.01/GL_vel_mosaic_Monthly_01Aug23_31Aug23_vx_v05.0.tif
+./2023.09.01/GL_vel_mosaic_Monthly_01Sep23_30Sep23_vx_v05.0.tif
+./2023.10.01/GL_vel_mosaic_Monthly_01Oct23_31Oct23_vx_v05.0.tif
+./2023.11.01/GL_vel_mosaic_Monthly_01Nov23_30Nov23_vx_v05.0.tif
+./2023.12.01/GL_vel_mosaic_Monthly_01Dec23_31Dec23_vx_v05.0.tif
+./2024.01.01/GL_vel_mosaic_Monthly_01Jan24_31Jan24_vx_v05.0.tif
+./2024.02.01/GL_vel_mosaic_Monthly_01Feb24_29Feb24_vx_v05.0.tif
+./2024.03.01/GL_vel_mosaic_Monthly_01Mar24_31Mar24_vx_v05.0.tif
+./2024.04.01/GL_vel_mosaic_Monthly_01Apr24_30Apr24_vx_v05.0.tif
+./2024.05.01/GL_vel_mosaic_Monthly_01May24_31May24_vx_v05.0.tif
+./2024.06.01/GL_vel_mosaic_Monthly_01Jun24_30Jun24_vx_v05.0.tif
+./2024.07.01/GL_vel_mosaic_Monthly_01Jul24_31Jul24_vx_v05.0.tif
+./2024.08.01/GL_vel_mosaic_Monthly_01Aug24_31Aug24_vx_v05.0.tif
+./2024.09.01/GL_vel_mosaic_Monthly_01Sep24_30Sep24_vx_v05.0.tif
+./2024.10.01/GL_vel_mosaic_Monthly_01Oct24_31Oct24_vx_v05.0.tif
+./2024.11.01/GL_vel_mosaic_Monthly_01Nov24_30Nov24_vx_v05.0.tif
 #+end_example
 
 ***** File Metadata
@@ -6145,22 +6168,22 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 #+END_SRC
 
 #+RESULTS: QC_md5sum_NSIDC_0731
-| 13039c11df27ca9f337221fe88bd2394 | ./2021.08.01/GL_vel_mosaic_Monthly_01Aug21_31Aug21_vx_v05.0.tif |
-| 55fc5cc6eeadd35b3e550ca99b10aa0b | ./2021.09.01/GL_vel_mosaic_Monthly_01Sep21_30Sep21_vx_v05.0.tif |
-| 1a5c03d0c868aafa7b72ed85cc498dd1 | ./2021.10.01/GL_vel_mosaic_Monthly_01Oct21_31Oct21_vx_v05.0.tif |
-| b024338814172429bf53d769b58f93b0 | ./2021.11.01/GL_vel_mosaic_Monthly_01Nov21_30Nov21_vx_v05.0.tif |
-| 57fbeb606692bc436193862e757684c9 | ./2021.12.01/GL_vel_mosaic_Monthly_01Dec21_31Dec21_vx_v05.0.tif |
-| 2059149ebf1434f506e0a63400c9161e | ./2022.01.01/GL_vel_mosaic_Monthly_01Jan22_31Jan22_vx_v05.0.tif |
-| a16a0f0ca27201348dad60853361cd32 | ./2022.02.01/GL_vel_mosaic_Monthly_01Feb22_28Feb22_vx_v05.0.tif |
-| 4ec84ba26bf9c50a5b7c06ffc6a8e916 | ./2022.03.01/GL_vel_mosaic_Monthly_01Mar22_31Mar22_vx_v05.0.tif |
-| 916f01f2946dc516adfd6c3efe009a95 | ./2022.04.01/GL_vel_mosaic_Monthly_01Apr22_30Apr22_vx_v05.0.tif |
-| b6cc0dcc40964bea458e7e0fa696aeb9 | ./2022.05.01/GL_vel_mosaic_Monthly_01May22_31May22_vx_v05.0.tif |
-| abe3dc0370f5f6f483128e722861980b | ./2022.06.01/GL_vel_mosaic_Monthly_01Jun22_30Jun22_vx_v05.0.tif |
-| 1d459b95bbbc9106d26a3d1caa5f16eb | ./2022.07.01/GL_vel_mosaic_Monthly_01Jul22_31Jul22_vx_v05.0.tif |
-| fc81cc7ac5bc8f48dc6495df316cc529 | ./2022.08.01/GL_vel_mosaic_Monthly_01Aug22_31Aug22_vx_v05.0.tif |
-| 3e82d61042b74a18d47ef88d1156d99f | ./2022.09.01/GL_vel_mosaic_Monthly_01Sep22_30Sep22_vx_v05.0.tif |
-| eb464f88c91336997da72319f44bfae5 | ./2022.10.01/GL_vel_mosaic_Monthly_01Oct22_31Oct22_vx_v05.0.tif |
-| 32c77418957e3a16badd0ef39baa0f3d | ./2022.11.01/GL_vel_mosaic_Monthly_01Nov22_30Nov22_vx_v05.0.tif |
+| 88d0fe41260a5f1915360754ef578dfb | ./2023.08.01/GL_vel_mosaic_Monthly_01Aug23_31Aug23_vx_v05.0.tif |
+| 820c8be455ff66132b8e2ee544bbb6b3 | ./2023.09.01/GL_vel_mosaic_Monthly_01Sep23_30Sep23_vx_v05.0.tif |
+| 9814d47debae4cf048e43ab607cf45df | ./2023.10.01/GL_vel_mosaic_Monthly_01Oct23_31Oct23_vx_v05.0.tif |
+| 16ffc8bc5c761e6812d08825ffb4800f | ./2023.11.01/GL_vel_mosaic_Monthly_01Nov23_30Nov23_vx_v05.0.tif |
+| 30faad144dc9f8c9916674986a00bf9f | ./2023.12.01/GL_vel_mosaic_Monthly_01Dec23_31Dec23_vx_v05.0.tif |
+| 6a4f4f003ce0d63dab390475e67050c6 | ./2024.01.01/GL_vel_mosaic_Monthly_01Jan24_31Jan24_vx_v05.0.tif |
+| 6dd282cf179254cff4b2f265ab63b25a | ./2024.02.01/GL_vel_mosaic_Monthly_01Feb24_29Feb24_vx_v05.0.tif |
+| dfc27045af5438b5fb2046f78b3b6e4e | ./2024.03.01/GL_vel_mosaic_Monthly_01Mar24_31Mar24_vx_v05.0.tif |
+| 756ce5c941dd0d9033d5e4b86830e88b | ./2024.04.01/GL_vel_mosaic_Monthly_01Apr24_30Apr24_vx_v05.0.tif |
+| 0ede963b328712ca936aa27b08eecd1c | ./2024.05.01/GL_vel_mosaic_Monthly_01May24_31May24_vx_v05.0.tif |
+| e69420396a06f3a7296d8789919262d2 | ./2024.06.01/GL_vel_mosaic_Monthly_01Jun24_30Jun24_vx_v05.0.tif |
+| b7f31b035563000739174db7002a3f62 | ./2024.07.01/GL_vel_mosaic_Monthly_01Jul24_31Jul24_vx_v05.0.tif |
+| 1c21e56b8afbfde7a98c529c19d71bd9 | ./2024.08.01/GL_vel_mosaic_Monthly_01Aug24_31Aug24_vx_v05.0.tif |
+| 6e6fbdca6a1ebc70cc781d0d1685f825 | ./2024.09.01/GL_vel_mosaic_Monthly_01Sep24_30Sep24_vx_v05.0.tif |
+| f27f2e866956e965d20e503bfa0a838b | ./2024.10.01/GL_vel_mosaic_Monthly_01Oct24_31Oct24_vx_v05.0.tif |
+| ddf1356a4c288fb34bc48463fe7928e1 | ./2024.11.01/GL_vel_mosaic_Monthly_01Nov24_30Nov24_vx_v05.0.tif |
 
 *** Sentinel 1
 ***** File List
