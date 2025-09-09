@@ -205,7 +205,6 @@ np.mean(unumpy.uarray([231,293,265,267], [40,39,39,38]))
 
 #+RESULTS:
 :results:
-264+/-20
 :end:
 
 # error %
@@ -250,9 +249,9 @@ done
 
 #+RESULTS:
 #+begin_example
-times  all:  3407
+times  all:  3408
 times 19XX:  108
-times 20XX:  3299
+times 20XX:  3300
 times 2000:  12
 times 2001:  9
 times 2002:  10
@@ -278,10 +277,10 @@ times 2021:  243
 times 2022:  230
 times 2023:  178
 times 2024:  53
-times 2025:  19
+times 2025:  20
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3407=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3408=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -398,7 +397,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : pixels:  5851
 : gates:  266
 : sectors:  173
-: times:  3407
+: times:  3408
 
 Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5851=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
@@ -687,14 +686,6 @@ for i in [1,2,10,18,100,176,267,5829]:
 #+END_SRC
 
 #+RESULTS:
-: 1 1.0 1.0 100.0
-: 2 2.0 1.4142135623730951 70.71
-: 10 10.0 3.1622776601683795 31.62
-: 18 18.0 4.242640687119285 23.57
-: 100 100.0 10.0 10.0
-: 176 176.0 13.2664991614216 7.54
-: 267 267.0 16.34013463836819 6.12
-: 5829 5829.0 76.34788798650555 1.31
 
 This reduction is unlikely to be physically meaningful. Our 173 sectors, 267 gates, and 5829 pixels means that, even if errors were 100 % for each, we could reduce it to 7.5, 6.1, or 1.3 % respectively. We note that the area error introduced by the common EPSG:3413 map projection is -5 % in the north and +8 % in the south. While this error is mentioned in some other works (e.g., citet:joughin_2018_greenland) it is often not explicitly mentioned.
 
@@ -5375,10 +5366,10 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0478
 #+begin_example
-9bf8fcf0c4add78ed54c4a35b444bdc3  /mnt/data/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
+9bf8fcf0c4add78ed54c4a35b444bdc3  /mnt/data/kdm/data//MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
 
 Driver: GTiff/GeoTIFF
-Files: /mnt/data/kdm/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
+Files: /mnt/data/kdm/data//MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
 Size is 7585, 13700
 Coordinate System is:
 PROJCRS["unnamed",
@@ -6094,10 +6085,10 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0731
 #+begin_example
-33e6afb888f11a8fc61f2e59c89ea657  /mnt/data/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
+33e6afb888f11a8fc61f2e59c89ea657  /mnt/data/kdm/data//MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 
 Driver: GTiff/GeoTIFF
-Files: /mnt/data/kdm/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
+Files: /mnt/data/kdm/data//MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 Size is 7585, 13700
 Coordinate System is:
 PROJCRS["WGS 84 / NSIDC Sea Ice Polar Stereographic North",
@@ -6468,6 +6459,7 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 ./IV_ROTR_20250703_20250727.nc
 ./IV_ROTR_20250715_20250808.nc
 ./IV_ROTR_20250727_20250820.nc
+./IV_ROTR_20250808_20250901.nc
 #+end_example
 
 ***** File Metadata
@@ -6664,7 +6656,6 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 #+END_SRC
 
 #+RESULTS: QC_md5sum_Sentinel1
-| 6dd51f9fcd5635a3ae91bdff787a3412 | ./IV_ROTR_20250129_20250221.nc |
 | a29d4327cb0b29e95c5fd5dc6a964df3 | ./IV_ROTR_20250209_20250305.nc |
 | 8d6fe900e40587487648bf75d94a35c7 | ./IV_ROTR_20250221_20250317.nc |
 | 5396f56dabaf197008215a4e6a667fdd | ./IV_ROTR_20250305_20250329.nc |
@@ -6680,6 +6671,7 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 | e6d69a2083ddb6139b0274311dd87c05 | ./IV_ROTR_20250703_20250727.nc |
 | e02834cf517808ca8c0313587645eff2 | ./IV_ROTR_20250715_20250808.nc |
 | 78cfed2a629ff1b0e30bf57b0de8e838 | ./IV_ROTR_20250727_20250820.nc |
+| c812babdbcf353c7350b4ec8eae130da | ./IV_ROTR_20250808_20250901.nc |
 
 ** Results
 *** GIS
