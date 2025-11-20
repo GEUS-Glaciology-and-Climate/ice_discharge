@@ -249,9 +249,9 @@ done
 
 #+RESULTS:
 #+begin_example
-times  all:  3413
+times  all:  3414
 times 19XX:  108
-times 20XX:  3305
+times 20XX:  3306
 times 2000:  12
 times 2001:  9
 times 2002:  10
@@ -277,10 +277,10 @@ times 2021:  243
 times 2022:  230
 times 2023:  178
 times 2024:  53
-times 2025:  25
+times 2025:  26
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3413=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3414=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -397,7 +397,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : pixels:  5851
 : gates:  266
 : sectors:  173
-: times:  3413
+: times:  3414
 
 Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5851=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
@@ -6465,6 +6465,7 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 ./IV_ROTR_20250913_20251007.nc
 ./IV_ROTR_20250925_20251019.nc
 ./IV_ROTR_20251007_20251031.nc
+./IV_ROTR_20251019_20251112.nc
 #+end_example
 
 ***** File Metadata
@@ -6661,7 +6662,6 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 #+END_SRC
 
 #+RESULTS: QC_md5sum_Sentinel1
-| 4a920242d18ffa12d466f866e29736cf | ./IV_ROTR_20250410_20250504.nc |
 | 3c8309fe741865c54c334f56551e2fa0 | ./IV_ROTR_20250422_20250516.nc |
 | b1ef8b4f03036c20e6a7356ad87045cb | ./IV_ROTR_20250504_20250528.nc |
 | 925950d904cab0372e81df85ebe5421f | ./IV_ROTR_20250516_20250609.nc |
@@ -6677,6 +6677,7 @@ find . -type f -name "*.nc" | LC_ALL=C sort | tail -n16 | parallel --keep-order 
 | 089af633bcca4100535be505ae8eb07e | ./IV_ROTR_20250913_20251007.nc |
 | de10bcbaf2e78b1e9a45ff0e67ab785d | ./IV_ROTR_20250925_20251019.nc |
 | 42bd0b5bb13291299b8fb2b7450e9659 | ./IV_ROTR_20251007_20251031.nc |
+| 1029b133747daa4b74d4192bf4c7a87e | ./IV_ROTR_20251019_20251112.nc |
 
 ** Results
 *** GIS
