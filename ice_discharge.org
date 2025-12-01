@@ -1295,10 +1295,10 @@ done
 g.region raster=VX_${DATE} -pa
 #+END_SRC
 
-**** PROMICE IV 200m
+**** PROMICE IV 500m
 ***** Data Intro                                        :noexport:
 #+BEGIN_SRC bash :results verbatim :tangle no
-DIR=${DATADIR}/Promice200m/
+DIR=${DATADIR}/Promice500m/
 (cd ${DIR}; ls *.nc | head)
 (cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")
 #+END_SRC 
@@ -1310,14 +1310,16 @@ DIR=${DATADIR}/Promice200m/
 
 #+NAME: promice_import
 #+BEGIN_SRC bash :results verbatim
-MSG_OK "Promice 200m"
+MSG_OK "Promice 500m"
 g.mapset -c promice
-ROOT=${DATADIR}/Promice200m/
+ROOT=${DATADIR}/Promice500m/
 
 FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG 
 for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do
-  DATE_STR=$(ncdump -t -v time ${FILE} | tail -n2 | tr -dc '[0-9\-]' | tr '-' '_')
-  echo $DATE_STR
+  T=$(ncdump -v time $FILE | tail -n2 | tr -dc '[0-9]')
+  DATE=$(date --utc --date="1990-01-01 +${T} days" --iso-8601)
+  DATE_STR=$(echo ${DATE} | sed s/-/_/g)
+  echo $DATE
 
   r.external -o source="NetCDF:${FILE}:land_ice_surface_easting_velocity" output=vx_${DATE_STR}
   r.external -o source="NetCDF:${FILE}:land_ice_surface_northing_velocity" output=vy_${DATE_STR}
