@@ -3002,13 +3002,8 @@ DD_err[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','r
 
 
 # PROMICE discharge — using PROMICE velocity and error
-D_promice = (vel_promice * th_ts).apply(
-    lambda c: c * (200 * meta['err_2D'].values), axis=0
-) * 917 / 1E12
-
-D_promice_err = vel_promice.apply(
-    lambda c: c * (th['fit_err'] * 200 * meta['err_2D'].values), axis=0
-) * 917 / 1E12
+D_promice = (vel_promice * th_ts).apply(lambda c: c * (200 * meta['err_2D'].values), axis=0) * 917 / 1E12
+D_promice_err = vel_promice.apply( lambda c: c * (th['fit_err'] * 200 * meta['err_2D'].values), axis=0) * 917 / 1E12
 
 # Attach metadata like we did for DD / DD_err
 DD_promice, DD_promice_err = [_.copy() for _ in [D_promice, D_promice_err]]
@@ -3084,40 +3079,74 @@ for c in D.columns:
     D_all_fill_weight.loc[c] = (fill[c] * (D[c] / D[c].sum())).sum()
 
 
-# Weighted fill for PROMICE
+# Weighted fill for PROMICE only output
+# D_gate :: Same, but at the gate scale
+# D_gate_err ::
+# D_gate_fill ::
+D_promice_gates = DD_promice.groupby('gates').sum().drop(['ones','sectors'], axis=1)
+D_promice_gates_err = DD_promice_err.groupby('gates').sum().drop(['ones','sectors'], axis=1)
 D_promice_gates_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_promice_gates)
 for g in D_promice_gates.index:
-    g_idx = DD_promice['gates'] == g
-    D_promice_gates_fill_weight.loc[g] = ((D_promice[g_idx] * fill_promice[g_idx]) /
-                                          D_promice[g_idx].sum()).sum()
+    g_idx = (DD_promice['gates'] == g)
+    D_promice_gates_fill_weight.loc[g] = ((D_promice[g_idx]*fill_promice[g_idx])/D_promice[g_idx].sum()).sum()
 
-# Same for sectors
+D_promice_gates.columns = D_promice_gates.columns.astype(str).astype('datetime64[ns]')
+D_promice_gates_err.columns = D_promice_gates_err.columns.astype(str).astype('datetime64[ns]')
+D_promice_gates_fill_weight.columns = D_promice_gates_fill_weight.columns.astype(str).astype('datetime64[ns]')
+D_promice_gates_fill_weight.clip(lower=0, upper=1, inplace=True)
+
+
+
+# D_sector :: Same, but at Mouginot sector scale
+# D_sector_err ::
+# D_sector_fill ::
+D_promice_sectors = DD_promice.groupby('name').sum().drop(['ones','sectors','gates'], axis=1)
+D_promice_sectors_err = DD_promice_err.groupby('name').sum().drop(['ones','sectors','gates'], axis=1)
 D_promice_sectors_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_promice_sectors)
 for s in D_promice_sectors.index:
-    s_idx = DD_promice['name'] == s
-    D_promice_sectors_fill_weight.loc[s] = ((D_promice[s_idx] * fill_promice[s_idx]) /
-                                            D_promice[s_idx].sum()).sum()
+    s_idx = (DD['name'] == s)
+    D_promice_sectors_fill_weight.loc[s] = ((D_promice[s_idx]*fill_promice[s_idx])/D_promice[s_idx].sum()).sum()
 
-# Same for regions
+D_promice_sectors.columns = D_promice_sectors.columns.astype(str).astype('datetime64[ns]')
+D_promice_sectors_err.columns = D_promice_sectors_err.columns.astype(str).astype('datetime64[ns]')
+D_promice_sectors_fill_weight.columns = D_promice_sectors_fill_weight.columns.astype(str).astype('datetime64[ns]')
+D_promice_sectors_fill_weight.clip(lower=0, upper=1, inplace=True)
+
+
+# D_region :: Same, but at Mouginot region scale
+# D_region_err ::
+# D_region_fill ::
+D_promice_regions = DD_promice.groupby('regions').sum().drop(['ones','sectors','gates'], axis=1)
+D_promice_regions_err = DD_promice_err.groupby('regions').sum().drop(['ones','sectors','gates'], axis=1)
 D_promice_regions_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_promice_regions)
 for r in D_promice_regions.index:
-    r_idx = DD_promice['regions'] == r
-    D_promice_regions_fill_weight.loc[r] = ((D_promice[r_idx] * fill_promice[r_idx]) /
-                                            D_promice[r_idx].sum()).sum()
+    r_idx = DD['regions'] == r
+    D_promice_regions_fill_weight.loc[r] = ((D_promice[r_idx]*fill_promice[r_idx])/D_promice[r_idx].sum()).sum()
+    
+    # # or, broken apart into simple steps.
+    # # Whether any given pixel is filled (1) or not (0).
+    # r_fill = fill[DD['regions'] == r].fillna(value=0)
+    # # Discharge for each pixel in this region, using filling
+    # r_filled_D = DD[DD['regions'] == r].drop(['sectors','regions','ones'], axis=1)
+    # # weighted filling for this region
+    # r_fill_weight = ((r_filled_D*r_fill)/r_filled_D.sum()).sum()
+    # D_regions_fill_weight.loc[r] = r_fill_weight
+    
+D_promice_regions.columns = D_promice_regions.columns.astype(str).astype('datetime64[ns]')
+D_promice_regions_err.columns = D_promice_regions_err.columns.astype(str).astype('datetime64[ns]')
+D_promice_regions_fill_weight.columns = D_promice_regions_fill_weight.columns.astype(str).astype('datetime64[ns]')
+D_promice_regions_fill_weight.clip(lower=0, upper=1, inplace=True)
 
-# PROMICE :: Same, but all GIS
-# D_promice_all :: PROMICE-only discharge sum
-# D_promice_all_err :: PROMICE-only discharge error
-# D_promice_all_fill :: PROMICE-only fill weighting
 
+# D_all :: Same, but all GIS
+# D_all_err ::
+# D_all_fill ::
 D_promice_all = DD_promice.drop(['regions','sectors','ones','name','gates'], axis=1).sum()
 D_promice_all_err = DD_promice_err.drop(['regions','sectors','ones','name','gates'], axis=1).sum()
+D_promice_all_fill_weight = pd.Series(dtype=np.float64).reindex_like(D_all)
+for c in D.columns:
+    D_promice_all_fill_weight.loc[c] = (fill_promice[c] * (D_promice[c] / D_promice[c].sum())).sum()
 
-# Weighted fill using PROMICE discharge and PROMICE fill mask
-D_promice_all_fill_weight = pd.Series(dtype=np.float64).reindex_like(D_promice_all)
-for c in D_promice.columns:
-    D_promice_all_fill_weight.loc[c] = (fill_promice[c] * 
-                                       (D_promice[c] / D_promice[c].sum())).sum()
 
 #+END_SRC
 
