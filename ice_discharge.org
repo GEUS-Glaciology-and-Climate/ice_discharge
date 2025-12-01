@@ -1849,8 +1849,8 @@ db.dropcolumn -f table=gates_final column=area
 mkdir -p out
 db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019,Zwally_2012,Moon_2008,Moon_2008_dist from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
 
-mkdir -p out_promice
-cp ./out/gate_meta.csv ./out_promice/gate_meta.csv
+mkdir -p out_promice500m
+cp ./out/gate_meta.csv ./out_promice500m/gate_meta.csv
 #+END_SRC
 
 *** Export Gates to KML                                            :noexport:
@@ -3325,7 +3325,7 @@ D and err data have units [Gt yr-1].
 Coverage is in range [0, 1]
 
 , *** PROMICE only
-Since this is a PROMICE data product, a PROMICE only equivalent dataset is produced in out_promice.
+Since this is a PROMICE data product, a PROMICE only equivalent dataset is produced in out_promice500m.
 
 ,** Surface elevation change
 
@@ -3363,9 +3363,9 @@ D_promice_gates_errT.index.name = "Date"
 D_promice_gates_fill_weightT.index.name = "Date"
 
 # Save files to the PROMICE output folder
-D_promice_gatesT.to_csv('./out_promice/gate_D.csv')
-D_promice_gates_errT.to_csv('./out_promice/gate_err.csv')
-D_promice_gates_fill_weightT.to_csv('./out_promice/gate_coverage.csv')
+D_promice_gatesT.to_csv('./out_promice500m/gate_D.csv')
+D_promice_gates_errT.to_csv('./out_promice500m/gate_err.csv')
+D_promice_gates_fill_weightT.to_csv('./out_promice500m/gate_coverage.csv')
 #+END_SRC
 
 #+RESULTS:
@@ -3405,11 +3405,11 @@ D_promice_sectors_errT.index.name = "Date"
 D_promice_sectors_fill_weightT.index.name = "Date"
 
 # meta_sector applies to PROMICE the same way as total (if present)
-# meta_sector.to_csv('./out_promice/sector_meta.csv')  # if you output meta files
+# meta_sector.to_csv('./out_promice500m/sector_meta.csv')  # if you output meta files
 
-D_promice_sectorsT.to_csv('./out_promice/sector_D.csv')
-D_promice_sectors_errT.to_csv('./out_promice/sector_err.csv')
-D_promice_sectors_fill_weightT.to_csv('./out_promice/sector_coverage.csv')
+D_promice_sectorsT.to_csv('./out_promice500m/sector_D.csv')
+D_promice_sectors_errT.to_csv('./out_promice500m/sector_err.csv')
+D_promice_sectors_fill_weightT.to_csv('./out_promice500m/sector_coverage.csv')
 
 
 #+END_SRC
@@ -3447,11 +3447,11 @@ D_promice_regions_errT.index.name = "Date"
 D_promice_regions_fill_weightT.index.name = "Date"
 
 # meta_region applies to PROMICE the same way as total
-# meta_region.to_csv('./out_promice/region_meta.csv')
+# meta_region.to_csv('./out_promice500m/region_meta.csv')
 
-D_promice_regionsT.to_csv('./out_promice/region_D.csv')
-D_promice_regions_errT.to_csv('./out_promice/region_err.csv')
-D_promice_regions_fill_weightT.to_csv('./out_promice/region_coverage.csv')
+D_promice_regionsT.to_csv('./out_promice500m/region_D.csv')
+D_promice_regions_errT.to_csv('./out_promice500m/region_err.csv')
+D_promice_regions_fill_weightT.to_csv('./out_promice500m/region_coverage.csv')
 #+END_SRC
 
 #+RESULTS:
@@ -3475,9 +3475,9 @@ D_promice_all.index.name = "Date"
 D_promice_all_err.index.name = "Date"
 D_promice_all_fill_weight.index.name = "Date"
 
-D_promice_all.to_csv('./out_promice/GIS_D.csv', float_format='%.3f',  header=["Discharge [Gt yr-1]"])
-D_promice_all_err.to_csv('./out_promice/GIS_err.csv', float_format='%.3f', header=["Discharge Error [Gt yr-1]"])
-D_promice_all_fill_weight.to_csv('./out_promice/GIS_coverage.csv', float_format='%.3f', header=["Coverage [unit]"])
+D_promice_all.to_csv('./out_promice500m/GIS_D.csv', float_format='%.3f',  header=["Discharge [Gt yr-1]"])
+D_promice_all_err.to_csv('./out_promice500m/GIS_err.csv', float_format='%.3f', header=["Discharge Error [Gt yr-1]"])
+D_promice_all_fill_weight.to_csv('./out_promice500m/GIS_coverage.csv', float_format='%.3f', header=["Coverage [unit]"])
 #+END_SRC
 
 #+RESULTS:
@@ -3493,9 +3493,9 @@ v.out.ogr input=gates_final output=./out/gates.kml format=KML --o
 v.out.ogr input=gates_final output=./out/gates.gpkg format=GPKG --o
 v.out.ogr input=gates_final output=./out/gates.geojson format=GeoJSON --o
 
-cp ./out/gates.kmz ./out_promice/gates_promice.kmz
-cp ./out/gates.gpkg ./out_promice/gates_promice.gpkg
-cp ./out/gates.geojson ./out_promice/gates_promice.geojson
+cp ./out/gates.kmz ./out_promice500m/gates_promice.kmz
+cp ./out/gates.gpkg ./out_promice500m/gates_promice.gpkg
+cp ./out/gates.geojson ./out_promice500m/gates_promice.geojson
 #+END_SRC
 
 **** Elevation change
@@ -3591,9 +3591,9 @@ For PROMICE only
 #+begin_src python
 csvfile = 'GIS'
 
-df_D = pd.read_csv('./out_promice/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out_promice/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out_promice/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out_promice500m/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out_promice500m/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out_promice500m/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
 
 # ds = df_D.to_xarray()
 
@@ -3649,7 +3649,7 @@ ds.attrs["product_version"] = 2.0
 # encoding = {var: comp for var in ds.data_vars} # all
 # encoding = {var: comp for var in ['time','coverage']} # some
 
-ds.to_netcdf('./out_promice/GIS.nc', mode='w')#, encoding=encoding)
+ds.to_netcdf('./out_promice500m/GIS.nc', mode='w')#, encoding=encoding)
 #+end_src
 
 #+RESULTS:
@@ -3748,9 +3748,9 @@ ds.to_netcdf('./out/region.nc', mode='w', encoding=encoding)
 
 csvfile = 'region'
 
-df_D = pd.read_csv('./out_promice/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out_promice/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out_promice/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out_promice500m/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out_promice500m/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out_promice500m/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
 
 ds = xr.Dataset()
 
@@ -3830,7 +3830,7 @@ ds.attrs["product_version"] = 2.0
 comp = dict(zlib=True, complevel=9)
 encoding = {var: comp for var in ds.data_vars} # all
 
-ds.to_netcdf('./out_promice/region.nc', mode='w', encoding=encoding)
+ds.to_netcdf('./out_promice500m/region.nc', mode='w', encoding=encoding)
 #+end_src
 
 #+RESULTS:
@@ -4010,7 +4010,7 @@ ds.attrs["product_version"] = 2.0
 comp = dict(zlib=True, complevel=9)
 encoding = {var: comp for var in ds.data_vars} # all
 
-ds.to_netcdf('./out_promice/sector.nc', mode='w', encoding=encoding)
+ds.to_netcdf('./out_promice500m/sector.nc', mode='w', encoding=encoding)
 #+end_src
 
 #+RESULTS:
@@ -4125,9 +4125,9 @@ ds.to_netcdf('./out/gate.nc', mode='w', encoding=encoding)
 
 csvfile = 'gate'
 
-df_D = pd.read_csv('./out_promice/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
-df_err = pd.read_csv('./out_promice/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
-df_coverage = pd.read_csv('./out_promice/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+df_D = pd.read_csv('./out_promice500m/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out_promice500m/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out_promice500m/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
 
 meta = pd.read_csv("./out/gate_meta.csv")
 
@@ -4222,7 +4222,7 @@ ds.attrs["product_version"] = 2.0
 comp = dict(zlib=True, complevel=9)
 encoding = {var: comp for var in ds.data_vars} # all
 
-ds.to_netcdf('./out_promice/gate.nc', mode='w', encoding=encoding)
+ds.to_netcdf('./out_promice500m/gate.nc', mode='w', encoding=encoding)
 #+end_src
 
 #+RESULTS:
