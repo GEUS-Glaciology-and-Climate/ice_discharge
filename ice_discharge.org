@@ -1846,6 +1846,9 @@ db.dropcolumn -f table=gates_final column=area
 #+BEGIN_SRC bash :results verbatim
 mkdir -p out
 db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019,Zwally_2012,Moon_2008,Moon_2008_dist from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
+
+mkdir -p out_promice
+cp ./out/gate_meta.csv ./out_promice/gate_meta.csv
 #+END_SRC
 
 *** Export Gates to KML                                            :noexport:
@@ -2483,13 +2486,13 @@ def filter_bad_v(v):
 ### Load all velocity
 ###
 vel = pd.read_csv("./tmp/dat_100_5000.csv", usecols=(lambda c: ('vel_eff' in c)))
-
+vel_promice = pd.read_csv("./tmp/dat_100_5000.csv", usecols=lambda col: ("vel_eff" in col) and col.endswith("@promice"))
 
 all_t = vel.rename(columns=lambda c: dt.datetime(int(c[8:12]),
                                                  int(c[13:15]),
                                                  int(c[16:18]))).columns.unique()
 
-# 'velocity source' as in Sentinel, measures.X, measures.Y, etc.
+# 'velocity source' as in promice, measures.X, measures.Y, etc.
 vel_sources = np.unique([_.split('@')[1] for _ in vel.columns])
 for vs in vel_sources:
     print(vs)
@@ -2511,6 +2514,11 @@ for vs in vel_sources:
                                 limit_area='inside', limit_direction='both')\
                    .replace(np.nan,0)
 
+    if "promice" in vs.lower():
+        vel_promice = vs_vel.copy()
+        vel_navg_promice = (vs_vel != 0).replace({True:1, False:0})
+        vel_fill_promice = vs_fill.copy().replace(np.nan,0)
+
     if vs == vel_sources[0]:
         vel_sum = vs_vel.copy()
         vel_navg = (vs_vel != 0).replace({True:1, False:0})
@@ -2523,8 +2531,14 @@ for vs in vel_sources:
 vel_final = vel_sum / vel_navg
 vel_final = vel_final.fillna(method='bfill', axis=1).fillna(method='ffill', axis=1)
 
+vel_final_promice = vel_promice / vel_navg_promice
+vel_final_promice = vel_final_promice.fillna(method='bfill', axis=1).fillna(method='ffill', axis=1)
+
 vel = vel_final
 fill = vel_fill; fill[fill > 1] = 1
+
+vel_promice = vel_final_promice
+fill_promice = vel_fill_promice; fill_promice[fill_promice > 1] =1
 
 
 ###
@@ -2554,6 +2568,8 @@ for c in err.columns:
     
 err.sort_index(axis='columns', inplace=True)
 
+# Separate PROMICE error (matching PROMICE velocity timestamps)
+err_promice = err.loc[:, err.columns.isin(vel_promice.columns)].copy()
 
 ###
 ### DEM
@@ -2985,6 +3001,21 @@ DD[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','regio
 DD_err[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','regions','ones','name']]
 
 
+# PROMICE discharge — using PROMICE velocity and error
+D_promice = (vel_promice * th_ts).apply(
+    lambda c: c * (200 * meta['err_2D'].values), axis=0
+) * 917 / 1E12
+
+D_promice_err = vel_promice.apply(
+    lambda c: c * (th['fit_err'] * 200 * meta['err_2D'].values), axis=0
+) * 917 / 1E12
+
+# Attach metadata like we did for DD / DD_err
+DD_promice, DD_promice_err = [_.copy() for _ in [D_promice, D_promice_err]]
+DD_promice[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','regions','ones','name']]
+DD_promice_err[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','regions','ones','name']]
+
+
 # D_gate :: Same, but at the gate scale
 # D_gate_err ::
 # D_gate_fill ::
@@ -3051,6 +3082,43 @@ D_all_err = DD_err.drop(['regions','sectors','ones','name','gates'], axis=1).sum
 D_all_fill_weight = pd.Series(dtype=np.float64).reindex_like(D_all)
 for c in D.columns:
     D_all_fill_weight.loc[c] = (fill[c] * (D[c] / D[c].sum())).sum()
+
+
+# Weighted fill for PROMICE
+D_promice_gates_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_promice_gates)
+for g in D_promice_gates.index:
+    g_idx = DD_promice['gates'] == g
+    D_promice_gates_fill_weight.loc[g] = ((D_promice[g_idx] * fill_promice[g_idx]) /
+                                          D_promice[g_idx].sum()).sum()
+
+# Same for sectors
+D_promice_sectors_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_promice_sectors)
+for s in D_promice_sectors.index:
+    s_idx = DD_promice['name'] == s
+    D_promice_sectors_fill_weight.loc[s] = ((D_promice[s_idx] * fill_promice[s_idx]) /
+                                            D_promice[s_idx].sum()).sum()
+
+# Same for regions
+D_promice_regions_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_promice_regions)
+for r in D_promice_regions.index:
+    r_idx = DD_promice['regions'] == r
+    D_promice_regions_fill_weight.loc[r] = ((D_promice[r_idx] * fill_promice[r_idx]) /
+                                            D_promice[r_idx].sum()).sum()
+
+# PROMICE :: Same, but all GIS
+# D_promice_all :: PROMICE-only discharge sum
+# D_promice_all_err :: PROMICE-only discharge error
+# D_promice_all_fill :: PROMICE-only fill weighting
+
+D_promice_all = DD_promice.drop(['regions','sectors','ones','name','gates'], axis=1).sum()
+D_promice_all_err = DD_promice_err.drop(['regions','sectors','ones','name','gates'], axis=1).sum()
+
+# Weighted fill using PROMICE discharge and PROMICE fill mask
+D_promice_all_fill_weight = pd.Series(dtype=np.float64).reindex_like(D_promice_all)
+for c in D_promice.columns:
+    D_promice_all_fill_weight.loc[c] = (fill_promice[c] * 
+                                       (D_promice[c] / D_promice[c].sum())).sum()
+
 #+END_SRC
 
 #+RESULTS: discharge
@@ -3128,6 +3196,29 @@ D_all = D_all.T[STARTDATE:].T
 D_all_err = D_all_err.T[STARTDATE:].T
 D_all_fill_weight = D_all_fill_weight.T[STARTDATE:].T
 
+
+# PROMICE :: Apply trimming to all PROMICE discharge outputs
+STARTDATE='2016'
+D_promice = D_promice.T[STARTDATE:].T
+D_promice_err = D_promice_err.T[STARTDATE:].T
+fill_promice = fill_promice.T[STARTDATE:].T
+
+D_promice_gates = D_promice_gates.T[STARTDATE:].T
+D_promice_gates_err = D_promice_gates_err.T[STARTDATE:].T
+D_promice_gates_fill_weight = D_promice_gates_fill_weight.T[STARTDATE:].T
+
+D_promice_sectors = D_promice_sectors.T[STARTDATE:].T
+D_promice_sectors_err = D_promice_sectors_err.T[STARTDATE:].T
+D_promice_sectors_fill_weight = D_promice_sectors_fill_weight.T[STARTDATE:].T
+
+D_promice_regions = D_promice_regions.T[STARTDATE:].T
+D_promice_regions_err = D_promice_regions_err.T[STARTDATE:].T
+D_promice_regions_fill_weight = D_promice_regions_fill_weight.T[STARTDATE:].T
+
+D_promice_all = D_promice_all.T[STARTDATE:].T
+D_promice_all_err = D_promice_all_err.T[STARTDATE:].T
+D_promice_all_fill_weight = D_promice_all_fill_weight.T[STARTDATE:].T
+
 #+END_SRC
 
 #+RESULTS:
@@ -3202,6 +3293,9 @@ This data set is made up of the following files
 D and err data have units [Gt yr-1].
 Coverage is in range [0, 1]
 
+, *** PROMICE only
+Since this is a PROMICE data product, a PROMICE only equivalent dataset is produced in out_promice.
+
 ,** Surface elevation change
 
 See doi:10.22008/promice/data/DTU/surface_elevation_change/v1.0.0
@@ -3226,6 +3320,21 @@ D_gates_fill_weightT.index.name = "Date"
 D_gatesT.to_csv('./out/gate_D.csv')
 D_gates_errT.to_csv('./out/gate_err.csv')
 D_gates_fill_weightT.to_csv('./out/gate_coverage.csv')
+
+# PROMICE gate level output
+D_promice_gatesT = D_promice_gates.T
+D_promice_gates_errT = D_promice_gates_err.T
+D_promice_gates_fill_weightT = D_promice_gates_fill_weight.T
+
+# Set index name for consistency
+D_promice_gatesT.index.name = "Date"
+D_promice_gates_errT.index.name = "Date"
+D_promice_gates_fill_weightT.index.name = "Date"
+
+# Save files to the PROMICE output folder
+D_promice_gatesT.to_csv('./out_promice/gate_D.csv')
+D_promice_gates_errT.to_csv('./out_promice/gate_err.csv')
+D_promice_gates_fill_weightT.to_csv('./out_promice/gate_coverage.csv')
 #+END_SRC
 
 #+RESULTS:
@@ -3254,6 +3363,24 @@ D_sectors_errT.to_csv('./out/sector_err.csv')
 D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv')
 
 # meta_sector.head(10)
+
+# PROMICE only
+D_promice_sectorsT = D_promice_sectors.T
+D_promice_sectors_errT = D_promice_sectors_err.T
+D_promice_sectors_fill_weightT = D_promice_sectors_fill_weight.T
+
+D_promice_sectorsT.index.name = "Date"
+D_promice_sectors_errT.index.name = "Date"
+D_promice_sectors_fill_weightT.index.name = "Date"
+
+# meta_sector applies to PROMICE the same way as total (if present)
+# meta_sector.to_csv('./out_promice/sector_meta.csv')  # if you output meta files
+
+D_promice_sectorsT.to_csv('./out_promice/sector_D.csv')
+D_promice_sectors_errT.to_csv('./out_promice/sector_err.csv')
+D_promice_sectors_fill_weightT.to_csv('./out_promice/sector_coverage.csv')
+
+
 #+END_SRC
 
 #+RESULTS:
@@ -3278,6 +3405,22 @@ D_regions_errT.to_csv('./out/region_err.csv')
 D_regions_fill_weightT.to_csv('./out/region_coverage.csv')
 
 # meta_region.head(10)
+
+# PROMICE only
+D_promice_regionsT = D_promice_regions.T
+D_promice_regions_errT = D_promice_regions_err.T
+D_promice_regions_fill_weightT = D_promice_regions_fill_weight.T
+
+D_promice_regionsT.index.name = "Date"
+D_promice_regions_errT.index.name = "Date"
+D_promice_regions_fill_weightT.index.name = "Date"
+
+# meta_region applies to PROMICE the same way as total
+# meta_region.to_csv('./out_promice/region_meta.csv')
+
+D_promice_regionsT.to_csv('./out_promice/region_D.csv')
+D_promice_regions_errT.to_csv('./out_promice/region_err.csv')
+D_promice_regions_fill_weightT.to_csv('./out_promice/region_coverage.csv')
 #+END_SRC
 
 #+RESULTS:
@@ -3294,6 +3437,16 @@ D_all_fill_weight.index.name = "Date"
 D_all.to_csv('./out/GIS_D.csv', float_format='%.3f', header=["Discharge [Gt yr-1]"])
 D_all_err.to_csv('./out/GIS_err.csv', float_format='%.3f', header=["Discharge Error [Gt yr-1]"])
 D_all_fill_weight.to_csv('./out/GIS_coverage.csv', float_format='%.3f', header=["Coverage [unit]"])
+
+#PROMICE only
+
+D_promice_all.index.name = "Date"
+D_promice_all_err.index.name = "Date"
+D_promice_all_fill_weight.index.name = "Date"
+
+D_promice_all.to_csv('./out_promice/GIS_D.csv', float_format='%.3f',  header=["Discharge [Gt yr-1]"])
+D_promice_all_err.to_csv('./out_promice/GIS_err.csv', float_format='%.3f', header=["Discharge Error [Gt yr-1]"])
+D_promice_all_fill_weight.to_csv('./out_promice/GIS_coverage.csv', float_format='%.3f', header=["Coverage [unit]"])
 #+END_SRC
 
 #+RESULTS:
@@ -3308,6 +3461,10 @@ v.out.ogr input=gates_final output=./out/gates.kml format=KML --o
 (cd out; zip gates.kmz gates.kml; rm gates.kml)
 v.out.ogr input=gates_final output=./out/gates.gpkg format=GPKG --o
 v.out.ogr input=gates_final output=./out/gates.geojson format=GeoJSON --o
+
+cp ./out/gates.kmz ./out_promice/gates_promice.kmz
+cp ./out/gates.gpkg ./out_promice/gates_promice.gpkg
+cp ./out/gates.geojson ./out_promice/gates_promice.geojson
 #+END_SRC
 
 **** Elevation change
@@ -3318,17 +3475,6 @@ Done manually. See DOI
 
 Make sure this Org file is tidy enough...
 
-**** TODO Distribute
-#+BEGIN_SRC bash :results verbatim :tangle no
-(cd out; zip -e /media/kdm/promicedata/ice_discharge/gates/gates.zip gates*)
-(cd out; zip -e /media/kdm/promicedata/ice_discharge/d/D.zip D*csv)
-cp ./out/README.txt /media/kdm/promicedata/ice_discharge/
-
-zip -e /media/kdm/promicedata/ice_discharge/code/mankoff_et_al.zip ice_discharge.org
-
-cp ${DATADIR}/Khan_2016/dhdt_1995-2015_GrIS.txt /media/kdm/promicedata/ice_discharge/surface_elevation_change
-
-#+END_SRC
 
 ** CSV to NetCDF
 :PROPERTIES:
@@ -3346,7 +3492,7 @@ import datetime
 #+RESULTS:
 
 *** GIS
-#+BEGIN_SRC python
+#+begin_src python
 csvfile = 'GIS'
 
 df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
@@ -3408,12 +3554,77 @@ ds.attrs["product_version"] = 2.0
 # encoding = {var: comp for var in ['time','coverage']} # some
 
 ds.to_netcdf('./out/GIS.nc', mode='w')#, encoding=encoding)
-#+END_SRC
+#+end_src
+
+For PROMICE only
+#+begin_src python
+csvfile = 'GIS'
+
+df_D = pd.read_csv('./out_promice/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out_promice/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out_promice/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+
+# ds = df_D.to_xarray()
+
+# ds = xr.Dataset({'time': df_D})
+ds = xr.Dataset()
+
+ds["time"] = ("time", df_D.index)
+ds["time"].attrs["long_name"] = "time of measurement"
+ds["time"].attrs["standard_name"] = "time"
+ds["time"].attrs["axis"] = "T"
+ds["time"].attrs["cf_role"] = "timeseries_id"
+
+ds["discharge"] = ("time", df_D['Discharge [Gt yr-1]'])
+ds["discharge"].attrs["long_name"] = "Discharge"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
+ds["discharge"].attrs["coordinates"] = "time"
+
+ds["err"] = ("time", df_err['Discharge Error [Gt yr-1]'])
+ds["err"].attrs["long_name"] = "Error"
+ds["err"].attrs["standard_name"] = "Uncertainty"
+ds["err"].attrs["units"] = "Gt yr-1"
+ds["err"].attrs["coordinates"] = "time"
+
+ds["coverage"] = ("time", df_coverage['Coverage [unit]'])
+ds["coverage"].attrs["long_name"] = "Coverage"
+ds["coverage"].attrs["standard_name"] = "Coverage"
+# ds["coverage"].attrs["units"] = "-"
+ds["coverage"].attrs["coordinates"] = "time"
+
+ds.attrs["featureType"] = "timeSeries"
+ds.attrs["title"] = "Greenland discharge using only PROMICE ice velocities"
+ds.attrs["summary"] = "Greenland discharge"
+ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
+# ds.attrs["Conventions"] = "CF-1.8"
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+# ds.attrs["comment"] = "TODO"
+# ds.attrs["acknowledgment"] = "TODO"
+# ds.attrs["license"] = "TODO"
+# ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
+ds.attrs["creator_name"] = "Signe Hillerup Larsen"
+ds.attrs["creator_email"] = "shl@geus.dk"
+ds.attrs["creator_url"] = "geus.dk"
+ds.attrs["institution"] = "GEUS"
+# ds.attrs["time_coverage_start"] = "TODO"
+# ds.attrs["time_coverage_end"] = "TODO"
+# ds.attrs["time_coverage_resolution"] = "TODO"
+ds.attrs["references"] = "10.22008/promice/ice_discharge"
+ds.attrs["product_version"] = 2.0
+
+# NOTE: Compression here does not save space
+# comp = dict(zlib=True, complevel=5)
+# encoding = {var: comp for var in ds.data_vars} # all
+# encoding = {var: comp for var in ['time','coverage']} # some
+
+ds.to_netcdf('./out_promice/GIS.nc', mode='w')#, encoding=encoding)
+#+end_src
 
 #+RESULTS:
 
 *** Region
-#+BEGIN_SRC python
+#+begin_src python
 
 csvfile = 'region'
 
@@ -3500,12 +3711,101 @@ comp = dict(zlib=True, complevel=9)
 encoding = {var: comp for var in ds.data_vars} # all
 
 ds.to_netcdf('./out/region.nc', mode='w', encoding=encoding)
-#+END_SRC
+#+end_src
+
+#+begin_src python
+
+csvfile = 'region'
+
+df_D = pd.read_csv('./out_promice/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out_promice/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out_promice/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+
+ds = xr.Dataset()
+
+ds["time"] = (("time"), df_D.index)
+ds["time"].attrs["cf_role"] = "timeseries_id"
+ds["time"].attrs["standard_name"] = "time"
+# ds["time"].attrs["units"] = "day of year"
+# ds["time"].attrs["calendar"] = "julian"
+ds["time"].attrs["axis"] = "T"
+
+ds["region"] = (("region"), df_D.columns)
+ds["region"].attrs["long_name"] = "Region"
+ds["region"].attrs["standard_name"] = "N/A"
+ds["region"].attrs["comment"] = "Regions from Mouginot (2019)"
+
+ds["discharge"] = (("region", "time"), df_D.T.values)
+ds["discharge"].attrs["long_name"] = "Discharge"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
+ds["discharge"].attrs["coordinates"] = "time region"
+
+ds["err"] = (("region", "time"), df_err.T.values)
+ds["err"].attrs["long_name"] = "Error"
+ds["err"].attrs["standard_name"] = "Uncertainty"
+ds["err"].attrs["units"] = "Gt yr-1"
+ds["err"].attrs["coordinates"] = "time region"
+
+ds["coverage"] = (("region", "time"), df_coverage.T.values)
+ds["coverage"].attrs["long_name"] = "Coverage"
+ds["coverage"].attrs["standard_name"] = "Coverage"
+# ds["coverage"].attrs["units"] = "-"
+ds["coverage"].attrs["coordinates"] = "time region"
+
+# ds["lat"] = (("station"), meta.loc['lat'].astype(np.float32))
+# #ds["lat"].attrs["coordinates"] = "station"
+# ds["lat"].attrs["long_name"] = "latitude"
+# ds["lat"].attrs["standard_name"] = "latitude"
+# ds["lat"].attrs["units"] = "degrees_north"
+# ds["lat"].attrs["axis"] = "Y"
+
+# ds["lon"] = (("station"), meta.loc['lon'].astype(np.float32))
+# #ds["lon"].attrs["coordinates"] = "station"
+# ds["lon"].attrs["long_name"] = "longitude"
+# ds["lon"].attrs["standard_name"] = "longitude"
+# ds["lon"].attrs["units"] = "degrees_east"
+# ds["lon"].attrs["axis"] = "X"
+
+# ds["alt"] = (("station"), meta.loc['elev'].astype(np.float32))
+# ds["alt"].attrs["long_name"] = "height_above_mean_sea_level"
+# ds["alt"].attrs["standard_name"] = "altitude"
+# # ds["alt"].attrs["long_name"] = "height above mean sea level"
+# # ds["alt"].attrs["standard_name"] = "height"
+# ds["alt"].attrs["units"] = "m"
+# ds["alt"].attrs["positive"] = "up"
+# ds["alt"].attrs["axis"] = "Z"
+
+ds.attrs["featureType"] = "timeSeries"
+ds.attrs["title"] = "Greenland discharge using only PROMICE ice velocities "
+ds.attrs["summary"] = "Greenland discharge per region"
+ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
+# ds.attrs["Conventions"] = "CF-1.8"
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+# ds.attrs["comment"] = "TODO"
+# ds.attrs["acknowledgment"] = "TODO"
+# ds.attrs["license"] = "TODO"
+# ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
+ds.attrs["creator_name"] = "Ken Mankoff"
+ds.attrs["creator_email"] = "kdm@geus.dk"
+ds.attrs["creator_url"] = "http://kenmankoff.com"
+ds.attrs["institution"] = "GEUS"
+# ds.attrs["time_coverage_start"] = "TODO"
+# ds.attrs["time_coverage_end"] = "TODO"
+# ds.attrs["time_coverage_resolution"] = "TODO"
+ds.attrs["references"] = "10.22008/promice/ice_discharge"
+ds.attrs["product_version"] = 2.0
+
+comp = dict(zlib=True, complevel=9)
+encoding = {var: comp for var in ds.data_vars} # all
+
+ds.to_netcdf('./out_promice/region.nc', mode='w', encoding=encoding)
+#+end_src
 
 #+RESULTS:
 
 *** Sectors
-#+BEGIN_SRC python
+#+begin_src python
 
 csvfile = 'sector'
 
@@ -3592,13 +3892,101 @@ comp = dict(zlib=True, complevel=9)
 encoding = {var: comp for var in ds.data_vars} # all
 
 ds.to_netcdf('./out/sector.nc', mode='w', encoding=encoding)
-#+END_SRC
+#+end_src
+
+#+begin_src python
+csvfile = 'sector'
+
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+
+ds = xr.Dataset()
+
+ds["time"] = (("time"), df_D.index)
+ds["time"].attrs["cf_role"] = "timeseries_id"
+ds["time"].attrs["standard_name"] = "time"
+# ds["time"].attrs["units"] = "day of year"
+# ds["time"].attrs["calendar"] = "julian"
+ds["time"].attrs["axis"] = "T"
+
+ds["sector"] = (("sector"), df_D.columns)
+ds["sector"].attrs["long_name"] = "Sector"
+ds["sector"].attrs["standard_name"] = "N/A"
+ds["sector"].attrs["comment"] = "Sectors from Mouginot (2019)"
+
+ds["discharge"] = (("sector", "time"), df_D.T.values)
+ds["discharge"].attrs["long_name"] = "Discharge"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
+ds["discharge"].attrs["coordinates"] = "time sector"
+
+ds["err"] = (("sector", "time"), df_err.T.values)
+ds["err"].attrs["long_name"] = "Error"
+ds["err"].attrs["standard_name"] = "Uncertainty"
+ds["err"].attrs["units"] = "Gt yr-1"
+ds["err"].attrs["coordinates"] = "time sector"
+
+ds["coverage"] = (("sector", "time"), df_coverage.T.values)
+ds["coverage"].attrs["long_name"] = "Coverage"
+ds["coverage"].attrs["standard_name"] = "Coverage"
+# ds["coverage"].attrs["units"] = "-"
+ds["coverage"].attrs["coordinates"] = "time sector"
+
+# ds["lat"] = (("station"), meta.loc['lat'].astype(np.float32))
+# #ds["lat"].attrs["coordinates"] = "station"
+# ds["lat"].attrs["long_name"] = "latitude"
+# ds["lat"].attrs["standard_name"] = "latitude"
+# ds["lat"].attrs["units"] = "degrees_north"
+# ds["lat"].attrs["axis"] = "Y"
+
+# ds["lon"] = (("station"), meta.loc['lon'].astype(np.float32))
+# #ds["lon"].attrs["coordinates"] = "station"
+# ds["lon"].attrs["long_name"] = "longitude"
+# ds["lon"].attrs["standard_name"] = "longitude"
+# ds["lon"].attrs["units"] = "degrees_east"
+# ds["lon"].attrs["axis"] = "X"
+
+# ds["alt"] = (("station"), meta.loc['elev'].astype(np.float32))
+# ds["alt"].attrs["long_name"] = "height_above_mean_sea_level"
+# ds["alt"].attrs["standard_name"] = "altitude"
+# # ds["alt"].attrs["long_name"] = "height above mean sea level"
+# # ds["alt"].attrs["standard_name"] = "height"
+# ds["alt"].attrs["units"] = "m"
+# ds["alt"].attrs["positive"] = "up"
+# ds["alt"].attrs["axis"] = "Z"
+
+ds.attrs["featureType"] = "timeSeries"
+ds.attrs["title"] = "Greenland discharge using PROMICE ice velocity only"
+ds.attrs["summary"] = "Greenland discharge per sector"
+ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
+# ds.attrs["Conventions"] = "CF-1.8"
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+# ds.attrs["comment"] = "TODO"
+# ds.attrs["acknowledgment"] = "TODO"
+# ds.attrs["license"] = "TODO"
+# ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
+ds.attrs["creator_name"] = "Signe Hillerup Larsen"
+ds.attrs["creator_email"] = "shl@geus.dk"
+ds.attrs["creator_url"] = "geus.dk"
+ds.attrs["institution"] = "GEUS"
+# ds.attrs["time_coverage_start"] = "TODO"
+# ds.attrs["time_coverage_end"] = "TODO"
+# ds.attrs["time_coverage_resolution"] = "TODO"
+ds.attrs["references"] = "10.22008/promice/ice_discharge"
+ds.attrs["product_version"] = 2.0
+
+comp = dict(zlib=True, complevel=9)
+encoding = {var: comp for var in ds.data_vars} # all
+
+ds.to_netcdf('./out_promice/sector.nc', mode='w', encoding=encoding)
+#+end_src
 
 #+RESULTS:
 
 *** Gates
 
-#+BEGIN_SRC python
+#+begin_src python
 
 csvfile = 'gate'
 
@@ -3700,7 +4088,111 @@ comp = dict(zlib=True, complevel=9)
 encoding = {var: comp for var in ds.data_vars} # all
 
 ds.to_netcdf('./out/gate.nc', mode='w', encoding=encoding)
-#+END_SRC
+#+end_src
+
+#+begin_src python
+
+csvfile = 'gate'
+
+df_D = pd.read_csv('./out_promice/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out_promice/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out_promice/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+
+meta = pd.read_csv("./out/gate_meta.csv")
+
+ds = xr.Dataset()
+
+ds["time"] = (("time"), df_D.index)
+ds["time"].attrs["cf_role"] = "timeseries_id"
+ds["time"].attrs["standard_name"] = "time"
+# ds["time"].attrs["units"] = "day of year"
+# ds["time"].attrs["calendar"] = "julian"
+ds["time"].attrs["axis"] = "T"
+
+ds["gate"] = (("gate"), df_D.columns.astype(np.int32))
+ds["gate"].attrs["long_name"] = "Gate"
+ds["gate"].attrs["standard_name"] = "N/A"
+
+ds["discharge"] = (("gate", "time"), df_D.T.values.astype(np.float32))
+ds["discharge"].attrs["long_name"] = "Discharge"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
+ds["discharge"].attrs["coordinates"] = "time gate"
+
+ds["err"] = (("gate", "time"), df_err.T.values.astype(np.float32))
+ds["err"].attrs["long_name"] = "Error"
+ds["err"].attrs["standard_name"] = "Uncertainty"
+ds["err"].attrs["units"] = "Gt yr-1"
+ds["err"].attrs["coordinates"] = "time gate"
+
+ds["coverage"] = (("gate", "time"), df_coverage.T.values.astype(np.float32))
+ds["coverage"].attrs["long_name"] = "Coverage"
+ds["coverage"].attrs["standard_name"] = "Coverage"
+# ds["coverage"].attrs["units"] = "-"
+ds["coverage"].attrs["coordinates"] = "time gate"
+
+ds["mean_x"] = (("gate"), meta.mean_x.astype(np.int32))
+ds["mean_x"].attrs["long_name"] = "Mean x coordinate of gate in EPSG:3413"
+ds["mean_x"].attrs["standard_name"] = "Mean x"
+
+ds["mean_y"] = (("gate"), meta.mean_y.astype(np.int32))
+ds["mean_y"].attrs["long_name"] = "Mean y coordinate of gate in EPSG:3413"
+ds["mean_y"].attrs["standard_name"] = "Mean y"
+
+ds["mean_lon"] = (("gate"), meta.lon.astype(np.float32))
+ds["mean_lon"].attrs["long_name"] = "Mean lon coordinate of gate"
+ds["mean_lon"].attrs["standard_name"] = "Longitude"
+
+ds["mean_lat"] = (("gate"), meta.lat.astype(np.float32))
+ds["mean_lat"].attrs["long_name"] = "Mean lat coordinate of gate"
+ds["mean_lat"].attrs["standard_name"] = "Latitude"
+
+ds["sector"] = (("gate"), meta.sector.astype(np.int32))
+ds["sector"].attrs["long_name"] = "Mouginot 2019 sector containing gate"
+
+ds["region"] = (("gate"), meta.region)
+ds["region"].attrs["long_name"] = "Mouginot 2019 region containing gate"
+
+ds["Zwally_2012"] = (("gate"), meta.Zwally_2012)
+ds["Zwally_2012"].attrs["long_name"] = "Zwally 2012 sector containing gate"
+
+ds["name_Bjørk"] = (("gate"), meta.Bjork_2015)
+ds["name_Bjørk"].attrs["long_name"] = "Nearest name from Bjørk (2015)"
+
+ds["name_Mouginot"] = (("gate"), meta.Mouginot_2019)
+ds["name_Mouginot"].attrs["long_name"] = "Nearest name from Mouginot (2019)"
+
+ds["ID_Moon"] = (("gate"), meta.Moon_2008)
+ds["ID_Moon"].attrs["long_name"] = "Moon 2008 glacier ID (a.k.a NSIDC 0642)"
+
+ds["ID_Moon_dist"] = (("gate"), meta.Moon_2008_dist)
+ds["ID_Moon_dist"].attrs["long_name"] = "Moon 2008 glacier ID (a.k.a NSIDC 0642) distance"
+
+ds.attrs["featureType"] = "timeSeries"
+ds.attrs["title"] = "Greenland discharge using PROMICE ice velocity only"
+ds.attrs["summary"] = "Greenland discharge per gate"
+ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
+# ds.attrs["Conventions"] = "CF-1.8"
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+# ds.attrs["comment"] = "TODO"
+# ds.attrs["acknowledgment"] = "TODO"
+# ds.attrs["license"] = "TODO"
+# ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
+ds.attrs["creator_name"] = "Ken Mankoff"
+ds.attrs["creator_email"] = "kdm@geus.dk"
+ds.attrs["creator_url"] = "http://kenmankoff.com"
+ds.attrs["institution"] = "GEUS"
+# ds.attrs["time_coverage_start"] = "TODO"
+# ds.attrs["time_coverage_end"] = "TODO"
+# ds.attrs["time_coverage_resolution"] = "TODO"
+ds.attrs["references"] = "10.22008/promice/ice_discharge"
+ds.attrs["product_version"] = 2.0
+
+comp = dict(zlib=True, complevel=9)
+encoding = {var: comp for var in ds.data_vars} # all
+
+ds.to_netcdf('./out_promice/gate.nc', mode='w', encoding=encoding)
+#+end_src
 
 #+RESULTS:
 
