@@ -26,7 +26,7 @@ update: docker ## Update with latest Sentinel data
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./errors.py
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./raw2discharge.py
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./csv2nc.py
-	cp ./out/* ~/data/Mankoff_2020/ice/latest
+	cp ./out/* /mnt/data/Mankoff_2020/ice/latest
 	make org
 	/usr/bin/git pull
 	/usr/bin/git commit ice_discharge.org -m "Auto update: `/bin/date +%Y-%m-%d\ %T`" || true
@@ -34,7 +34,7 @@ update: docker ## Update with latest Sentinel data
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./upload.py
 
 upload: docker ## Upload to dataverse
-	cp ./out/* ~/data/Mankoff_2020/ice/latest
+	cp ./out/* /mnt/data/Mankoff_2020/ice/latest
 	make org
 	/usr/bin/git pull
 	/usr/bin/git commit ice_discharge.org -m "Auto update: `/bin/date +%Y-%m-%d\ %T`" || true
