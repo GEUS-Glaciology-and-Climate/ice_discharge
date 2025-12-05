@@ -249,9 +249,9 @@ done
 
 #+RESULTS:
 #+begin_example
-times  all:  3414
+times  all:  3437
 times 19XX:  108
-times 20XX:  3306
+times 20XX:  3329
 times 2000:  12
 times 2001:  9
 times 2002:  10
@@ -275,12 +275,12 @@ times 2019:  254
 times 2020:  254
 times 2021:  243
 times 2022:  230
-times 2023:  178
-times 2024:  53
+times 2023:  190
+times 2024:  64
 times 2025:  26
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3414=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3437=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -397,7 +397,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : pixels:  5851
 : gates:  266
 : sectors:  173
-: times:  3414
+: times:  3437
 
 Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5851=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
@@ -5366,10 +5366,10 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0478
 #+begin_example
-9bf8fcf0c4add78ed54c4a35b444bdc3  /mnt/data/kdm/data//MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
+9bf8fcf0c4add78ed54c4a35b444bdc3  /mnt/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
 
 Driver: GTiff/GeoTIFF
-Files: /mnt/data/kdm/data//MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
+Files: /mnt/data/MEaSUREs/NSIDC-0478.002/2014.09.01/greenland_vel_mosaic200_2014_2015_vv_v02.1.tif
 Size is 7585, 13700
 Coordinate System is:
 PROJCRS["unnamed",
@@ -6085,17 +6085,25 @@ gdalinfo -mm ${somefile}
 
 #+RESULTS: QC_gdalinfo_NSIDC_0731
 #+begin_example
-33e6afb888f11a8fc61f2e59c89ea657  /mnt/data/kdm/data//MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
+33e6afb888f11a8fc61f2e59c89ea657  /mnt/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 
 Driver: GTiff/GeoTIFF
-Files: /mnt/data/kdm/data//MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
+Files: /mnt/data/MEaSUREs/NSIDC-0731.005/2014.12.01/GL_vel_mosaic_Monthly_01Dec14_31Dec14_vx_v05.0.tif
 Size is 7585, 13700
 Coordinate System is:
 PROJCRS["WGS 84 / NSIDC Sea Ice Polar Stereographic North",
     BASEGEOGCRS["WGS 84",
-        DATUM["World Geodetic System 1984",
+        ENSEMBLE["World Geodetic System 1984 ensemble",
+            MEMBER["World Geodetic System 1984 (Transit)"],
+            MEMBER["World Geodetic System 1984 (G730)"],
+            MEMBER["World Geodetic System 1984 (G873)"],
+            MEMBER["World Geodetic System 1984 (G1150)"],
+            MEMBER["World Geodetic System 1984 (G1674)"],
+            MEMBER["World Geodetic System 1984 (G1762)"],
+            MEMBER["World Geodetic System 1984 (G2139)"],
             ELLIPSOID["WGS 84",6378137,298.257223563,
-                LENGTHUNIT["metre",1]]],
+                LENGTHUNIT["metre",1]],
+            ENSEMBLEACCURACY[2.0]],
         PRIMEM["Greenwich",0,
             ANGLEUNIT["degree",0.0174532925199433]],
         ID["EPSG",4326]],
@@ -6126,8 +6134,8 @@ PROJCRS["WGS 84 / NSIDC Sea Ice Polar Stereographic North",
             ORDER[2],
             LENGTHUNIT["metre",1]],
     USAGE[
-        SCOPE["unknown"],
-        AREA["World - N hemisphere - north of 60°N"],
+        SCOPE["Polar research."],
+        AREA["Northern hemisphere - north of 60°N onshore and offshore, including Arctic."],
         BBOX[60,-180,90,180]],
     ID["EPSG",3413]]
 Data axis to CRS axis mapping: 1,2
@@ -6138,6 +6146,7 @@ Metadata:
 Image Structure Metadata:
   COMPRESSION=DEFLATE
   INTERLEAVE=BAND
+  LAYOUT=COG
 Corner Coordinates:
 Upper Left  ( -659100.000, -639100.000) ( 90d52'57.45"W, 81d32'23.19"N)
 Lower Left  ( -659100.000,-3379100.000) ( 56d 2'13.47"W, 58d58'10.19"N)
@@ -6147,7 +6156,7 @@ Center      (   99400.000,-2009100.000) ( 42d10' 3.39"W, 71d35' 4.30"N)
 Band 1 Block=512x512 Type=Float32, ColorInterp=Gray
   Min=-17040.822 Max=8270.726   Computed Min/Max=-17040.822,8270.726
   Minimum=-17040.822, Maximum=8270.726, Mean=-69.922, StdDev=332.203
-  NoData Value=-2000000000
+  NoData Value=-2e+09
   Overviews: 3792x6850, 1896x3425, 948x1712, 474x856, 237x428
   Metadata:
     STATISTICS_MAXIMUM=8270.7255859375
@@ -6498,6 +6507,7 @@ variables:
 		crs:latitude_of_projection_origin = 90. ;
 		crs:false_easting = 0. ;
 		crs:false_northing = 0. ;
+		crs:_Storage = "contiguous" ;
 	double y(y) ;
 		y:units = "m" ;
 		y:axis = "Y" ;
@@ -6538,8 +6548,8 @@ variables:
 		land_ice_surface_easting_velocity:standard_name = "land_ice_surface_x_velocity" ;
 		land_ice_surface_easting_velocity:_Storage = "chunked" ;
 		land_ice_surface_easting_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_easting_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_easting_velocity:_Shuffle = "true" ;
+		land_ice_surface_easting_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_easting_velocity:_Endianness = "little" ;
 	float land_ice_surface_northing_velocity(time, y, x) ;
 		land_ice_surface_northing_velocity:_FillValue = 1.e+20f ;
@@ -6553,8 +6563,8 @@ variables:
 		land_ice_surface_northing_velocity:standard_name = "land_ice_surface_y_velocity" ;
 		land_ice_surface_northing_velocity:_Storage = "chunked" ;
 		land_ice_surface_northing_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_northing_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_northing_velocity:_Shuffle = "true" ;
+		land_ice_surface_northing_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_northing_velocity:_Endianness = "little" ;
 	float land_ice_surface_vertical_velocity(time, y, x) ;
 		land_ice_surface_vertical_velocity:_FillValue = 1.e+20f ;
@@ -6568,8 +6578,8 @@ variables:
 		land_ice_surface_vertical_velocity:long_name = "vertical velocity derived assuming surface parallel flow" ;
 		land_ice_surface_vertical_velocity:_Storage = "chunked" ;
 		land_ice_surface_vertical_velocity:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_vertical_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_vertical_velocity:_Shuffle = "true" ;
+		land_ice_surface_vertical_velocity:_DeflateLevel = 4 ;
 		land_ice_surface_vertical_velocity:_Endianness = "little" ;
 	float land_ice_surface_velocity_magnitude(time, y, x) ;
 		land_ice_surface_velocity_magnitude:_FillValue = 1.e+20f ;
@@ -6583,8 +6593,8 @@ variables:
 		land_ice_surface_velocity_magnitude:long_name = "magnitude of horizontal ice velocity" ;
 		land_ice_surface_velocity_magnitude:_Storage = "chunked" ;
 		land_ice_surface_velocity_magnitude:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_velocity_magnitude:_DeflateLevel = 4 ;
 		land_ice_surface_velocity_magnitude:_Shuffle = "true" ;
+		land_ice_surface_velocity_magnitude:_DeflateLevel = 4 ;
 		land_ice_surface_velocity_magnitude:_Endianness = "little" ;
 	float land_ice_surface_easting_velocity_std(time, y, x) ;
 		land_ice_surface_easting_velocity_std:_FillValue = 1.e+20f ;
@@ -6598,8 +6608,8 @@ variables:
 		land_ice_surface_easting_velocity_std:standard_name = "land_ice_surface_x_velocity standard_error" ;
 		land_ice_surface_easting_velocity_std:_Storage = "chunked" ;
 		land_ice_surface_easting_velocity_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_easting_velocity_std:_DeflateLevel = 4 ;
 		land_ice_surface_easting_velocity_std:_Shuffle = "true" ;
+		land_ice_surface_easting_velocity_std:_DeflateLevel = 4 ;
 		land_ice_surface_easting_velocity_std:_Endianness = "little" ;
 	float land_ice_surface_northing_velocity_std(time, y, x) ;
 		land_ice_surface_northing_velocity_std:_FillValue = 1.e+20f ;
@@ -6613,8 +6623,8 @@ variables:
 		land_ice_surface_northing_velocity_std:standard_name = "land_ice_surface_y_velocity standard_error" ;
 		land_ice_surface_northing_velocity_std:_Storage = "chunked" ;
 		land_ice_surface_northing_velocity_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_northing_velocity_std:_DeflateLevel = 4 ;
 		land_ice_surface_northing_velocity_std:_Shuffle = "true" ;
+		land_ice_surface_northing_velocity_std:_DeflateLevel = 4 ;
 		land_ice_surface_northing_velocity_std:_Endianness = "little" ;
 	float land_ice_surface_velocity_magnitude_std(time, y, x) ;
 		land_ice_surface_velocity_magnitude_std:_FillValue = 1.e+20f ;
@@ -6628,8 +6638,8 @@ variables:
 		land_ice_surface_velocity_magnitude_std:long_name = "horizontal ice velocity error magnitude estimate" ;
 		land_ice_surface_velocity_magnitude_std:_Storage = "chunked" ;
 		land_ice_surface_velocity_magnitude_std:_ChunkSizes = 1, 1350, 750 ;
-		land_ice_surface_velocity_magnitude_std:_DeflateLevel = 4 ;
 		land_ice_surface_velocity_magnitude_std:_Shuffle = "true" ;
+		land_ice_surface_velocity_magnitude_std:_DeflateLevel = 4 ;
 		land_ice_surface_velocity_magnitude_std:_Endianness = "little" ;
 
 // global attributes:
@@ -6643,7 +6653,7 @@ variables:
 		:title = "Greenland Ice Velocity from 2016-01-05 to 2016-01-28" ;
 		:summary = "Greenland Ice Velocity from Sentinel-1 offset tracking for the period 2016-01-05 to 2016-01-28" ;
 		:product_version = "1.0" ;
-		:_NCProperties = "version=2|netcdf" ;
+		:_NCProperties = "version=2,netcdf=4.7.3,hdf5=1.10.4" ;
 		:_SuperblockVersion = 0 ;
 		:_IsNetcdf4 = 1 ;
 		:_Format = "netCDF-4" ;
@@ -6732,14 +6742,14 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass-core; do dp
 #+END_SRC
 
 #+RESULTS:
-| bash       | 4.4.18-2ubuntu1.3    |
-| gdal-bin   | 3.0.4+dfsg-1~bionic0 |
-| grass-core | 7.8.6-1~bionic1      |
-| nco        | 4.7.2-1              |
-| netcdf-bin | 1:4.6.0-2build1      |
-| parallel   | 20161222-1           |
-| proj-bin   | 7.0.0-1~bionic0      |
-| sed        | 4.4-2                |
+| bash       | 5.2.21-2ubuntu4     |
+| gdal-bin   | 3.8.4+dfsg-3ubuntu3 |
+| grass-core | 8.3.2-1ubuntu2      |
+| nco        | 5.2.1-1build2       |
+| netcdf-bin | 1:4.9.2-5ubuntu4    |
+| parallel   | 20231122+ds-1       |
+| proj-bin   | 9.4.0-1build2       |
+| sed        | 4.9-2build1         |
 
 *** Org Mode
 #+BEGIN_SRC elisp :exports both :eval no-export
@@ -6747,7 +6757,7 @@ for tool in gdal-bin parallel sed netcdf-bin proj-bin nco bash grass-core; do dp
 #+END_SRC
 
 #+RESULTS:
-: Org mode version 9.5 (9.5-g0a86ad @ /home/tmb_operational/.emacs.d/elpa/org-9.5/)
+: Org mode version 9.7.11 (release_9.7.11 @ /home/shl/local/emacs/share/emacs/31.0.50/lisp/org/)
 
 *** Python
 
