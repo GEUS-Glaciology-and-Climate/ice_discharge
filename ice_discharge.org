@@ -1274,8 +1274,8 @@ MSG_OK "MEaSURES.0766"
 g.mapset -c MEaSUREs.0766
 r.mask -r
 ROOT=${DATADIR}/MEaSUREs/NSIDC-0766.002
-VX=$(find ${ROOT} ${ROOT}-updates -name "*mosaic_*vx*.tif" | tail -n1) # DEBUG
-for VX in $(find ${ROOT} ${ROOT}-updates -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
+VX=$(find ${ROOT} -name "*mosaic_*vx*.tif" | tail -n1) # DEBUG
+for VX in $(find ${ROOT} -name "*mosaic_*vx*.tif" | LC_ALL=C sort); do
   VY=${VX/vx/vy}
   EX=${VX/vx/ex}
   EY=${EX/ex/ey}
@@ -1298,7 +1298,7 @@ g.region raster=VX_${DATE} -pa
 **** PROMICE IV 200m
 ***** Data Intro                                        :noexport:
 #+BEGIN_SRC bash :results verbatim :tangle no
-DIR=${DATADIR}/Promice200m/
+DIR=${DATADIR}/Promice200m_v5/
 (cd ${DIR}; ls *.nc | head)
 (cd ${DIR}; ncdump -h $(ls *.nc | head -n1) | grep "float")
 #+END_SRC 
@@ -1310,9 +1310,9 @@ DIR=${DATADIR}/Promice200m/
 
 #+NAME: promice_import
 #+BEGIN_SRC bash :results verbatim
-MSG_OK "Promice 200m"
+MSG_OK "Promice 200m v5"
 g.mapset -c promice
-ROOT=${DATADIR}/Promice200m/
+ROOT=${DATADIR}/Promice200m_v5/
 
 FILE=$(find ${ROOT} -name "*.nc" | head -n1) # DEBUG 
 for FILE in $(find ${ROOT} -name "*.nc" | LC_ALL=C sort); do
@@ -4660,17 +4660,17 @@ workingdir=$(pwd)
 MSG_WARN "MEaSUREs 0766.002 product needs to be manually updated if new data is available, see how in README.org in the datafolder"
 
 # Update PROMICE IV 
-cd ${DATADIR}/Promice200m/
+cd ${DATADIR}/Promice200m_v5/
 if [[ -e urls.txt ]]; then cp urls.txt urls.txt.last; fi
-curl https://dataverse.geus.dk/api/datasets/:persistentId?persistentId=doi:10.22008/FK2/LFZLZN | tr ',' '\n' | grep -E '"persistentId"' | cut -d'"' -f4 > urls.txt
+curl "https://dataverse.geus.dk/api/datasets/:persistentId/dirindex?persistentId=doi:10.22008/FK2/K70OPK" | grep -oP '(?<=href=")[^"]+' > urls.txt
 chmod 777 urls.txt
 if cmp -s urls.txt urls.txt.last; then
   MSG_WARN "No new Sentinel1 files..."
-  #exit 255
+  exit 255
 fi
 
-for PID in $(cat urls.txt | tail -n5); do
-  wget --content-disposition --continue "https://dataverse.geus.dk/api/access/datafile/:persistentId?persistentId=${PID}"
+for URL in $(cat urls.txt | tail -n5); do
+  wget --content-disposition --continue "https://dataverse.geus.dk${URL}"
 done
 
 MSG_OK "New Sentinel velocity files found..."
@@ -6198,7 +6198,7 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 ***** File List
 
 #+BEGIN_SRC bash :results verbatim :eval no-export
-(cd ${DATADIR}/Promice200m; find . -name "*.nc" | LC_ALL=C sort)
+(cd ${DATADIR}/Promice200m_v5; find . -name "*.nc" | LC_ALL=C sort)
 #+END_SRC
 
 #+RESULTS:
