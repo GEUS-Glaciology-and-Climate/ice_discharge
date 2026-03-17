@@ -900,7 +900,7 @@ g.mapset -c BedMachine
 
 for var in mask surface thickness bed errbed; do
   echo $var
-  r.external source=NetCDF:${DATADIR}/Morlighem_2017/BedMachineGreenland-v5.nc:${var} output=${var}
+  r.external source=NetCDF:${DATADIR}/Morlighem_2017/BedMachineGreenland-v6.nc:${var} output=${var}
 done
 
 r.colors -a map=errbed color=haxby
@@ -4686,6 +4686,9 @@ if cmp -s ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last; then
   MSG_ERR "No change"
   exit 255
 fi
+
+/home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $(cat ~/.new_thredds_token) --file out/sector.nc --file out/region.nc
+
 #+END_SRC
 
 #+BEGIN_SRC bash :tangle update_worker.sh
