@@ -249,9 +249,9 @@ done
 
 #+RESULTS:
 #+begin_example
-times  all:  3477
+times  all:  3479
 times 19XX:  108
-times 20XX:  3369
+times 20XX:  3371
 times 2000:  12
 times 2001:  9
 times 2002:  10
@@ -280,7 +280,7 @@ times 2024:  71
 times 2025:  31
 #+end_example
 
-This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3477=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
+This work uses src_bash[:eval yes]{head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" | wc -l} {{{results(=3479=)}}} different velocity maps, biased toward post-2015 when twelve-day ice velocities become available from the Sentinel-1 satellites. The temporal distribution is ~10 maps per year from 1986 to 2013, 14 in 2014, 25 in 2015, 38 in 2016, 81 in 2017, 54 in 2018, and one every ~12 days from 2019 onward.
 
 #+LATEX_ATTR: :placement [!h]
 #+CAPTION: Summary of data sources used in this work.
@@ -397,7 +397,7 @@ echo "times: " $(head -n1 ./tmp/dat_100_5000.csv | tr ',' '\n' | grep "vel_eff" 
 : pixels:  5851
 : gates:  266
 : sectors:  173
-: times:  3477
+: times:  3479
 
 Our gate placement algorithm generates src_bash[:eval yes]{tail -n +2 tmp/dat_100_5000.csv | wc -l} {{{results(=5851=)}}} pixels making up src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/gates_gateID@gates_100_5000.bsv | tail -n +2 | sort | uniq | wc -l} {{{results(=0=)}}} gates, assigned to src_bash[:eval yes]{cut -d"|" -f3 ./tmp/dat/sectors@Mouginot_2019.bsv | tail -n +2 | sort -n | uniq | wc -l} {{{results(=173=)}}} ice sheet sectors from citet:mouginot_2019_glacier. Previous similar studies have used 260 gates citep:mouginot_2019_forty, 230 gates citep:king_2018_seasonal, and 178 gates citep:enderlin_2014_improved.
 
@@ -6521,6 +6521,8 @@ find . -type f -name "*vx*.tif" | LC_ALL=C sort | tail -n16| parallel --keep-ord
 ./IV_ROTR_V5_20260228_20260324.nc
 ./IV_ROTR_V5_20260312_20260405.nc
 ./IV_ROTR_V5_20260324_20260417.nc
+./IV_ROTR_V5_20260405_20260429.nc
+./IV_ROTR_V5_20260417_20260511.nc
 #+end_example
 
 ***** File Metadata
