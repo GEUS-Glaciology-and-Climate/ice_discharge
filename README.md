@@ -188,26 +188,11 @@ figs/              # output figures
   journal = {Earth System Science Data}
 }
 ```
-
-### Project
-
-```bibtex
-@data{mankoff_2020_data,
-    author    = {Mankoff, Ken and Solgaard, Anne},
-    publisher = {GEUS Dataverse},
-    title     = {{G}reenland {I}ce {S}heet solid ice discharge from 1986 through last month: Discharge},
-    year      = {2020},
-    doi       = {10.22008/promice/data/ice_discharge/},
-    url       = {https://doi.org/10.22008/promice/data/ice_discharge/}}
-```
-
 ### Discharge data
-
-> Note: The version number updates approximately every two weeks.
-
+ 
 ```bibtex
 @data{mankoff_2020_discharge,
-    author    = {Mankoff, Ken and Solgaard, Anne},
+    author    = {Mankoff, Ken, Solgaard, Anne and Larsen, Signe Hillerup},
     publisher = {GEUS Dataverse},
     title     = {{G}reenland {I}ce {S}heet solid ice discharge from 1986 through last month: Discharge},
     year      = {2020},
@@ -219,8 +204,8 @@ figs/              # output figures
 ### Discharge gates
 
 ```bibtex
-@data{mankoff_2020_gates,
-    author    = {Mankoff, Ken},
+@data{porimice_sid_2020_gates,
+    author    = {Mankoff, Ken and Larsen, Signe Hillerup},
     publisher = {GEUS Dataverse},
     title     = {{G}reenland {I}ce {S}heet solid ice discharge from 1986 through last month: Gates},
     UNF       = {UNF:6:/eJSVvL8Rp1NG997hIhUag==},
