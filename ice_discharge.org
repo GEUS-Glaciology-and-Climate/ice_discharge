@@ -3392,9 +3392,8 @@ ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe"
 # ds.attrs["acknowledgment"] = "TODO"
 # ds.attrs["license"] = "TODO"
 # ds.attrs["date_created"] = datetime.datetime.now().strftime("%Y-%m-%d")
-ds.attrs["creator_name"] = "Ken Mankoff"
-ds.attrs["creator_email"] = "kdm@geus.dk"
-ds.attrs["creator_url"] = "http://kenmankoff.com"
+ds.attrs["creator_name"] = "GEUS PROMICE"
+ds.attrs["creator_email"] = "shl@geus.dk"
 ds.attrs["institution"] = "GEUS"
 # ds.attrs["time_coverage_start"] = "TODO"
 # ds.attrs["time_coverage_end"] = "TODO"
@@ -4670,7 +4669,7 @@ curl "https://dataverse.geus.dk/api/datasets/:persistentId/dirindex?persistentId
 chmod 777 urls.txt
 if cmp -s urls.txt urls.txt.last; then
   MSG_WARN "No new Sentinel1 files..."
-  exit 255
+  #exit 255
 fi
 
 for URL in $(cat urls.txt | tail -n5); do
