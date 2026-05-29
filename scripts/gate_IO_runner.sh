@@ -43,5 +43,5 @@ function ctrl_c() {
 
 VELOCITY_CUTOFF=100
 BUFFER_DIST=5000
-. ./gate_IO.sh
+. "$(dirname "$0")/gate_IO.sh"
 # Algorithm:1 ends here
