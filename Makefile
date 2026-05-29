@@ -33,12 +33,13 @@ update: docker ## Update with latest Sentinel data
 	/usr/bin/git push
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./upload.py
 
-upload: docker ## Upload to dataverse
+upload: docker ## Upload to dataverse and thredds
 	cp ./out/* /mnt/data/Mankoff_2020/ice/latest
 	make org
 	/usr/bin/git pull
 	/usr/bin/git commit ice_discharge.org -m "Auto update: `/bin/date +%Y-%m-%d\ %T`" || true
 	/usr/bin/git push
+        /home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $(cat ~/.new_thredds_token) --file out/*.nc
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python ./upload.py
 
 org: ## Update the Org document
