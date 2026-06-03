@@ -33,11 +33,11 @@ done
 MSG_OK "New Sentinel velocity files found..."
 cd ${workingdir}
 
-docker run --user $(id -u):$(id -g) --mount type=bind,src=${DATADIR},dst=/data --mount type=bind,src=$(pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./update_worker.sh
+docker run --user $(id -u):$(id -g) --mount type=bind,src=${DATADIR},dst=/data --mount type=bind,src=$(pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./scripts/update_worker.sh
 
 cp ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last
 
-docker run --user $(id -u):$(id -g) --mount type=bind,src=${DATADIR},dst=/data --mount type=bind,src=$(pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./export.sh
+docker run --user $(id -u):$(id -g) --mount type=bind,src=${DATADIR},dst=/data --mount type=bind,src=$(pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./scripts/export.sh
 
 if cmp -s ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last; then 
   MSG_ERR "No change"
