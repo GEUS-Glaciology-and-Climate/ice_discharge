@@ -904,16 +904,15 @@ for var in mask surface thickness bed errbed; do
 done
 
 r.colors -a map=errbed color=haxby
+r.colors map=mask color=haxby
 
 g.mapset PERMANENT
 g.region raster=surface@BedMachine res=200 -a -p
 g.region -s
+
 g.mapset BedMachine
 g.region -dp
-
-r.colors map=mask color=haxby
-
-r.mapcalc "mask_ice = if(mask == 2, 1, null())"
+r.mapcalc "mask_ice = if(mask == 2, 1, null())" --o
 #+END_SRC
 
 *** Sectors
@@ -1525,12 +1524,16 @@ g.mapset -c DEM
 
 g.region raster=DEM_2020@PRODEM -pa
 for y in {2019..2023}; do
-  r.mapcalc "DEM_${y} = DEM_${y}@PRODEM"
+  if [[ -z "$(g.list type=raster pattern=DEM_${y})" ]]; then
+    r.mapcalc "DEM_${y} = DEM_${y}@PRODEM"
+  fi
 done
 
-for y in {2019..1995}; do
+for y in {2018..1995}; do
   y1=$(( ${y} + 1 ))
-  r.mapcalc "DEM_${y} = DEM_${y1} - dh_${y}@Khan_2016"
+  if [[ -z "$(g.list type=raster pattern=DEM_${y})" ]]; then
+    r.mapcalc "DEM_${y} = DEM_${y1} - dh_${y}@Khan_2016"
+  fi
 done
 #+END_SRC
 
@@ -1577,7 +1580,7 @@ From above:
 The "loosely" is because the BedMachine mask doesn't always reach into each fjord all the way. I buffer the BedMachine mask by 2 km here so that it extends to the edge of the velocity data.
 
 #+BEGIN_SRC bash :results verbatim
-g.copy raster=mask_ice@BedMachine,mask_ice --o
+r.mapcalc "mask_ice = if(mask@BedMachine == 2, 1, null())" --o
 # Grow by 2 km (10 cells @ 200 m/cell)
 r.grow input=mask_ice output=mask_ice_grow radius=10 new=1 --o
 r.mask mask_ice_grow
@@ -1672,7 +1675,7 @@ r.null map=gates_y null=0 # OR r.null map=gates_y setnull=0
 **** Subset to where there is known discharge
 #+BEGIN_SRC bash :results verbatim
 r.mapcalc "gates_xy_clean00 = if((gates_x == 1) || (gates_y == 1), 1, null())" --o
-r.mapcalc "gates_xy_clean0 = if(gates_xy_clean00 & if(DEM_2019@DEM), 1, null())" --o
+r.mapcalc "gates_xy_clean0 = if(!isnull(gates_xy_clean00) && !isnull(DEM_2019@DEM), 1, null())" --o
 #+END_SRC
 
 **** Remove small areas (clusters <X cells)
@@ -1683,7 +1686,11 @@ r.mapcalc "gates_xy_clean0 = if(gates_xy_clean00 & if(DEM_2019@DEM), 1, null())"
 r.clump -d input=gates_xy_clean0 output=gates_gateID --o
 r.reclass.area -d input=gates_gateID output=gates_area value=9 mode=lesser method=reclass --o
 
-r.mapcalc "gates_xy_clean1 = if(isnull(gates_area), gates_xy_clean0, null())" --o
+if [ -n "$(g.list type=raster pattern=gates_area)" ]; then
+    r.mapcalc "gates_xy_clean1 = if(isnull(gates_area), gates_xy_clean0, null())" --o
+else
+    g.copy raster=gates_xy_clean0,gates_xy_clean1 --o
+fi
 #+END_SRC
 
 
@@ -1838,7 +1845,7 @@ done
 #+END_SRC
 **** Clean up
 #+BEGIN_SRC bash :results verbatim
-db.dropcolumn -f table=gates_final column=area
+[ -n "$(g.list type=vector pattern=gates_final)" ] && db.dropcolumn -f table=gates_final column=area
 # db.dropcolumn -f table=gates_final column=cat
 #+END_SRC
 
