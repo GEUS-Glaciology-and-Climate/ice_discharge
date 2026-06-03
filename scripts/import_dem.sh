@@ -71,10 +71,14 @@ g.mapset -c DEM
 g.region raster=DEM_2020@PRODEM -pa
 
 for y in {2019..2023}; do
-    r.mapcalc "DEM_${y} = DEM_${y}@PRODEM"
+    if [[ -z "$(g.list type=raster pattern=DEM_${y})" ]]; then
+        r.mapcalc "DEM_${y} = DEM_${y}@PRODEM"
+    fi
 done
 
-for y in {2019..1995}; do
+for y in {2018..1995}; do
     y1=$(( ${y} + 1 ))
-    r.mapcalc "DEM_${y} = DEM_${y1} - dh_${y}@Khan_2016"
+    if [[ -z "$(g.list type=raster pattern=DEM_${y})" ]]; then
+        r.mapcalc "DEM_${y} = DEM_${y1} - dh_${y}@Khan_2016"
+    fi
 done

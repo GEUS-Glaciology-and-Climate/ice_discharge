@@ -19,7 +19,7 @@ g.region -d
 
 
 # [[file:ice_discharge.org::*Algorithm][Algorithm:3]]
-g.copy raster=mask_ice@BedMachine,mask_ice --o
+r.mapcalc "mask_ice = if(mask@BedMachine == 2, 1, null())" --o
 # Grow by 2 km (10 cells @ 200 m/cell)
 r.grow input=mask_ice output=mask_ice_grow radius=10 new=1 --o
 r.mask mask_ice_grow
@@ -124,7 +124,7 @@ r.null map=gates_y null=0 # OR r.null map=gates_y setnull=0
 
 # [[file:ice_discharge.org::*Subset to where there is known discharge][Subset to where there is known discharge:1]]
 r.mapcalc "gates_xy_clean00 = if((gates_x == 1) || (gates_y == 1), 1, null())" --o
-r.mapcalc "gates_xy_clean0 = if(gates_xy_clean00 & if(DEM_2019@DEM), 1, null())" --o
+r.mapcalc "gates_xy_clean0 = if(!isnull(gates_xy_clean00) && !isnull(DEM_2019@DEM), 1, null())" --o
 # Subset to where there is known discharge:1 ends here
 
 # Remove small areas (clusters <X cells)
@@ -136,7 +136,11 @@ r.mapcalc "gates_xy_clean0 = if(gates_xy_clean00 & if(DEM_2019@DEM), 1, null())"
 r.clump -d input=gates_xy_clean0 output=gates_gateID --o
 r.reclass.area -d input=gates_gateID output=gates_area value=9 mode=lesser method=reclass --o
 
-r.mapcalc "gates_xy_clean1 = if(isnull(gates_area), gates_xy_clean0, null())" --o
+if [ -n "$(g.list type=raster pattern=gates_area)" ]; then
+    r.mapcalc "gates_xy_clean1 = if(isnull(gates_area), gates_xy_clean0, null())" --o
+else
+    g.copy raster=gates_xy_clean0,gates_xy_clean1 --o
+fi
 # Remove small areas (clusters <X cells):1 ends here
 
 # Limit to Mouginot 2019 mask
@@ -281,7 +285,7 @@ done
 # Clean up
 
 # [[file:ice_discharge.org::*Clean up][Clean up:1]]
-db.dropcolumn -f table=gates_final column=area
+[ -n "$(g.list type=vector pattern=gates_final)" ] && db.dropcolumn -f table=gates_final column=area
 # db.dropcolumn -f table=gates_final column=cat
 # Clean up:1 ends here
 
