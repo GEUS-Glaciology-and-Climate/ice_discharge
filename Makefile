@@ -29,7 +29,7 @@ update: docker ## Update with latest Sentinel data
 
 upload: docker ## Upload to dataverse and thredds
 	cp ./out/* /mnt/data/Mankoff_2020/ice/latest
-	/home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $(cat ~/.new_thredds_token) --file out/*.nc
+	/home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $$(cat ~/.new_thredds_token) --file out/*.nc
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/upload.py
 
 docker: ## Pull down Docker images
