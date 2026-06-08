@@ -23,7 +23,7 @@ curl "https://dataverse.geus.dk/api/datasets/:persistentId/dirindex?persistentId
 chmod 777 urls.txt
 if cmp -s urls.txt urls.txt.last; then
   MSG_WARN "No new Sentinel1 files..."
-  exit 255
+  #exit 255
 fi
 
 for URL in $(cat urls.txt | tail -n5); do
@@ -39,9 +39,8 @@ cp ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last
 
 docker run --user $(id -u):$(id -g) --mount type=bind,src=${DATADIR},dst=/data --mount type=bind,src=$(pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./scripts/export.sh
 
-if cmp -s ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last; then 
-  MSG_ERR "No change"
-  exit 255
+if cmp -s ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last; then
+  MSG_WARN "No change in exported data"
 fi
 
 /home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $(cat ~/.new_thredds_token) --file out/sector.nc --file out/region.nc
