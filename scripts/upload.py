@@ -41,7 +41,10 @@ for f in files:
                "contentType":content}
 
     json_str = json.dumps(json_dict)
-    d = api.replace_datafile(persistentId, "./out/"+filename, json_str)
+    # Use the numeric file id (always present) rather than persistentId: the
+    # GEUS dataverse does not assign file-level PIDs, so f['dataFile']['persistentId']
+    # is empty and replace_datafile would POST to an invalid URL.
+    d = api.replace_datafile(fileId, "./out/"+filename, json_str, is_filepid=False)
   
     if d.json()["status"] == "ERROR": 
         print(d.content)
