@@ -24,6 +24,7 @@ update: docker ## Update with latest Sentinel data
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/errors.py
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/raw2discharge.py
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/csv2nc.py
+	scripts/build_readme.sh
 	cp ./out/* /mnt/data/Mankoff_2020/ice/latest
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/upload.py
 
