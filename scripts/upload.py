@@ -41,7 +41,7 @@ for f in files:
                "contentType":content}
 
     json_str = json.dumps(json_dict)
-    d = api.replace_datafile(persistentId, "../out/"+filename, json_str)
+    d = api.replace_datafile(persistentId, "./out/"+filename, json_str)
   
     if d.json()["status"] == "ERROR": 
         print(d.content)
