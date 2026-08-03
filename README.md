@@ -65,22 +65,22 @@ This checks for new PROMICE/MEaSUREs data, reprocesses, and uploads results to T
 
 Builds a GRASS GIS database (`G/`) in EPSG:3413 (polar stereographic) with one mapset per data source:
 
-| Input dataset | Content |
-|---|---|
-| BedMachine v6 | Ice mask, surface elevation, ice thickness, bed elevation, bed error |
-| Mouginot 2019 | Sector and region polygon boundaries (7 regions of Greenland) |
-| Zwally 2012 | Alternate drainage basin sectors |
-| MEaSUREs 0478 | Annual velocity mosaics 200 m/500 m (~2000–present) |
-| MEaSUREs 0481 | TSX/TDX ~12-day scenes at high resolution |
-| MEaSUREs 0646 | Monthly mosaics 1985–2018 |
-| MEaSUREs 0731 | Annual mosaics |
-| MEaSUREs 0766 | Most recent mosaics (manually updated) |
-| PROMICE IV v5 | Sentinel-1, 200 m, ~12-day cadence (downloaded automatically) |
-| Mouginot 2018 | Historical velocities pre-2000 |
-| Bjørk 2015 | Glacier names (point vector) |
-| Moon 2008 / NSIDC-0642 | Glacier IDs |
-| PRODEM | Annual DEMs 2019–2023 |
-| Khan 2016 | dh/dt (elevation change) 1995–2019 |
+| Input dataset | Content | Reference |
+|---|---|---|
+| BedMachine | Ice mask, surface elevation, ice thickness, bed elevation, bed error | [Morlighem et al. 2017](https://doi.org/10.1002/2017GL074954) · data: [doi:10.5067/6B6B225B8V2D](https://doi.org/10.5067/6B6B225B8V2D) ([NSIDC IDBMG4](https://nsidc.org/data/idbmg4)) |
+| Mouginot 2019 | Sector and region polygon boundaries (7 regions of Greenland) | [Mouginot & Rignot 2019](https://doi.org/10.7280/D1WT11) ([UCI DASH](https://dash.lib.uci.edu/stash/dataset/doi:10.7280/D1WT11)) |
+| Zwally 2012 | Alternate drainage basin sectors | Zwally et al. 2012, [Antarctic and Greenland Drainage Systems](http://icesat4.gsfc.nasa.gov/cryo_data/ant_grn_drainage_systems.php) (GSFC Cryospheric Sciences Lab) |
+| MEaSUREs 0478 | Annual velocity mosaics 200 m/500 m (~2000–present) | [Joughin et al. 2010](https://doi.org/10.3189/002214310792447734) · data: [doi:10.5067/OC7B04ZM9G6Q](https://doi.org/10.5067/OC7B04ZM9G6Q) ([NSIDC-0478](https://nsidc.org/data/nsidc-0478)) |
+| MEaSUREs 0481 | TSX/TDX ~12-day scenes at high resolution | [NSIDC-0481](https://nsidc.org/data/nsidc-0481) — MEaSUREs Greenland Ice Velocity: Selected Glacier Site Velocity Maps from InSAR |
+| MEaSUREs 0646 | Monthly mosaics 1985–2018 | Howat 2017, data: [doi:10.5067/VM5DZ20MYF5C](https://doi.org/10.5067/VM5DZ20MYF5C) ([NSIDC-0646](https://nsidc.org/data/nsidc-0646)) |
+| MEaSUREs 0731 | Annual mosaics | [Joughin et al. 2018](https://doi.org/10.5194/tc-12-2211-2018) · data: [doi:10.5067/OPFQ9QDEUFFY](https://doi.org/10.5067/OPFQ9QDEUFFY) ([NSIDC-0731](https://nsidc.org/data/nsidc-0731)) |
+| MEaSUREs 0766 | Most recent mosaics (manually updated) | [NSIDC-0766](https://nsidc.org/data/nsidc-0766) — MEaSUREs Greenland 6- and 12-day Ice Sheet Velocity Mosaics from SAR |
+| PROMICE IV v5 | Sentinel-1, 200 m, ~12-day cadence (downloaded automatically) | [Solgaard et al. 2021](https://doi.org/10.5194/essd-13-3491-2021) · data: [doi:10.22008/FK2/K70OPK](https://doi.org/10.22008/FK2/K70OPK) ([GEUS Dataverse](https://dataverse.geus.dk/dataset.xhtml?persistentId=doi:10.22008/FK2/K70OPK)) |
+| Mouginot 2018 | Historical velocities pre-2000 | Mouginot et al. 2018: [1972–1990](https://doi.org/10.7280/D1MM37) · [1991–2000](https://doi.org/10.7280/D1GW91) (UCI DASH) |
+| Bjørk 2015 | Glacier names (point vector) | [Bjørk et al. 2015](https://doi.org/10.5194/tc-9-2215-2015) |
+| Moon 2008 / NSIDC-0642 | Glacier IDs | [Moon & Joughin 2008](https://doi.org/10.1029/2007JF000927) · data: [doi:10.5067/DC0MLBOCL3EL](https://doi.org/10.5067/DC0MLBOCL3EL) ([NSIDC-0642](https://nsidc.org/data/nsidc-0642)) |
+| PRODEM | Annual DEMs 2019–2023 | [Winstrup et al. 2024](https://doi.org/10.5194/essd-16-5405-2024) · data: [doi:10.22008/FK2/52WWHG](https://doi.org/10.22008/FK2/52WWHG) |
+| Khan 2016 | dh/dt (elevation change) 1995–2019 | [Khan et al. 2016](https://doi.org/10.1126/sciadv.1600931) · data: [doi:10.22008/promice/data/DTU/surface_elevation_change/v1.0.0](https://doi.org/10.22008/promice/data/DTU/surface_elevation_change/v1.0.0) |
 
 Also computes a 2015–2017 baseline velocity (average of three September MEaSUREs 0478 scenes), fills velocity holes via bilinear interpolation, corrects for the ±8 % 2D area error in EPSG:3413, and reconstructs annual DEMs back to 1995 by subtracting cumulative elevation change from Khan 2016.
 
