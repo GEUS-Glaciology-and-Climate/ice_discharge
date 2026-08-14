@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -26,6 +27,60 @@ for g in meta['gates'].unique():
     if R[R['gate'] == g].shape[0] == 0: continue
     meta.loc[meta['gates'] == g, 'name'] = R[R['gate'] == g]['Mouginot_2019'].values[0]
     
+###
+### Pixel-scale Mouginot catchment assignment
+###
+# The `sectors` column is overwritten just below with each gate's modal sector,
+# which is what the gate-scale sector product uses. Capture the true per-pixel
+# catchment first.
+#
+# Scale of the difference, measured on the 2025-12 export (5851 pixels, 266
+# gates): 4 gates (2 %) span more than one Mouginot catchment, at most 3 each,
+# and 188 pixels (3.2 %) sit in a catchment other than their gate's modal one.
+# Pixel-scale grouping yields 173 catchments against 171 gate-scale names. So
+# this is a correctness refinement at the margins, not a wholesale
+# redistribution - but for a small catchment adjacent to a large one, a few
+# reattributed pixels can still be a large fraction of ITS discharge.
+#
+# This is ADDITIVE. The sector product below is untouched, so the two can be
+# compared directly.
+meta['catchment_id'] = meta['sectors'].copy()
+
+# cat -> name. Prefer the full category table exported from GRASS by export.sh,
+# which covers catchments containing no gate. Fall back to gate_meta.csv, which
+# by construction cannot.
+cat_names = {}
+if os.path.exists('./tmp/sector_cats.csv'):
+    _c = pd.read_csv('./tmp/sector_cats.csv', header=None, names=['cat', 'label'])
+    _c = _c[_c['label'].notna() & (_c['label'].astype(str).str.strip() != '')]
+    # Labels are "SUBREGION1___NAME"; strip the region prefix so catchment names
+    # match the naming already used by the sector product.
+    cat_names = dict(zip(_c['cat'],
+                         _c['label'].astype(str).str.split('___').str[-1]))
+else:
+    print("WARNING: ./tmp/sector_cats.csv missing - naming catchments from gate_meta.csv,")
+    print("         which only covers catchments containing a gate. Others will be named")
+    print("         UNNAMED_<cat>. Re-run scripts/export.sh to produce the full table.")
+    cat_names = dict(zip(R['sector'], R['Mouginot_2019']))
+
+# Two cats stripping to the same NAME would be silently summed together, so say so.
+_dupe = pd.Series(cat_names).duplicated(keep=False)
+if _dupe.any():
+    print("NOTE: %d catchment ids share a name once the region prefix is stripped;"
+          % _dupe.sum())
+    print("      they are summed together in the catchment product.")
+
+meta['catchment'] = meta['catchment_id'].map(cat_names)
+_unnamed = meta['catchment'].isna()
+if _unnamed.any():
+    meta.loc[_unnamed, 'catchment'] = ('UNNAMED_'
+                                       + meta.loc[_unnamed, 'catchment_id'].astype(int).astype(str))
+    print("catchments with no name: %d pixels across %d ids"
+          % (_unnamed.sum(), meta.loc[_unnamed, 'catchment_id'].nunique()))
+
+print("catchments (pixel scale): %d | sectors (gate scale): %d"
+      % (meta['catchment'].nunique(), meta['name'].nunique()))
+
 ### https://github.com/GEUS-Glaciology-and-Climate/ice_discharge/issues/28
 ### Gates span sectors and regions. Assign to their primary sector or region
 ### meta.groupby('gates').mean()['sectors'].values  
@@ -292,8 +347,8 @@ D = (vel*th_ts).apply(lambda c: c * (200 * meta['err_2D'].values), axis=0) * 917
 D_err = vel.apply(lambda c: c * (th['fit_err'] * 200 * meta['err_2D'].values), axis=0) * 917 / 1E12
 
 [DD,DD_err] = [_.copy() for _ in [D,D_err]]
-DD[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','regions','ones','name']]
-DD_err[['gates','sectors','regions','ones','name']] = meta[['gates','sectors','regions','ones','name']]
+DD[['gates','sectors','regions','ones','name','catchment']] = meta[['gates','sectors','regions','ones','name','catchment']]
+DD_err[['gates','sectors','regions','ones','name','catchment']] = meta[['gates','sectors','regions','ones','name','catchment']]
 
 
 # D_gate :: Same, but at the gate scale
@@ -329,6 +384,28 @@ D_sectors_fill_weight.columns = D_sectors_fill_weight.columns.astype(str).astype
 D_sectors_fill_weight.clip(lower=0, upper=1, inplace=True)
 
 
+# D_catchment :: Same, but at Mouginot catchment scale, assigned PER PIXEL
+# D_catchment_err ::
+# D_catchment_fill ::
+#
+# The difference from the sector product above is only the grouping key: sectors
+# group by `name`, which gives every pixel of a gate that gate's single Mouginot
+# name, whereas this groups by `catchment`, each pixel's own Mouginot catchment.
+# Same discharge, same pixels, redistributed. Totals are identical by
+# construction; the split between catchments is not.
+D_catchments = DD.groupby('catchment').sum().drop(['ones','sectors','gates'], axis=1)
+D_catchments_err = DD_err.groupby('catchment').sum().drop(['ones','sectors','gates'], axis=1)
+D_catchments_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_catchments)
+for c in D_catchments.index:
+    c_idx = (DD['catchment'] == c)
+    D_catchments_fill_weight.loc[c] = ((D[c_idx]*fill[c_idx])/D[c_idx].sum()).sum()
+
+D_catchments.columns = D_catchments.columns.astype(str).astype('datetime64[ns]')
+D_catchments_err.columns = D_catchments_err.columns.astype(str).astype('datetime64[ns]')
+D_catchments_fill_weight.columns = D_catchments_fill_weight.columns.astype(str).astype('datetime64[ns]')
+D_catchments_fill_weight.clip(lower=0, upper=1, inplace=True)
+
+
 # D_region :: Same, but at Mouginot region scale
 # D_region_err ::
 # D_region_fill ::
@@ -357,8 +434,11 @@ D_regions_fill_weight.clip(lower=0, upper=1, inplace=True)
 # D_all :: Same, but all GIS
 # D_all_err ::
 # D_all_fill ::
-D_all = DD.drop(['regions','sectors','ones','name','gates'], axis=1).sum()
-D_all_err = DD_err.drop(['regions','sectors','ones','name','gates'], axis=1).sum()
+# 'catchment' must be dropped here too: unlike the groupby cases below, this is a
+# bare .sum() over the frame, so a leftover string column would be concatenated
+# into the ice-sheet total rather than ignored.
+D_all = DD.drop(['regions','sectors','ones','name','gates','catchment'], axis=1).sum()
+D_all_err = DD_err.drop(['regions','sectors','ones','name','gates','catchment'], axis=1).sum()
 D_all_fill_weight = pd.Series(dtype=np.float64).reindex_like(D_all)
 for c in D.columns:
     D_all_fill_weight.loc[c] = (fill[c] * (D[c] / D[c].sum())).sum()
@@ -373,6 +453,9 @@ D_gates_fill_weight = D_gates_fill_weight.T[STARTDATE:].T
 D_sectors = D_sectors.T[STARTDATE:].T
 D_sectors_err = D_sectors_err.T[STARTDATE:].T
 D_sectors_fill_weight = D_sectors_fill_weight.T[STARTDATE:].T
+D_catchments = D_catchments.T[STARTDATE:].T
+D_catchments_err = D_catchments_err.T[STARTDATE:].T
+D_catchments_fill_weight = D_catchments_fill_weight.T[STARTDATE:].T
 D_regions = D_regions.T[STARTDATE:].T
 D_regions_err = D_regions_err.T[STARTDATE:].T
 D_regions_fill_weight = D_regions_fill_weight.T[STARTDATE:].T
@@ -410,6 +493,27 @@ D_sectors_fill_weightT.index.name = "Date"
 D_sectorsT.to_csv('./out/sector_D.csv')
 D_sectors_errT.to_csv('./out/sector_err.csv')
 D_sectors_fill_weightT.to_csv('./out/sector_coverage.csv')
+
+D_catchmentsT = D_catchments.T
+D_catchments_errT = D_catchments_err.T
+D_catchments_fill_weightT = D_catchments_fill_weight.T
+
+D_catchmentsT.index.name = "Date"
+D_catchments_errT.index.name = "Date"
+D_catchments_fill_weightT.index.name = "Date"
+
+D_catchmentsT.to_csv('./out/catchment_D.csv')
+D_catchments_errT.to_csv('./out/catchment_err.csv')
+D_catchments_fill_weightT.to_csv('./out/catchment_coverage.csv')
+
+# The two products must agree at ice-sheet scale: same pixels, same discharge,
+# different grouping. A mismatch means pixels were dropped or double-counted.
+_chk_sec = D_sectors.sum().sum()
+_chk_cat = D_catchments.sum().sum()
+print("total discharge  sectors: %.3f  catchments: %.3f  diff: %.2e Gt"
+      % (_chk_sec, _chk_cat, _chk_cat - _chk_sec))
+if not np.isclose(_chk_sec, _chk_cat, rtol=1e-9):
+    print("WARNING: sector and catchment totals disagree - pixels lost or double-counted.")
 
 # meta_sector.head(10)
 

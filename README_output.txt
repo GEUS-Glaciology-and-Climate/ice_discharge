@@ -41,6 +41,14 @@ sector_D.csv           Sector discharge
 sector_err.csv         Errors for sector_D.csv
 sector_coverage.csv    Coverage for sector_D.csv
 sector.nc              Discharge, errors, and coverage for GIS sectors
+catchment_D.csv        Catchment discharge (Mouginot catchments, assigned per pixel)
+catchment_err.csv      Errors for catchment_D.csv
+catchment_coverage.csv Coverage for catchment_D.csv
+catchment.nc           Discharge, errors, and coverage per catchment
+
+  sector_* assigns every pixel of a flux gate to that gate's single Mouginot
+  catchment; catchment_* assigns each pixel to the catchment it actually falls
+  in. Ice-sheet totals are identical; the split between catchments is not.
 gate_D.csv             Gate discharge
 gate_err.csv           Errors for gate_D.csv
 gate_coverage.csv      Coverage for gate_D.csv

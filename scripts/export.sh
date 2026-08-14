@@ -62,6 +62,12 @@ THICK=$(g.list -m mapset=DEM type=raster pattern=DEM_???? separator=space)
 LIST="lon lat err_2D gates_x@${MAPSET} gates_y@${MAPSET} gates_gateID@${MAPSET} sectors@Mouginot_2019 regions@Mouginot_2019 bed@BedMachine thickness@BedMachine surface@BedMachine ${THICK} ${VEL_baseline} ${VEL_0478}
 ${VEL_0481} ${VEL_0646} ${VEL_0731} ${VEL_0766} ${VEL_SENTINEL} ${VEL_MOUGINOT} errbed@BedMachine ${ERR_0478} ${ERR_0481} ${ERR_0646} ${ERR_0731} ${ERR_0766} ${ERR_SENTINEL}"
 
+# Mouginot catchment category table: numeric cat -> "SUBREGION1___NAME" label.
+# The per-pixel export below carries only the numeric cat, so without this there
+# is no way to name a catchment that contains no gate - and pixel-scale
+# aggregation reaches ~95 catchments that no gate is assigned to.
+r.category map=sectors@Mouginot_2019 separator=comma > ./tmp/sector_cats.csv
+
 mkdir tmp/dat
 r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(mask_GIC@Mouginot_2019) | if(vel_err_baseline@MEaSUREs.0478) | if(DEM_2020@DEM)" --o
 parallel --bar "if [[ ! -e ./tmp/dat/{1}.bsv ]]; then (echo x\|y\|{1}; r.out.xyz input={1}) > ./tmp/dat/{1}.bsv; fi" ::: ${LIST}

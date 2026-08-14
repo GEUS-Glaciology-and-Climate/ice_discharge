@@ -242,6 +242,62 @@ encoding = {var: comp for var in ds.data_vars} # all
 encoding['time'] = {'dtype':'float64'} #time (to be compatible with openDAP)
 ds.to_netcdf('./out/sector.nc', mode='w', encoding=encoding)
 
+# Catchment: the same Mouginot (2019) units as `sector` above, but with each
+# PIXEL assigned to the catchment it falls in, rather than every pixel of a gate
+# inheriting that gate's single catchment. Ice-sheet total is identical; the
+# split between catchments is not. See scripts/raw2discharge.py.
+csvfile = 'catchment'
+
+df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
+df_err = pd.read_csv('./out/' + csvfile + '_err.csv', index_col=0, parse_dates=True)
+df_coverage = pd.read_csv('./out/' + csvfile + '_coverage.csv', index_col=0, parse_dates=True)
+
+ds = xr.Dataset()
+
+ds["time"] = (("time"), df_D.index)
+ds["time"].attrs["cf_role"] = "timeseries_id"
+ds["time"].attrs["standard_name"] = "time"
+ds["time"].attrs["axis"] = "T"
+
+ds["catchment"] = (("catchment"), df_D.columns)
+ds["catchment"].attrs["long_name"] = "Catchment"
+ds["catchment"].attrs["standard_name"] = "N/A"
+ds["catchment"].attrs["comment"] = "Catchments from Mouginot (2019), assigned per pixel"
+
+ds["discharge"] = (("catchment", "time"), df_D.T.values)
+ds["discharge"].attrs["long_name"] = "Discharge"
+ds["discharge"].attrs["standard_name"] = "land_ice_mass_tranport_due_to_calving_and_ice_front_melting"
+ds["discharge"].attrs["units"] = "Gt yr-1"
+ds["discharge"].attrs["coordinates"] = "time catchment"
+
+ds["err"] = (("catchment", "time"), df_err.T.values)
+ds["err"].attrs["long_name"] = "Error"
+ds["err"].attrs["standard_name"] = "Uncertainty"
+ds["err"].attrs["units"] = "Gt yr-1"
+ds["err"].attrs["coordinates"] = "time catchment"
+
+ds["coverage"] = (("catchment", "time"), df_coverage.T.values)
+ds["coverage"].attrs["long_name"] = "Coverage"
+ds["coverage"].attrs["standard_name"] = "Coverage"
+ds["coverage"].attrs["coordinates"] = "time catchment"
+
+ds.attrs["featureType"] = "timeSeries"
+ds.attrs["title"] = "Greenland discharge"
+ds.attrs["summary"] = "Greenland discharge per catchment, pixel-scale assignment"
+ds.attrs["keywords"] = "Greenland; Ice Discharge; Calving; Submarine Melt"
+ds.attrs["source"] = "git commit: " + subprocess.check_output(["git", "describe", "--always"]).strip().decode('UTF-8')
+ds.attrs["creator_name"] = "Ken Mankoff"
+ds.attrs["creator_email"] = "kdm@geus.dk"
+ds.attrs["creator_url"] = "http://kenmankoff.com"
+ds.attrs["institution"] = "GEUS"
+ds.attrs["references"] = "10.22008/promice/ice_discharge"
+ds.attrs["product_version"] = 2.0
+
+comp = dict(zlib=True, complevel=9)
+encoding = {var: comp for var in ds.data_vars} # all
+encoding['time'] = {'dtype':'float64'} #time (to be compatible with openDAP)
+ds.to_netcdf('./out/catchment.nc', mode='w', encoding=encoding)
+
 csvfile = 'gate'
 
 df_D = pd.read_csv('./out/' + csvfile + '_D.csv', index_col=0, parse_dates=True)
