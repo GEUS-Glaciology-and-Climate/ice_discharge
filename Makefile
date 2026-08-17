@@ -49,6 +49,7 @@ G: ## Create GRASS project location
 import: ## Import all data into GRASS
 import: $(STAMPS)/import_bedmachine \
         $(STAMPS)/import_basins \
+        $(STAMPS)/import_promice_icemask \
         $(STAMPS)/import_area_error \
         $(STAMPS)/import_measures_0478 \
         $(STAMPS)/import_measures_0481 \
@@ -71,6 +72,11 @@ $(STAMPS)/import_area_error: scripts/import_area_error.sh scripts/common.sh $(ST
 
 $(STAMPS)/import_basins: scripts/import_basins.sh scripts/common.sh | G $(STAMPS)
 	${grass_exec} scripts/import_basins.sh
+	touch $@
+
+# PROMICE-2022 ice mask; needs the 200 m PERMANENT region from import_bedmachine
+$(STAMPS)/import_promice_icemask: scripts/import_promice_icemask.sh scripts/common.sh $(STAMPS)/import_bedmachine | $(STAMPS)
+	${grass_exec} scripts/import_promice_icemask.sh
 	touch $@
 
 $(STAMPS)/import_measures_0478: scripts/import_measures_0478.sh scripts/common.sh | G $(STAMPS)

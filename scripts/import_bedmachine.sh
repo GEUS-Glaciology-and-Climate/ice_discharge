@@ -16,8 +16,3 @@ r.colors map=mask color=haxby
 g.mapset PERMANENT
 g.region raster=surface@BedMachine res=200 -a -p
 g.region -s
-
-# Compute mask_ice in BedMachine mapset using the correct 200 m region
-g.mapset BedMachine
-g.region -dp
-r.mapcalc "mask_ice = if(mask == 2, 1, null())" --o

@@ -11,14 +11,21 @@ g.region -d
 
 # From above:
 
-# + [X] Find grounding line by finding edge cells where fast-moving ice borders water or ice shelf based (loosely) on BedMachine mask
+# + [X] Find grounding line by finding edge cells where fast-moving ice borders water or ice shelf based (loosely) on the ice mask
 
-# The "loosely" is because the BedMachine mask doesn't always reach into each fjord all the way. I buffer the BedMachine mask by 2 km here so that it extends to the edge of the velocity data.
+# Ice extent is the PROMICE-2022 Ice Mask (was: BedMachine mask == 2). That is
+# an August 2022 Sentinel-2 outline, so it is both grounded and floating ice,
+# where BedMachine mask == 2 was grounded only. Shelves are still kept out of
+# gate placement by the not_ice test below (mask@BedMachine == 3).
+
+# The 2 km grow is retained from the BedMachine version, where it existed
+# because that mask "doesn't always reach into each fjord all the way". The
+# PROMICE mask tracks the true 2022 margin, so the grow is now doing only its
+# other job: reaching out to the edge of the velocity data.
 
 
-r.mapcalc "mask_ice = if(mask@BedMachine == 2, 1, null())" --o
 # Grow by 2 km (10 cells @ 200 m/cell)
-r.grow input=mask_ice output=mask_ice_grow radius=10 new=1 --o
+r.grow input=mask_ice@PROMICE_2022 output=mask_ice_grow radius=10 new=1 --o
 r.mask mask_ice_grow
 
 

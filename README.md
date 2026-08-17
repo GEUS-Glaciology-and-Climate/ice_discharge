@@ -69,6 +69,7 @@ Builds a GRASS GIS database (`G/`) in EPSG:3413 (polar stereographic) with one m
 |---|---|---|
 | BedMachine | Ice mask, surface elevation, ice thickness, bed elevation, bed error | [Morlighem et al. 2017](https://doi.org/10.1002/2017GL074954) · data: [doi:10.5067/6B6B225B8V2D](https://doi.org/10.5067/6B6B225B8V2D) ([NSIDC IDBMG4](https://nsidc.org/data/idbmg4)) |
 | Mouginot 2019 | Sector and region polygon boundaries (7 regions of Greenland) | [Mouginot & Rignot 2019](https://doi.org/10.7280/D1WT11) ([UCI DASH](https://dash.lib.uci.edu/stash/dataset/doi:10.7280/D1WT11)) |
+| PROMICE-2022 Ice Mask | Ice extent (August 2022, Sentinel-2 10 m) and ice-margin lines classified marine/land terminating | [Luetzenburg et al. 2025](https://doi.org/10.22008/FK2/O8CLRE) ([GEUS Dataverse](https://doi.org/10.22008/FK2/O8CLRE)) |
 | Zwally 2012 | Alternate drainage basin sectors | Zwally et al. 2012, [Antarctic and Greenland Drainage Systems](http://icesat4.gsfc.nasa.gov/cryo_data/ant_grn_drainage_systems.php) (GSFC Cryospheric Sciences Lab) |
 | MEaSUREs 0478 | Annual velocity mosaics 200 m/500 m (~2000–present) | [Joughin et al. 2010](https://doi.org/10.3189/002214310792447734) · data: [doi:10.5067/OC7B04ZM9G6Q](https://doi.org/10.5067/OC7B04ZM9G6Q) ([NSIDC-0478](https://nsidc.org/data/nsidc-0478)) |
 | MEaSUREs 0481 | TSX/TDX ~12-day scenes at high resolution | [NSIDC-0481](https://nsidc.org/data/nsidc-0481) — MEaSUREs Greenland Ice Velocity: Selected Glacier Site Velocity Maps from InSAR |
@@ -89,7 +90,7 @@ Also computes a 2015–2017 baseline velocity (average of three September MEaSUR
 Locates flux gates automatically using a fixed velocity cutoff of 100 m/yr and a 5000 m inland buffer:
 
 1. Identifies fast-moving ice (baseline velocity > 100 m/yr)
-2. Finds the grounding-line edge where fast ice borders ocean or ice shelf (BedMachine mask, grown 2 km into fjords)
+2. Finds the grounding-line edge where fast ice borders ocean or ice shelf (ice extent from the PROMICE-2022 ice mask grown 2 km; ocean/shelf from BedMachine)
 3. Places gates 5000 m inland from that edge
 4. Labels each gate pixel as "inside" or "outside" to determine the discharge direction
 5. Decomposes into x- and y-components based on flow direction
