@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Local
 
-# [[file:ice_discharge.org::*Local][Local:1]]
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
@@ -44,4 +43,3 @@ if cmp -s ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last; then
 fi
 
 /home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $(cat ~/.new_thredds_token) --file out/sector.nc --file out/region.nc
-# Local:1 ends here

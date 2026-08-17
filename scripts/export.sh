@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 # Export all data to CSV
-# :PROPERTIES:
-# :header-args:bash+: :tangle export.sh
-# :END:
 
-
-# [[file:ice_discharge.org::*Export all data to CSV][Export all data to CSV:1]]
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
@@ -30,13 +25,11 @@ function ctrl_c() {
   MSG_WARN "Killing process"
   kill -term $$ # send this program a terminate signal
 }
-# Export all data to CSV:1 ends here
 
 
 
 # #+NAME: export
 
-# [[file:ice_discharge.org::export][export]]
 MSG_OK "Exporting..."
 g.mapset PERMANENT
 g.region -dp
@@ -80,4 +73,3 @@ for f in ./tmp/dat/*; do
 done
 cat ./tmp/dat_100_5000_t.bsv |datamash -t"|" transpose | tr '|' ',' > ./tmp/dat_100_5000.csv
 rm ./tmp/dat_100_5000_t.bsv
-# export ends here

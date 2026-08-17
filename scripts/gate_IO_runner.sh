@@ -15,7 +15,6 @@
 
 # OR: Tangle via ((org-babel-tangle) the code below (C-c C-v C-t or ) to [[./gate_IO.sh]] and then run this in a GRASS session:
 
-# [[file:ice_discharge.org::*Algorithm][Algorithm:1]]
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
@@ -44,4 +43,3 @@ function ctrl_c() {
 VELOCITY_CUTOFF=100
 BUFFER_DIST=5000
 . "$(dirname "$0")/gate_IO.sh"
-# Algorithm:1 ends here

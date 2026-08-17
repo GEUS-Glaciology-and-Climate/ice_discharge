@@ -4,10 +4,8 @@
 # Create a new mapset for this specific velocity cutoff and buffer distance
 
 
-# [[file:ice_discharge.org::*Algorithm][Algorithm:2]]
 g.mapset -c gates_vel_buf
 g.region -d
-# Algorithm:2 ends here
 
 
 
@@ -18,19 +16,16 @@ g.region -d
 # The "loosely" is because the BedMachine mask doesn't always reach into each fjord all the way. I buffer the BedMachine mask by 2 km here so that it extends to the edge of the velocity data.
 
 
-# [[file:ice_discharge.org::*Algorithm][Algorithm:3]]
 r.mapcalc "mask_ice = if(mask@BedMachine == 2, 1, null())" --o
 # Grow by 2 km (10 cells @ 200 m/cell)
 r.grow input=mask_ice output=mask_ice_grow radius=10 new=1 --o
 r.mask mask_ice_grow
-# Algorithm:3 ends here
 
 
 
 # The fast ice edge is where there is fast-flowing ice overlapping with not-ice.
 
 
-# [[file:ice_discharge.org::*Algorithm][Algorithm:4]]
 r.mapcalc "fast_ice = if(vel_baseline@MEaSUREs.0478 > ${VELOCITY_CUTOFF}, 1, null())" --o
 r.mask -r
 
@@ -39,7 +34,6 @@ r.mapcalc "not_ice = if(isnull(vel_baseline@MEaSUREs.0478) ||| (mask@BedMachine 
 
 r.grow input=not_ice output=not_ice_grow radius=1.5 new=99 --o
 r.mapcalc "fast_ice_edge = if(((not_ice_grow == 99) && (fast_ice == 1)), 1, null())" --o
-# Algorithm:4 ends here
 
 
 
@@ -48,7 +42,6 @@ r.mapcalc "fast_ice_edge = if(((not_ice_grow == 99) && (fast_ice == 1)), 1, null
 # However, in order to properly estimate discharge, the gate location is not enough. Ice must flow from outside the gates, through the gates, to inside the gates, and not flow from one gate pixel to another gate pixel (or it would be counted 2x). 
 
 
-# [[file:ice_discharge.org::*Algorithm][Algorithm:5]]
 r.buffer input=fast_ice_edge output=fast_ice_buffer distances=${BUFFER_DIST} --o
 r.grow input=fast_ice_buffer output=fast_ice_buffer_grow radius=1.5 new=99 --o
 r.mask -i not_ice --o
@@ -73,7 +66,6 @@ r.colors map=gates_inside color=red
 r.colors map=gates_maybe color=grey
 r.colors map=gates_outside color=blue
 r.colors map=gates_IO color=viridis
-# Algorithm:5 ends here
 
 
 
@@ -100,7 +92,6 @@ r.colors map=gates_IO color=viridis
 # |                | [1,0]  | below             |
 
 
-# [[file:ice_discharge.org::*Algorithm][Algorithm:6]]
 # g.mapset -c gates_50_2500
 
 r.mask -r
@@ -118,18 +109,14 @@ r.mapcalc "gates_y = if(gates_y == 1, 1, 0)" --o
 
 r.null map=gates_x null=0 # OR r.null map=gates_x setnull=0
 r.null map=gates_y null=0 # OR r.null map=gates_y setnull=0
-# Algorithm:6 ends here
 
 # Subset to where there is known discharge
 
-# [[file:ice_discharge.org::*Subset to where there is known discharge][Subset to where there is known discharge:1]]
 r.mapcalc "gates_xy_clean00 = if((gates_x == 1) || (gates_y == 1), 1, null())" --o
 r.mapcalc "gates_xy_clean0 = if(!isnull(gates_xy_clean00) && !isnull(DEM_2019@DEM), 1, null())" --o
-# Subset to where there is known discharge:1 ends here
 
 # Remove small areas (clusters <X cells)
 
-# [[file:ice_discharge.org::*Remove small areas (clusters <X cells)][Remove small areas (clusters <X cells):1]]
 # Remove clusters of 2 or less. How many hectares in X pixels?
 # frink "(200 m)^2 * 2 -> hectares" # ans: 8.0
 
@@ -141,12 +128,10 @@ if [ -n "$(g.list type=raster pattern=gates_area)" ]; then
 else
     g.copy raster=gates_xy_clean0,gates_xy_clean1 --o
 fi
-# Remove small areas (clusters <X cells):1 ends here
 
 # Limit to Mouginot 2019 mask
 # + Actually, limit to approximate Mouginot 2019 mask - its a bit narrow in some places
 
-# [[file:ice_discharge.org::*Limit to Mouginot 2019 mask][Limit to Mouginot 2019 mask:1]]
 # r.mask mask_GIC@Mouginot_2019 --o
 r.grow input=mask_GIC@Mouginot_2019 output=mask_GIC_Mouginot_2019_grow radius=4.5 # three cells
 r.mask mask_GIC_Mouginot_2019_grow --o
@@ -155,12 +140,10 @@ r.mask -r
 
 # r.univar map=gates_xy_clean1
 # r.univar map=gates_xy_clean2
-# Limit to Mouginot 2019 mask:1 ends here
 
 # Remove gates in areas from manually-drawn KML mask
 # + See [[./dat/remove_gates_manual.kml]]
 
-# [[file:ice_discharge.org::*Remove gates in areas from manually-drawn KML mask][Remove gates in areas from manually-drawn KML mask:1]]
 v.import input=./dat/remove_gates_manual.kml output=remove_gates_manual --o
 r.mask -i vector=remove_gates_manual --o
 r.mapcalc "gates_xy_clean3 = gates_xy_clean2" --o
@@ -168,17 +151,13 @@ r.mask -r
 
 r.univar map=gates_xy_clean2
 r.univar map=gates_xy_clean3
-# Remove gates in areas from manually-drawn KML mask:1 ends here
 
 # Final Gates
 
-# [[file:ice_discharge.org::*Final Gates][Final Gates:1]]
 g.copy "gates_xy_clean3,gates_final" --o
-# Final Gates:1 ends here
 
 # Gate ID
 
-# [[file:ice_discharge.org::*Gate ID][Gate ID:1]]
 # db.droptable -f table=gates_final
 # db.droptable -f table=gates_final_pts
 
@@ -195,11 +174,9 @@ v.what.rast map=gates_final raster=gates_gateID column=gate type=centroid
 # v.db.dropcolumn map=gates_final_pts column=value
 # v.db.addcolumn map=gates_final_pts columns="gate INT"
 # v.what.rast map=gates_final_pts raster=gates_gateID column=gate type=point
-# Gate ID:1 ends here
 
 # Mean x,y
 
-# [[file:ice_discharge.org::*Mean x,y][Mean x,y:1]]
 # v.db.addcolumn map=gates_final columns="x DOUBLE PRECSION, y DOUBLE PRECISION, mean_x INT, mean_y INT, area INT"
 v.db.addcolumn map=gates_final columns="mean_x INT, mean_y INT"
 v.to.db map=gates_final option=coor columns=x,y units=meters
@@ -217,11 +194,9 @@ v.db.update map=gates_final_pts column=gate query_column=cat
 
 #v.db.addcolumn map=gates_final_pts columns="mean_x INT, mean_y INT"
 v.to.db map=gates_final_pts option=coor columns=mean_x,mean_y units=meters
-# Mean x,y:1 ends here
 
 # Mean lon,lat
 
-# [[file:ice_discharge.org::*Mean lon,lat][Mean lon,lat:1]]
 v.what.rast map=gates_final_pts raster=lon@PERMANENT column=lon
 v.what.rast map=gates_final_pts raster=lat@PERMANENT column=lat
 
@@ -230,14 +205,12 @@ for G in $(db.select -c sql="select gate from gates_final"|sort -n|uniq); do
     db.execute sql="UPDATE gates_final SET mean_lon=(SELECT lon FROM gates_final_pts WHERE gate = ${G}) where gate = ${G}"
     db.execute sql="UPDATE gates_final SET mean_lat=(SELECT lat FROM gates_final_pts WHERE gate = ${G}) where gate = ${G}"
 done
-# Mean lon,lat:1 ends here
 
 # Sector, Region, Names, etc.
 # + Sector Number
 # + Region Code
 # + Nearest Sector or Glacier Name
 
-# [[file:ice_discharge.org::*Sector, Region, Names, etc.][Sector, Region, Names, etc.:1]]
 v.db.addcolumn map=gates_final columns="sector INT"
 v.db.addcolumn map=gates_final_pts columns="sector INT"
 v.distance from=gates_final to=sectors@Mouginot_2019 upload=to_attr column=sector to_column=cat
@@ -280,25 +253,18 @@ for G in $(db.select -c sql="select gate from gates_final"|sort -n|uniq); do
     # now copy that to the average gate location (point) table
     db.execute sql="UPDATE gates_final_pts SET n_pixels = (SELECT n_pixels FROM gates_final WHERE gate = ${G}) WHERE gate = ${G}"
 done
-# Sector, Region, Names, etc.:1 ends here
 
 # Clean up
 
-# [[file:ice_discharge.org::*Clean up][Clean up:1]]
 [ -n "$(g.list type=vector pattern=gates_final)" ] && db.dropcolumn -f table=gates_final column=area
 # db.dropcolumn -f table=gates_final column=cat
-# Clean up:1 ends here
 
 # Export as metadata CSV
 
-# [[file:ice_discharge.org::*Export as metadata CSV][Export as metadata CSV:1]]
 mkdir -p out
 db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_2015,Mouginot_2019,Zwally_2012,Moon_2008,Moon_2008_dist from gates_final_pts" separator=, | sort -n | uniq  > ./out/gate_meta.csv
-# Export as metadata CSV:1 ends here
 
 # Export Gates to KML                                            :noexport:
 
-# [[file:ice_discharge.org::*Export Gates to KML][Export Gates to KML:1]]
 v.out.ogr input=gates_final output=./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml format=KML --o
 # open ./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml
-# Export Gates to KML:1 ends here

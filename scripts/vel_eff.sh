@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 # Effective Velocity
-# :PROPERTIES:
-# :header-args:bash+: :tangle vel_eff.sh
-# :END:
 
-
-# [[file:ice_discharge.org::*Effective Velocity][Effective Velocity:1]]
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
@@ -30,7 +25,6 @@ function ctrl_c() {
   MSG_WARN "Killing process"
   kill -term $$ # send this program a terminate signal
 }
-# Effective Velocity:1 ends here
 
 # Just one velocity cutoff & buffer distance
 # :PROPERTIES:
@@ -38,7 +32,6 @@ function ctrl_c() {
 # :END:
 
 
-# [[file:ice_discharge.org::*Just one velocity cutoff & buffer distance][Just one velocity cutoff & buffer distance:1]]
 g.mapsets -l
 
 r.mask -r
@@ -86,27 +79,23 @@ for VX in $(g.list type=raster pattern=vx_????_??_??); do
   echo $DATE
   r.mapcalc "vel_eff_${DATE} = if(gates_x@${MAPSET} == 1, if(isnull(${VX}), 0, abs(${VX})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(${VY}), 0, abs(${VY})), 0)"
 done
-# Just one velocity cutoff & buffer distance:1 ends here
 
 
 
 # #+NAME: MEaSUREs_0766_effective_velocity
 
-# [[file:ice_discharge.org::MEaSUREs_0766_effective_velocity][MEaSUREs_0766_effective_velocity]]
 g.mapset MEaSUREs.0766
 g.region -d
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
 parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
-# MEaSUREs_0766_effective_velocity ends here
 
 
 
 
 # #+NAME: promice_effective_velocity
 
-# [[file:ice_discharge.org::promice_effective_velocity][promice_effective_velocity]]
 g.mapset promice
 g.region -d
 
@@ -115,9 +104,6 @@ dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}
 
 parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}
-# promice_effective_velocity ends here
 
-# [[file:ice_discharge.org::*Just one velocity cutoff & buffer distance][Just one velocity cutoff & buffer distance:4]]
 # fix return code of this script so make continues
 MSG_OK "vel_eff DONE"
-# Just one velocity cutoff & buffer distance:4 ends here
