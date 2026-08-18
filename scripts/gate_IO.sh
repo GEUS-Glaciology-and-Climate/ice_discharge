@@ -9,6 +9,94 @@ g.region -d
 
 
 
+# Two methods produce the gates. Both must emit the same three concentric
+# rings - gates_inside (downstream reference), gates_maybe (THE GATE) and
+# gates_outside (upstream reference) - because everything below, from the
+# gates_x/gates_y flow-direction logic to raw2discharge.py, depends on them.
+#
+#   fastice  the published method: gates sit BUFFER_DIST inland of the edge
+#            where fast-flowing ice meets not-ice. A pixel is only ever a gate
+#            if it already flows faster than VELOCITY_CUTOFF.
+#
+#   marine   gates sit BUFFER_DIST upstream of the seaward edge of GROUNDED
+#            ice, measured geodesically through the ice. No velocity condition
+#            by default, so gates also exist on ice that is slow today but may
+#            speed up later - the reason for the method.
+#
+# See dev/2026-08-mask/ for the prototype these were validated against.
+GATE_METHOD=${GATE_METHOD:-fastice}
+VEL_FLOOR=${VEL_FLOOR:-0}
+
+if [ "${GATE_METHOD}" = "marine" ]; then
+
+# The datum is the seaward edge of grounded ice: the PROMICE-2022 marine
+# margin, except where a floating tongue intervenes, where it is the grounding
+# line. No special-casing is needed - removing the tongues from the cost
+# surface is enough. Where there is no tongue the marine margin already IS that
+# edge; where there is one, the calving front leaves the cost surface and
+# cannot seed anything, so the grounding line becomes the nearest source.
+# Otherwise the gate would measure flux that has already crossed the grounding
+# line, which is not the sea-level-relevant quantity.
+v.import input=./dat/floating_ice.gpkg output=tongues --o
+v.to.rast input=tongues output=tongue use=attr attribute_column=MTG_ID --o
+
+# Grounding line = grounded cells touching a tongue. r.grow without `new`
+# writes the value of the nearest input cell, so these inherit the tongue's
+# MTG_ID, which is what lets a gate there be attributed to the right glacier.
+r.grow input=tongue output=tongue_grow radius=1.5 --o
+r.mapcalc "grounding_line = if(!isnull(tongue_grow) && isnull(tongue) \
+                               && !isnull(mask_ice@PROMICE_2022), tongue_grow, null())" --o
+
+v.extract input=margin@PROMICE_2022 where="Termini='marine'" output=margin_marine --o
+v.to.rast input=margin_marine output=margin_marine use=attr attribute_column=MTG_ID --o
+r.mapcalc "margin_grounded = if(isnull(tongue), margin_marine, null())" --o
+r.patch input=margin_grounded,grounding_line output=gate_source --o
+
+# Gate substrate. Tongues are excluded here as well as from the cost surface
+# below - excluding them from the cost surface alone is NOT enough, because
+# dist is then null over a tongue and r.grow expands the buffer into it, so
+# gates would still form on floating ice.
+#
+# VEL_FLOOR, if used, is applied to gate SELECTION only, never to the cost
+# surface: putting it there would let slow patches block propagation and
+# corrupt the distance field.
+if [ "${VEL_FLOOR}" = "0" ]; then
+    r.mapcalc "gate_substrate = if(!isnull(mask_ice@PROMICE_2022) && isnull(tongue), 1, null())" --o
+else
+    r.mapcalc "gate_substrate = if(!isnull(mask_ice@PROMICE_2022) && isnull(tongue) \
+                                   && vel_baseline@MEaSUREs.0478 >= ${VEL_FLOOR}, 1, null())" --o
+fi
+
+# Geodesic distance through grounded ice. Euclidean distance would cut across
+# fjord mouths and put "BUFFER_DIST inland" in the wrong place; measured
+# through the ice a gate 5 km upstream can be only ~3 km straight-line.
+#
+# The cost cell value must be the RESOLUTION, not 1: r.cost charges the cell
+# value per cell step, so cost=1 accumulates a count of cells, not metres.
+r.mapcalc "cost = if((!isnull(mask_ice@PROMICE_2022) ||| !isnull(margin_marine)) \
+                     && isnull(tongue), nsres(), null())" --o
+r.cost input=cost output=dist start_raster=gate_source --o
+
+# Glacier identity for every cell: the MTG_ID of the nearest source, be that a
+# marine margin segment or a grounding line. Used for gate IDs further down,
+# because r.clump cannot serve that role here - without a fast_ice constraint
+# the gates form a continuous ribbon and one clump spans several glaciers.
+r.grow.distance input=gate_source distance=src_dist value=src_mtg --o
+
+r.mapcalc "margin_buffer = if(dist < ${BUFFER_DIST}, 1, null())" --o
+r.grow input=margin_buffer output=margin_buffer_grow radius=1.5 new=99 --o
+
+r.mask gate_substrate --o
+r.mapcalc "gates_inside = if(margin_buffer_grow == 99, 1, null())" --o
+r.grow input=gates_inside output=gates_inside_grow radius=1.1 new=99 --o
+r.mapcalc "gates_maybe = if((gates_inside_grow == 99) && isnull(margin_buffer), 1, null())" --o
+r.grow input=gates_maybe output=gates_maybe_grow radius=1.1 new=99 --o
+r.mapcalc "gates_outside = if((gates_maybe_grow == 99) && isnull(margin_buffer) \
+                              && isnull(gates_inside), 1, null())" --o
+r.mask -r
+
+else
+
 # From above:
 
 # + [X] Find grounding line by finding edge cells where fast-moving ice borders water or ice shelf based (loosely) on the ice mask
@@ -46,7 +134,7 @@ r.mapcalc "fast_ice_edge = if(((not_ice_grow == 99) && (fast_ice == 1)), 1, null
 
 # The gates are set ${BUFFER_DIST} inland from the fast ice edge. This is done by buffering the fast ice edge (which fills the space between the fast ice edge and buffer extent) and then growing the buffer by 1. This last step defines the gate locations.
 
-# However, in order to properly estimate discharge, the gate location is not enough. Ice must flow from outside the gates, through the gates, to inside the gates, and not flow from one gate pixel to another gate pixel (or it would be counted 2x). 
+# However, in order to properly estimate discharge, the gate location is not enough. Ice must flow from outside the gates, through the gates, to inside the gates, and not flow from one gate pixel to another gate pixel (or it would be counted 2x).
 
 
 r.buffer input=fast_ice_edge output=fast_ice_buffer distances=${BUFFER_DIST} --o
@@ -64,6 +152,8 @@ r.grow input=gates_maybe output=gates_maybe_grow radius=1.1 new=99 --o
 r.mask -i not_ice --o
 r.mapcalc "gates_outside = if(((gates_maybe_grow == 99) && (fast_ice == 1) && isnull(fast_ice_buffer) && isnull(gates_inside)), 1, null())" --o
 r.mask -r
+
+fi
 
 r.mapcalc "gates_IO = 0" --o
 r.mapcalc "gates_IO = if(isnull(gates_inside), gates_IO, 1)" --o
@@ -127,13 +217,34 @@ r.mapcalc "gates_xy_clean0 = if(!isnull(gates_xy_clean00) && !isnull(DEM_2019@DE
 # Remove clusters of 2 or less. How many hectares in X pixels?
 # frink "(200 m)^2 * 2 -> hectares" # ans: 8.0
 
-r.clump -d input=gates_xy_clean0 output=gates_gateID --o
-r.reclass.area -d input=gates_gateID output=gates_area value=9 mode=lesser method=reclass --o
+r.clump -d input=gates_xy_clean0 output=gates_clump --o
+r.reclass.area -d input=gates_clump output=gates_area value=9 mode=lesser method=reclass --o
 
 if [ -n "$(g.list type=raster pattern=gates_area)" ]; then
     r.mapcalc "gates_xy_clean1 = if(isnull(gates_area), gates_xy_clean0, null())" --o
 else
     g.copy raster=gates_xy_clean0,gates_xy_clean1 --o
+fi
+
+# Gate identity.
+#
+# fastice: one gate per connected cluster, which works because the fast_ice
+# constraint already breaks the gates into one curtain per outlet.
+#
+# marine: connectivity is NOT a usable identity. Without a fast_ice constraint
+# the gates form a continuous ribbon along the coast, so a single cluster spans
+# several glaciers - measured at up to 8 in the Upernavik prototype. The gate
+# is instead the marine-terminating glacier it belongs to, via the MTG_ID
+# propagated from the margin/grounding-line source. A gate is then one glacier
+# rather than one blob, which is also what makes the discharge attributable.
+#
+# int() is not cosmetic: MTG_ID is a double in the PROMICE margin table, so
+# v.to.rast and r.patch carry it through as DCELL and gate IDs would come out
+# as 242.0 rather than 242 in the per-pixel export.
+if [ "${GATE_METHOD}" = "marine" ]; then
+    r.mapcalc "gates_gateID = if(!isnull(gates_xy_clean0), int(src_mtg), null())" --o
+else
+    g.copy raster=gates_clump,gates_gateID --o
 fi
 
 # Limit to Mouginot 2019 mask

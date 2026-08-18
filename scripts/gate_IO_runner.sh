@@ -40,6 +40,27 @@ function ctrl_c() {
   kill -term $$ # send this program a terminate signal
 }
 
-VELOCITY_CUTOFF=100
-BUFFER_DIST=5000
+# GATE_METHOD selects how gates are placed; see scripts/gate_IO.sh.
+#   fastice  published method - BUFFER_DIST inland of the fast-ice/not-ice
+#            edge, only where ice already flows > VELOCITY_CUTOFF
+#   marine   BUFFER_DIST upstream of the seaward edge of grounded ice,
+#            measured geodesically through the ice, with no velocity condition
+#
+# VELOCITY_CUTOFF applies to fastice only. VEL_FLOOR applies to marine only and
+# is off (0) by default, which is the point of that method: gates exist on ice
+# that is slow today but may speed up later.
+#
+# For marine, BUFFER_DIST=2000 is what dev/2026-08-mask found best - it resolves
+# 722 of 841 marine-terminating glaciers against 437 at 10 km, because
+# tributaries merge upstream and gates lose the ability to tell glaciers apart.
+GATE_METHOD=${GATE_METHOD:-fastice}
+VEL_FLOOR=${VEL_FLOOR:-0}
+VELOCITY_CUTOFF=${VELOCITY_CUTOFF:-100}
+if [ "${GATE_METHOD}" = "marine" ]; then
+    BUFFER_DIST=${BUFFER_DIST:-2000}
+else
+    BUFFER_DIST=${BUFFER_DIST:-5000}
+fi
+export GATE_METHOD VEL_FLOOR VELOCITY_CUTOFF BUFFER_DIST
+MSG_OK "gate method: ${GATE_METHOD} | BUFFER_DIST=${BUFFER_DIST}"
 . "$(dirname "$0")/gate_IO.sh"
