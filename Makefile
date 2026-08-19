@@ -17,6 +17,8 @@ $(STAMPS):
 
 all: docker discharge zip ## Make all (setup and discharge)
 
+all_new_gates: docker G import gates_marine velocity errors output
+
 help: ## This help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
