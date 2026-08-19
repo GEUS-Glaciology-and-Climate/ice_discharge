@@ -25,10 +25,10 @@ g.region -d
 # it is gridded on BedMachine's own 150 m grid, so no rasterisation choices are
 # ours to make. The pipeline region is 200 m, so GRASS resamples on read; for a
 # binary mask that is subsequently grown by 2 km this is not significant.
-r.in.gdal input=${ROOT}/13-PROMICE-2022-IceMask-raster-150m.gpkg \
+r.in.gdal input=${ROOT}/13-PROMICE-2022-IceMask-raster-150m-v3.gpkg \
           output=mask_ice_150m --o
 r.mapcalc "mask_ice = if(mask_ice_150m > 0, 1, null())" --o
 r.colors map=mask_ice color=grey
 
 # Ice margin as lines, carrying the marine/land terminus classification.
-v.in.ogr input=${ROOT}/01-PROMICE-2022-IceMask-line.gpkg output=margin --o
+v.in.ogr input=${ROOT}/01-PROMICE-2022-IceMask-line-v3.gpkg output=margin --o
