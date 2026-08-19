@@ -274,6 +274,19 @@ r.univar map=gates_xy_clean3
 
 g.copy "gates_xy_clean3,gates_final" --o
 
+# gates_gateID is assigned above from gates_xy_clean0, i.e. BEFORE the
+# small-cluster filter, the Mouginot clip and the manual KML. For the marine
+# method that leaves IDs standing for glaciers whose pixels were all removed by
+# those steps, so the per-pixel export carries more gates than gate_meta.csv
+# does and csv2nc.py dies with "conflicting sizes for dimension 'gate'"
+# (664 vs 652 on the first full run). Restrict it to the gates that survived.
+#
+# fastice is deliberately left alone: its IDs come from r.clump and changing
+# them would move the published product.
+if [ "${GATE_METHOD}" = "marine" ]; then
+    r.mapcalc "gates_gateID = if(!isnull(gates_final), gates_gateID, null())" --o
+fi
+
 # Gate ID
 
 # db.droptable -f table=gates_final
