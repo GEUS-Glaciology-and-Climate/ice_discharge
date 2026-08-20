@@ -1,13 +1,13 @@
 container_cmd ?= docker
 # The bare --env NAME form forwards the variable from the host environment only
 # when it is set, so the defaults in scripts/gate_IO_runner.sh still apply.
-gate_env = --env GATE_METHOD --env VEL_FLOOR --env VELOCITY_CUTOFF --env BUFFER_DIST
+gate_env = --env VEL_FLOOR --env BUFFER_DIST
 container_args ?= run --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" $(gate_env)
 grass_exec = ${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec
 
 SHELL = bash
 .DEFAULT_GOAL := help
-.PHONY: help all discharge update upload docker gates gates_marine velocity export errors output figures zip clean clean_grass
+.PHONY: help all discharge update upload docker gates velocity export errors output figures zip clean clean_grass
 
 STAMPS := .stamps
 
@@ -17,7 +17,7 @@ $(STAMPS):
 
 all: docker discharge zip ## Make all (setup and discharge)
 
-all_new_gates: docker G import gates_marine velocity errors output
+all_new_gates: docker G import gates velocity export errors output ## Full chain with the new gates
 
 help: ## This help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -120,11 +120,8 @@ $(STAMPS)/import_dem: scripts/import_dem.sh scripts/common.sh | G $(STAMPS)
 
 ## --- Downstream targets ---
 
-gates: import ## Find flux gates (published fast-ice method)
+gates: import ## Find flux gates upstream of the marine margin / grounding line
 	${grass_exec} scripts/gate_IO_runner.sh
-
-gates_marine: import ## Find flux gates upstream of the marine margin / grounding line
-	GATE_METHOD=marine ${grass_exec} scripts/gate_IO_runner.sh
 
 velocity: ## Compute effective velocity at each gate
 	${grass_exec} scripts/vel_eff.sh

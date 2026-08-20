@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-# Create a new mapset for this specific velocity cutoff and buffer distance
+# Create a new mapset for this specific buffer distance
 
 
 g.mapset -c gates_vel_buf
@@ -9,25 +9,25 @@ g.region -d
 
 
 
-# Two methods produce the gates. Both must emit the same three concentric
-# rings - gates_inside (downstream reference), gates_maybe (THE GATE) and
-# gates_outside (upstream reference) - because everything below, from the
-# gates_x/gates_y flow-direction logic to raw2discharge.py, depends on them.
+# Gates sit BUFFER_DIST upstream of the seaward edge of GROUNDED ice, measured
+# geodesically through the ice. There is no velocity condition by default, so
+# gates also exist on ice that is slow today but may speed up later - which is
+# the reason for the method.
 #
-#   fastice  the published method: gates sit BUFFER_DIST inland of the edge
-#            where fast-flowing ice meets not-ice. A pixel is only ever a gate
-#            if it already flows faster than VELOCITY_CUTOFF.
+# This replaces the previous "fast ice" method, which placed gates BUFFER_DIST
+# inland of the edge where fast-flowing ice met not-ice and only ever made a
+# pixel a gate if it already flowed faster than a velocity cutoff. That method
+# conflated "no velocity data" with "not ice", which is why it needed
+# dat/remove_gates_manual.kml to delete the gates it got wrong.
 #
-#   marine   gates sit BUFFER_DIST upstream of the seaward edge of GROUNDED
-#            ice, measured geodesically through the ice. No velocity condition
-#            by default, so gates also exist on ice that is slow today but may
-#            speed up later - the reason for the method.
+# The construction produces three concentric rings - gates_inside (downstream
+# reference), gates_maybe (THE GATE) and gates_outside (upstream reference) -
+# because everything below, from the gates_x/gates_y flow-direction logic to
+# raw2discharge.py, depends on them.
 #
-# See dev/2026-08-mask/ for the prototype these were validated against.
-GATE_METHOD=${GATE_METHOD:-fastice}
+# See dev/2026-08-mask/ for the prototype this was validated against.
 VEL_FLOOR=${VEL_FLOOR:-0}
 
-if [ "${GATE_METHOD}" = "marine" ]; then
 
 # The datum is the seaward edge of grounded ice: the PROMICE-2022 marine
 # margin, except where a floating tongue intervenes, where it is the grounding
@@ -79,8 +79,8 @@ r.cost input=cost output=dist start_raster=gate_source --o
 
 # Glacier identity for every cell: the MTG_ID of the nearest source, be that a
 # marine margin segment or a grounding line. Used for gate IDs further down,
-# because r.clump cannot serve that role here - without a fast_ice constraint
-# the gates form a continuous ribbon and one clump spans several glaciers.
+# because r.clump cannot serve that role here - with no velocity condition the
+# gates form a continuous ribbon and one clump spans several glaciers.
 r.grow.distance input=gate_source distance=src_dist value=src_mtg --o
 
 r.mapcalc "margin_buffer = if(dist < ${BUFFER_DIST}, 1, null())" --o
@@ -95,65 +95,6 @@ r.mapcalc "gates_outside = if((gates_maybe_grow == 99) && isnull(margin_buffer) 
                               && isnull(gates_inside), 1, null())" --o
 r.mask -r
 
-else
-
-# From above:
-
-# + [X] Find grounding line by finding edge cells where fast-moving ice borders water or ice shelf based (loosely) on the ice mask
-
-# Ice extent is the PROMICE-2022 Ice Mask (was: BedMachine mask == 2). That is
-# an August 2022 Sentinel-2 outline, so it is both grounded and floating ice,
-# where BedMachine mask == 2 was grounded only. Shelves are still kept out of
-# gate placement by the not_ice test below (mask@BedMachine == 3).
-
-# The 2 km grow is retained from the BedMachine version, where it existed
-# because that mask "doesn't always reach into each fjord all the way". The
-# PROMICE mask tracks the true 2022 margin, so the grow is now doing only its
-# other job: reaching out to the edge of the velocity data.
-
-
-# Grow by 2 km (10 cells @ 200 m/cell)
-r.grow input=mask_ice@PROMICE_2022 output=mask_ice_grow radius=10 new=1 --o
-r.mask mask_ice_grow
-
-
-
-# The fast ice edge is where there is fast-flowing ice overlapping with not-ice.
-
-
-r.mapcalc "fast_ice = if(vel_baseline@MEaSUREs.0478 > ${VELOCITY_CUTOFF}, 1, null())" --o
-r.mask -r
-
-# no velocity data, or is flagged as ice shelf or land in BedMachine
-r.mapcalc "not_ice = if(isnull(vel_baseline@MEaSUREs.0478) ||| (mask@BedMachine == 0) ||| (mask@BedMachine == 3), 1, null())" --o
-
-r.grow input=not_ice output=not_ice_grow radius=1.5 new=99 --o
-r.mapcalc "fast_ice_edge = if(((not_ice_grow == 99) && (fast_ice == 1)), 1, null())" --o
-
-
-
-# The gates are set ${BUFFER_DIST} inland from the fast ice edge. This is done by buffering the fast ice edge (which fills the space between the fast ice edge and buffer extent) and then growing the buffer by 1. This last step defines the gate locations.
-
-# However, in order to properly estimate discharge, the gate location is not enough. Ice must flow from outside the gates, through the gates, to inside the gates, and not flow from one gate pixel to another gate pixel (or it would be counted 2x).
-
-
-r.buffer input=fast_ice_edge output=fast_ice_buffer distances=${BUFFER_DIST} --o
-r.grow input=fast_ice_buffer output=fast_ice_buffer_grow radius=1.5 new=99 --o
-r.mask -i not_ice --o
-r.mapcalc "gates_inside = if(((fast_ice_buffer_grow == 99) && (fast_ice == 1)), 1, null())" --o
-r.mask -r
-
-r.grow input=gates_inside output=gates_inside_grow radius=1.1 new=99 --o
-r.mask -i not_ice --o
-r.mapcalc "gates_maybe = if(((gates_inside_grow == 99) && (fast_ice == 1) && isnull(fast_ice_buffer)), 1, null())" --o
-r.mask -r
-
-r.grow input=gates_maybe output=gates_maybe_grow radius=1.1 new=99 --o
-r.mask -i not_ice --o
-r.mapcalc "gates_outside = if(((gates_maybe_grow == 99) && (fast_ice == 1) && isnull(fast_ice_buffer) && isnull(gates_inside)), 1, null())" --o
-r.mask -r
-
-fi
 
 r.mapcalc "gates_IO = 0" --o
 r.mapcalc "gates_IO = if(isnull(gates_inside), gates_IO, 1)" --o
@@ -226,26 +167,17 @@ else
     g.copy raster=gates_xy_clean0,gates_xy_clean1 --o
 fi
 
-# Gate identity.
-#
-# fastice: one gate per connected cluster, which works because the fast_ice
-# constraint already breaks the gates into one curtain per outlet.
-#
-# marine: connectivity is NOT a usable identity. Without a fast_ice constraint
-# the gates form a continuous ribbon along the coast, so a single cluster spans
-# several glaciers - measured at up to 8 in the Upernavik prototype. The gate
-# is instead the marine-terminating glacier it belongs to, via the MTG_ID
-# propagated from the margin/grounding-line source. A gate is then one glacier
-# rather than one blob, which is also what makes the discharge attributable.
+# Gate identity is the marine-terminating glacier, via the MTG_ID propagated
+# from the margin/grounding-line source - NOT connectivity. The gates form a
+# continuous ribbon along the coast, so a single r.clump cluster spans several
+# glaciers (up to 8 in the Upernavik prototype). A gate is therefore one
+# glacier rather than one blob, which is also what makes discharge
+# attributable. r.clump is still used above, but only to size-filter.
 #
 # int() is not cosmetic: MTG_ID is a double in the PROMICE margin table, so
 # v.to.rast and r.patch carry it through as DCELL and gate IDs would come out
 # as 242.0 rather than 242 in the per-pixel export.
-if [ "${GATE_METHOD}" = "marine" ]; then
-    r.mapcalc "gates_gateID = if(!isnull(gates_xy_clean0), int(src_mtg), null())" --o
-else
-    g.copy raster=gates_clump,gates_gateID --o
-fi
+r.mapcalc "gates_gateID = if(!isnull(gates_xy_clean0), int(src_mtg), null())" --o
 
 # Limit to Mouginot 2019 mask
 # + Actually, limit to approximate Mouginot 2019 mask - its a bit narrow in some places
@@ -274,18 +206,27 @@ r.univar map=gates_xy_clean3
 
 g.copy "gates_xy_clean3,gates_final" --o
 
-# gates_gateID is assigned above from gates_xy_clean0, i.e. BEFORE the
-# small-cluster filter, the Mouginot clip and the manual KML. For the marine
-# method that leaves IDs standing for glaciers whose pixels were all removed by
-# those steps, so the per-pixel export carries more gates than gate_meta.csv
-# does and csv2nc.py dies with "conflicting sizes for dimension 'gate'"
-# (664 vs 652 on the first full run). Restrict it to the gates that survived.
+# gates_gateID, gates_x and gates_y are all assigned above from state that
+# predates the small-cluster filter, the Mouginot clip and the manual KML.
+# Every one of them has to be brought back in line with gates_final:
 #
-# fastice is deliberately left alone: its IDs come from r.clump and changing
-# them would move the published product.
-if [ "${GATE_METHOD}" = "marine" ]; then
-    r.mapcalc "gates_gateID = if(!isnull(gates_final), gates_gateID, null())" --o
-fi
+#   gates_gateID  otherwise keeps IDs for glaciers whose pixels were all
+#                 removed, so the per-pixel export carries more gates than
+#                 gate_meta.csv and csv2nc.py dies with "conflicting sizes for
+#                 dimension 'gate'" (664 vs 652 on the first full run).
+#
+#   gates_x/y     otherwise still mark those removed pixels as gates, so
+#                 vel_eff.sh gives them a non-zero effective velocity and they
+#                 keep contributing discharge. raw2discharge.py cannot name
+#                 them - their gate is not in gate_meta.csv - so it files them
+#                 under the empty sector name '', producing a nameless sector
+#                 column and leaving the ice-sheet total slightly larger than
+#                 the sum of its sectors.
+#
+# Clipping a gate away has to remove its discharge, not just its label.
+r.mapcalc "gates_gateID = if(!isnull(gates_final), gates_gateID, null())" --o
+r.mapcalc "gates_x = if(!isnull(gates_final), gates_x, 0)" --o
+r.mapcalc "gates_y = if(!isnull(gates_final), gates_y, 0)" --o
 
 # Gate ID
 
@@ -397,5 +338,5 @@ db.select sql="SELECT gate,mean_x,mean_y,lon,lat,n_pixels,sector,region,Bjork_20
 
 # Export Gates to KML                                            :noexport:
 
-v.out.ogr input=gates_final output=./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml format=KML --o
-# open ./tmp/gates_final_${VELOCITY_CUTOFF}_${BUFFER_DIST}.kml
+v.out.ogr input=gates_final output=./tmp/gates_final_${BUFFER_DIST}.kml format=KML --o
+# open ./tmp/gates_final_${BUFFER_DIST}.kml

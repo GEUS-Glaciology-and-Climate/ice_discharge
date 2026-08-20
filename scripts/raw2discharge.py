@@ -373,6 +373,15 @@ D_gates_fill_weight.clip(lower=0, upper=1, inplace=True)
 # D_sector_fill ::
 D_sectors = DD.groupby('name').sum().drop(['ones','sectors','gates'], axis=1)
 D_sectors_err = DD_err.groupby('name').sum().drop(['ones','sectors','gates'], axis=1)
+
+# Every exported pixel outside the gates keeps meta['name'] == '' - it has no
+# gate, so nothing above could name it - and groupby collects them all into one
+# nameless sector. gate_IO.sh zeroes gates_x/gates_y outside gates_final so
+# that group carries no discharge, but it would still be written out as a
+# column with an empty name. Drop it.
+D_sectors = D_sectors.drop(index='', errors='ignore')
+D_sectors_err = D_sectors_err.drop(index='', errors='ignore')
+
 D_sectors_fill_weight = pd.DataFrame(dtype=np.float64).reindex_like(D_sectors)
 for s in D_sectors.index:
     s_idx = (DD['name'] == s)

@@ -87,15 +87,19 @@ Also computes a 2015–2017 baseline velocity (average of three September MEaSUR
 
 #### Stage 2 — Gate finding (`scripts/gate_IO_runner.sh` → `scripts/gate_IO.sh`)
 
-Locates flux gates automatically using a fixed velocity cutoff of 100 m/yr and a 5000 m inland buffer:
+Locates flux gates automatically, a fixed distance (`BUFFER_DIST`, default 2000 m) upstream of the seaward edge of **grounded** ice:
 
-1. Identifies fast-moving ice (baseline velocity > 100 m/yr)
-2. Finds the grounding-line edge where fast ice borders ocean or ice shelf (ice extent from the PROMICE-2022 ice mask grown 2 km; ocean/shelf from BedMachine)
-3. Places gates 5000 m inland from that edge
+1. Takes the seaward edge of grounded ice as the datum: the PROMICE-2022 **marine** margin, or the **grounding line** where a floating tongue intervenes (`dat/floating_ice.gpkg`) — flux on a tongue has already crossed the grounding line and is not the sea-level-relevant quantity
+2. Measures distance from it **geodesically through the ice** (`r.cost`), not Euclidean, which would cut across fjord mouths
+3. Places gates `BUFFER_DIST` upstream of that edge
 4. Labels each gate pixel as "inside" or "outside" to determine the discharge direction
 5. Decomposes into x- and y-components based on flow direction
-6. Removes clusters ≤ 9 pixels (< 8 ha) and manually flagged bad areas (`dat/remove_gates_manual.kml`)
-7. Assigns gate IDs, computes mean positions (x, y, lon, lat), and joins four naming systems per gate: Mouginot 2019, Bjørk 2015, Zwally 2012, Moon 2008
+6. Removes clusters ≤ 9 pixels (< 8 ha), areas outside the Mouginot mask, and manually flagged bad areas (`dat/remove_gates_manual.kml`)
+7. Assigns each gate the ID of its marine-terminating glacier (`MTG_ID`), computes mean positions (x, y, lon, lat), and joins four naming systems per gate: Mouginot 2019, Bjørk 2015, Zwally 2012, Moon 2008
+
+There is **no velocity condition** by default, so gates also exist on ice that is slow today but may speed up later — the reason for the method. `VEL_FLOOR` (default 0) can reintroduce one.
+
+This replaces the earlier "fast ice" method, which only made a pixel a gate if it already flowed faster than a cutoff, and which located the margin by treating *missing velocity data* as not-ice. See `dev/2026-08-mask/` for the prototype and the evidence behind the defaults.
 
 Outputs: `out/gate_meta.csv`, `out/gates.kml`, `out/gates.gpkg`, `out/gates.geojson`
 
