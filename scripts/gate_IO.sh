@@ -206,6 +206,31 @@ r.univar map=gates_xy_clean3
 
 g.copy "gates_xy_clean3,gates_final" --o
 
+# Drop gates that the export will not carry any pixels for.
+#
+# export.sh builds its MASK as
+#   if(gates_final) | if(mask_GIC) | if(vel_err_baseline) | if(DEM_2020)
+# and r.mapcalc's `|` PROPAGATES NULLS - verified: with a and b non-null over
+# disjoint halves of a region, `if(a) | if(b)` yields zero non-null cells,
+# while `|||` and `!isnull()` yield all of them. So despite reading as an OR
+# that expression is an AND: a pixel is exported only where all four are
+# non-null. That is load-bearing - it is why the export is thousands of rows
+# and not the whole ice sheet - so it must not be "fixed".
+#
+# The consequence is that a gate lying outside mask_GIC (gates are clipped to
+# mask_GIC GROWN by 4.5 cells, so a gate can sit just beyond the ungrown mask),
+# or where vel_err_baseline or DEM_2020 have no data, gets no exported pixels
+# at all. It therefore has no discharge, yet still reached gate_meta.csv,
+# leaving that file with more gates than gate_D.csv and csv2nc.py failing on
+# "conflicting sizes for dimension 'gate'" (668 vs 664).
+#
+# A gate with no data is not a gate. Apply the same three conditions here so
+# gates_final, and everything derived from it, matches what is exported.
+r.mapcalc "gates_final = if(!isnull(gates_final) \
+                            && !isnull(mask_GIC@Mouginot_2019) \
+                            && !isnull(vel_err_baseline@MEaSUREs.0478) \
+                            && !isnull(DEM_2020@DEM), gates_final, null())" --o
+
 # gates_gateID, gates_x and gates_y are all assigned above from state that
 # predates the small-cluster filter, the Mouginot clip and the manual KML.
 # Every one of them has to be brought back in line with gates_final:
