@@ -233,12 +233,25 @@ r.mapcalc "gates_y = if(!isnull(gates_final), gates_y, 0)" --o
 # db.droptable -f table=gates_final
 # db.droptable -f table=gates_final_pts
 
-# areas (clusters of gate pixels, but diagonals are separate)
-r.to.vect input=gates_final output=gates_final type=area --o
+# Vectorise gates_gateID, NOT the binary gates_final.
+#
+# gates_final is 1-or-null, so r.to.vect on it builds areas from connected
+# blobs and v.what.rast type=centroid then stamps ONE gate id per blob, taken
+# at its centroid. With gates forming a continuous ribbon a blob spans several
+# glaciers, so every glacier in that blob except the one under the centroid
+# vanishes from the vector table - while the raster, and therefore gate_D.csv,
+# still carries them. That is the 652-vs-664 mismatch csv2nc.py died on: the
+# same "connectivity is not identity" problem already fixed for gates_gateID,
+# surviving here in the vector path.
+#
+# gates_gateID is categorical, so its areas are contiguous AND single-valued:
+# `value` is the gate, no centroid sampling required, and every gate in the
+# raster is guaranteed at least one area.
+r.to.vect input=gates_gateID output=gates_final type=area --o
 v.db.dropcolumn map=gates_final column=label
-v.db.dropcolumn map=gates_final column=value
 v.db.addcolumn map=gates_final columns="gate INT"
-v.what.rast map=gates_final raster=gates_gateID column=gate type=centroid
+v.db.update map=gates_final column=gate query_column=value
+v.db.dropcolumn map=gates_final column=value
 
 # # points (each individual gate pixel)
 # r.to.vect input=gates_final output=gates_final_pts type=point --o
