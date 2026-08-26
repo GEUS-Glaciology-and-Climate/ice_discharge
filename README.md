@@ -57,6 +57,19 @@ make update
 
 This checks for new PROMICE/MEaSUREs data, reprocesses, and uploads results to Thredds and GEUS Dataverse.
 
+### Gate-distance sweep
+
+```bash
+make sweep                              # BUFFER_DIST = 2000 5000 7000 10000 m
+BUFFER_DISTS="5000 10000" make sweep    # a subset
+```
+
+Runs the pipeline once per gate distance and archives a complete result per distance under `sweep/buf_<dist>/` (`out/`, the pixel export, the gate KML and a `MANIFEST.txt` with commit, gate count and per-stage timings). Existing `sweep/buf_*` directories are skipped, so an interrupted sweep resumes.
+
+Only `make import` is shared between distances. `gates`, `velocity`, `export`, `errors` and `output` are all redone every time: `vel_eff` is `|vx|·gates_x + |vy|·gates_y`, and `export.sh` builds its MASK from `gates_final`, so moving the gates changes which pixels are exported at all. Budget the wall-clock accordingly — this is close to a full run per distance.
+
+Every artefact the pipeline writes is fixed-name — the GRASS mapset is `gates_vel_buf`, the pixel export is `tmp/dat_100_5000.csv` — and `gates_vel_buf` is baked into *column* names in `errors.py` and `raw2discharge.py`. So the sweep runs distances serially and moves each result aside rather than parameterising names.
+
 ---
 
 ### Pipeline stages

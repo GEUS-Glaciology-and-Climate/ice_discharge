@@ -7,7 +7,7 @@ grass_exec = ${container_cmd} ${container_args} mankoff/ice_discharge:grass gras
 
 SHELL = bash
 .DEFAULT_GOAL := help
-.PHONY: help all discharge update upload docker gates velocity export errors output figures zip clean clean_grass
+.PHONY: help all discharge update upload docker gates velocity export errors output figures sweep zip clean clean_grass
 
 STAMPS := .stamps
 
@@ -139,6 +139,11 @@ output: ## Compute discharge and write NetCDF
 
 figures: ## Produce figures
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/figures.py
+
+# Not a dependency of anything - it re-enters make once per distance, so making
+# it depend on the stages it drives would run them an extra time up front.
+sweep: ## Sweep BUFFER_DIST (2/5/7/10 km) through the pipeline into ./sweep/
+	scripts/sweep_buffer.sh
 
 zip: ## ZIP output directory
 	ln -s out ice_discharge

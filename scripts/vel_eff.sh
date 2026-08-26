@@ -11,6 +11,20 @@ MSG_ERR() { echo "${RED}ERROR: ${1}${NC}\n" >&2; }
 export GRASS_VERBOSE=3
 # export GRASS_MESSAGE_FORMAT=silent
 
+# vel_eff/err_eff are a function of gates_x/gates_y, so they MUST be recomputed
+# whenever the gates change - which is exactly what re-running this script is
+# for. None of the r.mapcalc calls below carry --o, so on a second run against a
+# populated database every one of them fails with "output map <vel_eff_YYYY_MM_DD>
+# exists", the previous run's rasters survive untouched, and export.sh happily
+# exports them. Nothing catches it: the r.mapcalc calls run under `parallel`, the
+# script has no `set -e`, and it ends with an unconditional MSG_OK precisely so
+# make continues. The result is a full pipeline run reporting the OLD gates'
+# discharge against the NEW gates' geometry, with no error anywhere in the log.
+#
+# Setting this here rather than adding --o to thirteen r.mapcalc lines also
+# covers the Mouginot_pre2000 for-loop, which is written in a different style.
+export GRASS_OVERWRITE=1
+
 if [ -z ${DATADIR+x} ]; then
     echo "DATADIR environment varible is unset."
     echo "Fix with: \"export DATADIR=/path/to/data\""
