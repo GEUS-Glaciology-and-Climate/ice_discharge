@@ -2,8 +2,12 @@ container_cmd ?= docker
 # The bare --env NAME form forwards the variable from the host environment only
 # when it is set, so the defaults in scripts/gate_IO_runner.sh still apply.
 gate_env = --env VEL_FLOOR --env BUFFER_DIST
-container_args ?= run --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" $(gate_env)
+base_args = run --user $(shell id -u):$(shell id -g) --mount type=bind,src=$(shell pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" $(gate_env)
+container_args ?= $(base_args) --mount type=bind,src=$${DATADIR},dst=/data
 grass_exec = ${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec
+# The post-processing steps read ./out and ./tmp only, so they must not require
+# $DATADIR to be mounted - it often is not on a machine that only makes figures.
+conda_exec = ${container_cmd} ${base_args} mankoff/ice_discharge:conda python
 
 SHELL = bash
 .DEFAULT_GOAL := help
@@ -131,14 +135,14 @@ export: ## Export pixel-level data from GRASS to CSV
 	${grass_exec} scripts/gate_export.sh
 
 errors: ## Estimate discharge errors
-	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/errors.py
+	${conda_exec} scripts/errors.py
 
 output: ## Compute discharge and write NetCDF
-	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/raw2discharge.py
-	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/csv2nc.py
+	${conda_exec} scripts/raw2discharge.py
+	${conda_exec} scripts/csv2nc.py
 
 figures: ## Produce figures
-	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/figures.py
+	${conda_exec} scripts/figures.py
 
 # Not a dependency of anything - it re-enters make once per distance, so making
 # it depend on the stages it drives would run them an extra time up front.
