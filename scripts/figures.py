@@ -314,6 +314,37 @@ SYMBOLS['RINK_ISBRAE'] = 's'
 SYMBOLS['ZACHARIAE_ISSTROM'] = 'o'
 SYMBOLS['PETERMANN_GLETSCHER'] ='^'
 
+# The curated names above are sector names, and the sector set is not fixed: a
+# sector name is whatever surviving gate the pixels are attributed to, so a
+# change to the gate method can rename or remove one. Petermann is the case
+# that bit: the old run gave it three gates split across sectors 223
+# (PETERMANN_GLETSCHER) and 224 (PETERMANN_GLETSCHER_N); since gates are
+# vectorised by gate id it is one gate whose modal sector is 224, so the name
+# the discharge lands under is PETERMANN_GLETSCHER_N.
+#
+# Each entry is the names this glacier has gone by, preferred first, so one
+# script plots both old and new runs. Add to a list rather than editing a name
+# in place, or the figure silently loses the glacier on the other run.
+ALIASES = {'PETERMANN_GLETSCHER': ['PETERMANN_GLETSCHER', 'PETERMANN_GLETSCHER_N']}
+
+for g in [g for g in LABELS if g not in D.columns]:
+    found = next((a for a in ALIASES.get(g, []) if a in D.columns), None)
+    if found is not None:
+        # Re-key onto the name this run actually uses, keeping label and symbol.
+        LABELS[found] = LABELS.pop(g)
+        SYMBOLS[found] = SYMBOLS.pop(g, 'o')
+        print("NOTE: sector '%s' appears as '%s' in this run" % (g, found))
+        continue
+    # No known alias present. Skip rather than dying on a KeyError, and say
+    # what is near it - a suffixed name is a rename to add to ALIASES above, a
+    # name with nothing near it is a gate that no longer exists.
+    near = [c for c in D.columns if c.startswith(g.split('_')[0])]
+    print("WARNING: sector '%s' is not in the data - skipping it" % g)
+    print("         similar names present: %s"
+          % (', '.join(sorted(near)) if near else 'none'))
+    LABELS.pop(g)
+    SYMBOLS.pop(g, None)
+
 MS=4
 Z=99
 for g in LABELS.keys(): # for each glacier
