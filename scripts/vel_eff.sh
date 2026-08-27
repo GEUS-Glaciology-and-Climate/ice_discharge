@@ -40,6 +40,31 @@ function ctrl_c() {
   kill -term $$ # send this program a terminate signal
 }
 
+# GRASS's MASK is a per-mapset raster and it PERSISTS - nothing below used to
+# remove it, so every mapset kept the previous run's mask indefinitely. That
+# matters because r.mapcalc HONOURS the mask already in place while it writes
+# the new one, so
+#
+#   r.mapcalc "MASK = <this run's gates>"
+#
+# actually computes  <this run's gates> INTERSECT <last run's gates>.
+#
+# Within one BUFFER_DIST the two are identical and the bug is invisible. Across
+# a `make sweep` they are not: gates are one 200 m pixel wide and the buffer
+# moves them kilometres inland, so the two gate sets are effectively disjoint
+# and the intersection is EMPTY. Every vel_eff/err_eff then comes out all-null,
+# r.out.xyz exports a header-only .bsv, and export.sh reports it three stages
+# later as "tmp/dat is stale" - which it is not.
+#
+# The promice block below is the only one that never set a MASK, and it was the
+# only set of rasters that survived the 5000 m leg of the sweep.
+#
+# r.mask -r is an ERROR, not a no-op, when there is no mask, so test first.
+reset_mask() {
+    [ -n "$(g.list type=raster pattern=MASK mapset=.)" ] && r.mask -r
+    return 0
+}
+
 # Just one velocity cutoff & buffer distance
 # :PROPERTIES:
 # :ID:       20210102T152009.186822
@@ -54,6 +79,7 @@ MAPSET=gates_vel_buf
 
 g.mapset MEaSUREs.0478
 g.region -d
+reset_mask
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(VX_{1} == -2*10^9, 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(VY_{1} == -2*10^9, 0, abs(VY_{1})), 0)\"" ::: ${dates}
@@ -62,6 +88,7 @@ parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(EX_{1} =
 
 g.mapset MEaSUREs.0481
 g.region -d
+reset_mask
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
@@ -70,6 +97,7 @@ parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(E
 
 g.mapset MEaSUREs.0646
 g.region -d
+reset_mask
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
@@ -78,6 +106,7 @@ parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(E
 
 g.mapset MEaSUREs.0731
 g.region -d
+reset_mask
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
@@ -85,6 +114,7 @@ parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(E
 
 g.mapset Mouginot_pre2000
 g.region -d
+reset_mask
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 VX=$(g.list type=raster pattern=vx_????_??_?? | head -n1) # DEBUG
 for VX in $(g.list type=raster pattern=vx_????_??_??); do
@@ -100,6 +130,7 @@ done
 
 g.mapset MEaSUREs.0766
 g.region -d
+reset_mask
 r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, null())" --o
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
@@ -118,6 +149,16 @@ dates=$(g.list type=raster pattern=vx_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(vx_{1}), 0, abs(vx_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(vy_{1}), 0, abs(vy_{1})), 0))\"" ::: ${dates}
 
 parallel --bar "r.mapcalc \"err_eff_{1} = 365 * (if(gates_x@${MAPSET} == 1, if(isnull(ex_{1}), 0, abs(ex_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(ey_{1}), 0, abs(ey_{1})), 0))\"" ::: ${dates}
+
+# Leave no MASK behind. reset_mask above already makes this run correct on its
+# own; clearing up here means the NEXT run - or anything else that touches these
+# mapsets - never inherits a mask it did not ask for either.
+for M in MEaSUREs.0478 MEaSUREs.0481 MEaSUREs.0646 MEaSUREs.0731 \
+         MEaSUREs.0766 Mouginot_pre2000 promice; do
+    g.mapset ${M}
+    reset_mask
+done
+g.mapset PERMANENT
 
 # fix return code of this script so make continues
 MSG_OK "vel_eff DONE"

@@ -61,7 +61,11 @@ ${VEL_0481} ${VEL_0646} ${VEL_0731} ${VEL_0766} ${VEL_SENTINEL} ${VEL_MOUGINOT} 
 # aggregation reaches ~95 catchments that no gate is assigned to.
 r.category map=sectors@Mouginot_2019 separator=comma > ./tmp/sector_cats.csv
 
-mkdir tmp/dat
+mkdir -p tmp/dat
+# Scratch files from a previous failed export. They are diagnostics only, and
+# the stacking loop at the bottom globs this directory, so they must not be
+# allowed to accumulate into it.
+rm -f ./tmp/dat/*.part ./tmp/dat/*.err
 
 # The per-layer cache below exists for the hundreds of velocity rasters, which
 # are expensive to export and never change once written. The three gate layers
@@ -75,13 +79,50 @@ rm -f ./tmp/dat/gates_x@${MAPSET}.bsv \
       ./tmp/dat/gates_gateID@${MAPSET}.bsv
 
 r.mapcalc "MASK = if(gates_final@${MAPSET}) | if(mask_GIC@Mouginot_2019) | if(vel_err_baseline@MEaSUREs.0478) | if(DEM_2020@DEM)" --o
-parallel --bar "if [[ ! -e ./tmp/dat/{1}.bsv ]]; then (echo x\|y\|{1}; r.out.xyz input={1}) > ./tmp/dat/{1}.bsv; fi" ::: ${LIST}
+# Write to a .part file and only move it into place once r.out.xyz has both
+# succeeded AND produced at least one data row.
+#
+# The old form redirected straight onto the final name, so the `echo` header
+# landed there before r.out.xyz even ran. A failed or empty export therefore
+# left a valid-looking 1-line file - and because the cache key is `-e`, that
+# file was then kept forever: every later `make export` skipped the raster and
+# re-reported the same mismatch, with no way to tell a genuinely stale cache
+# from a job that failed in this very run.
+parallel --bar "
+  f=./tmp/dat/{1}.bsv
+  if [[ ! -e \${f} ]]; then
+    if r.out.xyz input={1} > \${f}.part 2>\${f}.err && [[ -s \${f}.part ]]; then
+      (echo x\|y\|{1}; cat \${f}.part) > \${f} && rm -f \${f}.part \${f}.err
+    fi
+  fi" ::: ${LIST}
 r.mask -r
 
-# Every .bsv must have the same row count. They are transposed and stacked into
-# one CSV purely by position, so a file left over from a run with a different
-# MASK - and MASK depends on gates_final - would misalign every column without
-# any error. Fail loudly rather than emit a plausible, wrong CSV.
+# Two distinct failures, reported distinctly - conflating them cost a whole
+# sweep leg once, because an empty raster was reported as a stale cache.
+#
+#   MISSING  the export above refused to write the file: r.out.xyz failed, or
+#            the raster is entirely null within the MASK. Usually the raster is
+#            wrong, not the cache. The commonest cause is a stale per-mapset
+#            MASK during `make velocity` - see the comment in vel_eff.sh.
+#
+#   BAD      the file exists but has the wrong number of rows. Every .bsv is
+#            transposed and stacked into one CSV purely by position, so a file
+#            left over from a run with a different MASK - and MASK depends on
+#            gates_final - would misalign every column without any error. This
+#            one really is a stale cache.
+MISSING=$(for m in ${LIST}; do
+              [ -e "./tmp/dat/${m}.bsv" ] || echo "  ${m}"
+          done)
+if [ -n "${MISSING}" ]; then
+    MSG_ERR "$(echo "${MISSING}" | wc -l) raster(s) exported no data."
+    echo "${MISSING}" >&2
+    echo "These rasters are empty within the MASK, or r.out.xyz failed on them." >&2
+    echo "Check ./tmp/dat/*.err, then 'r.univar map=<name>' on one of them." >&2
+    echo "If n=0, re-run 'make velocity' - a leftover MASK in the source" >&2
+    echo "mapset is the usual cause. This is NOT a stale tmp/dat." >&2
+    exit 1
+fi
+
 NROW=$(wc -l < ./tmp/dat/lat.bsv)
 BAD=$(for f in ./tmp/dat/*.bsv; do
           n=$(wc -l < "$f")
@@ -96,7 +137,7 @@ fi
 
 # combine individual files to one mega csv
 cat ./tmp/dat/lat.bsv | cut -d"|" -f1,2 | datamash -t"|" transpose > ./tmp/dat_100_5000_t.bsv
-for f in ./tmp/dat/*; do
+for f in ./tmp/dat/*.bsv; do
   cat $f | cut -d"|" -f3 | datamash -t"|" transpose >> ./tmp/dat_100_5000_t.bsv
 done
 cat ./tmp/dat_100_5000_t.bsv |datamash -t"|" transpose | tr '|' ',' > ./tmp/dat_100_5000.csv

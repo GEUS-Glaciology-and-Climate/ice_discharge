@@ -100,7 +100,20 @@ for DIST in ${BUFFER_DISTS}; do
     #   out              gate_export.sh appends into gates.kmz with `zip`, and a
     #                     partial failure would otherwise leave last distance's
     #                     results looking like this one's.
+    #
+    #   G/*/MASK          GRASS's MASK is per-mapset and persistent, and
+    #                     r.mapcalc applies the mask already in place while
+    #                     writing a new one. A MASK left in MEaSUREs.* by the
+    #                     previous distance therefore intersects this
+    #                     distance's - and since the gates have moved
+    #                     kilometres, that intersection is empty, so every
+    #                     vel_eff/err_eff comes out all-null. vel_eff.sh now
+    #                     clears these itself; this is the backstop for a run
+    #                     that died before it got there.
     rm -rf ./G/gates_vel_buf ./tmp/dat ./tmp/dat_100_5000.csv ./out
+    # A GRASS raster is spread over several per-element directories; remove all
+    # of them, or `g.list` still reports a MASK that has no data behind it.
+    rm -rf ./G/*/{cell,fcell,cellhd,cell_misc,hist,cats,colr}/MASK
     mkdir -p ./tmp ./out
     mkdir -p "${DEST}"
     LOG="${DEST}/run.log"
