@@ -41,7 +41,17 @@ function ctrl_c() {
   kill -term $$ # send this program a terminate signal
 }
 
-VELOCITY_CUTOFF=100
-BUFFER_DIST=5000
+# Overridable from the environment so `make sweep` can drive a range of gate
+# distances through the pipeline without editing this file; the defaults are
+# the published values and are what a plain `make gates` still uses.
+#
+# The runner is the only place these are set, and gate_IO.sh reads them as
+# plain shell variables, so they must be EXPORTED as well as assigned - the
+# script is sourced here, but `parallel` and the r.mapcalc calls downstream run
+# in child processes.
+VELOCITY_CUTOFF=${VELOCITY_CUTOFF:-100}
+BUFFER_DIST=${BUFFER_DIST:-5000}
+export VELOCITY_CUTOFF BUFFER_DIST
+MSG_OK "gates: VELOCITY_CUTOFF=${VELOCITY_CUTOFF} BUFFER_DIST=${BUFFER_DIST}"
 . "$(dirname "$0")/gate_IO.sh"
 # Algorithm:1 ends here

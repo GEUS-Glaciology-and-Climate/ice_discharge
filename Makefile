@@ -1,10 +1,14 @@
 container_cmd ?= docker
-container_args ?= run --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1"
+# The bare --env NAME form forwards the variable from the host environment only
+# when it is set, so the defaults in scripts/gate_IO_runner.sh still apply to a
+# plain `make gates`. This is what lets `make sweep` vary the gate distance.
+gate_env = --env BUFFER_DIST --env VELOCITY_CUTOFF
+container_args ?= run --user $(shell id -u):$(shell id -g) --mount type=bind,src=$${DATADIR},dst=/data --mount type=bind,src=$(shell pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" $(gate_env)
 grass_exec = ${container_cmd} ${container_args} mankoff/ice_discharge:grass grass ./G/PERMANENT --exec
 
 SHELL = bash
 .DEFAULT_GOAL := help
-.PHONY: help all discharge update upload docker gates velocity export errors output figures zip clean clean_grass
+.PHONY: help all discharge update upload docker gates velocity export errors output figures sweep zip clean clean_grass
 
 STAMPS := .stamps
 
@@ -128,6 +132,11 @@ output: ## Compute discharge and write NetCDF
 
 figures: ## Produce figures
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/figures.py
+
+# Not a dependency of anything - it re-enters make once per distance, so making
+# it depend on the stages it drives would run them an extra time up front.
+sweep: ## Sweep BUFFER_DIST (2/5/7/10 km) through the pipeline into ./sweep/
+	scripts/sweep_buffer.sh
 
 zip: ## ZIP output directory
 	ln -s out ice_discharge
