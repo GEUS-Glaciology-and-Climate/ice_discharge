@@ -10,6 +10,8 @@ MSG_OK() { printf "${GREEN}${1}${NC}\n"; }
 MSG_WARN() { printf "${ORANGE}WARNING: ${1}${NC}\n"; }
 MSG_ERR() { echo "${RED}ERROR: ${1}${NC}\n" >&2; }
 
+set -euo pipefail
+
 MSG_OK "Updating Sentinel velocity files..."
 workingdir=$(pwd)
 
@@ -18,15 +20,16 @@ MSG_WARN "MEaSUREs 0766.002 product needs to be manually updated if new data is 
 
 # Update PROMICE IV 
 cd ${DATADIR}/Promice200m_v5/
-if [[ -e urls.txt ]]; then cp urls.txt urls.txt.last; fi
-curl "https://dataverse.geus.dk/api/datasets/:persistentId/dirindex?persistentId=doi:10.22008/FK2/K70OPK" | grep -oP '(?<=href=")[^"]+' > urls.txt
-chmod 777 urls.txt
-if cmp -s urls.txt urls.txt.last; then
+# The file list goes to urls.txt.new. It replaces urls.txt only as the last step
+# of `make update`, so if anything fails check_new_data.sh still sees new data
+# and the next cron run retries.
+curl -sf "https://dataverse.geus.dk/api/datasets/:persistentId/dirindex?persistentId=doi:10.22008/FK2/K70OPK" | grep -oP '(?<=href=")[^"]+' > urls.txt.new
+chmod 777 urls.txt.new
+if [[ -e urls.txt ]] && cmp -s urls.txt.new urls.txt; then
   MSG_WARN "No new Sentinel1 files..."
-  #exit 255
 fi
 
-for URL in $(cat urls.txt | tail -n5); do
+for URL in $(tail -n5 urls.txt.new); do
   wget --content-disposition --continue "https://dataverse.geus.dk${URL}"
 done
 
@@ -39,9 +42,13 @@ cp ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last
 
 docker run --user $(id -u):$(id -g) --mount type=bind,src=${DATADIR},dst=/data --mount type=bind,src=$(pwd),dst=/home/user --env PARALLEL="--delay 0.1 -j -1" mankoff/ice_discharge:grass grass ./G/PERMANENT --exec ./scripts/export.sh
 
+# export.sh's exit status is that of its last command, so check its product.
+if [[ ! -s ./tmp/dat_100_5000.csv || ! ./tmp/dat_100_5000.csv -nt ./tmp/dat_100_5000.csv.last ]]; then
+  MSG_ERR "export.sh did not write ./tmp/dat_100_5000.csv"
+  exit 1
+fi
+
 if cmp -s ./tmp/dat_100_5000.csv ./tmp/dat_100_5000.csv.last; then
   MSG_WARN "No change in exported data"
 fi
-
-/home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $(cat ~/.new_thredds_token) --file out/sector.nc --file out/region.nc
 # Local:1 ends here

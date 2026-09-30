@@ -19,6 +19,12 @@ help: ## This help
 
 discharge: G import gates velocity export errors output figures ## Run the full discharge pipeline
 
+thredds_upload = /home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $$(cat ~/.new_thredds_token)
+urls = $${DATADIR}/Promice200m_v5/urls.txt
+
+# Uploads come after csv2nc so they carry this run's NetCDFs. update.sh leaves
+# the new file list in urls.txt.new; it replaces urls.txt only once everything
+# has succeeded, so a failed update is retried by the next cron run.
 update: docker ## Update with latest Sentinel data
 	scripts/update.sh
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/errors.py
@@ -26,12 +32,14 @@ update: docker ## Update with latest Sentinel data
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/csv2nc.py
 	scripts/build_readme.sh
 	cp ./out/* /mnt/data/Mankoff_2020/ice/latest
+	${thredds_upload} --file out/sector.nc --file out/region.nc
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/upload.py
+	mv ${urls}.new ${urls}
 
 upload: docker ## Upload to dataverse and thredds
 	scripts/build_readme.sh
 	cp ./out/* /mnt/data/Mankoff_2020/ice/latest
-	/home/shl/miniconda3/envs/TMB/bin/python upload_cli.py --url https://thredds01.geus.dk/thredds_upload --destination sid --token $$(cat ~/.new_thredds_token) --file out/*.nc
+	${thredds_upload} --file out/*.nc
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/upload.py
 
 docker: ## Pull down Docker images

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Exits 0 if new Sentinel-1 files are available on the dataverse, 1 if not.
 # Use as a gate before make update:  scripts/check_new_data.sh && make update
+# Compares against urls.txt, which make update replaces only when it succeeds.
 
 if [[ -z "${DATADIR}" ]]; then
     echo "check_new_data.sh: DATADIR is not set" >&2

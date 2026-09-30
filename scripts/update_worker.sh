@@ -78,4 +78,20 @@ r.mapcalc "MASK = if((gates_x@${MAPSET} == 1) | (gates_y@${MAPSET} == 1), 1, nul
 dates=$(g.list type=raster pattern=VX_????_??_?? | cut -d"_" -f2-)
 parallel --bar "r.mapcalc \"vel_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(VX_{1}), 0, abs(VX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(VY_{1}), 0, abs(VY_{1})), 0)\"" ::: ${dates}
 parallel --bar "r.mapcalc \"err_eff_{1} = if(gates_x@${MAPSET} == 1, if(isnull(EX_{1}), 0, abs(EX_{1})), 0) + if(gates_y@${MAPSET} == 1, if(isnull(EY_{1}), 0, abs(EY_{1})), 0)\"" ::: ${dates}
+# Exit status for update.sh. The r.mapcalc calls above fail, harmlessly, for
+# every date that already has vel_eff_/err_eff_ (no --o), so their status means
+# nothing: check instead that every velocity date has both maps.
+missing=0
+for M in promice MEaSUREs.0766; do
+  if [[ ${M} == promice ]]; then P=vx; else P=VX; fi
+  for D in $(g.list type=raster mapset=${M} pattern="${P}_????_??_??" | cut -d"_" -f2-); do
+    for OUT in vel_eff err_eff; do
+      if ! g.findfile element=cellhd file=${OUT}_${D} mapset=${M} > /dev/null; then
+        MSG_ERR "missing ${OUT}_${D}@${M}"
+        missing=1
+      fi
+    done
+  done
+done
+exit ${missing}
 # Local:2 ends here
