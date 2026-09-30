@@ -44,6 +44,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--file",
         nargs="+",
+        action="extend",  # repeated --file adds files; plain store kept only the last
         required=True,
         help="One or more paths to files to upload.",
     )

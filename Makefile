@@ -32,7 +32,7 @@ update: docker ## Update with latest Sentinel data
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/csv2nc.py
 	scripts/build_readme.sh
 	cp ./out/* /mnt/data/Mankoff_2020/ice/latest
-	${thredds_upload} --file out/sector.nc --file out/region.nc
+	${thredds_upload} --file out/*.nc
 	${container_cmd} ${container_args} mankoff/ice_discharge:conda python scripts/upload.py
 	mv ${urls}.new ${urls}
 
